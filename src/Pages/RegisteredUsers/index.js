@@ -22,6 +22,8 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import {
   checkPermission,
+  convertDateUtcFormat,
+  convertDateUTCToLocal2,
   convertDateUTCToLocalWithoutSec,
 } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
@@ -40,6 +42,10 @@ const Index = () => {
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
+  const [dateType, setDateType] = useState({
+    label: "Local Timezone",
+    value: 1,
+  });
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -205,12 +211,17 @@ const Index = () => {
     {
       title: "Date",
       dataIndex: "createdDate",
-      key: "createdDate",
       render: (text, record) => (
-        <span>{convertDateUTCToLocalWithoutSec(text, "index")}</span>
+        <span>
+          {console.log("record", record)}
+          {dateType?.value == 1
+            ? convertDateUTCToLocal2(text, "index")
+            : convertDateUtcFormat(text, "index")}
+        </span>
       ),
+      key: "eventDate",
       sort: true,
-      style: { width: "20%" },
+      style: { width: "10%" },
     },
     {
       title: "Full Name",
@@ -227,76 +238,98 @@ const Index = () => {
       style: { width: "10%" },
     },
     {
-      title: "Allow Multi Login",
-      dataIndex: "isAllowMultiLogin",
-      key: "isAllowMultiLogin",
+      title: "Mobile No",
+      dataIndex: "mobileNo",
+      key: "mobileNo",
+      sort: true,
       render: (text, record) => (
-        <Button
-          color={`${text ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
+        <div className="d-flex">{text} {text &&<button
+          color={`${record.isMobileVerified ? "primary" : "danger"}`}
+          size="xs"
+          className="btn p-0 mx-1 d-flex justify-content-center align-items-center"
           disabled
+          style={{ color: record.isMobileVerified ? "#0bb197" : "#ff3d60" }}
           // onClick={() => {
-          //   handlePermissions("isAllowMultiLogin", record, record.isAllowMultiLogin);
+          //   handlePermissions("isMobileVerified", record, record.isMobileVerified);
           // }}
         >
           {" "}
           <i
             className={`bx ${
-              record.isAllowMultiLogin ? "bx-check" : "bx-block"
+              record.isMobileVerified ? "bx-check" : "bx-block"
             }`}
           ></i>
-        </Button>
+        </button>}</div>
       ),
       style: { width: "2%", textAlign: "center" },
     },
-    {
-      title: "Delete",
-      dataIndex: "isDelete",
-      key: "isDelete",
-      render: (text, record) => (
-        <Button
-          color={`${text ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          disabled
-          // onClick={() => {
-          //   handlePermissions("isDelete", record, record.isDelete);
-          // }}
-        >
-          {" "}
-          <i className={`bx ${record.isDelete ? "bx-check" : "bx-block"}`}></i>
-        </Button>
-      ),
-      style: { width: "2%", textAlign: "center" },
-    },
-    {
-      title: "Email Verified",
-      dataIndex: "isEmailVerified",
-      key: "isEmailVerified",
-      render: (text, record) => (
-        <Button
-          color={`${text ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          disabled
-          // onClick={() => {
-          //   handlePermissions("isEmailVerified", record, record.isEmailVerified);
-          // }}
-        >
-          {" "}
-          <i
-            className={`bx ${record.isEmailVerified ? "bx-check" : "bx-block"}`}
-          ></i>
-        </Button>
-      ),
-      style: { width: "2%", textAlign: "center" },
-    },
+    // {
+    //   title: "Delete",
+    //   dataIndex: "isDelete",
+    //   key: "isDelete",
+    //   render: (text, record) => (
+    //     <Button
+    //       color={`${text ? "primary" : "danger"}`}
+    //       size="sm"
+    //       className="btn"
+    //       disabled
+    //       // onClick={() => {
+    //       //   handlePermissions("isDelete", record, record.isDelete);
+    //       // }}
+    //     >
+    //       {" "}
+    //       <i className={`bx ${record.isDelete ? "bx-check" : "bx-block"}`}></i>
+    //     </Button>
+    //   ),
+    //   style: { width: "2%", textAlign: "center" },
+    // },
+    // {
+    //   title: "Email Verified",
+    //   dataIndex: "isEmailVerified",
+    //   key: "isEmailVerified",
+    //   render: (text, record) => {
+    //     console.log("record", record)
+    //     return <Button
+    //       color={`${text ? "primary" : "danger"}`}
+    //       size="sm"
+    //       className="btn"
+    //       disabled
+    //       // onClick={() => {
+    //       //   handlePermissions("isEmailVerified", record, record.isEmailVerified);
+    //       // }}
+    //     >
+    //       {" "}
+    //       <i
+    //         className={`bx ${record.isEmailVerified ? "bx-check" : "bx-block"}`}
+    //       ></i>
+    //     </Button>
+    //   },
+    //   style: { width: "2%", textAlign: "center" },
+    // },
     {
       title: "Email Id",
       dataIndex: "emailId",
       key: "emailId",
       sort: true,
+      render: (text, record) => (
+        <div className="d-flex mx-2">{text} {text && <button
+          color={`${record.isEmailVerified ? "primary" : "danger"}`}
+          size="sm"
+          className="btn p-0 mx-1 d-flex justify-content-center align-items-center"
+          disabled
+          style={{ color: record.isEmailVerified ? "#0bb197" : "#ff3d60" }}
+          // onClick={() => {
+          //   handlePermissions("isMobileVerified", record, record.isMobileVerified);
+          // }}
+        >
+          {" "}
+          <i
+            className={`bx ${
+              record.isEmailVerified ? "bx-check" : "bx-block"
+            }`}
+          ></i>
+        </button>}</div>
+      ),
       style: { width: "10%" },
     },
     {
@@ -323,13 +356,7 @@ const Index = () => {
       ),
       style: { width: "10%", textAlign: "center" },
     },
-    {
-      title: "Mobile No",
-      dataIndex: "mobileNo",
-      key: "mobileNo",
-      sort: true,
-      style: { width: "2%", textAlign: "center" },
-    },
+    
     {
       title: "Process Status",
       dataIndex: "registrationProcessStatus",
@@ -387,6 +414,30 @@ const Index = () => {
       ),
       style: { width: "2%", textAlign: "center" },
     },
+    {
+      title: "Allow Multi Login",
+      dataIndex: "isAllowMultiLogin",
+      key: "isAllowMultiLogin",
+      render: (text, record) => (
+        <Button
+          color={`${text ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          disabled
+          // onClick={() => {
+          //   handlePermissions("isAllowMultiLogin", record, record.isAllowMultiLogin);
+          // }}
+        >
+          {" "}
+          <i
+            className={`bx ${
+              record.isAllowMultiLogin ? "bx-check" : "bx-block"
+            }`}
+          ></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
   ];
   //elements required
   const tableElement = {
@@ -396,6 +447,7 @@ const Index = () => {
     reloadButton: true,
     loadData: true,
     clone: false,
+    isDateTypeSelect: true,
   };
 
   const handleLoadData = async (password) => {
@@ -491,6 +543,8 @@ const Index = () => {
               pageName,
               PERMISSION_DELETE
             )}
+            dateType={dateType}
+            setDateType={setDateType}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
