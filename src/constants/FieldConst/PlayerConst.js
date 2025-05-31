@@ -1,4 +1,4 @@
-import { IMAGE, MULTI_SELECT, SELECT, SWITCH, TEXT } from "../../components/Common/Const";
+import { COUNTER, IMAGE, MULTI_SELECT, SELECT, SWITCH, TEXT } from "../../components/Common/Const";
 
 export const PlayerFields = [
     {
@@ -137,5 +137,12 @@ export const PlayerFields = [
         label: "Select Team",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
+    },
+    {
+        name: "tpId",
+        label: "TPID",
+        type: COUNTER,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
     },
 ]
