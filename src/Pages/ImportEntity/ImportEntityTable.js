@@ -572,7 +572,7 @@ export default function ImportEntity() {
             onCancel={() => setMatchModalVisible(false)}
             footer={null}
             width={800}
-            height={700}
+            style={{ top: "5rem", height: 650, overflow: "scroll" }}
             centered
           >
             <MatchCard matchData={matchData} />
