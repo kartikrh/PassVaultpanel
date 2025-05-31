@@ -61,7 +61,7 @@ const MatchCard = ({ matchData }) => {
           <Col>
             <Tag
               color={getStatusColor(status)}
-              className="px-3 py-2 mx-5"
+              className="px-3 py-2 mx-4"
             >
               {status_str.toUpperCase()}
             </Tag>
@@ -73,9 +73,9 @@ const MatchCard = ({ matchData }) => {
       {/* Teams Section */}
       <Row gutter={[24, 24]} className="mb-4">
         <Col xs={24} sm={11}>
-          <Card className="text-center bg-light border">
+          <Card className="text-center bg-light border" bodyStyle={{padding : 5}} style={{ minHeight: 215 }}>
             <Avatar
-              size={80}
+              size={75}
               src={teama?.logo_url}
               className="bg-primary mb-3"
             >
@@ -107,9 +107,9 @@ const MatchCard = ({ matchData }) => {
         </Col>
 
         <Col xs={24} sm={11}>
-          <Card className="text-center bg-light border">
+          <Card className="text-center bg-light border"  bodyStyle={{padding : 5}} style={{ minHeight: 215 }}>
             <Avatar
-              size={80}
+              size={75}
               src={teamb?.logo_url}
               className="mb-3"
               style={{ backgroundColor: "#ff7875" }}
