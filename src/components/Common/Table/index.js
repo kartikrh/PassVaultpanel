@@ -1476,7 +1476,7 @@ const Index = forwardRef(
                               color="success"
                               className="btn"
                               onClick={() => {
-                                setSearchTerm("");
+                                // setSearchTerm("");
                                 singleCheck.length > 0
                                   ? loadModelFunction(true)
                                   : dispatch(
@@ -1497,7 +1497,7 @@ const Index = forwardRef(
                             <Button
                               color="danger"
                               onClick={() => {
-                                setSearchTerm("");
+                                // setSearchTerm("");
                                 singleCheck.length > 0
                                   ? suspendModelFunction(true)
                                   : dispatch(
@@ -1516,7 +1516,7 @@ const Index = forwardRef(
                             <Button
                               color="danger"
                               onClick={() => {
-                                setSearchTerm("");
+                                // setSearchTerm("");
                                 singleCheck.length > 0
                                   ? closeModelFunction(true)
                                   : dispatch(
@@ -1535,7 +1535,7 @@ const Index = forwardRef(
                             <Button
                               color="danger"
                               onClick={() => {
-                                setSearchTerm("");
+                                // setSearchTerm("");
                                 singleCheck.length > 0
                                   ? cancelModelFunction(true)
                                   : dispatch(
@@ -1554,7 +1554,7 @@ const Index = forwardRef(
                             <Button
                               color="soft-danger"
                               onClick={() => {
-                                setSearchTerm("");
+                                // setSearchTerm("");
                                 singleCheck.length > 0
                                   ? deleteModelFunction(true)
                                   : dispatch(
