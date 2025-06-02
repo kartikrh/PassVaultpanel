@@ -23,8 +23,8 @@ export const RoleFields = [
         type: TEXT,
         isRequired: true,
         requiredErrorMessage: "Please enter role name.",
-        regex: /^[a-zA-Z0-9 ]{1,100}$/,
-        regexErrorMessage: "Max allowed Characters 100, No Spacial Character",
+        regex: /^[^']{1,100}$/,
+        regexErrorMessage: "Max allowed Characters 100, No Spacial(') Character",
     },
     {
         name: "description",

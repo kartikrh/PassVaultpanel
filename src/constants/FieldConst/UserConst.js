@@ -40,8 +40,8 @@ export const UserFields = [
         parentclassName: "",
         type: TEXT,
         isRequired: true,
-        regex: /^[a-zA-Z0-9 ]{1,100}$/,
-        regexErrorMessage: "Max allowed Characters 100, No Spacial Character",
+        regex: /^.{0,100}$/,
+        regexErrorMessage: "Max allowed Characters 100, No Spacial(') Character",
         requiredErrorMessage: "Please enter full name.",
     },
     {
@@ -51,8 +51,8 @@ export const UserFields = [
         type: TEXT,
         isRequired: true,
         requiredErrorMessage: "Please enter user name.",
-        regex: /^[a-zA-Z0-9 ]{1,50}$/,
-        regexErrorMessage: "Max allowed Characters 50, No Spacial Character",
+        regex: /^.{0,50}$/,
+        regexErrorMessage: "Max allowed Characters 50, No Spacial(') Character",
     },
     {
         name: "password",
