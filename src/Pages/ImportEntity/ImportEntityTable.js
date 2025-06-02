@@ -120,7 +120,6 @@ export default function ImportEntity() {
       setIsLoading(true);
       let endpoint = "";
       let payload = {};
-
       try {
         switch (selectedLevel.level) {
           case "seasons":
@@ -243,8 +242,6 @@ export default function ImportEntity() {
       const response = await axiosInstance.post(
         `${entitySportUrl}/admin/list/MatchInfo`,
         {
-          page: 1, //why it is  asking for page limit in non Array response
-          limit: 1,
           mid: +matchId,
         }
       );
@@ -523,13 +520,11 @@ export default function ImportEntity() {
     if (!isLoading) {
       if (key == "currentpage") {
         setCurrentPage(value);
-        console.log("1");
         fetchData(value, pageSize);
-      }
-      if (key == "pagesize") {
+      } else if (key == "pagesize") {
         setPageSize(value);
-        console.log("2");
-        fetchData(currentPage, value);
+        // fetchData(currentPage, value);
+        setCurrentPage(1);
       }
     }
   };
@@ -538,6 +533,7 @@ export default function ImportEntity() {
   useEffect(() => {
     if (!isLoading) fetchData(currentPage, pageSize);
   }, [selectedLevel]);
+
   return (
     <React.Fragment>
       <div className="page-content">

@@ -1374,6 +1374,11 @@ export const UpdateManualOdds = () => {
         const isManualMode = !isLive && !directLineEnabled;
         console.log(`Manual mode: ${isManualMode}, isLive: ${isLive}, directLineEnabled: ${directLineEnabled}`);
 
+        if (key === '+' && isManualMode) {
+            event.preventDefault();
+            return;
+        }
+
         if (!isManualMode) {
             // Only allow status shortcuts (S, D, F, G) in non-manual modes
             switch (key) {

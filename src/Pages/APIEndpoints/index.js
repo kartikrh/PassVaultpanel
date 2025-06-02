@@ -136,6 +136,8 @@ const Index = () => {
         return "updateSeoModule";
       case 7:
         return "updateMenuList";
+      case 8:
+        return "configUpdate";
       default:
         return "Unknown";
     } 
