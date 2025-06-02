@@ -117,7 +117,7 @@ function AddAPIEndpoint() {
             <Col xs={12} md={8} lg={9}>
               <h3 className="modal-header-title">API Endpoints</h3>
             </Col>
-            <Card>
+            <Card className="pb-5">
               <CardBody>
                 {isLoading && <SpinnerModel />}
                 <Row>
