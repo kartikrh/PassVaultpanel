@@ -1008,7 +1008,7 @@ const Index = forwardRef(
     const handleTableReset = () => {
       if (renderCustomFilter && handleCustomReset) {
         handleCustomReset();
-        return
+        return;
       }
       setSearchTerm("");
       setTableActions({
@@ -1102,11 +1102,11 @@ const Index = forwardRef(
           isActive: true,
           rateSourceRefId: 1,
         });
-      // } else if (tableElement?.isVirtual) {
-      //   handleReset({
-      //     isActive: true,
-      //     isVirtual: 0,
-      //   });
+        // } else if (tableElement?.isVirtual) {
+        //   handleReset({
+        //     isActive: true,
+        //     isVirtual: 0,
+        //   });
       } else {
         handleReset({
           isActive: true,
@@ -1147,11 +1147,11 @@ const Index = forwardRef(
           isActive: true,
           rateSourceRefId: 1,
         });
-      // } else if (tableElement?.isVirtual) {
-      //   handleReload({
-      //     isActive: true,
-      //     isVirtual: 0,
-      //   });
+        // } else if (tableElement?.isVirtual) {
+        //   handleReload({
+        //     isActive: true,
+        //     isVirtual: 0,
+        //   });
       } else {
         handleReload({
           isActive: true,
@@ -1318,7 +1318,8 @@ const Index = forwardRef(
         <Col lg={12}>
           <Card className="card">
             {tableElement?.title !== "Auto Events" &&
-              tableElement?.title !== "Manual Events" && (
+              tableElement?.title !== "Manual Events" &&
+              !tableElement.isNonCrud && (
                 <CardHeader className="p-0 p-md-2">
                   <form>
                     {renderHeader && renderHeader()}
@@ -2359,7 +2360,7 @@ const Index = forwardRef(
                           ) : null}
                           {!tableElement?.isDateRange &&
                           tableElement?.isDateTypeSelect &&
-                          tableElement?.title == "Market Data Logs" ? (
+                          (tableElement?.title == "Market Data Logs" || tableElement?.title == "Registration Pending" || tableElement?.title == "Registered Users")  ? (
                             <Select
                               value={dateType}
                               placeholder="Date Type"

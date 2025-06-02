@@ -29,15 +29,16 @@ export const WARNING = "WARNING";
 export const TAB_API = "API";
 export const TAB_API_ENDPOINTS = "API Endpoints";
 
-
+export const TAB_IMPORT_ENTITYIMPORT = "Import EntityImport";
 export const TAB_AUTO_EVENT = "Auto Event";
 export const TAB_AWARDS = "Awards";
 export const TAB_PACKAGE = "Package";
 export const TAB_BANNER = "Banner";
 export const TAB_BLOCKS = "Blocks";
+export const TAB_CARD_TYPE = "Card Type";
 export const TAB_COUNTRY_CODE = "Country Code";
 export const WHITE_LABEL = "White Label";
-export const WHITE_LABEL_EVENT_DATA = "White Label Event Data"
+export const WHITE_LABEL_EVENT_DATA = "White Label Event Data";
 export const VENUE = "Venue";
 export const TAB_NOTIFICATION_CONFIG = "Notification Config";
 
@@ -122,8 +123,8 @@ export const BOWLING_STATUS = 2;
 
 export const STRING_SEPERATOR = "_##_";
 export const CONTENT_IMAGE_TYPE = {
-  BLOCKS: "Blocks"
-}
+  BLOCKS: "Blocks",
+};
 export const OPEN_MARKET_CONNECT = "connectEventMarket";
 export const COMMENTARY_STATUS_CONNECT = "conCommentary";
 export const OPEN_MARKET_DATA = "updateMarketData";
@@ -189,4 +190,4 @@ export const MODULE_WHITE_LABEL = 40;
 export const MODULE_WHITE_LABEL_SHOW_HIDE = 40;
 export const MODULE_VENUE = 41;
 
-export const LOG_ROCKET_TO_INCLUDE_ONLY = "CHG"
+export const LOG_ROCKET_TO_INCLUDE_ONLY = "CHG";

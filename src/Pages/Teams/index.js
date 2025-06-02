@@ -302,6 +302,13 @@ const Index = () => {
       ),
       style: { width: "2%", textAlign: "center" },
     },
+    {
+      title: "TPID",
+      dataIndex: "tpId",
+      key: "tpId",
+      style: { width: "10%" },
+      // sort: true,
+    },
   ];
 
   const downloadExcelColumn = [

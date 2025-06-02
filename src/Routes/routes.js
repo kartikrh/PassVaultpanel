@@ -39,6 +39,7 @@ import Toss from "../Pages/Commentary/Toss.jsx";
 import CommentaryMaster from "../Pages/Commentary/CommentaryMaster.js";
 import AddBlock from "../Pages/Blocks/AddBlock.jsx";
 import Blocks from "../Pages/Blocks";
+import CardType from "../Pages/CardType";
 import AddConfig from "../Pages/Config/AddConfig.jsx";
 import Config from "../Pages/Config";
 import PageFormat from "../Pages/PageFormat";
@@ -153,6 +154,9 @@ import AddWhiteLabel from "../Pages/WhiteLabel/AddWhiteLabel.jsx";
 import { ShowHide } from "../Pages/WhiteLabel/EventType/index.js";
 import Venue from "../Pages/Venue";
 import AddVenue from "../Pages/Venue/AddVenue.jsx";
+import AddCardType from "../Pages/CardType/AddCardType.jsx";
+import ImportEntity from "../Pages/ImportEntity/ImportEntityTable.js";
+
 
 const authProtectedRoutes = [
   //dashboard
@@ -211,6 +215,7 @@ const authProtectedRoutes = [
   { path: "/whiteLabelEventData", component: <ShowHide /> },
   { path: "/venue", component: <Venue /> },
   { path: "/addVenue", component: <AddVenue /> },
+  { path: "/importEntity", component: <ImportEntity /> },
   {
     path: "/commentaryMarketTemplate",
     component: <CommentaryMarketTemplate />,
@@ -294,6 +299,8 @@ const authProtectedRoutes = [
   { path: "/addPhotoLibrary", component: <AddPhotoLibrary /> },
   { path: "/addPhotos", component: <AddPhotos /> },
   { path: "/videoLibrary", component: <VideoLibrary /> },
+  { path: "/CardType", component: <CardType /> },
+  { path: "/addCardType", component: <AddCardType /> },
   { path: "/manualOddsMarket", component: <ManualOddsMarket /> },
   { path: "/updateManualOdds", component: <UpdateManualOdds /> },
   { path: "/AddVideoLibrary", component: <AddVideoLibrary /> },
