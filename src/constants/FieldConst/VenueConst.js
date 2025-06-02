@@ -16,7 +16,7 @@ export const VenueField = [
     name: "city",
     label: "City",
     isRequired: true,
-    // regex: /^[a-zA-Z0-9 ]{0,100}$/,
+    // regex: /^[^']{1,100}$/,
     // regexErrorMessage: "Max allowed Characters 100, No Spacial Character",
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
