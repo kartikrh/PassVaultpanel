@@ -1982,7 +1982,7 @@ const Commentary = (props) => {
     useEffect(() => {
         if (!isEmpty(commentaryDetails) && ballStatus) {
             if (socket) {
-                socket.emit(COMMENTARY_UPDATE, { ballStatus: ballStatus, eventRefId: commentaryDetails?.eventRefId, commentaryId: commentaryDetails?.commentaryId });
+                socket.emit(COMMENTARY_UPDATE, { ballStatus: ballStatus, eventRefId: commentaryDetails?.eventRefId, commentaryId: commentaryDetails?.commentaryId, teamId: teams[BATTING_TEAM].teamId, wicket: teams[BATTING_TEAM]?.teamWicket, score: teams[BATTING_TEAM].teamScore , over: teams[BATTING_TEAM]?.teamOver });
             }
         }
     }, [commentaryDetails, ballStatus]);
