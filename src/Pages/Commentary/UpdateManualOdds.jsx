@@ -2712,7 +2712,7 @@ export const UpdateManualOdds = () => {
                 socket.off(MARKET_RUNNER_DATA);
             }
         };
-    }, [socket, commentaryId, directLineEnabled, isLive]);
+    }, [socket, commentaryId, directLineEnabled, isLive, rateSourceRefID]);
 
     useEffect(() => {
         if (!socket) return;
@@ -2867,13 +2867,13 @@ export const UpdateManualOdds = () => {
                                                     setDirectLineEnabled(false);
                                                 }
                                             }}
-                                        > {rateSourceRefID.length &&
+                                        > {rateSourceRefID.length ?
                                             <FormControlLabel
                                                 value="live"
                                                 control={<Radio disabled={marketStatus === CLOSE_VALUE.toString()} />}
                                                 label="Live"
                                                 disabled={marketStatus === CLOSE_VALUE.toString()}
-                                            />}
+                                            /> : null}
                                             <FormControlLabel
                                                 value="directLine"
                                                 control={<Radio disabled={marketStatus === CLOSE_VALUE.toString()} />}
