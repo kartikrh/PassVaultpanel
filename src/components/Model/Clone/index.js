@@ -7,27 +7,72 @@ import { ERROR } from '../../Common/Const';
 import { Select } from 'antd';
 
 
-export const MatchTypeClone = ({cloneModelVisible, setCloneModelVisible, handleClone, setCloneName, singleCheck}) => {
-    return (
-    <Modal isOpen={cloneModelVisible} toggle={() => {setCloneModelVisible(false)}} centered >
-    <div className="tablelist-form">
+const ENTITY_OPTIONS = [
+  { label: "Select Entity", value: "0" },
+  { label: "ODI (One Day International)", value: 1 },
+  { label: "TEST", value: 2 },
+  { label: "T20I(Twenty20 International)", value: 3 },
+  { label: "List A(Limited Over Domestic Match)", value: 4 },
+  { label: "First Class", value: 5 },
+  { label: "T20 Domestic", value: 6 },
+  { label: "Women ODI", value: 7 },
+  { label: "Women T20", value: 8 },
+  { label: "Youth ODI", value: 9 },
+  { label: "Youth T20", value: 10 },
+  { label: "Other", value: 11 },
+  { label: "Other List A", value: 12 },
+  { label: "Other 1st Class", value: 13 },
+  { label: "Other T20", value: 14 },
+  { label: "Youth Test", value: 15 },
+  { label: "Women Test", value: 16 },
+  { label: "T10", value: 17 },
+  { label: "T100", value: 18 },
+  { label: "Women T100", value: 19 },
+  { label: "TB-10", value: 20 },
+];
+
+export const MatchTypeClone = ({ cloneModelVisible, setCloneModelVisible, handleClone, setCloneName, setEntityType, singleCheck }) => {
+  return (
+    <Modal isOpen={cloneModelVisible} toggle={() => setCloneModelVisible(false)} centered>
+      <div className="tablelist-form">
         <ModalBody>
-            {singleCheck.length===1?<div className="d-flex flex-column justify-content-center p-4">
-                <h4 className="form-label text-left text-lg modal-header-title">Clone New Match Type</h4>
-                <h6 className='text-left mt-4 modal-header-title'>Match Type Name</h6>
-                <input type="text" onChange={(e)=>{setCloneName(e.target.value)}} className="form-control" required />
-            </div>:singleCheck.length>1?<h4 className="text-danger text-center p-4">Select Only One Match Type</h4>:<h4 className="text-danger text-center p-4">Select One MatchTyp To Clone</h4>}
-            <div className="hstack gap-2 justify-content-end">
-                <button type="button" className="btn btn-light" onClick={() => {setCloneModelVisible(false)}}>Close</button>
-                {singleCheck.length===1?
-                <button type="submit" className="btn btn-warning" id="add-btn" onClick={()=>{handleClone()}}>Clone Match Type</button>
-                :null}
+          {singleCheck.length === 1 ? (
+            <div className="d-flex flex-column justify-content-center p-4">
+              <h4 className="form-label text-left text-lg modal-header-title">Clone New Match Type</h4>
+
+              <h6 className='text-left mt-4 modal-header-title'>Match Type Name</h6>
+              <input
+                type="text"
+                onChange={(e) => setCloneName(e.target.value)}
+                className="form-control"
+                required
+              />
+
+              <h6 className='text-left mt-4 modal-header-title'>Select Entity Type</h6>
+              <select className="form-control" onChange={(e) => setEntityType(e.target.value)} defaultValue="0">
+                {ENTITY_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>{option.label}</option>
+                ))}
+              </select>
             </div>
+          ) : singleCheck.length > 1 ? (
+            <h4 className="text-danger text-center p-4">Select Only One Match Type</h4>
+          ) : (
+            <h4 className="text-danger text-center p-4">Select One MatchType To Clone</h4>
+          )}
+
+          <div className="hstack gap-2 justify-content-end">
+            <button type="button" className="btn btn-light" onClick={() => setCloneModelVisible(false)}>Close</button>
+            {singleCheck.length === 1 && (
+              <button type="submit" className="btn btn-warning" onClick={handleClone}>Clone Match Type</button>
+            )}
+          </div>
         </ModalBody>
-    </div>
-</Modal>
-  )
-}
+      </div>
+    </Modal>
+  );
+};
+
 export const CommentaryClone = ({cloneModelVisible, cloneValues, setCloneModelVisible, handleClone, setCloneValues, singleCheck}) => {
     const handleCloneValues = (e) =>{
         const {name, value} = e.target;
