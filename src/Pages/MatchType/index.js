@@ -62,6 +62,7 @@ const Index = () => {
   const [cloneModelVisible, setCloneModelVisible] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [cloneName, setCloneName] = useState("");
+  const [entityType, setEntityType] = useState();
   const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState({
     selectedEntity: undefined,
@@ -144,6 +145,8 @@ const Index = () => {
       .post(`/admin/matchType/clone`, {
         matchTypeId: checekedList?.[0],
         matchType: cloneName,
+        entityEnum: +entityType,
+        // added entityEnum clone request payload 
       })
       .then((response) => {
         fetchData();
@@ -517,6 +520,7 @@ const Index = () => {
             setCloneModelVisible={setCloneModelVisible}
             handleClone={handleClone}
             setCloneName={setCloneName}
+            setEntityType={setEntityType}
             singleCheck={checekedList}
           />
           {loadDataModelVisable && (
