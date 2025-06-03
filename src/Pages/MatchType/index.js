@@ -80,8 +80,6 @@ const Index = () => {
       ...dataToPass,
     };
 
-    console.log("API Request Payload:", requestPayload); // Debug log
-
     await axiosInstance
       .post(`/admin/matchType/all`, requestPayload)
       .then((response) => {
@@ -447,21 +445,21 @@ const Index = () => {
     resetButton: true,
   };
 
-// Modified useEffect to prevent double API calls
-useEffect(() => {
-  if (
-    !checkPermission(permissionObj, pageName, PERMISSION_VIEW) &&
-    !isEmpty(permissionObj)
-  ) {
-    navigate("/dashboard");
-  }
-  
-  // Only call fetchData once on initial load
-  if (!initialLoadDone && !isEmpty(permissionObj)) {
-    fetchData();
-    setInitialLoadDone(true);
-  }
-}, [permissionObj, initialLoadDone]);
+  // Modified useEffect to prevent double API calls
+  useEffect(() => {
+    if (
+      !checkPermission(permissionObj, pageName, PERMISSION_VIEW) &&
+      !isEmpty(permissionObj)
+    ) {
+      navigate("/dashboard");
+    }
+
+    // Only call fetchData once on initial load
+    if (!initialLoadDone && !isEmpty(permissionObj)) {
+      fetchData();
+      setInitialLoadDone(true);
+    }
+  }, [permissionObj, initialLoadDone]);
   return (
     <React.Fragment>
       <div className="page-content">
