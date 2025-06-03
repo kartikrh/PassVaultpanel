@@ -38,9 +38,9 @@ export const TabFields = [
         label: "Display Name",
         type: TEXT,
         isRequired: true,
-        regex: /^[a-zA-Z0-9 ]{1,20}$/,
+        regex: /^[^']{1,20}$/,
         requiredErrorMessage: "Please enter Display name.",
-        regexErrorMessage: "Max allowed Characters 20, No Spacial Character",
+        regexErrorMessage: "Max allowed Characters 20, No Spacial(') Character",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },

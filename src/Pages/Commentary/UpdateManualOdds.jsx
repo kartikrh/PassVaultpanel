@@ -2700,7 +2700,7 @@ export const UpdateManualOdds = () => {
         if (directLineEnabled && !isLive) {
             // console.log("Connecting to INNINGS_CONNECT for DirectLine data");
             socket.emit(INNINGS_CONNECT, commentaryId);
-        } else {
+        } else if(rateSourceRefID.length){
             // console.log("Connecting to MARKET_RUNNER_CONNECT");
             socket.emit(MARKET_RUNNER_CONNECT, rateSourceRefID);
         }
@@ -2712,7 +2712,7 @@ export const UpdateManualOdds = () => {
                 socket.off(MARKET_RUNNER_DATA);
             }
         };
-    }, [socket, commentaryId, directLineEnabled, isLive]);
+    }, [socket, commentaryId, directLineEnabled, isLive, rateSourceRefID]);
 
     useEffect(() => {
         if (!socket) return;
@@ -2856,7 +2856,7 @@ export const UpdateManualOdds = () => {
                                             value={isLive ? "live" : directLineEnabled ? "directLine" : "manual"}
                                             onChange={(e) => {
                                                 const value = e.target.value;
-                                                if (value === "live") {
+                                                if (value === "live" && rateSourceRefID.length) {
                                                     setIsLive(true);
                                                     setDirectLineEnabled(false);
                                                 } else if (value === "directLine") {
@@ -2867,13 +2867,13 @@ export const UpdateManualOdds = () => {
                                                     setDirectLineEnabled(false);
                                                 }
                                             }}
-                                        >
+                                        > {rateSourceRefID.length ?
                                             <FormControlLabel
                                                 value="live"
                                                 control={<Radio disabled={marketStatus === CLOSE_VALUE.toString()} />}
                                                 label="Live"
                                                 disabled={marketStatus === CLOSE_VALUE.toString()}
-                                            />
+                                            /> : null}
                                             <FormControlLabel
                                                 value="directLine"
                                                 control={<Radio disabled={marketStatus === CLOSE_VALUE.toString()} />}

@@ -23,7 +23,32 @@ import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { Tooltip } from "antd";
+import Select from "react-select";
 import LoadDataModal from "../../components/Model/LoadDataModal";
+
+const ENTITY_OPTIONS = [
+  { label: "Select Entity", value: 0 },
+  { label: "ODI (One Day International)", value: 1 },
+  { label: "TEST", value: 2 },
+  { label: "T20I(Twenty20 International)", value: 3 },
+  { label: "List A(Limited Over Domestic Match)", value: 4 },
+  { label: "First Class", value: 5 },
+  { label: "T20 Domestic", value: 6 },
+  { label: "Women ODI", value: 7 },
+  { label: "Women T20", value: 8 },
+  { label: "Youth ODI", value: 9 },
+  { label: "Youth T20", value: 10 },
+  { label: "Other", value: 11 },
+  { label: "Other List A", value: 12 },
+  { label: "Other 1st Class", value: 13 },
+  { label: "Other T20", value: 14 },
+  { label: "Youth Test", value: 15 },
+  { label: "Women Test", value: 16 },
+  { label: "T10", value: 17 },
+  { label: "T100", value: 18 },
+  { label: "Women T100", value: 19 },
+  { label: "TB-10", value: 20 },
+];
 
 const Index = () => {
   const pageName = TAB_MATCH_TYPE;
@@ -38,18 +63,29 @@ const Index = () => {
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [cloneName, setCloneName] = useState("");
   const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
+  const [selectedFilter, setSelectedFilter] = useState({
+    selectedEntity: undefined,
+  });
+  const [initialLoadDone, setInitialLoadDone] = useState(false);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const fetchData = async (latestValueFromTable) => {
+
+  const fetchData = async (dataToPass = {}) => {
     setIsLoading(true);
 
-    const tableActions = finalizeRef.current.getTableAction();
+    const tableActions = finalizeRef.current?.getTableAction() || {};
+    const requestPayload = {
+      ...tableActions,
+      ...dataToPass,
+    };
+
     await axiosInstance
-      .post(`/admin/matchType/all`, {
-        ...(latestValueFromTable || tableActions),
-      })
+      .post(`/admin/matchType/all`, requestPayload)
       .then((response) => {
-        const apiData = response?.result?.sort((a,b)=>a?.matchTypeId - b?.matchTypeId);
+        const apiData = response?.result?.sort(
+          (a, b) => a?.matchTypeId - b?.matchTypeId
+        );
         let apiDataIdList = [];
         apiData.forEach((ele) => {
           apiDataIdList.push(ele?.matchTypeId);
@@ -61,6 +97,7 @@ const Index = () => {
       })
       .catch((error) => {
         setIsLoading(false);
+        console.error("Error fetching match types:", error);
       });
   };
 
@@ -77,7 +114,7 @@ const Index = () => {
   const handleLoadData = async (password) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/loadPanelData`, {module: [MODULE_MATCH_TYPES], password})
+      .post(`/loadPanelData`, { module: [MODULE_MATCH_TYPES], password })
       .then((response) => {
         fetchData();
         setLoadDataModelVisable(false);
@@ -158,6 +195,7 @@ const Index = () => {
         );
       });
   };
+
   const handleIsHistory = async (pType, record, cState) => {
     setIsLoading(true);
     await axiosInstance
@@ -167,30 +205,94 @@ const Index = () => {
       })
       .then((response) => {
         fetchData();
-        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
       })
       .catch((error) => {
         setIsLoading(false);
-        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
       });
   };
+
   const handleEdit = (id) => {
     navigate("/addMatchType", { state: { userId: id } });
   };
 
   const handlePredictorClick = (id) => {
     const url = new URL(window.location.origin + "/matchTypePredictor");
-    sessionStorage.setItem('matchTypePredictorId', "" + id);
-    window.open(url.href, '_blank');
-    // navigate("/matchTypePredictor", { state: { userId: id } });
+    sessionStorage.setItem("matchTypePredictorId", "" + id);
+    window.open(url.href, "_blank");
   };
 
   const handleBowlingPredictorClick = (id) => {
     const url = new URL(window.location.origin + "/bowlingPredictor");
-    sessionStorage.setItem('bowlingPredictorId', "" + id);
-    window.open(url.href, '_blank');
-    // navigate("/matchTypePredictor", { state: { userId: id } });
+    sessionStorage.setItem("bowlingPredictorId", "" + id);
+    window.open(url.href, "_blank");
   };
+
+  // Separate filter function for dropdown filter
+  const handleFilterChange = (key, value) => {
+    const filterDataToUpdate = { ...selectedFilter, [key]: value };
+    setSelectedFilter(filterDataToUpdate);
+
+    // Create the API payload based on the filter
+    const apiPayload = {};
+
+    // If "Select Entity" (value 0) is selected, don't call API
+    if (value && value.value === 0) {
+      return;
+    }
+    // Add entityEnum if an entity is selected (and not "Select Entity")
+    if (
+      filterDataToUpdate.selectedEntity &&
+      filterDataToUpdate.selectedEntity.value !== 0
+    ) {
+      apiPayload.entityEnum = filterDataToUpdate.selectedEntity.value;
+    }
+
+    // Call fetchData with the filter payload
+    fetchData(apiPayload);
+  };
+
+  // Reload function that respects current filter
+  const handleReload = () => {
+    const apiPayload = {};
+
+    // Add entityEnum if an entity is selected (and not "Select Entity")
+    if (
+      selectedFilter.selectedEntity &&
+      selectedFilter.selectedEntity.value !== 0
+    ) {
+      apiPayload.entityEnum = selectedFilter.selectedEntity.value;
+    }
+
+    fetchData(apiPayload);
+  };
+
+  const handleReset = () => {
+    setSelectedFilter({
+      selectedEntity: { label: "Select Entity", value: 0 },
+    });
+    fetchData({}); // Fetch all data without filter
+  };
+
+  // Helper function to get entity label by value
+  const getEntityLabel = (entityEnum) => {
+    const entity = ENTITY_OPTIONS.find((option) => option.value === entityEnum);
+    return entity ? entity.label : "";
+  };
+
   const columns = [
     {
       title: (
@@ -255,18 +357,24 @@ const Index = () => {
       title: "History",
       key: "isHistory",
       render: (text, record) => (
-      <Tooltip title={"Active/Inactive History"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-        <Button
-          color={`${record.isHistory ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            handleIsHistory("isHistory", record, record.isHistory);
-          }}
+        <Tooltip
+          title={"Active/Inactive History"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
         >
-          <i className={`bx ${record.isHistory ? "bx-check" : "bx-block"}`}></i>
-        </Button>
-      </Tooltip>
+          <Button
+            color={`${record.isHistory ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleIsHistory("isHistory", record, record.isHistory);
+            }}
+          >
+            <i
+              className={`bx ${record.isHistory ? "bx-check" : "bx-block"}`}
+            ></i>
+          </Button>
+        </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -275,44 +383,58 @@ const Index = () => {
       key: "predictor",
       printType: "ignore",
       render: (text, record) => (
-      <Tooltip title={"View Test Event Predictor"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-        <Button
-          color={"primary"}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            handlePredictorClick(record?.matchTypeId);
-          }}
+        <Tooltip
+          title={"View Test Event Predictor"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
         >
-          <i className="bx bx-plus"></i>
-        </Button>
-      </Tooltip>
+          <Button
+            color={"primary"}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handlePredictorClick(record?.matchTypeId);
+            }}
+          >
+            <i className="bx bx-plus"></i>
+          </Button>
+        </Tooltip>
       ),
       style: { width: "8%", textAlign: "center" },
     },
     {
       title: "Bowling Predictor",
-      key: "predictor",
+      key: "bowlingPredictor",
       printType: "ignore",
       render: (text, record) => (
-      <Tooltip title={"View Test bowling Predictor"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-        <Button
-          color={"primary"}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            handleBowlingPredictorClick(record?.matchTypeId);
-          }}
+        <Tooltip
+          title={"View Test bowling Predictor"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
         >
-          <i className="bx bx-plus"></i>
-        </Button>
-      </Tooltip>
+          <Button
+            color={"primary"}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleBowlingPredictorClick(record?.matchTypeId);
+            }}
+          >
+            <i className="bx bx-plus"></i>
+          </Button>
+        </Tooltip>
       ),
       style: { width: "8%", textAlign: "center" },
     },
+    {
+      title: "Entity",
+      dataIndex: "entityEnum",
+      key: "entityEnum",
+      render: (text, record) => getEntityLabel(record.entityEnum),
+      style: { width: "8%" },
+    },
   ];
 
-  //elements required
   const tableElement = {
     title: "Match Type",
     headerSelect: false,
@@ -320,18 +442,24 @@ const Index = () => {
     clone: true,
     reloadButton: true,
     loadData: true,
+    resetButton: true,
   };
 
+  // Modified useEffect to prevent double API calls
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW) && !isEmpty(permissionObj)) {
+    if (
+      !checkPermission(permissionObj, pageName, PERMISSION_VIEW) &&
+      !isEmpty(permissionObj)
+    ) {
       navigate("/dashboard");
     }
-    fetchData();
-  }, [permissionObj]);
 
-  const handleReload = (value) => {
-    fetchData();
-  };
+    // Only call fetchData once on initial load
+    if (!initialLoadDone && !isEmpty(permissionObj)) {
+      fetchData();
+      setInitialLoadDone(true);
+    }
+  }, [permissionObj, initialLoadDone]);
   return (
     <React.Fragment>
       <div className="page-content">
@@ -345,6 +473,7 @@ const Index = () => {
             tableElement={tableElement}
             reFetchData={fetchData}
             handleReload={handleReload}
+            handleCustomReset={handleReset}
             loadDataModelFunction={setLoadDataModelVisable}
             cloneModelFunction={setCloneModelVisible}
             deleteModelFunction={setDeleteModelVisable}
@@ -360,6 +489,22 @@ const Index = () => {
               pageName,
               PERMISSION_DELETE
             )}
+            renderCustomFilter={() => (
+              <div className="d-flex align-items-center">
+                <Select
+                  styles={{
+                    control: (provided) => ({ ...provided, width: 250 }),
+                  }}
+                  value={selectedFilter?.selectedEntity}
+                  placeholder="Select Entity"
+                  options={ENTITY_OPTIONS}
+                  onChange={(selectedOption) => {
+                    handleFilterChange("selectedEntity", selectedOption);
+                  }}
+                  classNamePrefix="filter-dropdown"
+                />
+              </div>
+            )}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
@@ -374,13 +519,14 @@ const Index = () => {
             setCloneName={setCloneName}
             singleCheck={checekedList}
           />
-          {loadDataModelVisable && 
+          {loadDataModelVisable && (
             <LoadDataModal
               loadDataModelVisable={loadDataModelVisable}
               setLoadDataModelVisable={setLoadDataModelVisable}
               handleLoadData={handleLoadData}
-              moduleName={"Match Type"} 
-            />}
+              moduleName={"Match Type"}
+            />
+          )}
         </Container>
       </div>
     </React.Fragment>
