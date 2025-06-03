@@ -146,7 +146,7 @@ const Index = () => {
         matchTypeId: checekedList?.[0],
         matchType: cloneName,
         entityEnum: +entityType,
-        // added entityEnum clone request payload 
+        // added entityEnum clone request payload
       })
       .then((response) => {
         fetchData();
@@ -167,6 +167,7 @@ const Index = () => {
             type: ERROR,
           })
         );
+        setIsLoading(false);
       });
   };
 
