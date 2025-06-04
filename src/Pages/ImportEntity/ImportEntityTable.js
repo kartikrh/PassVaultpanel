@@ -43,8 +43,9 @@ export default function ImportEntity() {
   const [checekedList, setCheckedList] = useState([]);
   const loadInitData = useSelector((state) => state.loadInit.loadInitData);
   const [currentPage, setCurrentPage] = useState(1);
-  const globalPageSize = localStorage.getItem("pageSize");
-  const [pageSize, setPageSize] = useState(globalPageSize || 10);
+  const globalPageSize = parseInt(localStorage.getItem("pageSize")) || 10;
+  const [pageSize, setPageSize] = useState(globalPageSize);
+
   const [total, setTotal] = useState(0);
   // Navigation state
   const [selectedLevel, setSelectedLevel] = useState({
@@ -59,6 +60,7 @@ export default function ImportEntity() {
   // Modal state for match details
   const [matchModalVisible, setMatchModalVisible] = useState(false);
   const [matchData, setMatchData] = useState(null);
+  const [dataToDB, setDataToDB] = useState({});
 
   let entitySportUrl =
     loadInitData.find((item) => item.key === loadInit.ENTITYSPORTURL)?.value ||
@@ -116,7 +118,8 @@ export default function ImportEntity() {
 
   // Unified fetch function
   const fetchData = useCallback(
-    async (page = 1, limit = 10) => {
+    async (page = currentPage, limit = pageSize) => {
+      // console.log("called", currentPage, pageSize);
       setIsLoading(true);
       let endpoint = "";
       let payload = {};
@@ -125,9 +128,10 @@ export default function ImportEntity() {
           case "seasons":
             endpoint = `${entitySportUrl}/admin/list/seasons`;
             payload = {
-              page: page,
-              limit: pageSize,
+              page: page == 0 ? 1 : page,
+              limit: +limit,
             };
+
             break;
           case "seasonCompetitions":
             if (!selectedLevel.seasonId) {
@@ -137,8 +141,8 @@ export default function ImportEntity() {
             endpoint = `${entitySportUrl}/admin/list/seasonCompetitions`;
             payload = {
               sid: +selectedLevel.seasonId,
-              page: page,
-              limit: pageSize,
+              page: page == 0 ? 1 : page,
+              limit: +limit,
             };
             break;
           case "competitionMatches":
@@ -149,8 +153,8 @@ export default function ImportEntity() {
             endpoint = `${entitySportUrl}/admin/list/competitionMatches`;
             payload = {
               cid: selectedLevel.competitionId,
-              page: page,
-              limit: limit,
+              page: page == 0 ? 1 : page,
+              limit: +limit,
             };
             break;
           default:
@@ -268,6 +272,34 @@ export default function ImportEntity() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Import match data
+  const addMatchData = async (matchData) => {
+    setIsLoading(true);
+    finalizeRef.current.getTableAction();
+    await axiosInstance
+      .post(`/admin/import/commentary`, matchData)
+      .then((response) => {
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
   };
 
   // Handle item clicks for navigation
@@ -400,6 +432,31 @@ export default function ImportEntity() {
 
   const getCompetitionMatchesColumns = () => [
     {
+      title: "Import",
+      dataIndex: "import",
+      key: "import",
+      width: "7.5%",
+      render: (text, record) => (
+        <button
+          color={"primary"}
+          size="sm"
+          className="btn-primary"
+          onClick={() => {
+            setDataToDB({
+              ...dataToDB,
+              ...record,
+            });
+            addMatchData({
+              ...dataToDB,
+              ...record,
+            });
+          }}
+        >
+          <i className="bx bx-plus"></i>
+        </button>
+      ),
+    },
+    {
       title: "Match ID",
       dataIndex: "match_id",
       key: "match_id",
@@ -450,13 +507,6 @@ export default function ImportEntity() {
         return parts.length > 0 ? parts.join(", ") : "N/A";
       },
     },
-    // {
-    //   title: "Country",
-    //   dataIndex: "venue",
-    //   key: "country",
-    //   width: "12.5%",
-    //   render: (venue) => venue?.country || "N/A",
-    // },
     {
       title: "Status",
       dataIndex: "status",
@@ -516,24 +566,30 @@ export default function ImportEntity() {
     }
   }, [permissionObj, navigate]);
 
-  const handlePageSizeAndLimit = (key, value) => {
-    if (!isLoading) {
-      if (key == "currentpage") {
-        setCurrentPage(value);
-        fetchData(value, pageSize);
-      } else if (key == "pagesize") {
-        setPageSize(value);
-        // fetchData(currentPage, value);
-        setCurrentPage(1);
-      }
-    }
-  };
+  // const handlePageSizeAndLimit = (key, value) => {
+  //   if (!isLoading) {
+  //     if (key == "currentpage") {
+  //       setCurrentPage(value);
+  //       fetchData(value, pageSize);
+  //     } else if (key == "pagesize") {
+  //       setPageSize(value);
+  //       // fetchData(currentPage, value);
+  //       setCurrentPage(1);
+  //     }
+  //   }
+  // };
 
   // Fetch data when level changes
   useEffect(() => {
-    if (!isLoading) fetchData(currentPage, pageSize);
-  }, [selectedLevel]);
+    if (!isLoading) {
+      // console.log("1");
+      fetchData(currentPage, pageSize);
+    }
+  }, [selectedLevel, currentPage, pageSize, fetchData]);
 
+  // useEffect(() => {
+  //   console.log({ currentPage, pageSize });
+  // });
   return (
     <React.Fragment>
       <div className="page-content">
@@ -551,12 +607,26 @@ export default function ImportEntity() {
             serverCurrentPage={currentPage}
             serverPageSize={pageSize}
             serverTotal={total}
-            setServerCurrentPage={(value) =>
-              handlePageSizeAndLimit("currentpage", value)
-            }
-            setServerPageSize={(value) =>
-              handlePageSizeAndLimit("pagesize", value)
-            }
+            setServerCurrentPage={(value) => {
+              const newPage = +value;
+              if (newPage > 0 && newPage !== currentPage) {
+                setCurrentPage(newPage); // let useEffect call fetchData
+              }
+            }}
+            setServerPageSize={(value) => {
+              const newSize = +value;
+              if (newSize > 0 && newSize !== pageSize) {
+                setPageSize(newSize); // let useEffect call fetchData
+                setCurrentPage(1); // reset to page 1 on page size change
+                localStorage.setItem("pageSize", newSize);
+              }
+            }}
+            // setServerCurrentPage={(value) =>
+            //   handlePageSizeAndLimit("currentpage", value)
+            // }
+            // setServerPageSize={(value) =>
+            //   handlePageSizeAndLimit("pagesize", value)
+            // }
             onBreadCrumbsClick={handleBreadcrumbClick}
             breadCrumbs={navigationHistory}
           />
@@ -564,11 +634,20 @@ export default function ImportEntity() {
           {/* Match Details Modal */}
           <Modal
             // title="Match Details"
-            visible={matchModalVisible}
+            open={matchModalVisible}
             onCancel={() => setMatchModalVisible(false)}
             footer={null}
             width={800}
-            style={{ top: "5rem", height: 650, overflow: "scroll" }}
+            style={{ top: "5rem" }}
+            bodyStyle={{
+              maxHeight: 650,
+              overflowY: "auto",
+              overflowX: "hidden",
+              marginRight: "-16px",
+              marginLeft: "-16px",
+              marginTop: "-16px",
+              marginBottom: "-16px",
+            }}
             centered
           >
             <MatchCard matchData={matchData} />
