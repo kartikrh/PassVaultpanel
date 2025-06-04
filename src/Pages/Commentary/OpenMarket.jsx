@@ -9,7 +9,7 @@ import axiosInstance from "../../Features/axios";
 import { ACTIVE, ALLOW, DEACTIVE, INACTIVE, INACTIVE_VALUE, NOT_ALLOW, OPEN_MARKET_STATUS, SEND_ALL, SUSPEND, SUSPEND_VALUE, OPEN_VALUE, ALL_SUSPEND } from "./CommentartConst";
 import "./CommentaryCss.css"
 import _, { isEmpty } from "lodash";
-import { generateOverUnderLineType } from "./functions";
+import { generateOverUnderLineType, getPlayerNameById } from "./functions";
 import createSocket from "../../Features/socket";
 import CustomInput from "../../components/Common/Reusables/CustomInput";
 import Select from "react-select";
@@ -23,6 +23,7 @@ export const OpenMarket = () => {
     const [teams, setTeams] = useState({});
     const [playersMarketShow, setPlayerMarketShow] = useState(false);
     const [players, setPlayers] = useState({});
+    const [updateBallStatusData, setUpdateBallStatusData] = useState({});
     const [categories, setCategories] = useState([]);
     const [fullCategories, setFullCategories] = useState([]);
     const [categorisedData, setCategorisedData] = useState([]);
@@ -92,6 +93,7 @@ export const OpenMarket = () => {
             ];
     });
     const [selectedKey, setSelectedKey] = useState("C");
+        console.log("updateBallStatusData", updateBallStatusData)
 
     useEffect(() => {
         socketRef.current = createSocket();
@@ -102,6 +104,26 @@ export const OpenMarket = () => {
             }
         };
     }, []);
+
+    function calculatePredictedValue(predefined, oversCompleted, maxOvers, playerIdToFind, playersList, newPlayerLine) {
+        console.log("predefined", predefined)
+        console.log("oversCompleted", oversCompleted)
+        console.log("maxOvers", maxOvers)
+        console.log("playerIdToFind", playerIdToFind)
+        console.log("playersList", playersList)
+        console.log("newPlayerLine", newPlayerLine)
+        const player = playersList.find(p => p.commentaryPlayerId === playerIdToFind);
+        const SR = player.batRun / player.batBall
+        console.log("SR", SR)
+        const decay = Math.max(0.7, 1 - 0.4 * (oversCompleted / maxOvers));
+        console.log("decay", decay)
+        const predictedValue = predefined * decay * Math.pow(SR, 0.15);
+        console.log("predictedValue", predictedValue)
+        const playerRunsLine = player.batRun + predictedValue
+        console.log("playerRunsLine", playerRunsLine)
+        const predefinedValue = ((newPlayerLine - player.batRun) / decay) * Math.pow(SR, 0.15);
+        return predefinedValue;
+    }
 
     useEffect(() => {
         const socket = socketRef.current;
@@ -143,7 +165,9 @@ export const OpenMarket = () => {
             });
 
             socket.on(UPDATE_BALL_STATUS, (data) => {
+                console.log("data", data)
                 if (data) {
+                    setUpdateBallStatusData(data)
                     setBallStatus(data?.ballStatus);
                 }
             });
@@ -513,6 +537,12 @@ export const OpenMarket = () => {
     };
 
     const handleValueChange = (record, key, value) => {
+        const [overs, balls] = updateBallStatusData.over.split(".");
+        const ballsComplete = parseInt(overs, 10) * 6 + parseInt(balls, 10);
+        const totalBalls = parseInt(updateBallStatusData.oversPerInings) * 6
+        const newPredifinedValue = calculatePredictedValue(record.predefinedValue, ballsComplete, totalBalls, record.playerId, updateBallStatusData.playersList, value)
+        // console.log("newPredifinedValue", newPredifinedValue.toFixed(2))
+        // console.log("record", record, key, value)
         setHasUnsavedChanges(true);
         setData(prevData => {
             let updatedData = [...prevData];
@@ -620,7 +650,8 @@ export const OpenMarket = () => {
                         }));
                         // console.log("originalData.line", originalData.line)
                         const lineDifference = parseFloat(value) - (originalData.line || 0);
-                        updatedMarket.predefinedValue = parseFloat((originalData.predefinedValue || 0) + lineDifference).toFixed(2);
+                        // updatedMarket.predefinedValue = parseFloat((originalData.predefinedValue || 0) + lineDifference).toFixed(2);
+                        updatedMarket.predefinedValue = newPredifinedValue.toFixed(2);
 
                         if (updatedMarket.marketTypeCategoryId === 31) {
                             // Calculate lineDiff only for the changed market
