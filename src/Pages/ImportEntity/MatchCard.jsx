@@ -130,7 +130,7 @@ const MatchCard = ({ matchData }) => {
         <div className="text-center mb-3">
           <Card
             className="bg-light-success border border-success rounded p-2"
-            bodyStyle={{ padding: "8px 10px" }} // Reduce internal padding
+            bodyStyle={{ padding: "0px 10px" }} // Reduce internal padding
           >
             <TrophyOutlined className="fs-4 text-success me-2" />
             <span className="fs-5 fw-bold text-success">{result}</span>
