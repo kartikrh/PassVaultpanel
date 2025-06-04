@@ -98,7 +98,8 @@ const PlayerDetails = () => {
                   {playerDetails && (
                     <Col className="col-sm-auto">
                       <h4 className="mb-0 font-size-18 modal-header-title">
-                        {playerDetails?.playerName} Details [Id:{" "} {playerDetails.playerId}]
+                        {/* {playerDetails?.playerName} Details [Id:{" "} {playerDetails.playerId}] */}
+                        {playerDetails?.playerName} Details: 
                       </h4>
                     </Col>
                   )}
