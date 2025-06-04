@@ -1986,6 +1986,7 @@ const Commentary = (props) => {
 
                 const filteredPlayersList = playersList?.length > 0 && playersList.map(player => ({
                     playerId: player?.playerId,
+                    commentaryPlayerId: player?.commentaryPlayerId,
                     playerName: player?.playerName,
                     batBall: player?.batBall,
                     batRun: player?.batRun,
