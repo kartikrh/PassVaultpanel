@@ -537,10 +537,10 @@ export const OpenMarket = () => {
     };
 
     const handleValueChange = (record, key, value) => {
-        const [overs, balls] = updateBallStatusData.over.split(".");
-        const ballsComplete = parseInt(overs, 10) * 6 + parseInt(balls, 10);
-        const totalBalls = parseInt(updateBallStatusData.oversPerInings) * 6
-        const newPredifinedValue = calculatePredictedValue(record.predefinedValue, ballsComplete, totalBalls, record.playerId, updateBallStatusData.playersList, value)
+        // const [overs, balls] = updateBallStatusData.over.split(".");
+        // const ballsComplete = parseInt(overs, 10) * 6 + parseInt(balls, 10);
+        // const totalBalls = parseInt(updateBallStatusData.oversPerInings) * 6
+        // const newPredifinedValue = calculatePredictedValue(record.predefinedValue, ballsComplete, totalBalls, record.playerId, updateBallStatusData.playersList, value)
         // console.log("newPredifinedValue", newPredifinedValue.toFixed(2))
         // console.log("record", record, key, value)
         setHasUnsavedChanges(true);
@@ -650,8 +650,8 @@ export const OpenMarket = () => {
                         }));
                         // console.log("originalData.line", originalData.line)
                         const lineDifference = parseFloat(value) - (originalData.line || 0);
-                        // updatedMarket.predefinedValue = parseFloat((originalData.predefinedValue || 0) + lineDifference).toFixed(2);
-                        updatedMarket.predefinedValue = newPredifinedValue.toFixed(2);
+                        updatedMarket.predefinedValue = parseFloat((originalData.predefinedValue || 0) + lineDifference).toFixed(2);
+                        // updatedMarket.predefinedValue = newPredifinedValue.toFixed(2);
 
                         if (updatedMarket.marketTypeCategoryId === 31) {
                             // Calculate lineDiff only for the changed market
