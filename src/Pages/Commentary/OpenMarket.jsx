@@ -23,6 +23,8 @@ export const OpenMarket = () => {
     const [teams, setTeams] = useState({});
     const [playersMarketShow, setPlayerMarketShow] = useState(false);
     const [players, setPlayers] = useState({});
+    const [comPlayers, setComPlayers] = useState([]);
+    const [comTeams, setComTeams] = useState([]);
     const [updateBallStatusData, setUpdateBallStatusData] = useState({});
     const [categories, setCategories] = useState([]);
     const [fullCategories, setFullCategories] = useState([]);
@@ -93,7 +95,6 @@ export const OpenMarket = () => {
             ];
     });
     const [selectedKey, setSelectedKey] = useState("C");
-        console.log("updateBallStatusData", updateBallStatusData)
 
     useEffect(() => {
         socketRef.current = createSocket();
@@ -106,21 +107,21 @@ export const OpenMarket = () => {
     }, []);
 
     function calculatePredictedValue(predefined, oversCompleted, maxOvers, playerIdToFind, playersList, newPlayerLine) {
-        console.log("predefined", predefined)
-        console.log("oversCompleted", oversCompleted)
-        console.log("maxOvers", maxOvers)
-        console.log("playerIdToFind", playerIdToFind)
-        console.log("playersList", playersList)
-        console.log("newPlayerLine", newPlayerLine)
-        const player = playersList.find(p => p.commentaryPlayerId === playerIdToFind);
-        const SR = player.batRun / player.batBall
-        console.log("SR", SR)
+        // console.log("predefined", predefined)
+        // console.log("oversCompleted", oversCompleted)
+        // console.log("maxOvers", maxOvers)
+        // console.log("playerIdToFind", playerIdToFind)
+        // console.log("playersList", playersList)
+        // console.log("newPlayerLine", newPlayerLine)
+        const player = playersList.find(p => p.comPlayerId === playerIdToFind);
+        const SR = player?.batRun / player?.batBall
+        // console.log("SR", SR)
         const decay = Math.max(0.7, 1 - 0.4 * (oversCompleted / maxOvers));
-        console.log("decay", decay)
+        // console.log("decay", decay)
         const predictedValue = predefined * decay * Math.pow(SR, 0.15);
-        console.log("predictedValue", predictedValue)
+        // console.log("predictedValue", predictedValue)
         const playerRunsLine = player.batRun + predictedValue
-        console.log("playerRunsLine", playerRunsLine)
+        // console.log("playerRunsLine", playerRunsLine)
         const predefinedValue = ((newPlayerLine - player.batRun) / decay) * Math.pow(SR, 0.15);
         return predefinedValue;
     }
@@ -167,7 +168,6 @@ export const OpenMarket = () => {
             socket.on(UPDATE_BALL_STATUS, (data) => {
                 console.log("data", data)
                 if (data) {
-                    setUpdateBallStatusData(data)
                     setBallStatus(data?.ballStatus);
                 }
             });
@@ -537,11 +537,6 @@ export const OpenMarket = () => {
     };
 
     const handleValueChange = (record, key, value) => {
-        // const [overs, balls] = updateBallStatusData.over.split(".");
-        // const ballsComplete = parseInt(overs, 10) * 6 + parseInt(balls, 10);
-        // const totalBalls = parseInt(updateBallStatusData.oversPerInings) * 6
-        // const newPredifinedValue = calculatePredictedValue(record.predefinedValue, ballsComplete, totalBalls, record.playerId, updateBallStatusData.playersList, value)
-        // console.log("newPredifinedValue", newPredifinedValue.toFixed(2))
         // console.log("record", record, key, value)
         setHasUnsavedChanges(true);
         setData(prevData => {
@@ -642,16 +637,23 @@ export const OpenMarket = () => {
                 if (key === 'line') {
                     // console.log("originalMarketData[updatedMarket.marketId]", originalMarketData[updatedMarket.marketId])
                     const originalData = originalMarketData[updatedMarket.marketId];
+                    // const marketTypeId = 
                     if (originalData) {
                         // Reset all lineDiffs to 0
                         updatedData = updatedData.map(market => ({
                             ...market,
                             lineDiff: 0
                         }));
-                        // console.log("originalData.line", originalData.line)
+                        let newPredifinedValue
+                        if(record.marketTypeId === 2 && [30, 29, 12].includes(record.marketTypeCategoryId) ){
+                            const [overs, balls] = comTeams.filter((i) => i.teamStatus == 1)[0].teamOver.toString().split(".");
+                            const ballsComplete = parseInt(overs, 10) * 6 + parseInt(balls, 10);
+                            const totalBalls = parseInt(comTeams.filter((i) => i.teamStatus == 1)[0].teamMaxOver.toString()) * 6
+                            newPredifinedValue = calculatePredictedValue(record.predefinedValue, ballsComplete, totalBalls, record.playerId, comPlayers, value)
+                        }
+                        // console.log("originalData.line", originalData.line)marketTypeCategoryId 30 29 12
                         const lineDifference = parseFloat(value) - (originalData.line || 0);
-                        updatedMarket.predefinedValue = parseFloat((originalData.predefinedValue || 0) + lineDifference).toFixed(2);
-                        // updatedMarket.predefinedValue = newPredifinedValue.toFixed(2);
+                        updatedMarket.predefinedValue = record.marketTypeId === 2 && [30, 29, 12].includes(record.marketTypeCategoryId) ? newPredifinedValue.toFixed(2) : parseFloat((originalData.predefinedValue || 0) + lineDifference).toFixed(2);
 
                         if (updatedMarket.marketTypeCategoryId === 31) {
                             // Calculate lineDiff only for the changed market
@@ -1253,6 +1255,8 @@ export const OpenMarket = () => {
                     response?.result?.comPlayer?.forEach(player => { playersObj[player.comPlayerId] = player.playerName })
                     response?.result?.categories?.forEach(category => { newCategoryObj[category.marketTypeCategoryId] = category.categoryName })
                     const formattedData = formatAPIDataForState({ responseData: response?.result?.marketList || [], teamData: teamsObj })
+                    setComPlayers(response?.result?.comPlayer)
+                    setComTeams(response?.result?.teams)
                     setPlayers(playersObj)
                     setTeams(teamsObj)
                     setData(formattedData.data);
