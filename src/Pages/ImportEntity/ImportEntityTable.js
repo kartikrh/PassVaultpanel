@@ -606,7 +606,7 @@ export default function ImportEntity() {
             onCancel={() => setMatchModalVisible(false)}
             footer={null}
             width={800}
-            style={{ top: "5rem" }}
+            style={{ top: "3rem" }}
             bodyStyle={{
               maxHeight: 650,
               overflowY: "auto",
