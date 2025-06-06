@@ -124,7 +124,7 @@ export default function ImportEntity() {
   // Unified data fetching function
   const fetchData = useCallback(async () => {
     if (!permissionChecked) return;
-    
+
     setIsLoading(true);
     let endpoint = "";
     let payload = {};
@@ -238,7 +238,14 @@ export default function ImportEntity() {
     } finally {
       setIsLoading(false);
     }
-  }, [permissionChecked, selectedLevel, currentPage, pageSize, entitySportUrl, dispatch]);
+  }, [
+    permissionChecked,
+    selectedLevel,
+    currentPage,
+    pageSize,
+    entitySportUrl,
+    dispatch,
+  ]);
 
   // Fetch data when dependencies change
   useEffect(() => {
@@ -250,7 +257,7 @@ export default function ImportEntity() {
     setIsLoading(true);
     try {
       const response = await axiosInstance.post(
-        `${entitySportUrl}/admin/list/MatchInfo`,
+        `${entitySportUrl}/admin/list/matchInfo`,
         {
           mid: +matchId,
         }
@@ -606,8 +613,8 @@ export default function ImportEntity() {
             onCancel={() => setMatchModalVisible(false)}
             footer={null}
             width={800}
-            style={{ top: "3rem" }}
-            bodyStyle={{
+            style={{
+              top: "3rem",
               maxHeight: 650,
               overflowY: "auto",
               overflowX: "hidden",
