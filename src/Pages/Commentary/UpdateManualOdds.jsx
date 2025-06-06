@@ -2884,7 +2884,7 @@ export const UpdateManualOdds = () => {
                         <Paper className="manual-card-body" elevation={1} sx={{ p: 3 }}>
                             {/* Header */}
                             <Box display="flex" alignItems="center" justifyContent="space-between" gap={1} sx={{ mb: 0 }}>
-                                <Box width="82%">
+                                <Box width="90%">
                                     {!isEmpty(eventData?.comDetails) && (
                                         <Box sx={{ mb: 3 }}>
                                             <Typography variant="h6" className='manual-card-text'>{`${eventData.comDetails.eventName}/${eventData.market?.marketName} [${eventData.market?.eventMarketId}]`}</Typography>
