@@ -2856,7 +2856,7 @@ export const UpdateManualOdds = () => {
         }
     };
 
-        // Added these helper functions for locally storing mode values 
+    // Added these helper functions for locally storing mode values 
     const saveModeToLocalStorage = useCallback((mode) => {
         try {
             localStorage.setItem('manualOddsMode', mode);
@@ -2883,8 +2883,8 @@ export const UpdateManualOdds = () => {
                     <Box width="100%">
                         <Paper className="manual-card-body" elevation={1} sx={{ p: 3 }}>
                             {/* Header */}
-                            <Box display="flex" alignItems="center" gap={2} sx={{ mb: 0.5 }}>
-                                <Box width="66.67%">
+                            <Box display="flex" alignItems="center" justifyContent="space-between" gap={1} sx={{ mb: 0 }}>
+                                <Box width="90%">
                                     {!isEmpty(eventData?.comDetails) && (
                                         <Box sx={{ mb: 3 }}>
                                             <Typography variant="h6" className='manual-card-text'>{`${eventData.comDetails.eventName}/${eventData.market?.marketName} [${eventData.market?.eventMarketId}]`}</Typography>
@@ -2894,9 +2894,9 @@ export const UpdateManualOdds = () => {
                                         </Box>
                                     )}
                                 </Box>
-                                <Box width="33.33%" sx={{ textAlign: 'right' }}>
+                                <Box width="15%" sx={{ textAlign: 'right' }}>
                                     <Button color="danger"
-                                        className="w-50"
+                                        className="w-100"
                                         onClick={() => navigate("/commentary")}>Exit</Button>
                                 </Box>
                             </Box>
@@ -3021,7 +3021,7 @@ export const UpdateManualOdds = () => {
                                 <Box width="15%">
                                     <Button
                                         color="primary"
-                                        className="me-2 w-100"
+                                        className="w-100"
                                         onClick={handleSave}
                                         disabled={marketStatus === CLOSE_VALUE.toString()}
                                     >
@@ -3255,7 +3255,8 @@ export const UpdateManualOdds = () => {
                             </Box>
 
                             {/* Shortcuts Section */}
-                            {(!isLive && !directLineEnabled) && (
+                            {/* (!isLive && !directLineEnabled) */}
+                            {(!isLive ) && (
                                 <Box display="flex" alignItems="center" flexWrap="wrap" gap={1} sx={{ mb: 3 }}>
                                     <Box display="flex" flexWrap="wrap" gap={1} sx={{ flex: 1 }}>
                                         {Object.entries(settings.shortcutValues).map(([key, value]) => (
