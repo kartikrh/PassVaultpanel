@@ -107,22 +107,36 @@ export const OpenMarket = () => {
     }, []);
 
     function calculatePredictedValue(predefined, oversCompleted, maxOvers, playerIdToFind, playersList, newPlayerLine) {
-        // console.log("predefined", predefined)
-        // console.log("oversCompleted", oversCompleted)
-        // console.log("maxOvers", maxOvers)
-        // console.log("playerIdToFind", playerIdToFind)
-        // console.log("playersList", playersList)
-        // console.log("newPlayerLine", newPlayerLine)
+        console.log("predefined", predefined)
+        console.log("oversCompleted", oversCompleted)
+        console.log("maxOvers", maxOvers)
+        console.log("playerIdToFind", playerIdToFind)
+        console.log("playersList", playersList)
+        console.log("newPlayerLine", newPlayerLine)
+
         const player = playersList.find(p => p.comPlayerId === playerIdToFind);
-        const SR = player?.batRun / player?.batBall
-        // console.log("SR", SR)
+
+        if (!player) {
+            console.error("Player not found with ID:", playerIdToFind);
+            return 0; // or return null/undefined based on your needs
+        }
+
+        const SR = player.batRun / player.batBall;
+        console.log("SR", SR)
+
         const decay = Math.max(0.7, 1 - 0.4 * (oversCompleted / maxOvers));
-        // console.log("decay", decay)
+        console.log("decay", decay)
+
         const predictedValue = predefined * decay * Math.pow(SR, 0.15);
-        // console.log("predictedValue", predictedValue)
-        const playerRunsLine = player.batRun + predictedValue
-        // console.log("playerRunsLine", playerRunsLine)
-        const predefinedValue = ((newPlayerLine - player.batRun) / decay) * Math.pow(SR, 0.15);
+        console.log("predictedValue", predictedValue)
+
+        const playerRunsLine = player.batRun + predictedValue;
+        console.log("playerRunsLine", playerRunsLine)
+
+        // Corrected formula: divide by (decay * SR^0.15) instead of multiplying
+        const predefinedValue = (newPlayerLine - player.batRun) / (decay * Math.pow(SR, 0.15));
+        console.log("predefinedValue", predefinedValue)
+
         return predefinedValue;
     }
 
@@ -645,7 +659,7 @@ export const OpenMarket = () => {
                             lineDiff: 0
                         }));
                         let newPredifinedValue
-                        if(record.marketTypeId === 2 && [30, 29, 12].includes(record.marketTypeCategoryId) ){
+                        if (record.marketTypeId === 2 && [30, 29, 12].includes(record.marketTypeCategoryId)) {
                             const [overs, balls] = comTeams.filter((i) => i.teamStatus == 1)[0].teamOver.toString().split(".");
                             const ballsComplete = parseInt(overs, 10) * 6 + parseInt(balls, 10);
                             const totalBalls = parseInt(comTeams.filter((i) => i.teamStatus == 1)[0].teamMaxOver.toString()) * 6
