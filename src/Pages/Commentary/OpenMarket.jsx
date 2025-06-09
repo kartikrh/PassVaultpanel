@@ -107,38 +107,49 @@ export const OpenMarket = () => {
     }, []);
 
     function calculatePredictedValue(predefined, oversCompleted, maxOvers, playerIdToFind, playersList, newPlayerLine) {
-        console.log("predefined", predefined)
-        console.log("oversCompleted", oversCompleted)
-        console.log("maxOvers", maxOvers)
-        console.log("playerIdToFind", playerIdToFind)
-        console.log("playersList", playersList)
-        console.log("newPlayerLine", newPlayerLine)
+        console.log("INPUTS:");
+        console.log("predefined:", predefined);
+        console.log("oversCompleted:", oversCompleted);
+        console.log("maxOvers:", maxOvers);
+        console.log("playerIdToFind:", playerIdToFind);
+        console.log("playersList:", playersList);
+        console.log("newPlayerLine:", newPlayerLine);
 
         const player = playersList.find(p => p.comPlayerId === playerIdToFind);
 
         if (!player) {
             console.error("Player not found with ID:", playerIdToFind);
-            return 0; // or return null/undefined based on your needs
+            return 0;
         }
 
+        console.log("Player found:", player);
+        console.log("player.batRun:", player.batRun);
+        console.log("player.batBall:", player.batBall);
+
         const SR = player.batRun / player.batBall;
-        console.log("SR", SR)
+        console.log("Strike Rate (SR) = player.batRun / player.batBall =", SR);
 
-        const decay = Math.max(0.7, 1 - 0.4 * (oversCompleted / maxOvers));
-        console.log("decay", decay)
+        const oversRatio = oversCompleted / maxOvers;
+        console.log("Overs Ratio = oversCompleted / maxOvers =", oversRatio);
 
-        const predictedValue = predefined * decay * Math.pow(SR, 0.15);
-        console.log("predictedValue", predictedValue)
+        const decay = Math.max(0.7, 1 - 0.4 * oversRatio);
+        console.log("Decay Factor = max(0.7, 1 - 0.4 * oversRatio) =", decay);
+
+        const SRPower = Math.pow(SR, 0.15);
+        console.log("SR^0.15 =", SRPower);
+
+        const predictedValue = predefined * decay * SRPower;
+        console.log("Predicted Value = predefined * decay * SR^0.15 =", predictedValue);
 
         const playerRunsLine = player.batRun + predictedValue;
-        console.log("playerRunsLine", playerRunsLine)
+        console.log("playerRunsLine = player.batRun + predictedValue =", playerRunsLine);
 
-        // Corrected formula: divide by (decay * SR^0.15) instead of multiplying
-        const predefinedValue = (newPlayerLine - player.batRun) / (decay * Math.pow(SR, 0.15));
-        console.log("predefinedValue", predefinedValue)
+        const predefinedValue = (newPlayerLine - player.batRun) / (decay * SRPower);
+        console.log("Re-calculated Predefined Value = (newPlayerLine - player.batRun) / (decay * SR^0.15) =", predefinedValue);
 
         return predefinedValue;
     }
+    
 
     useEffect(() => {
         const socket = socketRef.current;
