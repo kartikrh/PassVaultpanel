@@ -122,7 +122,7 @@ function AddRegisteredUsers() {
               <h3 className="modal-header-title">Registered Users</h3>
             </Col>
             <Card>
-              <CardBody>
+              <CardBody className="mb-5">
                 {isLoading && <SpinnerModel />}
                 <Row>
                   <Col
