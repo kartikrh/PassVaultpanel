@@ -97,10 +97,13 @@ function AddCommentary() {
                 setDisabledFields({})
                 setSavedFormState({})
                 setId("0");
+                setCompetitionId(competitionId);
                 finalizeRef1.current.resetForm()
                 finalizeRef2.current.resetForm()
                 finalizeRef3.current.resetForm()
                 finalizeRef4.current.resetForm()
+                // ✅ Redirect to Match Details tab (tab 1)
+                setactiveTab(1);
             }
             setCurrentSaveAction(undefined)
         }
@@ -239,11 +242,12 @@ function AddCommentary() {
     }
     const handleFormBDataChange = (newFormData) => {
         setSavedFormState({...savedFormState, ...newFormData});
+        
         // if both data are not same then do API call and fetch data
         if (newFormData["team1Id"] !== savedFormState["team1Id"]) {
             if (newFormData["team1Id"] !== "0") {
                 setIsApiLoading(true);
-                axiosInstance.post('/admin/player/byTeamIdv1', { teamId: newFormData["team1Id"], competitionId })
+                axiosInstance.post('/admin/player/byTeamIdv1', { teamId: newFormData["team1Id"], competitionId : newFormData["competitionId"]})
                     .then((response) => {
                         const formattedData = response?.result?.map(item => {
                             return { label: item?.playerName, value: item?.playerId }
@@ -271,7 +275,7 @@ function AddCommentary() {
         } else if (newFormData["team2Id"] !== savedFormState["team2Id"]) {
             if (newFormData["team2Id"] !== "0") {
                 setIsApiLoading(true);
-                axiosInstance.post('/admin/player/byTeamIdv1', { teamId: newFormData["team2Id"], competitionId })
+                axiosInstance.post('/admin/player/byTeamIdv1', { teamId: newFormData["team2Id"],  competitionId : newFormData["competitionId"] })
                     .then((response) => {
                         const formattedData = response?.result?.map(item => {
                             return { label: item?.playerName, value: item?.playerId }
@@ -475,6 +479,7 @@ function AddCommentary() {
                 "addSystemPlayer" : dataToSave2?.addSystemPlayer ? dataToSave2.addSystemPlayer : false,
                 "systemPlayerCount" :dataToSave2.addSystemPlayer ? dataToSave2.systemPlayerCount : "0",
                 "drsCount": dataToSave2?.drsCount || 0,
+
             }
             const extraData = {
                 commentaryId: id,
