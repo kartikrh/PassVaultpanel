@@ -270,7 +270,7 @@ const Index = () => {
               }}
             >
               <img
-                className="avatar-sm rounded-circle"
+                className="avatar-sm "
                 alt=""
                 src={text}
               />

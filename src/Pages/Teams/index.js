@@ -193,7 +193,7 @@ const Index = () => {
           {text ? (
             <div>
               <img
-                className="avatar-xs rounded-circle"
+                className="avatar-xs "
                 alt=""
                 src={text}
               />
@@ -217,7 +217,7 @@ const Index = () => {
           {text ? (
             <div>
               <img
-                className="avatar-xs rounded-circle"
+                className="avatar-xs "
                 alt=""
                 src={text}
               />

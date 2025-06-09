@@ -49,6 +49,8 @@ const Index = () => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [visiblePasswords, setVisiblePasswords] = useState({});
+
 
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
@@ -125,6 +127,8 @@ const Index = () => {
         return "Google";
       case 3:
         return "Facebook";
+      case 4:
+        return "OTP Less";
       default:
         return "Unknown";
     }
@@ -153,6 +157,14 @@ const Index = () => {
         return "";
     }
   };
+
+  const togglePasswordVisibility = (recordKey) => {
+    setVisiblePasswords((prev) => ({
+      // Clear all other visible passwords and toggle only the clicked one
+      [recordKey]: !prev[recordKey]
+    }));
+  };
+  
   //table columns
   const columns = [
     {
@@ -243,23 +255,28 @@ const Index = () => {
       key: "mobileNo",
       sort: true,
       render: (text, record) => (
-        <div className="d-flex">{text} {text &&<button
-          color={`${record.isMobileVerified ? "primary" : "danger"}`}
-          size="xs"
-          className="btn p-0 mx-1 d-flex justify-content-center align-items-center"
-          disabled
-          style={{ color: record.isMobileVerified ? "#0bb197" : "#ff3d60" }}
-          // onClick={() => {
-          //   handlePermissions("isMobileVerified", record, record.isMobileVerified);
-          // }}
-        >
-          {" "}
-          <i
-            className={`bx ${
-              record.isMobileVerified ? "bx-check" : "bx-block"
-            }`}
-          ></i>
-        </button>}</div>
+        <div className="d-flex">
+          {text}{" "}
+          {text && (
+            <button
+              color={`${record.isMobileVerified ? "primary" : "danger"}`}
+              size="xs"
+              className="btn p-0 mx-1 d-flex justify-content-center align-items-center"
+              disabled
+              style={{ color: record.isMobileVerified ? "#0bb197" : "#ff3d60" }}
+              // onClick={() => {
+              //   handlePermissions("isMobileVerified", record, record.isMobileVerified);
+              // }}
+            >
+              {" "}
+              <i
+                className={`bx ${
+                  record.isMobileVerified ? "bx-check" : "bx-block"
+                }`}
+              ></i>
+            </button>
+          )}
+        </div>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -312,25 +329,64 @@ const Index = () => {
       key: "emailId",
       sort: true,
       render: (text, record) => (
-        <div className="d-flex mx-2">{text} {text && <button
-          color={`${record.isEmailVerified ? "primary" : "danger"}`}
-          size="sm"
-          className="btn p-0 mx-1 d-flex justify-content-center align-items-center"
-          disabled
-          style={{ color: record.isEmailVerified ? "#0bb197" : "#ff3d60" }}
-          // onClick={() => {
-          //   handlePermissions("isMobileVerified", record, record.isMobileVerified);
-          // }}
-        >
-          {" "}
-          <i
-            className={`bx ${
-              record.isEmailVerified ? "bx-check" : "bx-block"
-            }`}
-          ></i>
-        </button>}</div>
+        <div className="d-flex mx-2">
+          {text}{" "}
+          {text && (
+            <button
+              color={`${record.isEmailVerified ? "primary" : "danger"}`}
+              size="sm"
+              className="btn p-0 mx-1 d-flex justify-content-center align-items-center"
+              disabled
+              style={{ color: record.isEmailVerified ? "#0bb197" : "#ff3d60" }}
+              // onClick={() => {
+              //   handlePermissions("isMobileVerified", record, record.isMobileVerified);
+              // }}
+            >
+              {" "}
+              <i
+                className={`bx ${
+                  record.isEmailVerified ? "bx-check" : "bx-block"
+                }`}
+              ></i>
+            </button>
+          )}
+        </div>
       ),
       style: { width: "10%" },
+    },
+    {
+      title: "Password",
+      dataIndex: "password",
+      key: "password",
+      render: (text, record) => {
+        const isVisible = visiblePasswords[record.clientId];
+
+        return (
+          <div className="d-flex mx-2 align-items-center">
+            <span className="me-2">
+              {isVisible ? record.decryptPassword : record.password}
+            </span>
+            <button
+              type="button"
+              className="btn btn-sm d-flex justify-content-center align-items-center"
+              onClick={() => togglePasswordVisibility(record.clientId)}
+              style={{
+                backgroundColor: "transparent",
+                border: "1px solid transparent",
+                borderRadius: "4px",
+                color: "#343a40",
+                cursor: "pointer",
+                padding: "4px 8px",
+                fontSize: "14px",
+              }}
+            >
+              <i className={`bx ${isVisible ? "bx-hide" : "bx-show"}`}
+              style={{ fontSize: "18px" }} ></i>
+            </button>
+          </div>
+        );
+      },
+      style: { width: "15%" },
     },
     // {
     //   title: "Mobile Verified",
@@ -356,7 +412,7 @@ const Index = () => {
     //   ),
     //   style: { width: "10%", textAlign: "center" },
     // },
-    
+
     {
       title: "Process Status",
       dataIndex: "registrationProcessStatus",

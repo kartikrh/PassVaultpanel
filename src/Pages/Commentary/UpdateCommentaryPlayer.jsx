@@ -63,6 +63,7 @@ const PlayerCommentary = () => {
         setCommentaryData(commentaryDetailsData);
         //setTeams(response?.result?.commentaryTeams);
         setIsDataLoading(false);
+        console.log("data:", commentaryDetailsData)
       })
       .catch((error) => {
         dispatch(
@@ -170,6 +171,7 @@ const PlayerCommentary = () => {
                                       commentaryId={commentaryId}
                                       teamDetails={teamDetails}
                                       inningPlayers={inningPlayers}
+                                      currentInnings={commentaryDetails?.currentInnings}
                                       fetchData={fetchData}
                                     />
                                   </CardBody>
