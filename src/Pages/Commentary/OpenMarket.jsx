@@ -25,7 +25,7 @@ export const OpenMarket = () => {
     const [players, setPlayers] = useState({});
     const [comPlayers, setComPlayers] = useState([]);
     const [comTeams, setComTeams] = useState([]);
-    const [updateBallStatusData, setUpdateBallStatusData] = useState({});
+    const [socketUpdateBallData, setSocketUpdateBallData] = useState({});
     const [categories, setCategories] = useState([]);
     const [fullCategories, setFullCategories] = useState([]);
     const [categorisedData, setCategorisedData] = useState([]);
@@ -106,16 +106,16 @@ export const OpenMarket = () => {
         };
     }, []);
 
-    function calculatePredictedValue(predefined, oversCompleted, maxOvers, playerIdToFind, playersList, newPlayerLine) {
-        console.log("INPUTS:");
-        console.log("predefined:", predefined);
-        console.log("oversCompleted:", oversCompleted);
-        console.log("maxOvers:", maxOvers);
-        console.log("playerIdToFind:", playerIdToFind);
-        console.log("playersList:", playersList);
-        console.log("newPlayerLine:", newPlayerLine);
+    function calculatePredictedValue(predefined, oversCompleted, maxOvers, playerIdToFind, playersList, newPlayerLine, isSocket) {
+        console.log("INPUTS:" , predefined, oversCompleted, maxOvers, playerIdToFind, playersList, newPlayerLine, isSocket);
+        // console.log("predefined:", predefined);
+        // console.log("oversCompleted:", oversCompleted);
+        // console.log("maxOvers:", maxOvers);
+        // console.log("playerIdToFind:", playerIdToFind);
+        // console.log("playersList:", playersList);
+        // console.log("newPlayerLine:", newPlayerLine);
 
-        const player = playersList.find(p => p.comPlayerId === playerIdToFind);
+        const player = playersList.find(p => (isSocket ? p.commentaryPlayerId : p.comPlayerId) === playerIdToFind);
 
         if (!player) {
             console.error("Player not found with ID:", playerIdToFind);
@@ -192,6 +192,7 @@ export const OpenMarket = () => {
 
             socket.on(UPDATE_BALL_STATUS, (data) => {
                 console.log("data", data)
+                setSocketUpdateBallData(data)
                 if (data) {
                     setBallStatus(data?.ballStatus);
                 }
@@ -671,10 +672,22 @@ export const OpenMarket = () => {
                         }));
                         let newPredifinedValue
                         if (record.marketTypeId === 2 && [30, 29, 12].includes(record.marketTypeCategoryId)) {
-                            const [overs, balls] = comTeams.filter((i) => i.teamStatus == 1)[0].teamOver.toString().split(".");
-                            const ballsComplete = parseInt(overs, 10) * 6 + parseInt(balls, 10);
-                            const totalBalls = parseInt(comTeams.filter((i) => i.teamStatus == 1)[0].teamMaxOver.toString()) * 6
-                            newPredifinedValue = calculatePredictedValue(record.predefinedValue, ballsComplete, totalBalls, record.playerId, comPlayers, value)
+                            if(!isEmpty(socketUpdateBallData)){
+                                console.log('if')
+                                const [overs, balls] = socketUpdateBallData.over.split(".")
+                                const ballsComplete = parseInt(overs, 10) * 6 + parseInt(balls, 10);
+                                console.log("socketUpdateBallData.oversPerIning", socketUpdateBallData.oversPerIning)
+                                const totalBalls = parseInt(socketUpdateBallData.oversPerInings * 6)
+                                newPredifinedValue = calculatePredictedValue(record.predefinedValue, ballsComplete, totalBalls, record.playerId, socketUpdateBallData.playersList, value, true)
+                            }else{
+                                console.log('else')
+                                const [overs, balls] = comTeams.filter((i) => i.teamStatus == 1)[0].teamOver.toString().split(".");
+                                console.log("overs", overs, 'balls', balls)
+                                const ballsComplete = parseInt(overs, 10) * 6 + parseInt(balls || 0, 10);
+                                console.log("ballsComplete", ballsComplete)
+                                const totalBalls = parseInt(comTeams.filter((i) => i.teamStatus == 1)[0].teamMaxOver.toString()) * 6
+                                newPredifinedValue = calculatePredictedValue(record.predefinedValue, ballsComplete, totalBalls, record.playerId, comPlayers, value, false)
+                            }
                         }
                         // console.log("originalData.line", originalData.line)marketTypeCategoryId 30 29 12
                         const lineDifference = parseFloat(value) - (originalData.line || 0);
