@@ -12,6 +12,7 @@ import { isEqual } from "lodash";
 import {
   ERROR,
   MODULE_COMMENTARY,
+  MODULE_SINGLE_COMMENTARY,
   PERMISSION_ADD,
   PERMISSION_EDIT,
   PERMISSION_VIEW,
@@ -37,6 +38,7 @@ import { Tooltip } from "antd";
 import AwardSelectionComponent from "../Commentary/CommentaryModels/AwardModal";
 import { mapCommentaryStatus } from "../Commentary/functions";
 import { DlsModal } from "../Commentary/CommentaryModels/DlsModal";
+import LoadDataModal from "../../components/Model/LoadDataModal";
 import GenerateModal from "../Commentary/GenerateModal";
 
 const Index = () => {
@@ -81,6 +83,9 @@ const Index = () => {
   const [competitionId, setCompetitionId] = useState(null);
   const [generateModalData, setGenerateModalData] = useState(null);
   const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
+  const [loadSingleDataModelVisible, setLoadSingleDataModelVisible] =
+    useState(false);
+  const [selectedCommentaryId, setSelectedCommentaryId] = useState(null);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -615,6 +620,44 @@ const Index = () => {
     fetchData(value);
     fetchEventTypeData();
   };
+
+   const handleLoadSingleCommentaryData = async (commentaryId, password) => {
+     setIsLoading(true);
+     try {
+       const response = await axiosInstance.post(`/loadPanelData`, {
+         module: [MODULE_SINGLE_COMMENTARY],
+         password,
+         commentaryId,
+       });
+
+       // setLoadDataModelVisable(false); // This will be handled by the wrapper function
+       dispatch(
+         updateToastData({
+           data: response?.message,
+           title: response?.title,
+           type: SUCCESS,
+         })
+       );
+     } catch (error) {
+       dispatch(
+         updateToastData({
+           data: error?.message,
+           title: error?.title,
+           type: ERROR,
+         })
+       );
+     } finally {
+       setIsLoading(false);
+     }
+   };
+
+   const handleLoadSingleCommentaryDataWithModal = async (password) => {
+     if (selectedCommentaryId) {
+       await handleLoadSingleCommentaryData(selectedCommentaryId, password);
+       setLoadSingleDataModelVisible(false);
+       setSelectedCommentaryId(null);
+     }
+   };
   //table columns
   const columns = [
     {
@@ -673,10 +716,7 @@ const Index = () => {
             handleEdit(record.commentaryId);
           }}
         >
-          <i
-            className="bx bx-edit"
-
-          ></i>
+          <i className="bx bx-edit"></i>
         </span>
       ),
       style: { width: "2%", textAlign: "center" },
@@ -703,9 +743,7 @@ const Index = () => {
       dataIndex: "eventRefId",
       render: (text, record) => (
         <div className="d-flex align-items-center gap-1">
-          <span
-            style={{ cursor: record.isPredictMarket && "pointer" }}
-          >
+          <span style={{ cursor: record.isPredictMarket && "pointer" }}>
             {text}
           </span>
           <span
@@ -713,7 +751,16 @@ const Index = () => {
             onClick={() => {
               setEventRefModelVisible(true);
               setSelectedEventRef(record);
-            }}> <Tooltip title="Edit Event Id" color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>{<a className="bx bx-edit-alt"></a>}</Tooltip>
+            }}
+          >
+            {" "}
+            <Tooltip
+              title="Edit Event Id"
+              color={"#e8e8ea"}
+              overlayInnerStyle={{ color: "#000" }}
+            >
+              {<a className="bx bx-edit-alt"></a>}
+            </Tooltip>
           </span>
         </div>
       ),
@@ -726,9 +773,7 @@ const Index = () => {
       dataIndex: "eventName",
       render: (text, record) => (
         <div className="d-flex flex-column">
-          <span>
-            {text}
-          </span>
+          <span>{text}</span>
           <span className="point-font">{record?.eventNo}</span>
         </div>
       ),
@@ -755,8 +800,14 @@ const Index = () => {
           }}
           style={{ cursor: "pointer" }}
         >
-          {text} {" "}
-          <Tooltip title="Edit Match Type" color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>{<a className="bx bx-edit-alt"></a>}</Tooltip>
+          {text}{" "}
+          <Tooltip
+            title="Edit Match Type"
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            {<a className="bx bx-edit-alt"></a>}
+          </Tooltip>
         </span>
       ),
       key: "matchType",
@@ -768,7 +819,11 @@ const Index = () => {
       key: "commentaryScoring",
       printType: "ignore",
       render: (text, record) => (
-        <Tooltip title={"Go to scoring"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip
+          title={"Go to scoring"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
           <Button
             color={"warning"}
             size="sm"
@@ -777,7 +832,7 @@ const Index = () => {
               handleDetailsClick(record.commentaryId);
             }}
           >
-            <i class='bx bxs-right-arrow' ></i>
+            <i class="bx bxs-right-arrow"></i>
           </Button>
         </Tooltip>
       ),
@@ -786,9 +841,7 @@ const Index = () => {
     {
       title: "Status",
       dataIndex: "commentaryStatus",
-      render: (text, record) => (
-        <span>{mapCommentaryStatus(text)}</span>
-      ),
+      render: (text, record) => <span>{mapCommentaryStatus(text)}</span>,
       key: "commentaryStatus",
       sort: true,
       style: { width: "40%" },
@@ -797,7 +850,11 @@ const Index = () => {
       title: "Show",
       key: "isClientShow",
       render: (text, record) => (
-        <Tooltip title={"Show/Hide Client"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip
+          title={"Show/Hide Client"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
           <Button
             color={`${record.isClientShow ? "primary" : "danger"}`}
             size="sm"
@@ -818,7 +875,11 @@ const Index = () => {
       title: "Active",
       key: "isActive",
       render: (text, record) => (
-        <Tooltip title={"Active/Inactive Commentary"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip
+          title={"Active/Inactive Commentary"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
           <Button
             color={`${record.isActive ? "primary" : "danger"}`}
             size="sm"
@@ -839,16 +900,16 @@ const Index = () => {
       title: "Virtual",
       key: "isVirtual",
       render: (text, record) => (
-          <Button
-            color={`${record.isVirtual ? "primary" : "danger"}`}
-            size="sm"
-            className="btn"
-            disabled
-          >
-            <i
-              className={`bx ${record?.isVirtual ? "bx-check" : "bx-block"}`}
-            ></i>
-          </Button>
+        <Button
+          color={`${record.isVirtual ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          disabled
+        >
+          <i
+            className={`bx ${record?.isVirtual ? "bx-check" : "bx-block"}`}
+          ></i>
+        </Button>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -857,7 +918,11 @@ const Index = () => {
       key: "updatePlayers",
       printType: "ignore",
       render: (text, record) => (
-        <Tooltip title={"Update Players"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip
+          title={"Update Players"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
           <Button
             color={"info"}
             size="sm"
@@ -866,7 +931,7 @@ const Index = () => {
               handleUpdatePlayersClick(record);
             }}
           >
-            <i class='bx bxs-up-arrow-square' ></i>
+            <i class="bx bxs-up-arrow-square"></i>
           </Button>
         </Tooltip>
       ),
@@ -877,7 +942,11 @@ const Index = () => {
       key: "shortCommentary",
       printType: "ignore",
       render: (text, record) => (
-        <Tooltip title={"Short Score"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip
+          title={"Short Score"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
           <Button
             color={"secondary"}
             size="sm"
@@ -886,7 +955,7 @@ const Index = () => {
               handleShortCommentaryClick(record.commentaryId);
             }}
           >
-            <i class='bx bxs-chevrons-right'></i>
+            <i class="bx bxs-chevrons-right"></i>
           </Button>
         </Tooltip>
       ),
@@ -897,7 +966,11 @@ const Index = () => {
       key: "updateCommentary",
       printType: "ignore",
       render: (text, record) => (
-        <Tooltip title={"Update Commentary"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip
+          title={"Update Commentary"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
           <Button
             color={"success"}
             size="sm"
@@ -906,7 +979,7 @@ const Index = () => {
               handleUpdateCommentaryClick(record.commentaryId);
             }}
           >
-            <i class='bx bx-arrow-to-right' ></i>
+            <i class="bx bx-arrow-to-right"></i>
           </Button>
         </Tooltip>
       ),
@@ -957,7 +1030,11 @@ const Index = () => {
       title: "SR",
       dataIndex: "setRunner",
       render: (text, record) => (
-        <Tooltip title={"Set Runner"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip
+          title={"Set Runner"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
           <Button
             size="sm"
             className="btn runner-button-commentary"
@@ -967,7 +1044,7 @@ const Index = () => {
             }}
             style={{ cursor: "pointer" }}
           >
-            <i class='bx bxs-up-arrow-square' ></i>
+            <i class="bx bxs-up-arrow-square"></i>
           </Button>
         </Tooltip>
       ),
@@ -979,12 +1056,19 @@ const Index = () => {
       title: "DLS",
       dataIndex: "dls",
       render: (text, record) => (
-        <Tooltip title={"Duckworth-Lewis-Stern"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip
+          title={"Duckworth-Lewis-Stern"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
           <Button
             size="sm"
             className="dls-button btn"
-            onClick={() => { setDlsModalCommentary(record) }}>
-            <i class='bx bx-cloud-light-rain'></i>
+            onClick={() => {
+              setDlsModalCommentary(record);
+            }}
+          >
+            <i class="bx bx-cloud-light-rain"></i>
           </Button>
         </Tooltip>
       ),
@@ -994,17 +1078,27 @@ const Index = () => {
       title: "CP",
       key: "isCountInPoint",
       render: (text, record) => (
-        <Tooltip title={"Active/Inactive Count In Point"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip
+          title={"Active/Inactive Count In Point"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
           <Button
             color={`${record.isCountInPoint ? "primary" : "danger"}`}
             size="sm"
             className="btn"
             onClick={() => {
-              handleIsCountInPoint("isCountInPoint", record, record?.isCountInPoint);
+              handleIsCountInPoint(
+                "isCountInPoint",
+                record,
+                record?.isCountInPoint
+              );
             }}
           >
             <i
-              className={`bx ${record?.isCountInPoint ? "bx-check" : "bx-block"}`}
+              className={`bx ${
+                record?.isCountInPoint ? "bx-check" : "bx-block"
+              }`}
             ></i>
           </Button>
         </Tooltip>
@@ -1015,16 +1109,28 @@ const Index = () => {
       title: "Win %",
       key: "isTeamPredictionOn",
       render: (text, record) => (
-        <Tooltip title={"Active/Inactive Team Prediction"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip
+          title={"Active/Inactive Team Prediction"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
           <Button
             color={`${record.isTeamPredictionOn ? "primary" : "danger"}`}
             size="sm"
             className="btn"
             onClick={() => {
-              handleTeamPredictionPermissions("isTeamPredictionOn", record, record.isTeamPredictionOn);
+              handleTeamPredictionPermissions(
+                "isTeamPredictionOn",
+                record,
+                record.isTeamPredictionOn
+              );
             }}
           >
-            <i className={`bx ${record.isTeamPredictionOn ? "bx-check" : "bx-block"}`}></i>
+            <i
+              className={`bx ${
+                record.isTeamPredictionOn ? "bx-check" : "bx-block"
+              }`}
+            ></i>
           </Button>
         </Tooltip>
       ),
@@ -1034,21 +1140,25 @@ const Index = () => {
       title: "Generate Image",
       key: "generateImage",
       render: (text, record) => (
-      <>
-        <Tooltip title={"Generate Image"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
-          <Button
-            color={"info"}
-            size="sm"
-            className="btn"
-            onClick={() => {
-              setGenerateModalData(record);
-              setIsGenerateModalOpen(true);
-            }}
+        <>
+          <Tooltip
+            title={"Generate Image"}
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            <Button
+              color={"info"}
+              size="sm"
+              className="btn"
+              onClick={() => {
+                setGenerateModalData(record);
+                setIsGenerateModalOpen(true);
+              }}
             >
               GI
-          </Button>
-        </Tooltip>
-      </>
+            </Button>
+          </Tooltip>
+        </>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -1081,6 +1191,31 @@ const Index = () => {
       key: "commentaryId",
       sort: true,
       style: { width: "10%" },
+    },
+    {
+      title: "Load Data",
+      key: "loadSingleData",
+      printType: "ignore",
+      render: (text, record) => (
+        <Tooltip
+          title="Load Data"
+          color="#e8e8ea"
+          overlayInnerStyle={{ color: "#000" }}
+        >
+          <Button
+            color="warning"
+            size="sm"
+            className="btn"
+            onClick={() => {
+              setSelectedCommentaryId(record.commentaryId); // Store the commentaryId
+              setLoadSingleDataModelVisible(true); // Open the modal
+            }}
+          >
+            <i className="bx bx-cloud-download"></i>
+          </Button>
+        </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
     },
   ];
 
@@ -1251,7 +1386,7 @@ const Index = () => {
             handleReset={handleReset}
             handleReload={handleReload}
             onAddNavigate={"/addCommentary"}
-            isCommentaryList = "true"
+            isCommentaryList="true"
             competitions={competitions}
             setEventTypeId={setEventTypeId}
             setCompetitionId={setCompetitionId}
@@ -1336,19 +1471,38 @@ const Index = () => {
               setSelectedCommentaryRunner={setSelectedCommentaryRunner}
             />
           )}
-          {dlsModalCommentary && <DlsModal
-            commentaryDetails={dlsModalCommentary}
-            toggle={() => { setDlsModalCommentary(false) }}
-          />}
-          {showAwardModel && <AwardSelectionComponent
-            commentaryId={showAwardModel}
-            onClose={() => { setShowAwardModel(undefined) }} />}
-          {isGenerateModalOpen && <GenerateModal
-            isOpen={isGenerateModalOpen}
-            toggle={() => setIsGenerateModalOpen(!isGenerateModalOpen)}
-            data={generateModalData}
-            fetchData={fetchData}
-          />}
+          {loadSingleDataModelVisible && (
+            <LoadDataModal
+              loadDataModelVisable={loadSingleDataModelVisible}
+              setLoadDataModelVisable={setLoadSingleDataModelVisible}
+              handleLoadData={handleLoadSingleCommentaryDataWithModal}
+              moduleName={"Single Commentary"}
+            />
+          )}
+          {dlsModalCommentary && (
+            <DlsModal
+              commentaryDetails={dlsModalCommentary}
+              toggle={() => {
+                setDlsModalCommentary(false);
+              }}
+            />
+          )}
+          {showAwardModel && (
+            <AwardSelectionComponent
+              commentaryId={showAwardModel}
+              onClose={() => {
+                setShowAwardModel(undefined);
+              }}
+            />
+          )}
+          {isGenerateModalOpen && (
+            <GenerateModal
+              isOpen={isGenerateModalOpen}
+              toggle={() => setIsGenerateModalOpen(!isGenerateModalOpen)}
+              data={generateModalData}
+              fetchData={fetchData}
+            />
+          )}
         </Container>
       </div>
     </React.Fragment>
