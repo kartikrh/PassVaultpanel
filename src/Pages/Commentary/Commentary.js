@@ -1993,7 +1993,27 @@ const Commentary = (props) => {
                     batsmanAverage: player?.batsmanAverage,
                 }));
                 
-                socket.emit(COMMENTARY_UPDATE, { ballStatus: ballStatus, eventRefId: commentaryDetails?.eventRefId, commentaryId: commentaryDetails?.commentaryId, teamId: _teams?.[BATTING_TEAM]?.teamId || teams?.[BATTING_TEAM]?.teamId, wicket: _teams?.[BATTING_TEAM]?.teamWicket || teams?.[BATTING_TEAM]?.teamWicket, score: _teams?.[BATTING_TEAM]?.teamScore || teams?.[BATTING_TEAM]?.teamScore , over: _teams?.[BATTING_TEAM]?.teamOver || teams?.[BATTING_TEAM]?.teamOver, oversPerInings: matchTypeDetails?.oversPerInings, playersList: filteredPlayersList });
+                const partnershipData = _currentPartnership || currentPartnership;
+ 
+                const currPartnership = {
+                    commentaryBallByBallId: partnershipData?.commentaryBallByBallId,
+                    commentaryId: partnershipData?.commentaryId,
+                    commentaryPartnershipId: partnershipData?.commentaryPartnershipId,
+                    currentInnings: partnershipData?.currentInnings,
+                    isActive: partnershipData?.isActive,
+                    order: partnershipData?.order,
+                    teamId: partnershipData?.teamId,
+                    totalBalls: partnershipData?.totalBalls,
+                    totalExtra: partnershipData?.totalExtra,
+                    totalFour: partnershipData?.totalFour,
+                    totalNoBall: partnershipData?.totalNoBall,
+                    totalRuns: partnershipData?.totalRuns,
+                    totalSix: partnershipData?.totalSix,
+                    totalWide: partnershipData?.totalWide,
+ 
+                }
+
+                socket.emit(COMMENTARY_UPDATE, { ballStatus: ballStatus, eventRefId: commentaryDetails?.eventRefId, commentaryId: commentaryDetails?.commentaryId, teamId: _teams?.[BATTING_TEAM]?.teamId || teams?.[BATTING_TEAM]?.teamId, wicket: _teams?.[BATTING_TEAM]?.teamWicket || teams?.[BATTING_TEAM]?.teamWicket, score: _teams?.[BATTING_TEAM]?.teamScore || teams?.[BATTING_TEAM]?.teamScore , over: _teams?.[BATTING_TEAM]?.teamOver || teams?.[BATTING_TEAM]?.teamOver, oversPerInings: matchTypeDetails?.oversPerInings, playersList: filteredPlayersList, currentPartnership: currPartnership });
             }
         }
     }, [commentaryDetails, ballStatus, matchTypeDetails?.oversPerInings, currentOver?.ballCount]);

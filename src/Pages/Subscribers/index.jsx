@@ -262,11 +262,11 @@ const Index = () => {
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
-            onAddNavigate={"/addSubscriber"}
+            // onAddNavigate={"/addSubscriber"}
             handleReset={handleReset}
             loadDataModelFunction={setLoadDataModelVisable}
             reFetchData={fetchData}
-            isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
+            // isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
             isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
           />
           <DeleteTabModel
