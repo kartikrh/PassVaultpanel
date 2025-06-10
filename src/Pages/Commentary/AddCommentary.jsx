@@ -247,7 +247,7 @@ function AddCommentary() {
         if (newFormData["team1Id"] !== savedFormState["team1Id"]) {
             if (newFormData["team1Id"] !== "0") {
                 setIsApiLoading(true);
-                axiosInstance.post('/admin/player/byTeamIdv1', { teamId: newFormData["team1Id"], competitionId : newFormData["competitionId"]})
+                axiosInstance.post('/admin/player/byTeamIdv1', { teamId: newFormData["team1Id"], competitionId})
                     .then((response) => {
                         const formattedData = response?.result?.map(item => {
                             return { label: item?.playerName, value: item?.playerId }
