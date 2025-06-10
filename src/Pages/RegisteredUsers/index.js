@@ -363,9 +363,6 @@ const Index = () => {
 
         return (
           <div className="d-flex mx-2 align-items-center">
-            <span className="me-2">
-              {isVisible ? record.decryptPassword : record.password}
-            </span>
             <button
               type="button"
               className="btn btn-sm d-flex justify-content-center align-items-center"
@@ -380,9 +377,14 @@ const Index = () => {
                 fontSize: "14px",
               }}
             >
-              <i className={`bx ${isVisible ? "bx-hide" : "bx-show"}`}
-              style={{ fontSize: "18px" }} ></i>
+              <i
+                className={`bx ${isVisible ? "bx-hide" : "bx-show"}`}
+                style={{ fontSize: "18px" }}
+              ></i>
             </button>
+            <span className="me-2">
+              {isVisible ? record.decryptPassword : record.password}
+            </span>
           </div>
         );
       },
