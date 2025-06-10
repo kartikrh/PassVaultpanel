@@ -274,19 +274,13 @@ export const ShowHide = () => {
       key: "eventType",
       style: { width: "80%" },
       render: (text, record) => (
-        <Tooltip
-          title={text}
-          color={"#e8e8ea"}
-          overlayInnerStyle={{ color: "#000" }}
+        <span
+          className="cursor-pointer"
+          onClick={() => handleItemClick(record, "competition", "eventType")}
+          style={{ cursor: "pointer" }}
         >
-          <span
-            className="cursor-pointer"
-            onClick={() => handleItemClick(record, "competition", "eventType")}
-            style={{ cursor: "pointer", color: "#000" }}
-          >
-            {text}
-          </span>
-        </Tooltip>
+          {text}
+        </span>
       ),
     },
     {
@@ -336,19 +330,13 @@ export const ShowHide = () => {
       key: "competition",
       style: { width: "60%" },
       render: (text, record) => (
-        <Tooltip
-          title={text}
-          color={"#e8e8ea"}
-          overlayInnerStyle={{ color: "#000" }}
+        <span
+          className="cursor-pointer"
+          onClick={() => handleItemClick(record, "commentary", "competition")}
+          style={{ cursor: "pointer"}}
         >
-          <span
-            className="cursor-pointer"
-            onClick={() => handleItemClick(record, "commentary", "competition")}
-            style={{ cursor: "pointer", color: "#000" }}
-          >
-            {text}
-          </span>
-        </Tooltip>
+          {text}
+        </span>
       ),
     },
     // {
@@ -408,13 +396,14 @@ export const ShowHide = () => {
       key: "eventName",
       style: { width: "50%" },
       render: (text, record) => (
-        <Tooltip
-          title={text}
-          color={"#e8e8ea"}
-          overlayInnerStyle={{ color: "#000" }}
+        <span
+          className="cursor-pointer"
+          style={{
+            cursor: "pointer",
+          }}
         >
-          <span>{text}</span>
-        </Tooltip>
+          {text}
+        </span>
       ),
     },
     // {
