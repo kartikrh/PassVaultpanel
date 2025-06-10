@@ -379,8 +379,12 @@ export const UpdateManualOdds = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const socket = createSocket();
-    const commentaryId = localStorage.getItem("updateManualOddsCommentaryId");
-    const commentaryDetails = JSON.parse(localStorage.getItem('updateManualOddsCommentaryDetails') || "{}");
+    // const commentaryId = localStorage.getItem("updateManualOddsCommentaryId");
+    // const commentaryDetails = JSON.parse(localStorage.getItem('updateManualOddsCommentaryDetails') || "{}");
+
+    const commentaryId = sessionStorage.getItem("updateManualOddsCommentaryId");
+    const commentaryDetails = JSON.parse(sessionStorage.getItem('updateManualOddsCommentaryDetails') || "{}");
+
     // const [isSocketConnected, setIsSocketConnected] = useState(false);
     const [isLive, setIsLive] = useState(true);
     const [rateSourceRefID, setRateSourceRefID] = useState([]);
@@ -1154,8 +1158,11 @@ export const UpdateManualOdds = () => {
 
         if (isShortcut) {
             // Handle shortcut value changes - only allow in manual mode
-            const isManualMode = !isLive && !directLineEnabled;
-            if (!isManualMode) return;
+            
+            // const isManualMode = !isLive && !directLineEnabled;
+            // if (!isManualMode) return;
+            
+            if (isLive) return;
 
             setSettings(prev => {
                 const newSettings = {
@@ -1374,10 +1381,16 @@ export const UpdateManualOdds = () => {
         const isManualMode = !isLive && !directLineEnabled;
         console.log(`Manual mode: ${isManualMode}, isLive: ${isLive}, directLineEnabled: ${directLineEnabled}`);
 
-        if (key === '+' && isManualMode) {
+        // if (key === '+' && isManualMode) {
+        //     event.preventDefault();
+        //     return;
+        // }
+
+        if (key === '+' && !isLive) {
             event.preventDefault();
             return;
         }
+
 
         if (!isManualMode) {
             // Only allow status shortcuts (S, D, F, G) in non-manual modes
@@ -1400,42 +1413,51 @@ export const UpdateManualOdds = () => {
             return;
         }
 
-        // Manual mode: Check for shortcut values
+        // Manual mode & Direct Line: Check for shortcut values
         const value = settings.shortcutValues[key];
         console.log(`Shortcut value for ${key}:`, value);
 
-        if (value && value !== '') {
-            console.log(`✅ Valid shortcut key: ${key} with value: ${value}`);
+        // FIRST: Handle shortcut keys (Q, W, E, R, T, Y, U, I, O, P) - ALWAYS prevent default for these
+        // const shortcutKeys = ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'];
+        // shortcutKeys.includes(key)
+        if (key === 'E' || key === 'e') {
+        
+            // ALWAYS prevent default for shortcut keys to avoid input field issues
+            event.preventDefault();
 
-            const newRateDiff = parseFloat(value);
-            console.log(`Setting temporary rate diff to: ${newRateDiff}`);
-            setTempRateDiffWithRef(newRateDiff);
+            if (value && value !== '') {
+                console.log(`✅ Valid shortcut key: ${key} with value: ${value}`);
 
-            // Update runners with the temporary rate difference
-            setRunners(prevRunners => {
-                console.log('Updating runners with temporary rate diff');
-                return prevRunners.map(runner => {
-                    const tempSettings = { ...settings, rateDifferent: newRateDiff };
-                    const newRates = calculateRunnerRates(runner, tempSettings, {
-                        forceCalculateLay: true
+                const newRateDiff = parseFloat(value);
+                console.log(`Setting temporary rate diff to: ${newRateDiff}`);
+                setTempRateDiffWithRef(newRateDiff);
+
+                // Update runners with the temporary rate difference
+                setRunners(prevRunners => {
+                    console.log('Updating runners with temporary rate diff');
+                    return prevRunners.map(runner => {
+                        const tempSettings = { ...settings, rateDifferent: newRateDiff };
+                        const newRates = calculateRunnerRates(runner, tempSettings, {
+                            forceCalculateLay: true
+                        });
+
+                        return {
+                            ...runner,
+                            b2: newRates.b2,
+                            b1: newRates.b1,
+                            back: { ...runner.back, price: newRates.back },
+                            lay: { ...runner.lay, price: newRates.lay },
+                            l1: newRates.l1,
+                            l2: newRates.l2
+                        };
                     });
-
-                    return {
-                        ...runner,
-                        b2: newRates.b2,
-                        b1: newRates.b1,
-                        back: { ...runner.back, price: newRates.back },
-                        lay: { ...runner.lay, price: newRates.lay },
-                        l1: newRates.l1,
-                        l2: newRates.l2
-                    };
                 });
-            });
 
-            // Update saved prices temporarily in manual mode
-            console.log('Updating saved prices with new rate diff');
-            updateSavedPricesWithNewRateDiff(newRateDiff);
-            return;
+                // Update saved prices temporarily in manual mode
+                console.log('Updating saved prices with new rate diff');
+                updateSavedPricesWithNewRateDiff(newRateDiff);
+                return;
+            }
         }
 
         // Handle status shortcuts in manual mode too
@@ -2244,7 +2266,8 @@ export const UpdateManualOdds = () => {
             console.log(`Key released: ${key}, Manual mode: ${isManualMode}`);
 
             // Only handle keyup in manual mode
-            if (!isManualMode) return;
+            // if (!isManualMode) return;
+            if (isLive) return;
 
             const shortcutValue = settings.shortcutValues[key];
 
