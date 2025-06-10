@@ -23,15 +23,11 @@ export const PlayeraListingComponent = ({ columns, dataSource = [], tableElement
     // Function to get market type from market object
     const getMarketType = (market) => {
         // Determine market type based on runnerName or other properties
-        const runnerName = market?.runner?.[0]?.runnerName?.toLowerCase() || '';
-        const marketName = market?.marketName?.toLowerCase() || '';
-
-        // Check runner name first
-        if (runnerName.includes('run') || marketName.includes('run')) return 'Runs';
-        if (runnerName.includes('boundar') || marketName.includes('boundar')) return 'Boundaries';
-        if (runnerName.includes('ball') || runnerName.includes('face') || marketName.includes('ball') || marketName.includes('face')) return 'Balls';
-        if (runnerName.includes('wicket') || marketName.includes('wicket')) return 'Wickets';
-
+        const marketCategoryId = market?.marketTypeCategoryId
+        if (+marketCategoryId === 12) return 'Runs'
+        else if (+marketCategoryId === 29) return 'Boundaries'
+        else if (+marketCategoryId === 30) return 'Balls'
+        else if (+marketCategoryId === 13) return 'Wickets'
         return null; // Unknown market type
     };
 
