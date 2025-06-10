@@ -671,7 +671,7 @@ export const OpenMarket = () => {
                             lineDiff: 0
                         }));
                         let newPredifinedValue
-                        if (record.marketTypeId === 2 && [30, 29, 12].includes(record.marketTypeCategoryId)) {
+                        if (record.marketTypeId === 2 && record.marketTypeCategoryId == 12) {
                             if(!isEmpty(socketUpdateBallData)){
                                 console.log('if')
                                 const [overs, balls] = socketUpdateBallData.over.split(".")
@@ -680,19 +680,28 @@ export const OpenMarket = () => {
                                 const totalBalls = parseInt(socketUpdateBallData.oversPerInings * 6)
                                 newPredifinedValue = calculatePredictedValue(record.predefinedValue, ballsComplete, totalBalls, record.playerId, socketUpdateBallData.playersList, value, true)
                             }else{
-                                console.log('else')
-                                const [overs, balls] = comTeams.filter((i) => i.teamStatus == 1)[0].teamOver.toString().split(".");
+                                console.log("else")
+                                const team = comTeams.find(i => i.teamStatus == 1);
+                                const teamOverStr = team?.teamOver?.toString();
+
+                                let overs = "0", balls = "0";
+
+                                if (teamOverStr && teamOverStr.includes(".")) {
+                                    [overs, balls] = teamOverStr.split(".");
+                                } else if (teamOverStr) {
+                                    overs = teamOverStr;
+                                    balls = "0";
+                                }
+                                // const [overs, balls] = comTeams.filter((i) => i.teamStatus == 1)[0]?.teamOver?.toString().split(".");
                                 console.log("overs", overs, 'balls', balls)
-                                const ballsComplete = parseInt(overs, 10) * 6 + parseInt(balls || 0, 10);
+                                const ballsComplete = parseInt(overs, 10) * 6 + parseInt(balls, 10);
                                 console.log("ballsComplete", ballsComplete)
                                 const totalBalls = parseInt(comTeams.filter((i) => i.teamStatus == 1)[0].teamMaxOver.toString()) * 6
                                 newPredifinedValue = calculatePredictedValue(record.predefinedValue, ballsComplete, totalBalls, record.playerId, comPlayers, value, false)
                             }
                         }
-                        // console.log("originalData.line", originalData.line)marketTypeCategoryId 30 29 12
                         const lineDifference = parseFloat(value) - (originalData.line || 0);
-                        updatedMarket.predefinedValue = record.marketTypeId === 2 && [30, 29, 12].includes(record.marketTypeCategoryId) ? newPredifinedValue.toFixed(2) : parseFloat((originalData.predefinedValue || 0) + lineDifference).toFixed(2);
-
+                        updatedMarket.predefinedValue = (record.marketTypeId === 2 && record.marketTypeCategoryId == 12 && !Number.isNaN(newPredifinedValue)) ? newPredifinedValue.toFixed(2) : parseFloat((originalData.predefinedValue || 0) + lineDifference).toFixed(2);
                         if (updatedMarket.marketTypeCategoryId === 31) {
                             // Calculate lineDiff only for the changed market
                             updatedMarket.lineDiff = lineDifference;
