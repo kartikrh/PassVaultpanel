@@ -30,8 +30,12 @@ export const ManualOddsMarket = () => {
         rateSourceRefID: "",
         favRatio: "",
     });
-    const commentaryId = localStorage.getItem("updateManualOddsCommentaryId");
-    const commentaryDetails = JSON.parse(localStorage.getItem('updateManualOddsCommentaryDetails') || "{}");
+    // const commentaryId = localStorage.getItem("updateManualOddsCommentaryId");
+    // const commentaryDetails = JSON.parse(localStorage.getItem('updateManualOddsCommentaryDetails') || "{}");
+
+    const commentaryId = sessionStorage.getItem("updateManualOddsCommentaryId");
+    const commentaryDetails = JSON.parse(sessionStorage.getItem('updateManualOddsCommentaryDetails') || "{}");
+    
     let navigate = useNavigate();
     const [eventData, setEventData] = useState({
         comDetails: null,

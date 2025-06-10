@@ -189,5 +189,6 @@ export const MODULE_PACKAGES = 39;
 export const MODULE_WHITE_LABEL = 40;
 export const MODULE_WHITE_LABEL_SHOW_HIDE = 40;
 export const MODULE_VENUE = 41;
+export const MODULE_SINGLE_COMMENTARY = 42;
 
 export const LOG_ROCKET_TO_INCLUDE_ONLY = "CHG";

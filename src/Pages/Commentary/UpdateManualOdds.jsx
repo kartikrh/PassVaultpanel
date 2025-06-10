@@ -379,8 +379,12 @@ export const UpdateManualOdds = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const socket = createSocket();
-    const commentaryId = localStorage.getItem("updateManualOddsCommentaryId");
-    const commentaryDetails = JSON.parse(localStorage.getItem('updateManualOddsCommentaryDetails') || "{}");
+    // const commentaryId = localStorage.getItem("updateManualOddsCommentaryId");
+    // const commentaryDetails = JSON.parse(localStorage.getItem('updateManualOddsCommentaryDetails') || "{}");
+
+    const commentaryId = sessionStorage.getItem("updateManualOddsCommentaryId");
+    const commentaryDetails = JSON.parse(sessionStorage.getItem('updateManualOddsCommentaryDetails') || "{}");
+
     // const [isSocketConnected, setIsSocketConnected] = useState(false);
     const [isLive, setIsLive] = useState(true);
     const [rateSourceRefID, setRateSourceRefID] = useState([]);
@@ -438,7 +442,7 @@ export const UpdateManualOdds = () => {
     const settingsRef = useRef(settings);
     const tempRateDiffRef = useRef(null);
     const runnersRef = useRef([]);
-    console.log({ savedPrices })
+    // console.log({ savedPrices })
 
     const handlePriceCalculations = (backPrice, isSelected) => {
         backPrice = Math.max(0, parseFloat(backPrice || 0));
@@ -960,7 +964,7 @@ export const UpdateManualOdds = () => {
                 ? parseFloat((1 + ((1 - margin) / (oppositeBackPrice - 1))).toFixed(2))
                 : 1.01;
 
-            console.log(`Runner ${runner.selectionId}: Using opposite back price ${oppositeBackPrice} to calculate lay price ${calculatedLayPrice}`);
+            // console.log(`Runner ${runner.selectionId}: Using opposite back price ${oppositeBackPrice} to calculate lay price ${calculatedLayPrice}`);
 
             return {
                 ...runner,
@@ -1154,8 +1158,11 @@ export const UpdateManualOdds = () => {
 
         if (isShortcut) {
             // Handle shortcut value changes - only allow in manual mode
-            const isManualMode = !isLive && !directLineEnabled;
-            if (!isManualMode) return;
+            
+            // const isManualMode = !isLive && !directLineEnabled;
+            // if (!isManualMode) return;
+            
+            if (isLive) return;
 
             setSettings(prev => {
                 const newSettings = {
@@ -1374,10 +1381,16 @@ export const UpdateManualOdds = () => {
         const isManualMode = !isLive && !directLineEnabled;
         console.log(`Manual mode: ${isManualMode}, isLive: ${isLive}, directLineEnabled: ${directLineEnabled}`);
 
-        if (key === '+' && isManualMode) {
+        // if (key === '+' && isManualMode) {
+        //     event.preventDefault();
+        //     return;
+        // }
+
+        if (key === '+' && !isLive) {
             event.preventDefault();
             return;
         }
+
 
         if (!isManualMode) {
             // Only allow status shortcuts (S, D, F, G) in non-manual modes
@@ -1400,42 +1413,51 @@ export const UpdateManualOdds = () => {
             return;
         }
 
-        // Manual mode: Check for shortcut values
+        // Manual mode & Direct Line: Check for shortcut values
         const value = settings.shortcutValues[key];
         console.log(`Shortcut value for ${key}:`, value);
 
-        if (value && value !== '') {
-            console.log(`✅ Valid shortcut key: ${key} with value: ${value}`);
+        // FIRST: Handle shortcut keys (Q, W, E, R, T, Y, U, I, O, P) - ALWAYS prevent default for these
+        // const shortcutKeys = ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'];
+        // shortcutKeys.includes(key)
+        if (key === 'E' || key === 'e') {
+        
+            // ALWAYS prevent default for shortcut keys to avoid input field issues
+            event.preventDefault();
 
-            const newRateDiff = parseFloat(value);
-            console.log(`Setting temporary rate diff to: ${newRateDiff}`);
-            setTempRateDiffWithRef(newRateDiff);
+            if (value && value !== '') {
+                console.log(`✅ Valid shortcut key: ${key} with value: ${value}`);
 
-            // Update runners with the temporary rate difference
-            setRunners(prevRunners => {
-                console.log('Updating runners with temporary rate diff');
-                return prevRunners.map(runner => {
-                    const tempSettings = { ...settings, rateDifferent: newRateDiff };
-                    const newRates = calculateRunnerRates(runner, tempSettings, {
-                        forceCalculateLay: true
+                const newRateDiff = parseFloat(value);
+                console.log(`Setting temporary rate diff to: ${newRateDiff}`);
+                setTempRateDiffWithRef(newRateDiff);
+
+                // Update runners with the temporary rate difference
+                setRunners(prevRunners => {
+                    console.log('Updating runners with temporary rate diff');
+                    return prevRunners.map(runner => {
+                        const tempSettings = { ...settings, rateDifferent: newRateDiff };
+                        const newRates = calculateRunnerRates(runner, tempSettings, {
+                            forceCalculateLay: true
+                        });
+
+                        return {
+                            ...runner,
+                            b2: newRates.b2,
+                            b1: newRates.b1,
+                            back: { ...runner.back, price: newRates.back },
+                            lay: { ...runner.lay, price: newRates.lay },
+                            l1: newRates.l1,
+                            l2: newRates.l2
+                        };
                     });
-
-                    return {
-                        ...runner,
-                        b2: newRates.b2,
-                        b1: newRates.b1,
-                        back: { ...runner.back, price: newRates.back },
-                        lay: { ...runner.lay, price: newRates.lay },
-                        l1: newRates.l1,
-                        l2: newRates.l2
-                    };
                 });
-            });
 
-            // Update saved prices temporarily in manual mode
-            console.log('Updating saved prices with new rate diff');
-            updateSavedPricesWithNewRateDiff(newRateDiff);
-            return;
+                // Update saved prices temporarily in manual mode
+                console.log('Updating saved prices with new rate diff');
+                updateSavedPricesWithNewRateDiff(newRateDiff);
+                return;
+            }
         }
 
         // Handle status shortcuts in manual mode too
@@ -1470,13 +1492,13 @@ export const UpdateManualOdds = () => {
         return null;
     };
 
-    const handleSync = () => {
-        setOriginalShortcutValues(settings.shortcutValues);
-        setHasShortcutChanges(false);
+    // const handleSync = () => {
+    //     setOriginalShortcutValues(settings.shortcutValues);
+    //     setHasShortcutChanges(false);
 
-        // Save to local storage
-        saveSettingsToLocalStorage(settings);
-    };
+    //     // Save to local storage
+    //     saveSettingsToLocalStorage(settings);
+    // };
 
     // const updateSavedPricesWithOriginalRateDiff = useCallback(() => {
     //     console.log('updateSavedPricesWithOriginalRateDiff called');
@@ -1984,19 +2006,31 @@ export const UpdateManualOdds = () => {
                     setAbOpen(false);
                     setAbSuspend(false);
                 } else {
-                    const settingDataToUpdate = {
-                        ...settings,
-                        betAllow: marketData?.isAllow || settings.betAllow,
-                        active: marketData?.isActive || settings.active,
-                        rateDifferent: marketData?.rateDiff || settings.rateDifferent,
-                        bRateVolume: marketData?.defaultBackSize || settings.bRateVolume,
-                        lRateVolume: marketData?.defaultLaySize || settings.lRateVolume,
-                        margin: marketData?.margin || settings.margin,
-                        delay: marketData?.delay || settings.delay,
-                        lineRatio: marketData?.lineRatio || settings.lineRatio,
-                        favRatio: marketData?.favRatio || settings.favRatio,
-                    };
-                    setSettings(settingDataToUpdate);
+                     setSettings(prevSettings => ({
+                        ...prevSettings,
+                        betAllow: marketData?.isAllow || prevSettings.betAllow,
+                        active: marketData?.isActive || prevSettings.active,
+                        rateDifferent: marketData?.rateDiff || prevSettings.rateDifferent,
+                        bRateVolume: marketData?.defaultBackSize || prevSettings.bRateVolume,
+                        lRateVolume: marketData?.defaultLaySize || prevSettings.lRateVolume,
+                        margin: marketData?.margin || prevSettings.margin,
+                        delay: marketData?.delay || prevSettings.delay,
+                        lineRatio: marketData?.lineRatio || prevSettings.lineRatio,
+                        favRatio: marketData?.favRatio || prevSettings.favRatio,
+                    }));
+                    // const settingDataToUpdate = {
+                    //     ...settings,
+                    //     betAllow: marketData?.isAllow || settings.betAllow,
+                    //     active: marketData?.isActive || settings.active,
+                    //     rateDifferent: marketData?.rateDiff || settings.rateDifferent,
+                    //     bRateVolume: marketData?.defaultBackSize || settings.bRateVolume,
+                    //     lRateVolume: marketData?.defaultLaySize || settings.lRateVolume,
+                    //     margin: marketData?.margin || settings.margin,
+                    //     delay: marketData?.delay || settings.delay,
+                    //     lineRatio: marketData?.lineRatio || settings.lineRatio,
+                    //     favRatio: marketData?.favRatio || settings.favRatio,
+                    // };
+                    // setSettings(settingDataToUpdate);
                 }
 
                 if (marketData?.rateSourceRefID) {
@@ -2171,9 +2205,9 @@ export const UpdateManualOdds = () => {
 
     useEffect(() => {
         // Load other data
-        fetchMarketData();
+        // fetchMarketData();
 
-        // Load settings from local storage
+        // Load settings from local storage FIRST
         const savedSettings = loadSettingsFromLocalStorage();
         if (savedSettings) {
             setSettings(prevSettings => ({
@@ -2188,28 +2222,33 @@ export const UpdateManualOdds = () => {
         return () => window.removeEventListener('keydown', handleKeyPress);
     }, []);
 
+    // Separate useEffect for fetching market data after settings are loaded
     useEffect(() => {
-        // Ensure shortcut values are properly set with defaults if empty
-        setSettings(prev => {
-            const defaultShortcuts = {
-                Q: '0.03', W: '0.05', E: '0.07', R: '0.08',
-                T: '0.10', Y: '0.15', U: '0.20', I: '0.30',
-                O: '', P: ''
-            };
-
-            const hasEmptyShortcuts = Object.values(prev.shortcutValues).every(val => !val);
-
-            if (hasEmptyShortcuts) {
-                console.log('Initializing default shortcut values');
-                return {
-                    ...prev,
-                    shortcutValues: defaultShortcuts
-                };
-            }
-
-            return prev;
-        });
+        fetchMarketData();
     }, []);
+
+    // useEffect(() => {
+    //     // Ensure shortcut values are properly set with defaults if empty
+    //     setSettings(prev => {
+    //         const defaultShortcuts = {
+    //             Q: '0.03', W: '0.05', E: '0.07', R: '0.08',
+    //             T: '0.10', Y: '0.15', U: '0.20', I: '0.30',
+    //             O: '', P: ''
+    //         };
+
+    //         const hasEmptyShortcuts = Object.values(prev.shortcutValues).every(val => !val);
+
+    //         if (hasEmptyShortcuts) {
+    //             console.log('Initializing default shortcut values');
+    //             return {
+    //                 ...prev,
+    //                 shortcutValues: defaultShortcuts
+    //             };
+    //         }
+
+    //         return prev;
+    //     });
+    // }, []);
 
     useEffect(() => {
         fetchMarketData();
@@ -2227,7 +2266,8 @@ export const UpdateManualOdds = () => {
             console.log(`Key released: ${key}, Manual mode: ${isManualMode}`);
 
             // Only handle keyup in manual mode
-            if (!isManualMode) return;
+            // if (!isManualMode) return;
+            if (isLive) return;
 
             const shortcutValue = settings.shortcutValues[key];
 
@@ -2399,7 +2439,7 @@ export const UpdateManualOdds = () => {
     useEffect(() => {
         // Only recalculate in live mode when bfRateDiff changes
         if (isLive && originalMarketRunnerData.length > 0) {
-            console.log('BF Rate changed in live mode, recalculating...');
+            // console.log('BF Rate changed in live mode, recalculating...');
             processMarketRunnerData(originalMarketRunnerData);
         }
     }, [settings.bfRateDiff, isLive, processMarketRunnerData, originalMarketRunnerData]);
@@ -2760,6 +2800,23 @@ export const UpdateManualOdds = () => {
         };
     }, [settings.shortcutValues, isLive]);
 
+    // Added this useEffect for fetching mode values initially from local
+    useEffect(() => {
+        // Load mode from localStorage on component mount
+        const savedMode = loadModeFromLocalStorage();
+    
+        if (savedMode === "live" && rateSourceRefID.length) {
+            setIsLive(true);
+            setDirectLineEnabled(false);
+        } else if (savedMode === "directLine") {
+            setIsLive(false);
+            setDirectLineEnabled(true);
+        } else { // default to manual
+            setIsLive(false);
+            setDirectLineEnabled(false);
+        }
+    }, [rateSourceRefID]);// Depend on rateSourceRefID so it runs when it's populated
+
     const handleBetAllowToggle = async (newValue) => {
         const marketData = {
             eventMarket: [{
@@ -2821,6 +2878,27 @@ export const UpdateManualOdds = () => {
             setIsLoading(false);
         }
     };
+
+    // Added these helper functions for locally storing mode values 
+    const saveModeToLocalStorage = useCallback((mode) => {
+        try {
+            localStorage.setItem('manualOddsMode', mode);
+            console.log('Mode saved to local storage:', mode);
+        } catch (error) {
+            console.error('Error saving mode to local:', error);
+        }
+    }, []);
+
+    const loadModeFromLocalStorage = () => {
+        try {
+            const savedMode = localStorage.getItem('manualOddsMode');
+            return savedMode || 'manual'; // default to manual if nothing saved
+        } catch (error) {
+            console.error('Error loading mode from:', error);
+            return 'manual';
+        }
+    };
+
     return (
         <Box className="page-content">
             <Container fluid>
@@ -2828,8 +2906,8 @@ export const UpdateManualOdds = () => {
                     <Box width="100%">
                         <Paper className="manual-card-body" elevation={1} sx={{ p: 3 }}>
                             {/* Header */}
-                            <Box display="flex" alignItems="center" gap={2} sx={{ mb: 3 }}>
-                                <Box width="66.67%">
+                            <Box display="flex" alignItems="center" justifyContent="space-between" gap={1} sx={{ mb: 0 }}>
+                                <Box width="90%">
                                     {!isEmpty(eventData?.comDetails) && (
                                         <Box sx={{ mb: 3 }}>
                                             <Typography variant="h6" className='manual-card-text'>{`${eventData.comDetails.eventName}/${eventData.market?.marketName} [${eventData.market?.eventMarketId}]`}</Typography>
@@ -2839,9 +2917,9 @@ export const UpdateManualOdds = () => {
                                         </Box>
                                     )}
                                 </Box>
-                                <Box width="33.33%" sx={{ textAlign: 'right' }}>
+                                <Box width="15%" sx={{ textAlign: 'right' }}>
                                     <Button color="danger"
-                                        className="w-50"
+                                        className="w-100"
                                         onClick={() => navigate("/commentary")}>Exit</Button>
                                 </Box>
                             </Box>
@@ -2855,7 +2933,11 @@ export const UpdateManualOdds = () => {
                                             row
                                             value={isLive ? "live" : directLineEnabled ? "directLine" : "manual"}
                                             onChange={(e) => {
-                                                const value = e.target.value;
+                                                const value = e.target.value;  
+                                                
+                                                // Save to localStorage
+                                                saveModeToLocalStorage(value);
+
                                                 if (value === "live" && rateSourceRefID.length) {
                                                     setIsLive(true);
                                                     setDirectLineEnabled(false);
@@ -2962,7 +3044,7 @@ export const UpdateManualOdds = () => {
                                 <Box width="15%">
                                     <Button
                                         color="primary"
-                                        className="me-2 w-100"
+                                        className="w-100"
                                         onClick={handleSave}
                                         disabled={marketStatus === CLOSE_VALUE.toString()}
                                     >
@@ -3196,7 +3278,8 @@ export const UpdateManualOdds = () => {
                             </Box>
 
                             {/* Shortcuts Section */}
-                            {(!isLive && !directLineEnabled) && (
+                            {/* (!isLive && !directLineEnabled) */}
+                            {(!isLive ) && (
                                 <Box display="flex" alignItems="center" flexWrap="wrap" gap={1} sx={{ mb: 3 }}>
                                     <Box display="flex" flexWrap="wrap" gap={1} sx={{ flex: 1 }}>
                                         {Object.entries(settings.shortcutValues).map(([key, value]) => (
@@ -3221,7 +3304,7 @@ export const UpdateManualOdds = () => {
                                             </Box>
                                         ))}
                                     </Box>
-                                    <Box width="8%">
+                                    {/* <Box width="8%">
                                         <Button
                                             color="primary"
                                             disabled={!hasShortcutChanges || marketStatus === CLOSE_VALUE.toString()}
@@ -3238,7 +3321,7 @@ export const UpdateManualOdds = () => {
                                             <RiRefreshLine className="me-1" size={16} />
                                             Sync
                                         </Button>
-                                    </Box>
+                                    </Box> */}
                                 </Box>
                             )}
                             {/* Table Section */}

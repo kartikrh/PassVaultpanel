@@ -43,9 +43,11 @@ export default function ImportEntity() {
   const [checekedList, setCheckedList] = useState([]);
   const loadInitData = useSelector((state) => state.loadInit.loadInitData);
   const [currentPage, setCurrentPage] = useState(1);
-  const globalPageSize = localStorage.getItem("pageSize");
-  const [pageSize, setPageSize] = useState(globalPageSize || 10);
+  const globalPageSize = parseInt(localStorage.getItem("pageSize")) || 10;
+  const [pageSize, setPageSize] = useState(globalPageSize);
   const [total, setTotal] = useState(0);
+  const [permissionChecked, setPermissionChecked] = useState(false);
+
   // Navigation state
   const [selectedLevel, setSelectedLevel] = useState({
     seasonId: null,
@@ -54,11 +56,23 @@ export default function ImportEntity() {
     level: "seasons", // 'seasons', 'seasonCompetitions', 'competitionMatches'
     year: null,
   });
-  const [navigationHistory, setNavigationHistory] = useState([]);
+  const [navigationHistory, setNavigationHistory] = useState([
+    {
+      label: "Home",
+      value: {
+        seasonId: null,
+        competitionId: null,
+        matchId: null,
+        level: "seasons",
+        year: null,
+      },
+    },
+  ]);
 
   // Modal state for match details
   const [matchModalVisible, setMatchModalVisible] = useState(false);
   const [matchData, setMatchData] = useState(null);
+  const [dataToDB, setDataToDB] = useState({});
 
   let entitySportUrl =
     loadInitData.find((item) => item.key === loadInit.ENTITYSPORTURL)?.value ||
@@ -96,151 +110,154 @@ export default function ImportEntity() {
     return moment(dateTime).format("DD/MM/YYYY HH:mm");
   };
 
-  // Initialize navigation history
+  // Initial permission check - separated from data loading
   useEffect(() => {
-    if (navigationHistory.length === 0) {
-      setNavigationHistory([
-        {
-          label: "Home",
-          value: {
-            seasonId: null,
-            competitionId: null,
-            matchId: null,
-            level: "seasons",
-            year: null,
-          },
-        },
-      ]);
+    if (!isEmpty(permissionObj)) {
+      if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+        navigate("/dashboard");
+        return;
+      }
+      setPermissionChecked(true);
     }
-  }, []);
+  }, [permissionObj, navigate]);
 
-  // Unified fetch function
-  const fetchData = useCallback(
-    async (page = 1, limit = 10) => {
-      setIsLoading(true);
-      let endpoint = "";
-      let payload = {};
-      try {
-        switch (selectedLevel.level) {
-          case "seasons":
-            endpoint = `${entitySportUrl}/admin/list/seasons`;
-            payload = {
-              page: page,
-              limit: pageSize,
-            };
-            break;
-          case "seasonCompetitions":
-            if (!selectedLevel.seasonId) {
-              setIsLoading(false);
-              return;
-            }
-            endpoint = `${entitySportUrl}/admin/list/seasonCompetitions`;
-            payload = {
-              sid: +selectedLevel.seasonId,
-              page: page,
-              limit: pageSize,
-            };
-            break;
-          case "competitionMatches":
-            if (!selectedLevel.competitionId) {
-              setIsLoading(false);
-              return;
-            }
-            endpoint = `${entitySportUrl}/admin/list/competitionMatches`;
-            payload = {
-              cid: selectedLevel.competitionId,
-              page: page,
-              limit: limit,
-            };
-            break;
-          default:
+  // Unified data fetching function
+  const fetchData = useCallback(async () => {
+    if (!permissionChecked) return;
+
+    setIsLoading(true);
+    let endpoint = "";
+    let payload = {};
+
+    try {
+      switch (selectedLevel.level) {
+        case "seasons":
+          endpoint = `${entitySportUrl}/admin/list/seasons`;
+          payload = {
+            page: currentPage == 0 ? 1 : currentPage,
+            limit: pageSize,
+          };
+          break;
+        case "seasonCompetitions":
+          if (!selectedLevel.seasonId) {
             setIsLoading(false);
             return;
-        }
-
-        const response = await axiosInstance.post(endpoint, payload);
-
-        let apiData = [];
-        let totalCount = 0;
-
-        // Handle different response structures
-        if (selectedLevel.level === "seasons") {
-          apiData = response?.result?.data || [];
-          totalCount = response?.result?.totalRecords || apiData.length || 0;
-          // Sort seasons by year in descending order
-          apiData = apiData.sort((a, b) => b.sid - a.sid);
-        } else if (response?.data?.result?.appdata) {
-          apiData = response.data.result.appdata;
-          totalCount =
-            response.data.result.totalRecordsl ||
-            response.data.result.appdata.length;
-        } else if (response?.result?.response?.items) {
-          apiData = response.result.response.items;
-          totalCount =
-            response.result.response.totalRecords ||
-            response.result.response.total ||
-            0;
-        } else if (
-          response?.result?.response &&
-          Array.isArray(response.result.response)
-        ) {
-          apiData = response.result.response;
-          totalCount =
-            response?.result?.totalRecords || response.result.response.length;
-        } else if (
-          response?.result?.data &&
-          Array.isArray(response.result.data)
-        ) {
-          apiData = response.result.data;
-          totalCount =
-            response?.result?.totalRecords || response.result.data.length;
-        } else if (response?.result && Array.isArray(response.result)) {
-          apiData = response.result;
-          totalCount = response?.totalRecords || response.result.length;
-        } else {
-          console.error("Unexpected API response structure:", response);
-          apiData = [];
-          totalCount = 0;
-        }
-
-        // Sort data in descending order by date
-        if (selectedLevel.level === "seasonCompetitions") {
-          apiData = apiData.sort(
-            (a, b) => new Date(b.datestart) - new Date(a.datestart)
-          );
-        } else if (selectedLevel.level === "competitionMatches") {
-          apiData = apiData.sort(
-            (a, b) => new Date(b.date_start_ist) - new Date(a.date_start_ist)
-          );
-        }
-
-        totalCount = +totalCount || 0;
-
-        setData(apiData);
-        setTotal(totalCount);
-        setCurrentPage(page);
-        setPageSize(limit);
-      } catch (error) {
-        console.error(`Error fetching ${selectedLevel.level}:`, error);
-        dispatch(
-          updateToastData({
-            type: ERROR,
-            message: `Failed to fetch ${selectedLevel.level} data`,
-          })
-        );
-      } finally {
-        setIsLoading(false);
+          }
+          endpoint = `${entitySportUrl}/admin/list/seasonCompetitions`;
+          payload = {
+            sid: +selectedLevel.seasonId,
+            page: currentPage == 0 ? 1 : currentPage,
+            limit: pageSize,
+          };
+          break;
+        case "competitionMatches":
+          if (!selectedLevel.competitionId) {
+            setIsLoading(false);
+            return;
+          }
+          endpoint = `${entitySportUrl}/admin/list/competitionMatches`;
+          payload = {
+            cid: selectedLevel.competitionId,
+            page: currentPage == 0 ? 1 : currentPage,
+            limit: pageSize,
+          };
+          break;
+        default:
+          setIsLoading(false);
+          return;
       }
-    },
-    [selectedLevel, entitySportUrl, dispatch]
-  );
+
+      const response = await axiosInstance.post(endpoint, payload);
+
+      let apiData = [];
+      let totalCount = 0;
+
+      // Handle different response structures
+      if (selectedLevel.level === "seasons") {
+        apiData = response?.result?.data || [];
+        totalCount = response?.result?.totalRecords || apiData.length || 0;
+        // Sort seasons by year in descending order
+        apiData = apiData.sort((a, b) => b.sid - a.sid);
+      } else if (response?.data?.result?.appdata) {
+        apiData = response.data.result.appdata;
+        totalCount =
+          response.data.result.totalRecordsl ||
+          response.data.result.appdata.length;
+      } else if (response?.result?.response?.items) {
+        apiData = response.result.response.items;
+        totalCount =
+          response.result.response.totalRecords ||
+          response.result.response.total ||
+          0;
+      } else if (
+        response?.result?.response &&
+        Array.isArray(response.result.response)
+      ) {
+        apiData = response.result.response;
+        totalCount =
+          response?.result?.totalRecords || response.result.response.length;
+      } else if (
+        response?.result?.data &&
+        Array.isArray(response.result.data)
+      ) {
+        apiData = response.result.data;
+        totalCount =
+          response?.result?.totalRecords || response.result.data.length;
+      } else if (response?.result && Array.isArray(response.result)) {
+        apiData = response.result;
+        totalCount = response?.totalRecords || response.result.length;
+      } else {
+        console.error("Unexpected API response structure:", response);
+        apiData = [];
+        totalCount = 0;
+      }
+
+      // Sort data in descending order by date
+      if (selectedLevel.level === "seasonCompetitions") {
+        apiData = apiData.sort(
+          (a, b) => new Date(b.datestart) - new Date(a.datestart)
+        );
+      } else if (selectedLevel.level === "competitionMatches") {
+        apiData = apiData.sort(
+          (a, b) => new Date(b.date_start_ist) - new Date(a.date_start_ist)
+        );
+      }
+
+      totalCount = +totalCount || 0;
+
+      setData(apiData);
+      setTotal(totalCount);
+    } catch (error) {
+      console.error(`Error fetching ${selectedLevel.level}:`, error);
+      dispatch(
+        updateToastData({
+          type: ERROR,
+          message: `Failed to fetch ${selectedLevel.level} data`,
+        })
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }, [
+    permissionChecked,
+    selectedLevel,
+    currentPage,
+    pageSize,
+    entitySportUrl,
+    dispatch,
+  ]);
+
+  // Fetch data when dependencies change
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   // Fetch match details for modal
   const fetchMatchDetails = async (matchId) => {
     setIsLoading(true);
     try {
       const response = await axiosInstance.post(
-        `${entitySportUrl}/admin/list/MatchInfo`,
+        `${entitySportUrl}/admin/list/matchInfo`,
         {
           mid: +matchId,
         }
@@ -268,6 +285,34 @@ export default function ImportEntity() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Import match data
+  const addMatchData = async (matchData) => {
+    setIsLoading(true);
+    finalizeRef.current.getTableAction();
+    await axiosInstance
+      .post(`/admin/import/commentary`, matchData)
+      .then((response) => {
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
   };
 
   // Handle item clicks for navigation
@@ -328,6 +373,21 @@ export default function ImportEntity() {
     setSelectedLevel(value);
     setData([]);
     setCurrentPage(1);
+  };
+
+  // Fixed pagination handlers
+  const handlePageChange = (page) => {
+    if (page !== currentPage && !isLoading) {
+      setCurrentPage(page);
+    }
+  };
+
+  const handlePageSizeChange = (size) => {
+    if (size !== pageSize && !isLoading) {
+      setPageSize(size);
+      setCurrentPage(1); // Reset to first page when changing page size
+      localStorage.setItem("pageSize", size);
+    }
   };
 
   // Column configurations
@@ -400,6 +460,31 @@ export default function ImportEntity() {
 
   const getCompetitionMatchesColumns = () => [
     {
+      title: "Import",
+      dataIndex: "import",
+      key: "import",
+      width: "7.5%",
+      render: (text, record) => (
+        <button
+          color={"primary"}
+          size="sm"
+          className="btn-primary"
+          onClick={() => {
+            setDataToDB({
+              ...dataToDB,
+              ...record,
+            });
+            addMatchData({
+              ...dataToDB,
+              ...record,
+            });
+          }}
+        >
+          <i className="bx bx-plus"></i>
+        </button>
+      ),
+    },
+    {
       title: "Match ID",
       dataIndex: "match_id",
       key: "match_id",
@@ -450,13 +535,6 @@ export default function ImportEntity() {
         return parts.length > 0 ? parts.join(", ") : "N/A";
       },
     },
-    // {
-    //   title: "Country",
-    //   dataIndex: "venue",
-    //   key: "country",
-    //   width: "12.5%",
-    //   render: (venue) => venue?.country || "N/A",
-    // },
     {
       title: "Status",
       dataIndex: "status",
@@ -505,35 +583,6 @@ export default function ImportEntity() {
     isNonCrud: true,
   };
 
-  // Initial permission check
-  useEffect(() => {
-    if (
-      !checkPermission(permissionObj, pageName, PERMISSION_VIEW) &&
-      !isEmpty(permissionObj)
-    ) {
-      navigate("/dashboard");
-      return;
-    }
-  }, [permissionObj, navigate]);
-
-  const handlePageSizeAndLimit = (key, value) => {
-    if (!isLoading) {
-      if (key == "currentpage") {
-        setCurrentPage(value);
-        fetchData(value, pageSize);
-      } else if (key == "pagesize") {
-        setPageSize(value);
-        // fetchData(currentPage, value);
-        setCurrentPage(1);
-      }
-    }
-  };
-
-  // Fetch data when level changes
-  useEffect(() => {
-    if (!isLoading) fetchData(currentPage, pageSize);
-  }, [selectedLevel]);
-
   return (
     <React.Fragment>
       <div className="page-content">
@@ -551,12 +600,8 @@ export default function ImportEntity() {
             serverCurrentPage={currentPage}
             serverPageSize={pageSize}
             serverTotal={total}
-            setServerCurrentPage={(value) =>
-              handlePageSizeAndLimit("currentpage", value)
-            }
-            setServerPageSize={(value) =>
-              handlePageSizeAndLimit("pagesize", value)
-            }
+            setServerCurrentPage={handlePageChange}
+            setServerPageSize={handlePageSizeChange}
             onBreadCrumbsClick={handleBreadcrumbClick}
             breadCrumbs={navigationHistory}
           />
@@ -564,11 +609,20 @@ export default function ImportEntity() {
           {/* Match Details Modal */}
           <Modal
             // title="Match Details"
-            visible={matchModalVisible}
+            open={matchModalVisible}
             onCancel={() => setMatchModalVisible(false)}
             footer={null}
             width={800}
-            style={{ top: "5rem", height: 650, overflow: "scroll" }}
+            style={{
+              top: "3rem",
+              maxHeight: 650,
+              overflowY: "auto",
+              overflowX: "hidden",
+              marginRight: "-16px",
+              marginLeft: "-16px",
+              marginTop: "-16px",
+              marginBottom: "-16px",
+            }}
             centered
           >
             <MatchCard matchData={matchData} />
