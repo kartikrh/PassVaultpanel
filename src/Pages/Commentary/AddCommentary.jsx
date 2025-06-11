@@ -94,15 +94,15 @@ function AddCommentary() {
                 navigate(navLink)
             }
             else if (currentSaveAction === SAVE_AND_NEW) {
+                // console.log("Inside save and new")
                 setDisabledFields({})
                 setSavedFormState({})
+                setInitialEditData(undefined)
                 setId("0");
-                setCompetitionId(competitionId);
                 finalizeRef1.current.resetForm()
                 finalizeRef2.current.resetForm()
                 finalizeRef3.current.resetForm()
                 finalizeRef4.current.resetForm()
-                // ✅ Redirect to Match Details tab (tab 1)
                 setactiveTab(1);
             }
             setCurrentSaveAction(undefined)
@@ -448,8 +448,6 @@ function AddCommentary() {
                 setIsApiLoading(false);
             });
     };
-
-
 
     const handleSaveClick = async (saveAction) => {
         const dataToSave1 = finalizeRef1.current.finalizeData()

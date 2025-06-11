@@ -20,9 +20,13 @@ import {
   MODULE_PHOTO_LIBRARY,
 } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
-import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
+import {
+  checkPermission,
+  convertDateUTCToLocal,
+} from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import LoadDataModal from "../../components/Model/LoadDataModal";
+import { Switch } from "antd";
 
 const Index = () => {
   const pageName = TAB_PHOTOLIBRARY;
@@ -35,7 +39,8 @@ const Index = () => {
   const [dataIndexList, setDataIndexList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
-  const [importExportModelVisable, setImportExportModelVisable] = useState(false);
+  const [importExportModelVisable, setImportExportModelVisable] =
+    useState(false);
   const [checekedList, setCheckedList] = useState([]);
   const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
 
@@ -50,7 +55,9 @@ const Index = () => {
         ...(latestValueFromTable || tableActions),
       })
       .then((response) => {
-        const apiData = response?.result?.sort((a, b) => a?.photoLibraryId - b?.photoLibraryId);
+        const apiData = response?.result?.sort(
+          (a, b) => a?.photoLibraryId - b?.photoLibraryId
+        );
         let apiDataIdList = [];
         apiData.forEach((ele) => {
           apiDataIdList.push(ele?.photoLibraryId);
@@ -87,7 +94,9 @@ const Index = () => {
   const handleSingleCheck = (e) => {
     let updateSingleCheck = [];
     if (checekedList.includes(e.photoLibraryId)) {
-      updateSingleCheck = checekedList.filter((item) => item !== e.photoLibraryId);
+      updateSingleCheck = checekedList.filter(
+        (item) => item !== e.photoLibraryId
+      );
     } else {
       updateSingleCheck = [...checekedList, e.photoLibraryId];
     }
@@ -95,10 +104,10 @@ const Index = () => {
   };
 
   const handleActionClick = (id) => {
-    localStorage.setItem('photoLibraryId', "" + id);
+    localStorage.setItem("photoLibraryId", "" + id);
     const url = new URL(window.location.origin + "/photos");
     // url.searchParams.append("commentaryId", id);
-    window.open(url.href, '_blank');
+    window.open(url.href, "_blank");
   };
 
   // const handlePermissions = async (pType, record, cState) => {
@@ -133,7 +142,7 @@ const Index = () => {
   const handleLoadData = async (password) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/loadPanelData`, {module: [MODULE_PHOTO_LIBRARY], password})
+      .post(`/loadPanelData`, { module: [MODULE_PHOTO_LIBRARY], password })
       .then((response) => {
         fetchData();
         setLoadDataModelVisable(false);
@@ -253,37 +262,53 @@ const Index = () => {
       dataIndex: "title",
       key: "title",
       render: (text, record) => (
-        <span style={{ cursor: "pointer" }} onClick={() => {
-          handleActionClick(record?.photoLibraryId)
-        }}>{text.length > 30 ? `${text.substring(0, 30)}...` : text}</span>
+        <span>{text.length > 30 ? `${text.substring(0, 30)}...` : text}</span>
       ),
       style: { width: "20%" },
       sort: true,
     },
     {
-      title: "SEO",
-      dataIndex: "SEO",
-      key: "SEO",
+      title: "Permanent",
+      dataIndex: "isPermanent",
+      key: "isPermanent",
       render: (text, record) => (
-        <span style={{ cursor: "pointer" }} onClick={() => {
-          handleActionClick(record?.photoLibraryId)
-        }}>{text.length > 30 ? `${text.substring(0, 30)}...` : text}</span>
+        <Button
+          color={`${record.isPermanent ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          disabled
+        >
+          <i
+            className={`bx ${record?.isPermanent ? "bx-check" : "bx-block"}`}
+          ></i>
+        </Button>
       ),
-      style: { width: "20%" },
-      sort: true,
+      style: { width: "10%"},
     },
-    {
-      title: "Description",
-      dataIndex: "description",
-      key: "description",
-      render: (text, record) => (
-        <span style={{ cursor: "pointer" }} onClick={() => {
-          handleActionClick(record?.photoLibraryId)
-        }}>{text.length > 30 ? `${text.substring(0, 30)}...` : text}</span>
-      ),
-      style: { width: "20%" },
-      sort: true,
-    },
+    // {
+    //   title: "SEO",
+    //   dataIndex: "SEO",
+    //   key: "SEO",
+    //   render: (text, record) => (
+    //     <span style={{ cursor: "pointer" }} onClick={() => {
+    //       handleActionClick(record?.photoLibraryId)
+    //     }}>{text.length > 30 ? `${text.substring(0, 30)}...` : text}</span>
+    //   ),
+    //   style: { width: "20%" },
+    //   sort: true,
+    // },
+    // {
+    //   title: "Description",
+    //   dataIndex: "description",
+    //   key: "description",
+    //   render: (text, record) => (
+    //     <span style={{ cursor: "pointer" }} onClick={() => {
+    //       handleActionClick(record?.photoLibraryId)
+    //     }}>{text.length > 30 ? `${text.substring(0, 30)}...` : text}</span>
+    //   ),
+    //   style: { width: "20%" },
+    //   sort: true,
+    // },
     {
       title: "Start Date",
       dataIndex: "startDate",
@@ -306,6 +331,23 @@ const Index = () => {
       key: "endDate",
       style: { width: "20%" },
     },
+    {
+      title: "Image",
+      key: "image",
+      render: (text, record) => (
+        <Button
+          color="primary"
+          size="sm"
+          style={{ marginRight: "300px" }}
+          onClick={() => {
+            handleActionClick(record?.photoLibraryId);
+          }}
+        >
+          <i className="bx bx-plus"></i>
+        </Button>
+      ),
+      style: { width: "10%"},
+    },
   ];
   //elements required
   const tableElement = {
@@ -317,7 +359,7 @@ const Index = () => {
 
   useEffect(() => {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
-      navigate("/dashboard")
+      navigate("/dashboard");
     }
     fetchData();
   }, []);
@@ -361,13 +403,14 @@ const Index = () => {
             handleDelete={handleDelete}
             singleCheck={checekedList}
           />
-          {loadDataModelVisable && 
+          {loadDataModelVisable && (
             <LoadDataModal
               loadDataModelVisable={loadDataModelVisable}
               setLoadDataModelVisable={setLoadDataModelVisable}
               handleLoadData={handleLoadData}
-              moduleName={"Photo Library"} 
-            />}
+              moduleName={"Photo Library"}
+            />
+          )}
         </Container>
       </div>
     </React.Fragment>

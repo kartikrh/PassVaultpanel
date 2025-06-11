@@ -121,7 +121,7 @@ function AddRegistrationPending() {
               <h3 className="modal-header-title">Registration Pending</h3>
             </Col>
             <Card>
-              <CardBody>
+              <CardBody  className="mb-5">
                 {isLoading && <SpinnerModel />}
                 <Row>
                   <Col
