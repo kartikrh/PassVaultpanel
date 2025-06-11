@@ -672,18 +672,30 @@ export const OpenMarket = () => {
                         }));
                         let newPredifinedValue
                         if (record.marketTypeId === 2 && record.marketTypeCategoryId == 12) {
-                            if(!isEmpty(socketUpdateBallData)){
-                                console.log('if')
-                                const [overs, balls] = socketUpdateBallData.over.split(".")
+                            if (!isEmpty(socketUpdateBallData)) {
+                                console.log('if');
+
+                                const overStr = socketUpdateBallData?.over?.toString();
+                                let overs = "0", balls = "0";
+
+                                if (overStr && overStr.includes(".")) {
+                                    [overs, balls] = overStr.split(".");
+                                } else if (overStr) {
+                                    overs = overStr;
+                                    balls = "0";
+                                }
+
                                 const ballsComplete = parseInt(overs, 10) * 6 + parseInt(balls, 10);
-                                console.log("socketUpdateBallData.oversPerIning", socketUpdateBallData.oversPerIning)
-                                const totalBalls = parseInt(socketUpdateBallData.oversPerInings * 6)
-                                newPredifinedValue = calculatePredictedValue(record.predefinedValue, ballsComplete, totalBalls, record.playerId, socketUpdateBallData.playersList, value, true)
-                            }else{
-                                console.log("else")
+                                const totalBalls = parseInt(socketUpdateBallData?.oversPerInings?.toString() || "0", 10) * 6;
+
+                                newPredifinedValue = calculatePredictedValue(record.predefinedValue,ballsComplete,totalBalls,record.playerId,socketUpdateBallData.playersList,value,true
+                                );
+
+                            } else {
+                                console.log("else");
+
                                 const team = comTeams.find(i => i.teamStatus == 1);
                                 const teamOverStr = team?.teamOver?.toString();
-
                                 let overs = "0", balls = "0";
 
                                 if (teamOverStr && teamOverStr.includes(".")) {
@@ -692,14 +704,15 @@ export const OpenMarket = () => {
                                     overs = teamOverStr;
                                     balls = "0";
                                 }
-                                // const [overs, balls] = comTeams.filter((i) => i.teamStatus == 1)[0]?.teamOver?.toString().split(".");
-                                console.log("overs", overs, 'balls', balls)
+
                                 const ballsComplete = parseInt(overs, 10) * 6 + parseInt(balls, 10);
-                                console.log("ballsComplete", ballsComplete)
-                                const totalBalls = parseInt(comTeams.filter((i) => i.teamStatus == 1)[0].teamMaxOver.toString()) * 6
-                                newPredifinedValue = calculatePredictedValue(record.predefinedValue, ballsComplete, totalBalls, record.playerId, comPlayers, value, false)
+                                const totalBalls = parseInt(team?.teamMaxOver?.toString() || "0", 10) * 6;
+
+                                newPredifinedValue = calculatePredictedValue(record.predefinedValue,ballsComplete,totalBalls,record.playerId,comPlayers,value,false
+                                );
                             }
                         }
+
                         const lineDifference = parseFloat(value) - (originalData.line || 0);
                         updatedMarket.predefinedValue = (record.marketTypeId === 2 && record.marketTypeCategoryId == 12 && !Number.isNaN(newPredifinedValue)) ? newPredifinedValue.toFixed(2) : parseFloat((originalData.predefinedValue || 0) + lineDifference).toFixed(2);
                         if (updatedMarket.marketTypeCategoryId === 31) {
