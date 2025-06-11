@@ -24,10 +24,13 @@ export const PlayeraListingComponent = ({ columns, dataSource = [], tableElement
     const getMarketType = (market) => {
         // Determine market type based on runnerName or other properties
         const marketCategoryId = market?.marketTypeCategoryId
+        // console.log({ marketCategoryId, name: market.marketName })
         if (+marketCategoryId === 12) return 'Runs'
         else if (+marketCategoryId === 29) return 'Boundaries'
+        else if (+marketCategoryId === 32) return 'Boundaries'
         else if (+marketCategoryId === 30) return 'Balls'
-        else if (+marketCategoryId === 13) return 'Wickets'
+        else if (+marketCategoryId === 33) return 'Balls'
+        else if (+marketCategoryId === 31) return 'Wickets'
         return null; // Unknown market type
     };
 
