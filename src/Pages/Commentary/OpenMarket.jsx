@@ -108,13 +108,6 @@ export const OpenMarket = () => {
 
     function calculatePredictedValue(predefined, oversCompleted, maxOvers, playerIdToFind, playersList, newPlayerLine, isSocket) {
         console.log("INPUTS:" , predefined, oversCompleted, maxOvers, playerIdToFind, playersList, newPlayerLine, isSocket);
-        // console.log("predefined:", predefined);
-        // console.log("oversCompleted:", oversCompleted);
-        // console.log("maxOvers:", maxOvers);
-        // console.log("playerIdToFind:", playerIdToFind);
-        // console.log("playersList:", playersList);
-        // console.log("newPlayerLine:", newPlayerLine);
-
         const player = playersList.find(p => (isSocket ? p.commentaryPlayerId : p.comPlayerId) === playerIdToFind);
 
         if (!player) {
@@ -146,7 +139,6 @@ export const OpenMarket = () => {
 
         const predefinedValue = (newPlayerLine - player.batRun) / (decay * SRPower);
         console.log("Re-calculated Predefined Value = (newPlayerLine - player.batRun) / (decay * SR^0.15) =", predefinedValue);
-
         return predefinedValue;
     }
     
@@ -712,9 +704,12 @@ export const OpenMarket = () => {
                                 );
                             }
                         }
-
                         const lineDifference = parseFloat(value) - (originalData.line || 0);
-                        updatedMarket.predefinedValue = (record.marketTypeId === 2 && record.marketTypeCategoryId == 12 && !Number.isNaN(newPredifinedValue)) ? newPredifinedValue.toFixed(2) : parseFloat((originalData.predefinedValue || 0) + lineDifference).toFixed(2);
+                        if(record.marketTypeId === 2 && record.marketTypeCategoryId == 12 && (typeof newPredifinedValue === "number" && Number.isFinite(newPredifinedValue))) {
+                            updatedMarket.predefinedValue = newPredifinedValue.toFixed(2) 
+                        } else{
+                            updatedMarket.predefinedValue = parseFloat((originalData.predefinedValue || 0) + lineDifference).toFixed(2);
+                        } 
                         if (updatedMarket.marketTypeCategoryId === 31) {
                             // Calculate lineDiff only for the changed market
                             updatedMarket.lineDiff = lineDifference;
