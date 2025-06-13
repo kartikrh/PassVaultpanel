@@ -64,9 +64,11 @@ const FormBuilder = forwardRef(
     const [fieldErrors, setFieldErrors] = useState({});
     const [viewImage, setViewImage] = useState(null);
     const [viewVideo, setViewVideo] = useState(null);
-    
+
     const handleImageChange = (field, event) => {
       const file = event.target.files[0];
+
+      // Update form data immediately
       setFormData((prevFormData) => ({
         ...prevFormData,
         [field.name]: file,
@@ -78,9 +80,68 @@ const FormBuilder = forwardRef(
             ...prev,
             [field.name]: e.target.result,
           }));
-        };
+        };            
+
+      // if (!file) return;
+
+      // const reader = new FileReader();
+
+      // reader.onload = function (e) {
+      //   const img = new Image();
+
+      //   img.onload = () => {
+      //     // Get actual image dimensions
+      //     const { width, height } = img;
+      //     const maxWidth = field.validateWidth || 500;
+      //     const maxHeight = field.validateHeight || 500;
+      //     const isValidSize = width <= maxWidth && height <= maxHeight;
+
+      //     // Update image preview
+      //     setViewImage((prev) => ({
+      //       ...prev,
+      //       [field.name]: e.target.result,
+      //     }));
+
+      //     // Handle validation and errors
+      //     const errors = { ...fieldErrors };
+
+      //     if (!isValidSize) {
+      //       errors[
+      //         field.name
+      //       ] = `Note: Image dimensions (${width}x${height}) exceed the maximum allowed size of ${maxWidth}x${maxHeight} pixels.`;
+      //     } else {
+      //       delete errors[field.name];
+      //     }
+
+      //     setFieldErrors(errors);
+
+      //     console.log({
+      //       isValidSize,
+      //       dimensions: { width, height },
+      //       file: file.name,
+      //     });
+      //   };
+
+      //   img.onerror = () => {
+      //     // Handle invalid image files
+      //     const errors = { ...fieldErrors };
+      //     errors[field.name] =
+      //       "Invalid image file. Please select a valid image.";
+      //     setFieldErrors(errors);
+      //   };
+
+      //   img.src = e.target.result;
+      // };
+
+      // reader.onerror = () => {
+      //   // Handle file reading errors
+      //   const errors = { ...fieldErrors };
+      //   errors[field.name] = "Error reading file. Please try again.";
+      //   setFieldErrors(errors);
+      // };
+
         reader.readAsDataURL(file);
-      }
+      }   
     };
 
     const handleVideoChange = (field, event) => {
@@ -187,6 +248,14 @@ const FormBuilder = forwardRef(
         if (field.regex && field.isRequired && !field.regex.test(value || "")) {
           errors[field.name] = field.regexErrorMessage || "Invalid input.";
         }
+        // if (
+        //   shouldValidate &&
+        //   field.type === IMAGE &&
+        //   field.isValidateImage &&
+        //   fieldErrors[field.name]
+        // ) {
+        //   errors[field.name] = fieldErrors[field.name];
+        // }
       });
 
       setFieldErrors(errors);
@@ -211,6 +280,7 @@ const FormBuilder = forwardRef(
 
     const finalizeData = (doNotValidateFields = []) => {
       const errors = validateAllFields(doNotValidateFields);
+      // if (typeof errors === "object" && Object.keys(errors).length === 0) {
       if (isValueEmpty(errors)) {
         const filteredData = filterData(formData);
         return sanitizeFormData(filteredData);
@@ -668,8 +738,12 @@ const FormBuilder = forwardRef(
                           id="customSwitchsizelg"
                           // width={70}
                           uncheckedIcon={""}
-                                    checkedIcon={""}
-                          disabled={disabledFields?.[field.name] || (pageName === "Commentary" && field.name === "isVirtual")}
+                          checkedIcon={""}
+                          disabled={
+                            disabledFields?.[field.name] ||
+                            (pageName === "Commentary" &&
+                              field.name === "isVirtual")
+                          }
                           // className="form-check-input"
                           onColor="#02a499"
                           onChange={(e) => {
