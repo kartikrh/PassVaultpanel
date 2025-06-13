@@ -1311,7 +1311,7 @@ const Commentary = (props) => {
                 "commentaryId": commentaryDetails.commentaryId,
                 "commentaryDetails": { ...commentaryDetails, "displayStatus": `${updatedOnStrikePlayer.playerName} on Strike`, "rmk": isRemainingBallsShow ? generateRemainingRuns(teams[BATTING_TEAM], matchTypeDetails.ballsPerOver, matchTypeDetails): "" },
                 "isCallPredict": props?.isPredictToggle,
-                "commentaryDetails": { ...commentaryDetails, "displayStatus": `${updatedOnStrikePlayer.playerName} on Strike`, "rmk": isRemainingBallsShow ? generateRemainingRuns(_teams[BATTING_TEAM], matchTypeDetails.ballsPerOver, matchTypeDetails, ): "" },
+                "commentaryDetails": { ...commentaryDetails, "displayStatus": `${updatedOnStrikePlayer.playerName} on Strike`, "rmk": isRemainingBallsShow ? generateRemainingRuns(_teams[BATTING_TEAM], matchTypeDetails.ballsPerOver, matchTypeDetails): "" },
                 "commentaryBallByBall": generateBall({
                     currentBall, commentaryDetails, currentOver,
                     onPitchPlayers: { ...onPitchPlayers, [ON_STRIKE]: updatedOnStrikePlayer, [NON_STRIKE]: updatedNonStrikePlayer }, teams,
