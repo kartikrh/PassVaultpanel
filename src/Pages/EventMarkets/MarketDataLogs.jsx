@@ -276,9 +276,9 @@ function MarketDataLogs() {
       style: { width: "5%", textAlign: "center" },
     },
     {
-      title: "Line Diff",
-      dataIndex: "lineDiff",
-      key: "lineDiff",
+      title: "Predefined Value",
+      dataIndex: "predefinedValue",
+      key: "predefinedValue",
       style: { width: "5%", textAlign: "center" },
     },
     {
@@ -352,6 +352,12 @@ function MarketDataLogs() {
       title: "Created By",
       dataIndex: "userName",
       key: "userName",
+      style: { width: "5%", textAlign: "center" },
+    },
+    {
+      title: "Line Diff",
+      dataIndex: "lineDiff",
+      key: "lineDiff",
       style: { width: "5%", textAlign: "center" },
     },
   ];
