@@ -34,6 +34,7 @@ import {
 } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { ChnageMatchTypeModel } from "../../components/Model/ChangeMatchType";
+import { UpdateDayModel } from "../../components/Model/UpdateDayModel";
 import { ChangeDelayModel } from "../../components/Model/ChangeDelay";
 import { ChangeResultModel } from "../../components/Model/ChangeResult";
 import { ChangeEventRefIdModel } from "../../components/Model/ChangeEventRefId";
@@ -105,6 +106,8 @@ const Index = () => {
   const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
   const [isScorecardShow, setIsScorecardShow] = useState(false);
   const loadInitData = useSelector((state) => state.loadInit.loadInitData);
+  const [updateDayModelVisible, setUpdateDayModelVisible] = useState(false);
+  const [selectedCommentaryDay, setSelectedCommentaryDay] = useState({});
 
   //state to track which commentary's scorecard is being shown
   const [activeScorecardCommentary, setActiveScorecardCommentary] =
@@ -1110,6 +1113,34 @@ const Index = () => {
     }
   };
 
+  const handleUpdateDay = async (updatedData) => {
+    try {
+      setIsLoading(true);
+      const { data: response } = await axiosInstance.post(`/admin/commentary/updatePitchAndSession`, {
+        commentaryId: updatedData.commentaryId,
+        pitchAge: +updatedData.pitchAge,
+        session: updatedData.session,
+      });
+
+      fetchData();
+      dispatch(updateToastData({
+        data: response?.message,
+        title: response?.title,
+        type: SUCCESS,
+      }));
+    } catch (error) {
+      dispatch(updateToastData({
+        data: error?.message,
+        title: error?.title,
+        type: ERROR,
+      }));
+    } finally {
+      setIsLoading(false);
+      setUpdateDayModelVisible(false);
+    }
+  };
+
+
   //table columns
   const columns = [
     {
@@ -2098,6 +2129,30 @@ const Index = () => {
       ),
       style: { width: "4%", textAlign: "center" },
     },
+    {
+      title: "Day",
+      dataIndex: "pitchAge",
+      render: (text, record) => (
+        <span
+          onClick={() => {
+            setUpdateDayModelVisible(true);
+            setSelectedCommentaryDay(record);
+          }}
+          style={{ cursor: "pointer" }}
+        >
+          {text}{" "}
+          <Tooltip
+            title="Edit Day"
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+          <a className="bx bx-edit-alt"></a>
+          </Tooltip>
+        </span>
+      ),
+      key: "pitchAge",
+      style: { width: "10%" },
+    },
   ];
 
   const getColumns = (data) => {
@@ -2499,6 +2554,15 @@ const Index = () => {
               toggle={() => setIsGenerateModalOpen(!isGenerateModalOpen)}
               data={generateModalData}
               fetchData={fetchData}
+            />
+          )}
+          {updateDayModelVisible && (
+            <UpdateDayModel
+            updateDayModelVisible={updateDayModelVisible}
+            setUpdateDayModelVisible={setUpdateDayModelVisible}
+            handleUpdateDay={handleUpdateDay}
+            selectedCommentaryDay={selectedCommentaryDay}
+            setSelectedCommentaryDay={setSelectedCommentaryDay}
             />
           )}
           {/* Scorecard Modal */}
