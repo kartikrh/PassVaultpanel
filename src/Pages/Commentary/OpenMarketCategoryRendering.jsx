@@ -466,18 +466,6 @@ const OpenMarketCategories = ({ categorisedData, columns, teams, handleMultiRunn
                 </Accordion>
             ))} </>
             )}
-
-            <Row>
-                <Col>
-                    <b><i>Note :</i></b>
-                    <div><b>RR</b> - Run Rate</div>
-                    <div><b>A</b> - Active</div>
-                    <div><b>B</b> - Allow</div>
-                    <div><b>S</b> - Send</div>
-                    <div><b>R-Diff</b> - Rate difference between No_Yes Rate</div>
-                    <div><b>PR</b> - Predefine Value of Market</div>
-                </Col>
-            </Row>
         </>
     );
 };
