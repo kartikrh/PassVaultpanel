@@ -191,12 +191,12 @@ export const OpenMarket = () => {
             });
 
             // 5. Handle reconnection case
-            socket.on('connect', () => {
-                // Re-establish all connections on reconnect
-                socket.emit(OPEN_MARKET_CONNECT, { commentaryId });
-                socket.emit(CONNECT_COMMENTARY, { commentaryId });
-                // socket.emit('connectEventMarket', { commentaryId });
-            });
+            // socket.on('connect', () => {
+            //     // Re-establish all connections on reconnect
+            //     socket.emit(OPEN_MARKET_CONNECT, { commentaryId });
+            //     socket.emit(CONNECT_COMMENTARY, { commentaryId });
+            //     // socket.emit('connectEventMarket', { commentaryId });
+            // });
 
             setIsSocketConnected(true);
         } else {
@@ -2145,7 +2145,6 @@ export const OpenMarket = () => {
                                             <i className='bx bx-refresh'></i></Button>
                                     </Col>
                                 </Row>
-                                {data.length > 0 &&
                                     <Row>
                                         <Col className="mt-2" xs={12} md={12} lg={12}>
                                             <div><b>Filter Categories:</b></div>
@@ -2161,63 +2160,67 @@ export const OpenMarket = () => {
                                                 onChange={handleCategoryChange}
                                             />
                                         </Col>
-                                        {lineRatioField}
-                                        <Col className="p-0 d-flex align-items-center" xs={12} md={6} lg={6}>
-                                            <Button
-                                                color="primary"
-                                                // style={{ opacity: hasUnsavedChanges && selectedCategories.length > 0 ? 1 : 0.65 }}
-                                                className="table-header-button"
-                                                onClick={() => handleAction({ changeIn: data, key: "isSendData", value: true, action: "SEND_ALL" })}
-                                                disabled={selectedCategories.length === 0 || hasUnsavedChanges}
-                                            > {`${SEND_ALL} (S)`}</Button>
-                                            <Button
-                                                color="primary"
-                                                className="table-header-button"
-                                                onClick={() => handleAction({ changeIn: data, key: "status", value: OPEN_VALUE, action: "PUBLISH" })}
-                                                disabled={selectedCategories.length === 0}
-                                            >{`Publish (D)`}</Button>
-                                            <Button
-                                                color="primary"
-                                                className="table-header-button"
-                                                style={{ opacity: hasUnsavedChanges && selectedCategories.length > 0 ? 1 : 0.65 }}
-                                                onClick={() => updateRecords()}
-                                                disabled={selectedCategories.length === 0 || !hasUnsavedChanges}
-                                            >{`Save All (A)`}</Button>
-                                            <Switch
-                                                width={80}
-                                                uncheckedIcon={<OffsymbolStatus />}
-                                                checkedIcon={<OnSymbolStatus />}
-                                                className="mx-2"
-                                                onColor="#02a499"
-                                                onChange={() => {
-                                                    setIsScorecardShow(!isScorecardShow);
-                                                }}
-                                                checked={isScorecardShow}
-                                            />
-                                            <Switch
-                                                width={80}
-                                                uncheckedIcon={<OffsymbolPointStatus />}
-                                                checkedIcon={<OnSymbolPointStatus />}
-                                                className="mx-2"
-                                                onColor="#02a499"
-                                                onChange={() => {
-                                                    setIsPointsShow(!isPointsShow);
-                                                }}
-                                                checked={isPointsShow}
-                                            />
-                                            <Switch
-                                                width={80}
-                                                uncheckedIcon={<OffsymbolPlayerMarketStatus />}
-                                                checkedIcon={<OnSymbolPlayerMarketStatus />}
-                                                className="mx-2"
-                                                onColor="#02a499"
-                                                onChange={() => {
-                                                    setPlayerMarketShow(!playersMarketShow);
-                                                }}
-                                                checked={playersMarketShow}
-                                            />
-                                        </Col>
-                                    </Row>}
+                                        {data.length > 0 && (
+                                            <>
+                                                {lineRatioField}
+                                                <Col className="p-0 d-flex align-items-center" xs={12} md={6} lg={6}>
+                                                    <Button
+                                                    color="primary"
+                                                    // style={{ opacity: hasUnsavedChanges && selectedCategories.length > 0 ? 1 : 0.65 }}
+                                                    className="table-header-button"
+                                                    onClick={() => handleAction({ changeIn: data, key: "isSendData", value: true, action: "SEND_ALL" })}
+                                                    disabled={selectedCategories.length === 0 || hasUnsavedChanges}
+                                                    > {`${SEND_ALL} (S)`}</Button>
+                                                    <Button
+                                                    color="primary"
+                                                    className="table-header-button"
+                                                    onClick={() => handleAction({ changeIn: data, key: "status", value: OPEN_VALUE, action: "PUBLISH" })}
+                                                    disabled={selectedCategories.length === 0}
+                                                    >{`Publish (D)`}</Button>
+                                                    <Button
+                                                        color="primary"
+                                                        className="table-header-button"
+                                                        style={{ opacity: hasUnsavedChanges && selectedCategories.length > 0 ? 1 : 0.65 }}
+                                                        onClick={() => updateRecords()}
+                                                        disabled={selectedCategories.length === 0 || !hasUnsavedChanges}
+                                                    >{`Save All (A)`}</Button>
+                                                    <Switch
+                                                        width={80}
+                                                        uncheckedIcon={<OffsymbolStatus />}
+                                                        checkedIcon={<OnSymbolStatus />}
+                                                        className="mx-2"
+                                                        onColor="#02a499"
+                                                        onChange={() => {
+                                                            setIsScorecardShow(!isScorecardShow);
+                                                        }}
+                                                        checked={isScorecardShow}
+                                                    />
+                                                    <Switch
+                                                        width={80}
+                                                        uncheckedIcon={<OffsymbolPointStatus />}
+                                                        checkedIcon={<OnSymbolPointStatus />}
+                                                        className="mx-2"
+                                                        onColor="#02a499"
+                                                        onChange={() => {
+                                                            setIsPointsShow(!isPointsShow);
+                                                        }}
+                                                        checked={isPointsShow}
+                                                    />
+                                                    <Switch
+                                                        width={80}
+                                                        uncheckedIcon={<OffsymbolPlayerMarketStatus />}
+                                                        checkedIcon={<OnSymbolPlayerMarketStatus />}
+                                                        className="mx-2"
+                                                        onColor="#02a499"
+                                                        onChange={() => {
+                                                            setPlayerMarketShow(!playersMarketShow);
+                                                        }}
+                                                        checked={playersMarketShow}
+                                                    />
+                                                </Col>
+                                            </>
+                                        )}
+                                    </Row>
                                 {isScorecardShow && (
                                     <Row className='p-0'>
                                         <Col xs={12} className="p-0">
@@ -2264,7 +2267,7 @@ export const OpenMarket = () => {
                                         />
                                     </Col>
                                 </Row>}
-                                {Object.keys(categorisedData).length > 0 && (
+                                {Object.keys(categorisedData).length > 0 ? (
                                     <OpenMarketCategories
                                         categorisedData={categorisedData}
                                         columns={columns}
@@ -2282,7 +2285,21 @@ export const OpenMarket = () => {
                                         teamsData={teamsData}
                                         handleDS={handleDS}
                                     />
+                                ) : (
+                                    <div className="my-5 text-center">No Market Available</div>
                                 )}
+
+                                <Row>
+                                    <Col>
+                                        <b><i>Note :</i></b>
+                                        <div><b>RR</b> - Run Rate</div>
+                                        <div><b>A</b> - Active</div>
+                                        <div><b>B</b> - Allow</div>
+                                        <div><b>S</b> - Send</div>
+                                        <div><b>R-Diff</b> - Rate difference between No_Yes Rate</div>
+                                        <div><b>PR</b> - Predefine Value of Market</div>
+                                    </Col>
+                                </Row>
                             </CardBody>
                         </Card>
                     </Row>

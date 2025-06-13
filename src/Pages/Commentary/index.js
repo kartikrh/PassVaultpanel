@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
 import { mapCommentaryStatus } from "./functions";
-import { Button, Container } from "reactstrap";
+import { Button, Container, Modal, ModalHeader, ModalBody } from "reactstrap";
 import { useNavigate } from "react-router-dom";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import LoadCommentaryModel from "../../components/Model/LoadCommentaryModel";
@@ -34,6 +34,7 @@ import {
 } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { ChnageMatchTypeModel } from "../../components/Model/ChangeMatchType";
+import { UpdateDayModel } from "../../components/Model/UpdateDayModel";
 import { ChangeDelayModel } from "../../components/Model/ChangeDelay";
 import { ChangeResultModel } from "../../components/Model/ChangeResult";
 import { ChangeEventRefIdModel } from "../../components/Model/ChangeEventRefId";
@@ -45,6 +46,7 @@ import AwardSelectionComponent from "./CommentaryModels/AwardModal";
 import CommentaryMarketTemplateModel from "../../components/Model/CommentaryMarketTemplateModel";
 import LoadDataModal from "../../components/Model/LoadDataModal";
 import GenerateModal from "./GenerateModal";
+import { loadInit } from "../../config";
 
 const Index = () => {
   const pageName = TAB_COMMENTARY;
@@ -102,6 +104,28 @@ const Index = () => {
   const [competitionId, setCompetitionId] = useState(null);
   const [generateModalData, setGenerateModalData] = useState(null);
   const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
+  const [isScorecardShow, setIsScorecardShow] = useState(false);
+  const loadInitData = useSelector((state) => state.loadInit.loadInitData);
+  const [updateDayModelVisible, setUpdateDayModelVisible] = useState(false);
+  const [selectedCommentaryDay, setSelectedCommentaryDay] = useState({});
+
+  //state to track which commentary's scorecard is being shown
+  const [activeScorecardCommentary, setActiveScorecardCommentary] =
+    useState(null);
+
+  // Update the scorecard URL construction to use the active commentary's eventRefId
+  let scorecardFrameUrl = null;
+  if (activeScorecardCommentary && loadInitData) {
+    const baseUrl = loadInitData.find(
+      (item) => item.key === loadInit.SCORECARD_FRAME_URL
+    )?.value;
+    if (baseUrl) {
+      scorecardFrameUrl = baseUrl.replace(
+        "{eventId}",
+        activeScorecardCommentary.eventRefId
+      );
+    }
+  }
 
   const didInitialFetch = useRef(false);
   const navigate = useNavigate();
@@ -1077,6 +1101,46 @@ const Index = () => {
     }
   };
 
+  const handleScorecardToggle = (record) => {
+    if (activeScorecardCommentary?.commentaryId === record.commentaryId) {
+      // If the same commentary is clicked, toggle off
+      setActiveScorecardCommentary(null);
+      setIsScorecardShow(false);
+    } else {
+      // Set new commentary and turn on scorecard
+      setActiveScorecardCommentary(record);
+      setIsScorecardShow(true);
+    }
+  };
+
+  const handleUpdateDay = async (updatedData) => {
+    try {
+      setIsLoading(true);
+      const { data: response } = await axiosInstance.post(`/admin/commentary/updatePitchAndSession`, {
+        commentaryId: updatedData.commentaryId,
+        pitchAge: +updatedData.pitchAge,
+        session: updatedData.session,
+      });
+
+      fetchData();
+      dispatch(updateToastData({
+        data: response?.message,
+        title: response?.title,
+        type: SUCCESS,
+      }));
+    } catch (error) {
+      dispatch(updateToastData({
+        data: error?.message,
+        title: error?.title,
+        type: ERROR,
+      }));
+    } finally {
+      setIsLoading(false);
+      setUpdateDayModelVisible(false);
+    }
+  };
+
+
   //table columns
   const columns = [
     {
@@ -2049,6 +2113,46 @@ const Index = () => {
       ),
       style: { width: "2%", textAlign: "center" },
     },
+    {
+      title: "ScoreCard",
+      key: "viewScoreCard",
+      printType: "ignore",
+      render: (text, record) => (
+        <Button
+          color="primary"
+          size="sm"
+          className="btn"
+          onClick={() => handleScorecardToggle(record)}
+        >
+          S
+        </Button>
+      ),
+      style: { width: "4%", textAlign: "center" },
+    },
+    {
+      title: "Day",
+      dataIndex: "pitchAge",
+      render: (text, record) => (
+        <span
+          onClick={() => {
+            setUpdateDayModelVisible(true);
+            setSelectedCommentaryDay(record);
+          }}
+          style={{ cursor: "pointer" }}
+        >
+          {text}{" "}
+          <Tooltip
+            title="Edit Day"
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+          <a className="bx bx-edit-alt"></a>
+          </Tooltip>
+        </span>
+      ),
+      key: "pitchAge",
+      style: { width: "10%" },
+    },
   ];
 
   const getColumns = (data) => {
@@ -2452,6 +2556,49 @@ const Index = () => {
               fetchData={fetchData}
             />
           )}
+          {updateDayModelVisible && (
+            <UpdateDayModel
+            updateDayModelVisible={updateDayModelVisible}
+            setUpdateDayModelVisible={setUpdateDayModelVisible}
+            handleUpdateDay={handleUpdateDay}
+            selectedCommentaryDay={selectedCommentaryDay}
+            setSelectedCommentaryDay={setSelectedCommentaryDay}
+            />
+          )}
+          {/* Scorecard Modal */}
+          {isScorecardShow &&
+            activeScorecardCommentary &&
+            scorecardFrameUrl && (
+              <Modal
+                isOpen={isScorecardShow}
+                toggle={() => {
+                  setIsScorecardShow(false);
+                  setActiveScorecardCommentary(null);
+                }}
+                size="xl"
+                style={{ maxWidth: "90vw" }}
+              >
+                <ModalHeader
+                  toggle={() => {
+                    setIsScorecardShow(false);
+                    setActiveScorecardCommentary(null);
+                  }}
+                >
+                  Scorecard for: {activeScorecardCommentary.eventName} (ID:{" "}
+                  {activeScorecardCommentary.eventRefId})
+                </ModalHeader>
+                <ModalBody className="p-0">
+                  <iframe
+                    title="Scorecard viewer"
+                    width="100%"
+                    height="600"
+                    src={scorecardFrameUrl}
+                    frameBorder="0"
+                    style={{ border: "none" }}
+                  />
+                </ModalBody>
+              </Modal>
+            )}
         </Container>
       </div>
     </React.Fragment>
