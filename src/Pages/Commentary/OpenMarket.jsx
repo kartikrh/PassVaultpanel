@@ -18,6 +18,11 @@ import Switch from "react-switch";
 import { loadInit } from "../../config";
 
 export const OpenMarket = () => {
+    const loadInitData = useSelector((state) => state.loadInit.loadInitData);
+    let isPlayerStrikeApply = loadInitData.find(item => item.key === loadInit.IS_APPLY_PLAYER_STRIKE_LOGIC)?.value;
+    const [newCalculation, setNewCalculation] = useState(() => {
+        return isPlayerStrikeApply ?? false; // fallback to false if undefined
+    });
     const [data, setData] = useState([]);
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
     const [teams, setTeams] = useState({});
@@ -53,7 +58,7 @@ export const OpenMarket = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const marketTypeObj = useSelector((state) => state.marketType?.marketTypeList);
-    const loadInitData = useSelector((state) => state.loadInit.loadInitData);
+    
     // const socket = createSocket();
     const statusListToInclude = [1, 2, 3]
     const lineRatioForMarketCategoryId = 23
@@ -105,6 +110,16 @@ export const OpenMarket = () => {
             }
         };
     }, []);
+
+    useEffect(() => {
+        const value = loadInitData.find(
+            (item) => item.key === loadInit.IS_APPLY_PLAYER_STRIKE_LOGIC
+        )?.value;
+
+        const isPlayerStrikeApply = value === "true" || value === true;
+
+        setNewCalculation(isPlayerStrikeApply);
+    }, [loadInitData]);
 
     function calculatePredictedValue(predefined, oversCompleted, maxOvers, playerIdToFind, playersList, newPlayerLine, isSocket) {
         console.log("INPUTS:", predefined, oversCompleted, maxOvers, playerIdToFind, playersList, newPlayerLine, isSocket);
@@ -463,6 +478,42 @@ export const OpenMarket = () => {
             </div>
         );
     };
+    const OffsymbolNewCalculation = () => {
+        return (
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100%",
+                    fontSize: 12,
+                    color: "#fff",
+                    paddingRight: "10px",
+                }}
+            >
+                {" "}
+                Calculate
+            </div>
+        );
+    };
+    const OnSymbolNewCalculation = () => {
+        return (
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100%",
+                    fontSize: 12,
+                    color: "#fff",
+                    paddingLeft: "11px",
+                }}
+            >
+                {" "}
+                Calculate
+            </div>
+        );
+    };
 
     const categoryOptions = [
         { value: 'ALL', label: 'Select All' },
@@ -663,7 +714,7 @@ export const OpenMarket = () => {
                             lineDiff: 0
                         }));
                         let newPredifinedValue
-                        if (record.marketTypeId === 2 && record.marketTypeCategoryId == 12) {
+                        if (record.marketTypeId === 2 && record.marketTypeCategoryId == 12 && newCalculation) {
                             if (!isEmpty(socketUpdateBallData)) {
                                 console.log('if');
 
@@ -1060,6 +1111,17 @@ export const OpenMarket = () => {
     }
 
     const saveData = async ({ dataToSave, action }) => {
+        const rawValue = dataToSave[0].predefinedValue;
+
+        if (rawValue === null || rawValue === "" || !(typeof +rawValue === "number" && Number.isFinite(+rawValue))) {
+            dispatch(updateToastData({
+                data: "PredefinedValue is not correct",
+                title: "PredefinedValue",
+                type: ERROR
+            }));
+            return;
+        }
+
         // console.log('Saving data:', { action, marketCount: dataToSave.length });
         setIsLoading(true);
         try {
@@ -2216,6 +2278,18 @@ export const OpenMarket = () => {
                                                     }}
                                                     checked={playersMarketShow}
                                                 />
+                                                    <Switch
+                                                        width={80}
+                                                        uncheckedIcon={<OffsymbolNewCalculation />}
+                                                        checkedIcon={<OnSymbolNewCalculation />}
+                                                        className="mx-2"
+                                                        onColor="#02a499"
+                                                        // onChange={() => {
+                                                        //     setNewCalculation(!newCalculation);
+                                                        // }}
+                                                        disabled
+                                                        checked={newCalculation}
+                                                    />
                                             </Col>
                                         </>
                                     )}
