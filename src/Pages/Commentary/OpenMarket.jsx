@@ -1111,10 +1111,14 @@ export const OpenMarket = () => {
     }
 
     const saveData = async ({ dataToSave, action }) => {
-        const numericValue = +dataToSave[0].predefinedValue;
+        const rawValue = dataToSave[0].predefinedValue;
 
-        if (!(typeof numericValue === "number" && Number.isFinite(numericValue))) {
-            dispatch(updateToastData({ data: "PredefinedValue is not correct", title: "PredefinedValue", type: ERROR}));
+        if (rawValue === null || rawValue === "" || !(typeof +rawValue === "number" && Number.isFinite(+rawValue))) {
+            dispatch(updateToastData({
+                data: "PredefinedValue is not correct",
+                title: "PredefinedValue",
+                type: ERROR
+            }));
             return;
         }
 
