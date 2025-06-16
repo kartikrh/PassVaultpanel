@@ -18,11 +18,15 @@ import Switch from "react-switch";
 import { loadInit } from "../../config";
 
 export const OpenMarket = () => {
+    const loadInitData = useSelector((state) => state.loadInit.loadInitData);
+    let isPlayerStrikeApply = loadInitData.find(item => item.key === loadInit.IS_APPLY_PLAYER_STRIKE_LOGIC)?.value;
+    const [newCalculation, setNewCalculation] = useState(() => {
+        return isPlayerStrikeApply ?? false; // fallback to false if undefined
+    });
     const [data, setData] = useState([]);
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
     const [teams, setTeams] = useState({});
     const [playersMarketShow, setPlayerMarketShow] = useState(false);
-    const [newCalculation, setNewCalculation] = useState(false);
     const [players, setPlayers] = useState({});
     const [comPlayers, setComPlayers] = useState([]);
     const [comTeams, setComTeams] = useState([]);
@@ -54,7 +58,7 @@ export const OpenMarket = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const marketTypeObj = useSelector((state) => state.marketType?.marketTypeList);
-    const loadInitData = useSelector((state) => state.loadInit.loadInitData);
+    
     // const socket = createSocket();
     const statusListToInclude = [1, 2, 3]
     const lineRatioForMarketCategoryId = 23
@@ -106,6 +110,16 @@ export const OpenMarket = () => {
             }
         };
     }, []);
+
+    useEffect(() => {
+        const value = loadInitData.find(
+            (item) => item.key === loadInit.IS_APPLY_PLAYER_STRIKE_LOGIC
+        )?.value;
+
+        const isPlayerStrikeApply = value === "true" || value === true;
+
+        setNewCalculation(isPlayerStrikeApply);
+    }, [loadInitData]);
 
     function calculatePredictedValue(predefined, oversCompleted, maxOvers, playerIdToFind, playersList, newPlayerLine, isSocket) {
         console.log("INPUTS:", predefined, oversCompleted, maxOvers, playerIdToFind, playersList, newPlayerLine, isSocket);
@@ -2266,9 +2280,10 @@ export const OpenMarket = () => {
                                                         checkedIcon={<OnSymbolNewCalculation />}
                                                         className="mx-2"
                                                         onColor="#02a499"
-                                                        onChange={() => {
-                                                            setNewCalculation(!newCalculation);
-                                                        }}
+                                                        // onChange={() => {
+                                                        //     setNewCalculation(!newCalculation);
+                                                        // }}
+                                                        disabled
                                                         checked={newCalculation}
                                                     />
                                             </Col>
