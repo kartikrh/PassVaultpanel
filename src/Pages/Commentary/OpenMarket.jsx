@@ -108,7 +108,7 @@ export const OpenMarket = () => {
     }, []);
 
     function calculatePredictedValue(predefined, oversCompleted, maxOvers, playerIdToFind, playersList, newPlayerLine, isSocket) {
-        console.log("INPUTS:" , predefined, oversCompleted, maxOvers, playerIdToFind, playersList, newPlayerLine, isSocket);
+        console.log("INPUTS:", predefined, oversCompleted, maxOvers, playerIdToFind, playersList, newPlayerLine, isSocket);
         const player = playersList.find(p => (isSocket ? p.commentaryPlayerId : p.comPlayerId) === playerIdToFind);
 
         if (!player) {
@@ -142,7 +142,7 @@ export const OpenMarket = () => {
         console.log("Re-calculated Predefined Value = (newPlayerLine - player.batRun) / (decay * SR^0.15) =", predefinedValue);
         return predefinedValue;
     }
-    
+
 
     useEffect(() => {
         const socket = socketRef.current;
@@ -184,7 +184,7 @@ export const OpenMarket = () => {
             });
 
             socket.on(UPDATE_BALL_STATUS, (data) => {
-                console.log("data", data)
+                // console.log("data", data)
                 setSocketUpdateBallData(data)
                 if (data) {
                     setBallStatus(data?.ballStatus);
@@ -717,7 +717,7 @@ export const OpenMarket = () => {
                                 const ballsComplete = parseInt(overs, 10) * 6 + parseInt(balls, 10);
                                 const totalBalls = parseInt(socketUpdateBallData?.oversPerInings?.toString() || "0", 10) * 6;
 
-                                newPredifinedValue = calculatePredictedValue(record.predefinedValue,ballsComplete,totalBalls,record.playerId,socketUpdateBallData.playersList,value,true
+                                newPredifinedValue = calculatePredictedValue(record.predefinedValue, ballsComplete, totalBalls, record.playerId, socketUpdateBallData.playersList, value, true
                                 );
 
                             } else {
@@ -737,16 +737,16 @@ export const OpenMarket = () => {
                                 const ballsComplete = parseInt(overs, 10) * 6 + parseInt(balls, 10);
                                 const totalBalls = parseInt(team?.teamMaxOver?.toString() || "0", 10) * 6;
 
-                                newPredifinedValue = calculatePredictedValue(record.predefinedValue,ballsComplete,totalBalls,record.playerId,comPlayers,value,false
+                                newPredifinedValue = calculatePredictedValue(record.predefinedValue, ballsComplete, totalBalls, record.playerId, comPlayers, value, false
                                 );
                             }
                         }
                         const lineDifference = parseFloat(value) - (originalData.line || 0);
-                        if(record.marketTypeId === 2 && record.marketTypeCategoryId == 12 && (typeof newPredifinedValue === "number" && Number.isFinite(newPredifinedValue))) {
-                            updatedMarket.predefinedValue = newPredifinedValue.toFixed(2) 
-                        } else{
+                        if (record.marketTypeId === 2 && record.marketTypeCategoryId == 12 && (typeof newPredifinedValue === "number" && Number.isFinite(newPredifinedValue))) {
+                            updatedMarket.predefinedValue = newPredifinedValue.toFixed(2)
+                        } else {
                             updatedMarket.predefinedValue = parseFloat((originalData.predefinedValue || 0) + lineDifference).toFixed(2);
-                        } 
+                        }
                         if (updatedMarket.marketTypeCategoryId === 31) {
                             // Calculate lineDiff only for the changed market
                             updatedMarket.lineDiff = lineDifference;
@@ -1204,18 +1204,17 @@ export const OpenMarket = () => {
         return { data: updatedDatalist, lineRatio: highestLineRatio * 5 }
     }
 
-    const formatSocketDataForState = (responseData) => {
+    const formatSocketDataForState = (dataForSocket) => {
+        let responseData = dataForSocket
         // console.log('Socket data received:', responseData);
         if (!isEmpty(responseData)) {
             const newMarketData = {};
             const newOriginalData = {}; // New object to store original values only for socket-received markets
-
+            if (!Array.isArray(responseData)) responseData = [responseData]
             responseData.forEach(eventMarketString => {
                 if (typeof eventMarketString === "string") {
                     const eventMarket = JSON.parse(eventMarketString);
                     // console.log('Processing socket market data:', eventMarket.marketId);
-
-                    // Store original values ONLY for socket-received markets
                     if (eventMarket.runner && eventMarket.runner.length === 1) {
                         newOriginalData[eventMarket.marketId] = {
                             line: Array.isArray(eventMarket.runner) ?
@@ -2189,78 +2188,78 @@ export const OpenMarket = () => {
                                             <i className='bx bx-refresh'></i></Button>
                                     </Col>
                                 </Row>
-                                    <Row>
-                                        <Col className="mt-2" xs={12} md={12} lg={12}>
-                                            <div><b>Filter Categories:</b></div>
-                                            <Select
-                                                isMulti
-                                                name="categories"
-                                                // options={Object.entries(categories).map(([id, name]) => ({ value: +id, label: name }))}
-                                                options={categoryOptions}
-                                                className="filter-categories"
-                                                classNamePrefix="filter-dropdown"
-                                                value={selectedCategories}
-                                                // menuIsOpen={true}
-                                                onChange={handleCategoryChange}
-                                            />
-                                        </Col>
-                                        {data.length > 0 && (
-                                            <>
-                                                {lineRatioField}
-                                                <Col className="p-0 d-flex align-items-center" xs={12} md={6} lg={6}>
-                                                    <Button
+                                <Row>
+                                    <Col className="mt-2" xs={12} md={12} lg={12}>
+                                        <div><b>Filter Categories:</b></div>
+                                        <Select
+                                            isMulti
+                                            name="categories"
+                                            // options={Object.entries(categories).map(([id, name]) => ({ value: +id, label: name }))}
+                                            options={categoryOptions}
+                                            className="filter-categories"
+                                            classNamePrefix="filter-dropdown"
+                                            value={selectedCategories}
+                                            // menuIsOpen={true}
+                                            onChange={handleCategoryChange}
+                                        />
+                                    </Col>
+                                    {data.length > 0 && (
+                                        <>
+                                            {lineRatioField}
+                                            <Col className="p-0 d-flex align-items-center" xs={12} md={6} lg={6}>
+                                                <Button
                                                     color="primary"
                                                     // style={{ opacity: hasUnsavedChanges && selectedCategories.length > 0 ? 1 : 0.65 }}
                                                     className="table-header-button"
                                                     onClick={() => handleAction({ changeIn: data, key: "isSendData", value: true, action: "SEND_ALL" })}
                                                     disabled={selectedCategories.length === 0 || hasUnsavedChanges}
-                                                    > {`${SEND_ALL} (S)`}</Button>
-                                                    <Button
+                                                > {`${SEND_ALL} (S)`}</Button>
+                                                <Button
                                                     color="primary"
                                                     className="table-header-button"
                                                     onClick={() => handleAction({ changeIn: data, key: "status", value: OPEN_VALUE, action: "PUBLISH" })}
                                                     disabled={selectedCategories.length === 0}
-                                                    >{`Publish (D)`}</Button>
-                                                    <Button
-                                                        color="primary"
-                                                        className="table-header-button"
-                                                        style={{ opacity: hasUnsavedChanges && selectedCategories.length > 0 ? 1 : 0.65 }}
-                                                        onClick={() => updateRecords()}
-                                                        disabled={selectedCategories.length === 0 || !hasUnsavedChanges}
-                                                    >{`Save All (A)`}</Button>
-                                                    <Switch
-                                                        width={80}
-                                                        uncheckedIcon={<OffsymbolStatus />}
-                                                        checkedIcon={<OnSymbolStatus />}
-                                                        className="mx-2"
-                                                        onColor="#02a499"
-                                                        onChange={() => {
-                                                            setIsScorecardShow(!isScorecardShow);
-                                                        }}
-                                                        checked={isScorecardShow}
-                                                    />
-                                                    <Switch
-                                                        width={80}
-                                                        uncheckedIcon={<OffsymbolPointStatus />}
-                                                        checkedIcon={<OnSymbolPointStatus />}
-                                                        className="mx-2"
-                                                        onColor="#02a499"
-                                                        onChange={() => {
-                                                            setIsPointsShow(!isPointsShow);
-                                                        }}
-                                                        checked={isPointsShow}
-                                                    />
-                                                    <Switch
-                                                        width={80}
-                                                        uncheckedIcon={<OffsymbolPlayerMarketStatus />}
-                                                        checkedIcon={<OnSymbolPlayerMarketStatus />}
-                                                        className="mx-2"
-                                                        onColor="#02a499"
-                                                        onChange={() => {
-                                                            setPlayerMarketShow(!playersMarketShow);
-                                                        }}
-                                                        checked={playersMarketShow}
-                                                    />
+                                                >{`Publish (D)`}</Button>
+                                                <Button
+                                                    color="primary"
+                                                    className="table-header-button"
+                                                    style={{ opacity: hasUnsavedChanges && selectedCategories.length > 0 ? 1 : 0.65 }}
+                                                    onClick={() => updateRecords()}
+                                                    disabled={selectedCategories.length === 0 || !hasUnsavedChanges}
+                                                >{`Save All (A)`}</Button>
+                                                <Switch
+                                                    width={80}
+                                                    uncheckedIcon={<OffsymbolStatus />}
+                                                    checkedIcon={<OnSymbolStatus />}
+                                                    className="mx-2"
+                                                    onColor="#02a499"
+                                                    onChange={() => {
+                                                        setIsScorecardShow(!isScorecardShow);
+                                                    }}
+                                                    checked={isScorecardShow}
+                                                />
+                                                <Switch
+                                                    width={80}
+                                                    uncheckedIcon={<OffsymbolPointStatus />}
+                                                    checkedIcon={<OnSymbolPointStatus />}
+                                                    className="mx-2"
+                                                    onColor="#02a499"
+                                                    onChange={() => {
+                                                        setIsPointsShow(!isPointsShow);
+                                                    }}
+                                                    checked={isPointsShow}
+                                                />
+                                                <Switch
+                                                    width={80}
+                                                    uncheckedIcon={<OffsymbolPlayerMarketStatus />}
+                                                    checkedIcon={<OnSymbolPlayerMarketStatus />}
+                                                    className="mx-2"
+                                                    onColor="#02a499"
+                                                    onChange={() => {
+                                                        setPlayerMarketShow(!playersMarketShow);
+                                                    }}
+                                                    checked={playersMarketShow}
+                                                />
                                                     <Switch
                                                         width={80}
                                                         uncheckedIcon={<OffsymbolNewCalculation />}
@@ -2272,10 +2271,10 @@ export const OpenMarket = () => {
                                                         }}
                                                         checked={newCalculation}
                                                     />
-                                                </Col>
-                                            </>
-                                        )}
-                                    </Row>
+                                            </Col>
+                                        </>
+                                    )}
+                                </Row>
                                 {isScorecardShow && (
                                     <Row className='p-0'>
                                         <Col xs={12} className="p-0">

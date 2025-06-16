@@ -823,6 +823,21 @@ const FormBuilder = forwardRef(
                       </Button>
                     )}
                   </div>
+                  {/* Add note if it exists */}
+                  {field.note && (
+                    <div
+                      className="field-note mt-2 mb-2"
+                      style={{ fontSize: "0.875rem", color: "#6c757d" }}
+                    >
+                      {field.note}
+                    </div>
+                  )}
+
+                  <span className="text-danger">
+                    {fieldErrors[field.name] && (
+                      <p>{fieldErrors[field.name]}</p>
+                    )}
+                  </span>
                   <span className="text-danger">
                     {fieldErrors[field.name] && (
                       <p>{fieldErrors[field.name]}</p>
@@ -859,6 +874,7 @@ FormBuilder.propTypes = {
       isRequired: PropTypes.bool.isRequired,
       regex: PropTypes.instanceOf(RegExp),
       regexErrorMessage: PropTypes.string,
+          note: PropTypes.node, 
       options: PropTypes.arrayOf(
         PropTypes.shape({
           value: PropTypes.string.isRequired,
