@@ -166,14 +166,15 @@ const PlayerCommentary = () => {
                              .map(
                               (inningKey) => {
                                 const inningPlayers = teamDetails.commentaryTeamPlayers[inningKey];
+                                const currentInnings = inningPlayers[0]?.currentInnings || (inningKey === "currentInnings1" ? 1 : inningKey === "currentInnings2" ? 2 : "");
                                 return (
                                   <CardBody key={inningKey}>
-                                    {commentaryData?.totalInnings > 1 ? <h6> Innings : {inningPlayers[0]?.currentInnings}</h6> : null}
+                                    {commentaryData?.totalInnings > 1 ? <h6> Innings : {currentInnings}</h6> : null}
                                     <TeamPlayerCard
                                       commentaryId={commentaryId}
                                       teamDetails={teamDetails}
                                       inningPlayers={inningPlayers}
-                                      // currentInnings={commentaryDetails?.currentInnings}
+                                      currentInnings={currentInnings}
                                       fetchData={fetchData}
                                     />
                                     <hr className="my-3" />

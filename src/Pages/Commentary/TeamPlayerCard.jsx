@@ -13,7 +13,7 @@ import bat from '../../../src/assets/images/cricket-icons/cricket-bat.png';
 import allrounder from '../../../src/assets/images/cricket-icons/cricket.png';
 import keeper from '../../../src/assets/images/cricket-icons/game.png';
 
-const TeamPlayerCard = ({ commentaryId, teamDetails, inningPlayers, fetchData }) => {
+const TeamPlayerCard = ({ commentaryId, teamDetails, inningPlayers, fetchData, currentInnings }) => {
     const [commentaryTeamPlayers, setCommentaryTeamPlayers] = useState([]);
     const [nonCommentaryTeamPlayers, setNonCommentaryTeamPlayers] = useState([]);
     const [selectedPlayer, setSelectedPlayer] = useState(undefined);
@@ -37,8 +37,7 @@ const TeamPlayerCard = ({ commentaryId, teamDetails, inningPlayers, fetchData })
         if (playerIndex !== -1) {
             setIsLoading(true);
             await axiosInstance
-                .post("/admin/commentary/addTeamPlayer", { commentaryId, teamId: teamDetails?.teamId, playerId: selectedPlayer?.value, currentInnings: inningPlayers?.[0]?.currentInnings })
-                // .post("/admin/commentary/addTeamPlayer", { commentaryId, teamId: teamDetails?.teamId, playerId: selectedPlayer?.value, currentInnings: currentInnings>0 ? currentInnings : null })
+                .post("/admin/commentary/addTeamPlayer", { commentaryId, teamId: teamDetails?.teamId, playerId: selectedPlayer?.value, currentInnings: currentInnings })
                 .then((response) => {
                     setCommentaryTeamPlayers(prev => [...prev, { teamId: teamDetails?.teamId, playerId: selectedPlayer?.value, playerName: nonCommentaryTeamPlayers[playerIndex].playerName }])
                     setNonCommentaryTeamPlayers(prev => [...prev.slice(0, playerIndex), ...prev.slice(playerIndex + 1)])
