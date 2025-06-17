@@ -161,7 +161,9 @@ const PlayerCommentary = () => {
                           <CardHeader>{teamDetails?.teamName}</CardHeader>
                           {teamDetails?.commentaryTeamPlayers &&
                             Object.keys(teamDetails.commentaryTeamPlayers).length > 0 &&
-                            Object.keys(teamDetails.commentaryTeamPlayers).map(
+                            Object.keys(teamDetails.commentaryTeamPlayers?? {})
+                             .sort(([a], [b]) => Number(a) - Number(b))
+                             .map(
                               (inningKey) => {
                                 const inningPlayers = teamDetails.commentaryTeamPlayers[inningKey];
                                 return (
@@ -171,9 +173,10 @@ const PlayerCommentary = () => {
                                       commentaryId={commentaryId}
                                       teamDetails={teamDetails}
                                       inningPlayers={inningPlayers}
-                                      currentInnings={commentaryDetails?.currentInnings}
+                                      // currentInnings={commentaryDetails?.currentInnings}
                                       fetchData={fetchData}
                                     />
+                                    <hr className="my-3" />
                                   </CardBody>
                                 );
                               }
