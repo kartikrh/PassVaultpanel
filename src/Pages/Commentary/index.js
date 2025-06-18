@@ -109,23 +109,7 @@ const Index = () => {
   const [updateDayModelVisible, setUpdateDayModelVisible] = useState(false);
   const [selectedCommentaryDay, setSelectedCommentaryDay] = useState({});
 
-  //state to track which commentary's scorecard is being shown
-  const [activeScorecardCommentary, setActiveScorecardCommentary] =
-    useState(null);
-
-  // Update the scorecard URL construction to use the active commentary's eventRefId
   let scorecardFrameUrl = null;
-  if (activeScorecardCommentary && loadInitData) {
-    const baseUrl = loadInitData.find(
-      (item) => item.key === loadInit.SCORECARD_FRAME_URL
-    )?.value;
-    if (baseUrl) {
-      scorecardFrameUrl = baseUrl.replace(
-        "{eventId}",
-        activeScorecardCommentary.eventRefId
-      );
-    }
-  }
 
   const didInitialFetch = useRef(false);
   const navigate = useNavigate();
@@ -1101,15 +1085,19 @@ const Index = () => {
     }
   };
 
-  const handleScorecardToggle = (record) => {
-    if (activeScorecardCommentary?.commentaryId === record.commentaryId) {
-      // If the same commentary is clicked, toggle off
-      setActiveScorecardCommentary(null);
-      setIsScorecardShow(false);
-    } else {
-      // Set new commentary and turn on scorecard
-      setActiveScorecardCommentary(record);
-      setIsScorecardShow(true);
+  const openScorecardIframe = (record) => {
+    if (record && loadInitData) {
+    const baseUrl = loadInitData.find(
+      (item) => item.key === loadInit.SCORECARD_FRAME_URL
+    )?.value;
+      if (baseUrl) {
+        scorecardFrameUrl = baseUrl.replace(
+          "{eventId}",
+          record.eventRefId
+        );
+        window.open(scorecardFrameUrl, "_blank", "width=600,height=400");
+        // console.log("url: ",scorecardFrameUrl);
+      }
     }
   };
 
@@ -2122,7 +2110,7 @@ const Index = () => {
           color="primary"
           size="sm"
           className="btn"
-          onClick={() => handleScorecardToggle(record)}
+          onClick={() => openScorecardIframe(record)}
         >
           S
         </Button>
@@ -2566,7 +2554,7 @@ const Index = () => {
             />
           )}
           {/* Scorecard Modal */}
-          {isScorecardShow &&
+          {/* {isScorecardShow &&
             activeScorecardCommentary &&
             scorecardFrameUrl && (
               <Modal
@@ -2598,7 +2586,7 @@ const Index = () => {
                   />
                 </ModalBody>
               </Modal>
-            )}
+            )} */}
         </Container>
       </div>
     </React.Fragment>
