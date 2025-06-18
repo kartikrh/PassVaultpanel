@@ -37,14 +37,13 @@ const TeamPlayerCard = ({ commentaryId, teamDetails, inningPlayers, fetchData, c
         if (playerIndex !== -1) {
             setIsLoading(true);
             await axiosInstance
-                .post("/admin/commentary/addTeamPlayer", { commentaryId, teamId: teamDetails?.teamId, playerId: selectedPlayer?.value, currentInnings: currentInnings>0 ? currentInnings : null })
+                .post("/admin/commentary/addTeamPlayer", { commentaryId, teamId: teamDetails?.teamId, playerId: selectedPlayer?.value, currentInnings: currentInnings })
                 .then((response) => {
                     setCommentaryTeamPlayers(prev => [...prev, { teamId: teamDetails?.teamId, playerId: selectedPlayer?.value, playerName: nonCommentaryTeamPlayers[playerIndex].playerName }])
                     setNonCommentaryTeamPlayers(prev => [...prev.slice(0, playerIndex), ...prev.slice(playerIndex + 1)])
                     setSelectedPlayer(undefined);
                     fetchData(commentaryId);
                     setIsLoading(false);
-                    console.log("current Innings Value: ", currentInnings)
                 })
                 .catch((error) => {
                     dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
@@ -53,23 +52,25 @@ const TeamPlayerCard = ({ commentaryId, teamDetails, inningPlayers, fetchData, c
         }
     }
 
-    // const handleDeletePlayer = async (playerId) => {
-    //     const playerIndex = commentaryTeamPlayers.findIndex(player => player.playerId === playerId)
-    //     if (playerIndex !== -1) {
-    //         setIsLoading(true);
-    //         await axiosInstance
-    //             .post("/admin/commentary/deleteTeamPlayer", { commentaryId, teamId: teamDetails?.teamId, playerId: playerId })
-    //             .then((response) => {
-    //                 setIsLoading(false);
-    //                 setNonCommentaryTeamPlayers(prev => [...prev, { teamId: teamDetails?.teamId, playerId: playerId, playerName: commentaryTeamPlayers[playerIndex].playerName }])
-    //                 setCommentaryTeamPlayers(prev => [...prev.slice(0, playerIndex), ...prev.slice(playerIndex + 1)])
-    //             })
-    //             .catch((error) => {
-    //                 dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-    //                 setIsLoading(false);
-    //             });
-    //     }
-    // }
+    const handleDeletePlayer = async (playerId) => {
+        const playerIndex = commentaryTeamPlayers.findIndex(player => player.playerId === playerId)
+        if (playerIndex !== -1) {
+            const commentaryPlayerId = commentaryTeamPlayers[playerIndex].commentaryPlayerId;
+            setIsLoading(true);
+            await axiosInstance
+                .post("/admin/commentary/deleteTeamPlayer", {commentaryId, commentaryPlayerId })
+                .then((response) => {
+                    // commentaryId, teamId: teamDetails?.teamId, playerId: playerId
+                    setIsLoading(false);
+                    setNonCommentaryTeamPlayers(prev => [...prev, { teamId: teamDetails?.teamId, playerId: playerId, playerName: commentaryTeamPlayers[playerIndex].playerName }])
+                    setCommentaryTeamPlayers(prev => [...prev.slice(0, playerIndex), ...prev.slice(playerIndex + 1)])
+                })
+                .catch((error) => {
+                    dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+                    setIsLoading(false);
+                });
+        }
+    }
 
     const handleReloadTeam = async () => {
         setIsLoading(true);
@@ -272,29 +273,22 @@ const TeamPlayerCard = ({ commentaryId, teamDetails, inningPlayers, fetchData, c
                     <div class="col-12 ps-4">
                         <div className="row">
                             <div className="col-1"></div>
-                            <div className="col-3">Player</div>
+                            <div className="col-2">Player</div>
                             <div className="col-2">Avg</div>
                             {/* <div className="col-1">SR</div> */}
                             <div className="col-2">BDRY</div>
                             <div className="col-2">PBF</div>
+                            <div className="col-2">Delete</div>
                             <div className="col-1">XI</div>
                         </div>
                     </div>
                 </div>
                 {sortedData?.map((player, index) => (
                     <div key={index} class="row d-flex align-items-center my-2 ">
-                        {/* <div class="col-2">
-                                <Button
-                                    color="soft-danger"
-                                    onClick={(e) => handleDeletePlayer(player.playerId)}
-                                >
-                                    <i className="ri-delete-bin-2-line"></i>
-                                </Button>
-                            </div> */}
-                        <div class="col-12 ps-4">
+                        <div class="col-12">
                             <div className="row">
                                 <div className="col-1">{imageRender(player?.playerType)}</div>
-                                <div className="col-3 playerNameScroll">{player?.playerName}</div>
+                                <div className="col-2 playerNameScroll">{player?.playerName}</div>
                                 <div className="col-2">
                                     <input
                                         type="number"
@@ -344,7 +338,7 @@ const TeamPlayerCard = ({ commentaryId, teamDetails, inningPlayers, fetchData, c
                                 <div className="col-2">
                                     <input
                                         type="number"
-                                        style={{ width: "55px" }}
+                                        style={{ width: "50px" }}
                                         value={
                                             editedPlayers[player.commentaryPlayerId]?.playerBallFaced == null ? +player.playerBallFaced : editedPlayers[player.commentaryPlayerId]?.playerBallFaced !== "" ? +editedPlayers[player.commentaryPlayerId]?.playerBallFaced : ""
                                         }
@@ -357,6 +351,14 @@ const TeamPlayerCard = ({ commentaryId, teamDetails, inningPlayers, fetchData, c
                                             )
                                         }
                                     />
+                                </div>
+                                <div class="col-2">
+                                    <Button
+                                        color="soft-danger"
+                                        onClick={(e) => handleDeletePlayer(player.playerId)}
+                                    >
+                                        <i className="ri-delete-bin-2-line"></i>
+                                    </Button>
                                 </div>
                                 <div className="col-1">
                                     <div className="form-check form-switch form-switch-lg">
@@ -378,6 +380,7 @@ const TeamPlayerCard = ({ commentaryId, teamDetails, inningPlayers, fetchData, c
                                         />
                                     </div>
                                 </div>
+                               
                             </div>
                         </div>
                     </div>)

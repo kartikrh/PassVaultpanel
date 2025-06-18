@@ -155,29 +155,50 @@ const PlayerCommentary = () => {
                     {teams.map((teamDetails, index) => (
                       <div
                         key={index}
-                        class="col-12 col-lg-6 col-sm-6 col-md-6"
+                        className="col-12 col-lg-6 col-sm-6 col-md-6"
                       >
                         <Card>
                           <CardHeader>{teamDetails?.teamName}</CardHeader>
                           {teamDetails?.commentaryTeamPlayers &&
-                            Object.keys(teamDetails.commentaryTeamPlayers).length > 0 &&
-                            Object.keys(teamDetails.commentaryTeamPlayers).map(
-                              (inningKey) => {
-                                const inningPlayers = teamDetails.commentaryTeamPlayers[inningKey];
+                            Object.keys(teamDetails.commentaryTeamPlayers)
+                              .length > 0 &&
+                            Object.keys(teamDetails.commentaryTeamPlayers)
+                              .sort((a, b) => {
+                                const numA = Number(
+                                  a.replace("currentInnings", "")
+                                );
+                                const numB = Number(
+                                  b.replace("currentInnings", "")
+                                );
+                                return numA - numB;
+                              })
+                              .map((inningKey) => {
+                                const inningPlayers =
+                                  teamDetails.commentaryTeamPlayers[inningKey];
+                                const currentInnings =
+                                  inningPlayers[0]?.currentInnings ||
+                                  (inningKey.startsWith("currentInnings")
+                                    ? Number(
+                                        inningKey.replace("currentInnings", "")
+                                      )
+                                    : "");
+                                // console.log("Current Innings: ", currentInnings);
                                 return (
                                   <CardBody key={inningKey}>
-                                    {commentaryData?.totalInnings > 1 ? <h6> Innings : {inningPlayers[0]?.currentInnings}</h6> : null}
+                                    {commentaryData?.totalInnings > 1 ? (
+                                      <h6> Innings : {currentInnings}</h6>
+                                    ) : null}
                                     <TeamPlayerCard
                                       commentaryId={commentaryId}
                                       teamDetails={teamDetails}
                                       inningPlayers={inningPlayers}
-                                      currentInnings={commentaryDetails?.currentInnings}
+                                      currentInnings={currentInnings}
                                       fetchData={fetchData}
                                     />
+                                    <hr className="my-3" />
                                   </CardBody>
                                 );
-                              }
-                            )}
+                              })}
                         </Card>
                       </div>
                     ))}
