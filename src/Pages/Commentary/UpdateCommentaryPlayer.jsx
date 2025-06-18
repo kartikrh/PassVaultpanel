@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import {
   ERROR,
   PERMISSION_VIEW,
+  SUCCESS,
   TAB_COMMENTARY,
 } from "../../components/Common/Const";
 import {
@@ -11,7 +12,18 @@ import {
   convertDateUTCToLocal,
 } from "../../components/Common/Reusables/reusableMethods";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-import { Card, CardBody, CardHeader, Col, Container, Row } from "reactstrap";
+import {
+  Accordion,
+  AccordionBody,
+  AccordionHeader,
+  AccordionItem,
+  Card,
+  CardBody,
+  CardHeader,
+  Col,
+  Container,
+  Row,
+} from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { updateToastData } from "../../Features/toasterSlice";
 import axiosInstance from "../../Features/axios";
@@ -24,6 +36,7 @@ const PlayerCommentary = () => {
   const location = useLocation();
   let navigate = useNavigate();
   const [isDataLoading, setIsDataLoading] = useState(false);
+  const [apiResponse, setApiResponse] = useState(false);
   const commentaryId = +localStorage.getItem("updatePlayerCommentaryId") || "0";
   const commentaryDetails = JSON.parse(
     localStorage.getItem("updatePlayerCommentaryDetails")
@@ -33,9 +46,12 @@ const PlayerCommentary = () => {
   const dispatch = useDispatch();
   const [teams, setTeams] = useState([]);
   const [commentaryData, setCommentaryData] = useState(null);
-  
+  const [openAccordions, setOpenAccordions] = useState("");
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW) && !isEmpty(permissionObj)) {
+    if (
+      !checkPermission(permissionObj, pageName, PERMISSION_VIEW) &&
+      !isEmpty(permissionObj)
+    ) {
       navigate("/dashboard");
     }
     if (commentaryId !== "0") {
@@ -61,9 +77,10 @@ const PlayerCommentary = () => {
         const commentaryDetailsData = response?.result?.commentaryDetails;
         setTeams(teams);
         setCommentaryData(commentaryDetailsData);
+        setApiResponse(response?.result || {});
         //setTeams(response?.result?.commentaryTeams);
         setIsDataLoading(false);
-        console.log("data:", commentaryDetailsData)
+        console.log("data:", commentaryDetailsData);
       })
       .catch((error) => {
         dispatch(
@@ -77,10 +94,31 @@ const PlayerCommentary = () => {
       });
   };
 
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(JSON.stringify(apiResponse, null, 2));
+      dispatch(
+        updateToastData({
+          data: "API Response copied to clipboard!",
+          title: "Success",
+          type: SUCCESS, 
+        })
+      );
+    } catch (err) {
+      dispatch(
+        updateToastData({
+          data: "Failed to copy to clipboard",
+          title: "Error",
+          type: ERROR,
+        })
+      );
+    }
+  };
+
   const handleBackClick = () => {
     navigate("/commentary");
   };
-  
+
   return (
     <React.Fragment>
       <div className="page-content">
@@ -203,6 +241,67 @@ const PlayerCommentary = () => {
                       </div>
                     ))}
                   </Row>
+                </Row>
+                <Row>
+                  <Accordion
+                    open={openAccordions ? "one-time" : ""}
+                    toggle={(id) => {
+                      setOpenAccordions(openAccordions === id ? "" : id);
+                    }}
+                  >
+                    <AccordionItem className="rounded-0">
+                      <AccordionHeader
+                        className="market-category-header"
+                        targetId="one-time"
+                      >
+                        <b>API Response Data</b>
+                      </AccordionHeader>
+                      <AccordionBody
+                        className="market-category-body category-list bg-white"
+                        accordionId="one-time"
+                      >
+                        <Card>
+                          {/* <CardHeader className="d-flex justify-content-between align-items-center">
+                            <span>
+                              <strong>API Response Data</strong>
+                            </span>
+                            <button
+                              className="btn btn-outline-primary btn-sm"
+                              onClick={copyToClipboard}
+                              title="Copy to clipboard"
+                            >
+                              📋 Copy
+                            </button>
+                          </CardHeader> */}
+                          <CardBody>
+                            <div className="d-flex justify-content-end mb-2">
+                              <button
+                                className="btn btn-outline-primary btn-sm"
+                                onClick={copyToClipboard}
+                                title="Copy to clipboard"
+                              >
+                                📋 Copy
+                              </button>
+                            </div>
+                            <pre
+                              style={{
+                                whiteSpace: "pre-wrap",
+                                fontSize: "12px",
+                                maxHeight: "400px",
+                                overflowY: "auto",
+                                backgroundColor: "#f8f9fa",
+                                padding: "15px",
+                                borderRadius: "4px",
+                                margin: 0,
+                              }}
+                            >
+                              {JSON.stringify(apiResponse, null, 2)}
+                            </pre>
+                          </CardBody>
+                        </Card>
+                      </AccordionBody>
+                    </AccordionItem>
+                  </Accordion>
                 </Row>
               </CardBody>
             </Card>
