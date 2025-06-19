@@ -323,13 +323,7 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                             <Typography variant="subtitle2" sx={{
                                 fontFamily: "'Work Sans', sans-serif"
                             }} className='accordian-text'>
-                                {overDetails?.totalRun || 0} <b>Runs</b>
-                                {overDetails?.totalWicket > 0 && (
-                                    <>
-                                        <br />
-                                        {overDetails?.totalWicket} <b>Wk</b>
-                                    </>
-                                )}
+                                {overDetails?.totalRun || 0}/{overDetails?.totalWicket || 0}
                             </Typography>
                         </RunsInfo>
                     </div>
@@ -382,13 +376,7 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                     </BallsContainer>
                     <RunsInfo>
                         <Typography variant="subtitle2" className='accordian-text'>
-                            {overDetails?.totalRun || 0} <b>Runs</b>
-                            {overDetails?.totalWicket > 0 && (
-                                <>
-                                    <br />
-                                    {overDetails?.totalWicket} <b>Wk</b>
-                                </>
-                            )}
+                        {`${overDetails?.totalRun || 0}/${overDetails?.totalWicket || 0} ${overDetails.teamScore ? '['+overDetails.teamScore+']':""}`}
                         </Typography>
                     </RunsInfo>
                 </OverContainer>}

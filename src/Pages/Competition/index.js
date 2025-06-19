@@ -16,6 +16,7 @@ import { updateToastData } from "../../Features/toasterSlice";
 import CompetitionMarketTemplateModel from "../../components/Model/CompetitionMarketTemplateModel";
 import LoadDataModal from "../../components/Model/LoadDataModal";
 import { mapType } from "../Commentary/functions";
+import { ChangeStatusModel } from "../../components/Model/ChangeStatusModel";
 
 const Index = () => {
   const pageName = TAB_COMPETITION
@@ -34,6 +35,9 @@ const Index = () => {
   const [marketTemplateRecord, setMarketTemplateTimeRecord] = useState({});
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const [changeStatusModelVisible, setChangeStatusModelVisible] = useState(false);
+  const [selectedCompetitionRecord, setSelectedCompetitionRecord] = useState({});
 
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
@@ -255,6 +259,33 @@ const Index = () => {
   const handleEdit = (id) => {
     navigate("/addCompetition", { state: { userId: id } });
   };
+
+  const handleChangeStatus = async (updatedData) => {
+    try {
+      setIsLoading(true);
+      const { data: response } = await axiosInstance.post(`/admin/competition/upStatus`, {
+        competitionId: updatedData.competitionId,
+        commStatus: +updatedData.commStatus,
+      });
+
+      fetchData();
+      dispatch(updateToastData({
+        data: response?.message,
+        title: response?.title,
+        type: SUCCESS,
+      }));
+    } catch (error) {
+      dispatch(updateToastData({
+        data: error?.message,
+        title: error?.title,
+        type: ERROR,
+      }));
+    } finally {
+      setIsLoading(false);
+      setChangeStatusModelVisible(false);
+    }
+  };
+
   //table columns
   const columns = [
     {
@@ -410,6 +441,38 @@ const Index = () => {
         </div>
       )},
       style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Status",
+      dataIndex: "commStatus",
+      render: (text, record) => {
+        const statusLabels = {
+          1: "Upcoming",
+          2: "Started", 
+          3: "Completed",
+          4: "Stop"
+        };
+        return (
+          <span
+            onClick={() => {
+              setChangeStatusModelVisible(true);
+              setSelectedCompetitionRecord(record);
+            }}
+            style={{ cursor: "pointer" }}
+          >
+            {statusLabels[text] || " "}
+            <Tooltip
+              title="Edit Status"
+              color={"#e8e8ea"}
+              overlayInnerStyle={{ color: "#000" }}
+            >
+              <a className="bx bx-edit-alt"></a>
+            </Tooltip>
+          </span>
+        );
+      },
+      key: "commStatus",
+      style: { width: "10%" },
     },
     {
       title: "Active",
@@ -604,35 +667,54 @@ const Index = () => {
             deleteModelFunction={setDeleteModelVisable}
             changeOrderApiName="competition"
             eventTypes={eventTypes}
-            matchType = {matchTypes}
+            matchType={matchTypes}
             singleCheck={checekedList}
             reFetchData={fetchData}
             handleReload={handleReload}
             loadDataModelFunction={setLoadDataModelVisable}
             onAddNavigate={"/addCompetition"}
             handleReset={handleReset}
-            isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
-            isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
+            isAddPermission={checkPermission(
+              permissionObj,
+              pageName,
+              PERMISSION_ADD
+            )}
+            isDeletePermission={checkPermission(
+              permissionObj,
+              pageName,
+              PERMISSION_DELETE
+            )}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
             setDeleteModelVisable={setDeleteModelVisable}
             handleDelete={handleDelete}
           />
-          {loadDataModelVisable && 
+          {loadDataModelVisable && (
             <LoadDataModal
               loadDataModelVisable={loadDataModelVisable}
               setLoadDataModelVisable={setLoadDataModelVisable}
               handleLoadData={handleLoadData}
-              moduleName={"Competition"} 
-            />}
-          {marketTemplateModelVisible &&
+              moduleName={"Competition"}
+            />
+          )}
+          {marketTemplateModelVisible && (
             <CompetitionMarketTemplateModel
               marketTemplateModelVisible={marketTemplateModelVisible}
               setMarketTemplateModelVisible={setMarketTemplateModelVisible}
               marketTemplateRecord={marketTemplateRecord}
               fetchData={fetchData}
-            />}
+            />
+          )}
+          {changeStatusModelVisible && (
+            <ChangeStatusModel
+              changeStatusModelVisible={changeStatusModelVisible}
+              setChangeStatusModelVisible={setChangeStatusModelVisible}
+              handleChangeStatus={handleChangeStatus}
+              selectedCompetitionRecord={selectedCompetitionRecord}
+              setSelectedCompetitionRecord={setSelectedCompetitionRecord}
+            />
+          )}
         </Container>
       </div>
     </React.Fragment>
