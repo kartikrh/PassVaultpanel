@@ -41,6 +41,7 @@ export const WHITE_LABEL = "White Label";
 export const WHITE_LABEL_EVENT_DATA = "White Label Event Data";
 export const VENUE = "Venue";
 export const TAB_NOTIFICATION_CONFIG = "Notification Config";
+export const PYTHON_API = "Python API"
 
 export const TAB_CLIENT = "Client";
 

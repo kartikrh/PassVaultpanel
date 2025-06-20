@@ -43,6 +43,7 @@ import notificationConfigSlice from "./notificationConfigSlice";
 import packageSlice from "./packageSlice";
 import WhiteLabelSlice from "./WhiteLabelSlice";
 import VenueSlice from "./VenueSlice";
+import pythonApiSlice from "./pythonApiSlice";
 
 const rootReducer = combineReducers({
   tab: TabSlice,
@@ -89,6 +90,7 @@ const rootReducer = combineReducers({
   notificationConfig: notificationConfigSlice,
   whiteLabel: WhiteLabelSlice,
   venue: VenueSlice,
+  pythonAPI: pythonApiSlice,
 });
 
 export default rootReducer;
