@@ -12,6 +12,7 @@ import { styled } from '@mui/material/styles';
 import _ from 'lodash';
 import { generateBallLabelFromBall } from '../functions';
 import PlayerImage from '../../../components/Common/Reusables/PlayerImage';
+import { BATTING_TEAM } from '../CommentartConst';
 
 // Styled components remain the same
 const BallBox = styled(Box)(({ theme, balltype }) => ({
@@ -85,6 +86,7 @@ const RunsInfo = styled(Box)(({ theme }) => ({
 
 
 const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, currentOver }) => {
+    // console.log({ overBalls, teamDetails, overHistory, playersList, currentOver })
     // const viewportWidth = window.innerWidth;
     const [viewportWidth, setViewportWidth] = useState();
     const [expanded, setExpanded] = useState();
@@ -278,7 +280,6 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
         const bowler = getBowlerDetails(overDetails?.bowlerId);
 
         const sortedBalls = [...balls].sort((a, b) => b.overCount - a.overCount);
-
         // const viewportWidth = window.innerWidth;
         return (<>
             {viewportWidth < 578 ?
@@ -323,13 +324,11 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                             <Typography variant="subtitle2" sx={{
                                 fontFamily: "'Work Sans', sans-serif"
                             }} className='accordian-text'>
-                                {overDetails?.totalRun || 0} <b>Runs</b>
-                                {overDetails?.totalWicket > 0 && (
-                                    <>
-                                        <br />
-                                        {overDetails?.totalWicket} <b>Wk</b>
-                                    </>
-                                )}
+                            {`${overDetails?.totalRun || 0}/${overDetails?.totalWicket || 0} ${
+                                overDetails?.isComplete
+                                ? `[${overDetails?.teamScore}]`
+                                : `[${teamDetails?.[BATTING_TEAM]?.teamScore || 0}/${teamDetails?.[BATTING_TEAM]?.teamWicket || 0}]`
+                            }`}
                             </Typography>
                         </RunsInfo>
                     </div>
@@ -382,13 +381,12 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                     </BallsContainer>
                     <RunsInfo>
                         <Typography variant="subtitle2" className='accordian-text'>
-                            {overDetails?.totalRun || 0} <b>Runs</b>
-                            {overDetails?.totalWicket > 0 && (
-                                <>
-                                    <br />
-                                    {overDetails?.totalWicket} <b>Wk</b>
-                                </>
-                            )}
+                        {/* {`${overDetails?.totalRun || 0}/${overDetails?.totalWicket || 0} ${overDetails.isComplete ? '['+overDetails.teamScore+']':'['+teamDetails[BATTING_TEAM].teamScore +'/'+teamDetails[BATTING_TEAM].teamWicket+']'}`} */}
+                        {`${overDetails?.totalRun || 0}/${overDetails?.totalWicket || 0} ${
+                            overDetails?.isComplete
+                            ? `[${overDetails?.teamScore}]`
+                            : `[${teamDetails?.[BATTING_TEAM]?.teamScore || 0}/${teamDetails?.[BATTING_TEAM]?.teamWicket || 0}]`
+                        }`}
                         </Typography>
                     </RunsInfo>
                 </OverContainer>}
