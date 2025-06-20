@@ -34,7 +34,7 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [checekedList, setCheckedList] = useState([]);
-  //   const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
+  const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -101,32 +101,32 @@ const Index = () => {
       });
   };
 
-  //   const handleLoadData = async (password) => {
-  //     setIsLoading(true);
-  //     await axiosInstance
-  //       .post(`/loadPanelData`, { module: [MODULE_PYTHON_API], password })
-  //       .then((response) => {
-  //         fetchData();
-  //         setLoadDataModelVisable(false);
-  //         dispatch(
-  //           updateToastData({
-  //             data: response?.message,
-  //             title: response?.title,
-  //             type: SUCCESS,
-  //           })
-  //         );
-  //       })
-  //       .catch((error) => {
-  //         setIsLoading(false);
-  //         dispatch(
-  //           updateToastData({
-  //             data: error?.message,
-  //             title: error?.title,
-  //             type: ERROR,
-  //           })
-  //         );
-  //       });
-  //   };
+    const handleLoadData = async (password) => {
+      setIsLoading(true);
+      await axiosInstance
+        .post(`/loadPanelData`, { module: [MODULE_PYTHON_API], password })
+        .then((response) => {
+          fetchData();
+          setLoadDataModelVisable(false);
+          dispatch(
+            updateToastData({
+              data: response?.message,
+              title: response?.title,
+              type: SUCCESS,
+            })
+          );
+        })
+        .catch((error) => {
+          setIsLoading(false);
+          dispatch(
+            updateToastData({
+              data: error?.message,
+              title: error?.title,
+              type: ERROR,
+            })
+          );
+        });
+    };
 
   const handleDelete = async (e) => {
     setIsLoading(true);
@@ -355,7 +355,7 @@ const Index = () => {
             onAddNavigate={"/addPythonAPI"}
             handleReset={handleReset}
             handleReload={handleReload}
-            // loadDataModelFunction={setLoadDataModelVisable}
+            loadDataModelFunction={setLoadDataModelVisable}
             reFetchData={fetchData}
             isAddPermission={checkPermission(
               permissionObj,
@@ -374,14 +374,14 @@ const Index = () => {
             handleDelete={handleDelete}
             singleCheck={checekedList}
           />
-          {/* {loadDataModelVisable && (
+          {loadDataModelVisable && (
             <LoadDataModal
               loadDataModelVisable={loadDataModelVisable}
               setLoadDataModelVisable={setLoadDataModelVisable}
               handleLoadData={handleLoadData}
               moduleName={"Python API"}
             />
-          )} */}
+          )}
         </Container>
       </div>
     </React.Fragment>
