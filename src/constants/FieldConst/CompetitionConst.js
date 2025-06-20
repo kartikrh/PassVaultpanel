@@ -75,6 +75,7 @@ export const CompetitionFields = [
           { label: "Upcoming", value: 1 },
           { label: "Started", value: 2 },
           { label: "Completed", value: 3 },
+          { label: "Stop", value: 4 },
         ],
         // isRequired: true,
         type: SELECT,
