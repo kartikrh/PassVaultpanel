@@ -324,7 +324,11 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                             <Typography variant="subtitle2" sx={{
                                 fontFamily: "'Work Sans', sans-serif"
                             }} className='accordian-text'>
-                        {`${overDetails?.totalRun || 0}/${overDetails?.totalWicket || 0} ${overDetails.isComplete ? '['+overDetails.teamScore+']':'['+teamDetails[BATTING_TEAM].teamScore +'/'+teamDetails[BATTING_TEAM].teamWicket+']'}`}
+                            {`${overDetails?.totalRun || 0}/${overDetails?.totalWicket || 0} ${
+                                overDetails?.isComplete
+                                ? `[${overDetails?.teamScore}]`
+                                : `[${teamDetails?.[BATTING_TEAM]?.teamScore || 0}/${teamDetails?.[BATTING_TEAM]?.teamWicket || 0}]`
+                            }`}
                             </Typography>
                         </RunsInfo>
                     </div>
@@ -377,7 +381,12 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                     </BallsContainer>
                     <RunsInfo>
                         <Typography variant="subtitle2" className='accordian-text'>
-                        {`${overDetails?.totalRun || 0}/${overDetails?.totalWicket || 0} ${overDetails.isComplete ? '['+overDetails.teamScore+']':'['+teamDetails[BATTING_TEAM].teamScore +'/'+teamDetails[BATTING_TEAM].teamWicket+']'}`}
+                        {/* {`${overDetails?.totalRun || 0}/${overDetails?.totalWicket || 0} ${overDetails.isComplete ? '['+overDetails.teamScore+']':'['+teamDetails[BATTING_TEAM].teamScore +'/'+teamDetails[BATTING_TEAM].teamWicket+']'}`} */}
+                        {`${overDetails?.totalRun || 0}/${overDetails?.totalWicket || 0} ${
+                            overDetails?.isComplete
+                            ? `[${overDetails?.teamScore}]`
+                            : `[${teamDetails?.[BATTING_TEAM]?.teamScore || 0}/${teamDetails?.[BATTING_TEAM]?.teamWicket || 0}]`
+                        }`}
                         </Typography>
                     </RunsInfo>
                 </OverContainer>}
