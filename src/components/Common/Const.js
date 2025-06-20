@@ -41,6 +41,7 @@ export const WHITE_LABEL = "White Label";
 export const WHITE_LABEL_EVENT_DATA = "White Label Event Data";
 export const VENUE = "Venue";
 export const TAB_NOTIFICATION_CONFIG = "Notification Config";
+export const PYTHON_API = "Python API"
 
 export const TAB_CLIENT = "Client";
 
@@ -190,5 +191,6 @@ export const MODULE_WHITE_LABEL = 40;
 export const MODULE_WHITE_LABEL_SHOW_HIDE = 40;
 export const MODULE_VENUE = 41;
 export const MODULE_SINGLE_COMMENTARY = 42;
+export const MODULE_PYTHON_API = 43;
 
 export const LOG_ROCKET_TO_INCLUDE_ONLY = "CHG";

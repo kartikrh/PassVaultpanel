@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import FormBuilder from "../../components/Common/Reusables/FormBuilder";
-import { VenueField } from "../../constants/FieldConst/VenueConst";
+import { PythonApiField } from "../../constants/FieldConst/PythonApiConst";
 import {
   Button,
   ButtonDropdown,
@@ -23,81 +23,65 @@ import {
   SAVE,
   SAVE_AND_CLOSE,
   SAVE_AND_NEW,
-  VENUE,
+  PYTHON_API,
 } from "../../components/Common/Const";
-import { addVenueToDb, updateSavedState } from "../../Features/Tabs/VenueSlice";
+import {
+  addpythonAPIToDb,
+  updateSavedState,
+} from "../../Features/Tabs/pythonApiSlice";
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 
-const AddVenue = () => {
-  const pageName = VENUE;
+const AddPythonAPI = () => {
+  const pageName = PYTHON_API;
   const finalizeRef = useRef(null);
   const [drp_up, setDrp_up] = useState(false);
   const [initialEditData, setInitialEditData] = useState(undefined);
-  const [masterData, setMasterData] = useState({});
   const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
-  const { isSaved, isLoading } = useSelector((state) => state.tabsData.venue);
+  const { isSaved, isLoading } = useSelector(
+    (state) => state.tabsData.pythonAPI
+  );
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   const dispatch = useDispatch();
   let navigate = useNavigate();
   const location = useLocation();
-  const [venueId, setvenueId] = useState(location.state?.venueId || "0");
+  const [pythonApiId, setpythonApiId] = useState(
+    location.state?.pythonApiId || "0"
+  );
 
   useEffect(() => {
-    if (venueId !== 0) {
-      fetchData(venueId);
+    if (pythonApiId !== 0) {
+      fetchData(pythonApiId);
     }
-  }, [venueId]);
+  }, [pythonApiId]);
 
   useEffect(() => {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard");
-    }fetchMasterData();
+    }
   }, []);
 
   useEffect(() => {
     if (isSaved) {
       dispatch(updateSavedState(undefined));
       if (currentSaveAction === SAVE_AND_CLOSE) {
-        navigate("/venue");
+        navigate("/pythonAPI");
       } else if (currentSaveAction === SAVE_AND_NEW) {
         setInitialEditData({});
-        setvenueId("0");
+        setpythonApiId("0");
         finalizeRef.current.resetForm();
       }
       setCurrentSaveAction(undefined);
     }
   }, [isSaved]);
 
-  const fetchData = async (venueId) => {
+  const fetchData = async (pythonApiId) => {
     await axiosInstance
-      .post("/admin/venue/byId", { id: venueId })
+      .post("/admin/pythonAPI/byId", { id: pythonApiId })
       .then((response) => {
         setInitialEditData(response?.result);
-      })
-      .catch((error) => {
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
-      });
-  };
-
-  const fetchMasterData = async () => {
-    await axiosInstance
-      .post("/admin/venue/countryCodes", {})
-      .then((response) => {
-        setMasterData((preData) => ({
-          ...preData,
-          countryId: response.result?.map((item) => {
-            return { label: item.countryName, value: item.id };
-          }),
-        }));
       })
       .catch((error) => {
         dispatch(
@@ -114,15 +98,15 @@ const AddVenue = () => {
     const dataToSave = finalizeRef.current.finalizeData();
     if (dataToSave) {
       const extraData = {
-        id: venueId,
+        id: pythonApiId,
+        isDefault: dataToSave?.isDefault || false,
       };
-      dispatch(addVenueToDb({ ...dataToSave, ...extraData }));
+      dispatch(addpythonAPIToDb({ ...dataToSave, ...extraData }));
       setCurrentSaveAction(saveAction);
     }
   };
-
   const handleBackClick = () => {
-    navigate("/venue");
+    navigate("/pythonAPI");
   };
 
   return (
@@ -131,7 +115,7 @@ const AddVenue = () => {
         <Container fluid={true}>
           <Row>
             <Col xs={12} md={8} lg={9}>
-              <h3 className="modal-header-title">Venue</h3>
+              <h3 className="modal-header-title">Python API</h3>
             </Col>
             <Card>
               <CardBody>
@@ -213,9 +197,8 @@ const AddVenue = () => {
                 </Row>
                 <FormBuilder
                   ref={finalizeRef}
-                  fields={VenueField}
+                  fields={PythonApiField}
                   editFormData={initialEditData}
-                  masterData={masterData}
                 />
               </CardBody>
             </Card>
@@ -226,4 +209,4 @@ const AddVenue = () => {
   );
 };
 
-export default AddVenue;
+export default AddPythonAPI;
