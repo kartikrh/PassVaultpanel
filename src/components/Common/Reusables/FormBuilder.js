@@ -832,12 +832,6 @@ const FormBuilder = forwardRef(
                       {field.note}
                     </div>
                   )}
-
-                  <span className="text-danger">
-                    {fieldErrors[field.name] && (
-                      <p>{fieldErrors[field.name]}</p>
-                    )}
-                  </span>
                   <span className="text-danger">
                     {fieldErrors[field.name] && (
                       <p>{fieldErrors[field.name]}</p>
