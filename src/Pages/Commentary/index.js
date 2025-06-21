@@ -713,7 +713,7 @@ const Index = () => {
   const handlePythonChange = async () => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/admin/commentary/changeMatchType`, {
+      .post(`/admin/commentary/updatePythonAPI`, {
         ...selectedPythonCommentary,
       })
       .then((response) => {
