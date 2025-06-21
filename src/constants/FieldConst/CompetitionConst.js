@@ -1,4 +1,4 @@
-import { DATE_TIME_PICKER, IMAGE, SELECT, SWITCH, TEXT } from "../../components/Common/Const";
+import { DATE_TIME_PICKER, IMAGE, SELECT, SWITCH, TEXT, COUNTER } from "../../components/Common/Const";
 
 export const CompetitionFields = [
     {
@@ -114,6 +114,13 @@ export const CompetitionFields = [
         defaultValue: "0",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
+    },
+    {
+        name: "tpId",
+        label: "TPID",
+        type: COUNTER,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
     },
     {
         name: "isVirtual",

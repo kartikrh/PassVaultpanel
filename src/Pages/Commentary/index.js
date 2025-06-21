@@ -107,7 +107,7 @@ const Index = () => {
   const [competitionId, setCompetitionId] = useState(null);
   const [generateModalData, setGenerateModalData] = useState(null);
   const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
-  const [isScorecardShow, setIsScorecardShow] = useState(false);
+  const [pythonApis, setpythonApis] = useState([]);
   const loadInitData = useSelector((state) => state.loadInit.loadInitData);
   const [updateDayModelVisible, setUpdateDayModelVisible] = useState(false);
   const [selectedCommentaryDay, setSelectedCommentaryDay] = useState({});
@@ -195,6 +195,14 @@ const Index = () => {
         setEventTypes(response.result);
       })
       .catch((error) => {});
+  };
+  const fetchPythonAPIData = async () => {
+    await axiosInstance
+      .post(`/admin/commentary/pythonAPIs`, {})
+      .then((response) => {
+        setpythonApis(response.result);
+      })
+      .catch((error) => { });
   };
   const fetchCompetitionData = async (value) => {
     await axiosInstance
@@ -1089,6 +1097,7 @@ const Index = () => {
   const handleReset = (value) => {
     fetchData(value);
     fetchEventTypeData();
+    fetchPythonAPIData();
   };
 
   const handleLoadSingleCommentaryData = async (commentaryId, password) => {
@@ -2306,6 +2315,7 @@ const Index = () => {
     reloadButton: true,
     loadData: true,
     isDateTypeSelect: true,
+    pythonApiSelect: true,
     statusOptions: [
       {
         label: "All",
@@ -2364,6 +2374,7 @@ const Index = () => {
   useEffect(() => {
     fetchEventTypeData();
     fetchUserPermission();
+    fetchPythonAPIData();
   }, []);
 
   useEffect(() => {
@@ -2415,6 +2426,7 @@ const Index = () => {
   const handleReload = (value) => {
     fetchData();
     fetchEventTypeData();
+    fetchPythonAPIData();
   };
   return (
     <React.Fragment>
@@ -2444,6 +2456,7 @@ const Index = () => {
             }}
             onAddNavigate={"/addCommentary"}
             competitions={competitions}
+            pythonApis={pythonApis}
             setEventTypeId={setEventTypeId}
             setCompetitionId={setCompetitionId}
             dateType={dateType}
