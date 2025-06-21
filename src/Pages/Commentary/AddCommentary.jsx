@@ -421,9 +421,9 @@ function AddCommentary() {
         axiosInstance.post('/admin/commentary/pythonAPIs')
             .then((response) => {
                 const formattedData = response?.result?.map(item => {
-                    return { label: item?.URI, value: item?.id }
+                    return { label: item?.developerName, value: item?.id }
                 })
-                setPythonList(formattedData || [])
+                setPythonList(response?.result || []);
                 setMasterData((preData) => ({
                     ...preData,
                     "pythonId": formattedData,
@@ -471,7 +471,7 @@ function AddCommentary() {
         const dataToSave2 = finalizeRef2.current.finalizeData()
         const dataToSave3 = finalizeRef3.current.finalizeData()
         const dataToSave4 = finalizeRef4.current.finalizeData()
-        const pythonURI = pythonList && pythonList.length > 0 && pythonList.find((item) => item?.value === dataToSave1?.pythonId)?.label;
+        const pythonURI = pythonList && pythonList.length > 0 && pythonList.find((item) => item?.id == dataToSave1?.pythonId)?.URI;
         if (dataToSave1 && dataToSave2 && dataToSave3 && dataToSave4) {
             const dataToSave = {
                 ...dataToSave1,

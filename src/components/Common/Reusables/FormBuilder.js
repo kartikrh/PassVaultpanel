@@ -419,11 +419,7 @@ const FormBuilder = forwardRef(
                       {field.isRequired && (
                         <span className="text-danger">*&nbsp;</span>
                       )}
-                      {field.name === "isPredictMarket"
-                        ? formData.eventId != "0"
-                          ? field.label
-                          : ""
-                        : field.label}
+                      {field.label}
                     </label>
                   </div>
                 </Col>
@@ -713,13 +709,7 @@ const FormBuilder = forwardRef(
                     )}
                     {field.type === SWITCH && (
                       <div
-                        className={`${
-                          field.name === "isPredictMarket"
-                            ? formData.eventId != "0"
-                              ? ""
-                              : "d-none"
-                            : ""
-                        } mb-4`}
+                        className={`mb-4`}
                       >
                         {/* <input
                           className="form-check-input"

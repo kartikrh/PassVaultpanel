@@ -1304,7 +1304,7 @@ const Index = () => {
               }}
               style={{ cursor: "pointer" }}
             >
-              {record?.pythonURI}{" "}
+              {record?.developerName}{" "}
               <Tooltip
                 title="Edit Python Type"
                 color={"#e8e8ea"}

@@ -19,12 +19,7 @@ export const ChangePythonType = ({changeModelVisible, setChangeModelVisible, sel
             "commentaryId": selectedCommentary?.commentaryId,
           })
           .then((response) => {
-            const apiData = response?.result;
-            let apiDataIdList = [];
-            apiData.forEach(ele => {
-              apiDataIdList.push({label: ele?.URI, value : ele?.id})
-            })
-            setPythonList(apiDataIdList);
+            setPythonList(response?.result);
           })
           .catch((error) => {
             dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
@@ -38,7 +33,7 @@ export const ChangePythonType = ({changeModelVisible, setChangeModelVisible, sel
     <div className="tablelist-form">
         <ModalBody>
             <div className="d-flex flex-column justify-content-center p-4">
-                <h4 className="form-label text-left text-lg modal-header-title">Change Python URI</h4>
+                <h4 className="form-label text-left text-lg modal-header-title">Change Python Type</h4>
                 <div className="d-flex my-4">
                 <div style={{marginRight:"20px"}}>
                     <span style={{marginRight:"10px", fontWeight:"700"}}>Event Name:</span>
@@ -54,12 +49,13 @@ export const ChangePythonType = ({changeModelVisible, setChangeModelVisible, sel
                       classNamePrefix="filter-dropdown"
                       id="pythonURI"
                       name="pythonURI"
-                      defaultValue={{label: selectedCommentary?.pythonURI, value: selectedCommentary?.pythonId}}
-                      options={pythonList}
+                      defaultValue={{label: selectedCommentary?.developerName, value: selectedCommentary?.pythonId}}
+                      options={pythonList && pythonList.length > 0 && pythonList.map((item) => ({label: item?.developerName, value : item?.id})) || []}
                       onChange={(e) => {
+                        const pythonURI = pythonList && pythonList.length > 0 && pythonList.find((item) => item?.id == e?.value)?.URI;
                         setSelectedCommentary({
                         pythonId: e?.value,
-                        pythonURI: e?.label,
+                        pythonURI: pythonURI,
                         commentaryId: selectedCommentary?.commentaryId,
                         })
                       }}
