@@ -661,6 +661,20 @@ const Index = () => {
       ),
       style: { width: "2%", textAlign: "center" },
     },
+    {
+      title: "TPID",
+      dataIndex: "tpId",
+      key: "tpId",
+      style: { width: "10%" },
+      sort: true,
+    },
+    {
+      title: "CID",
+      dataIndex: "competitionId",
+      key: "competitionId",
+      style: { width: "10%" },
+      sort: true,
+    },
   ];
 
   const handleReset = (value) => {
