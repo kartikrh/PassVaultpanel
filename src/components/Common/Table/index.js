@@ -134,6 +134,7 @@ const Index = forwardRef(
       defaultTableActionData,
       renderCustomFilter,
       handleCustomReset,
+      pythonApis
     },
     ref
   ) => {
@@ -1083,6 +1084,10 @@ const Index = forwardRef(
           value: 0,
           label: "Category",
         },
+        pythonApi: {
+          value: 0,
+          label: "API",
+        },
       });
       if (
         tableElement?.dateRange &&
@@ -1899,6 +1904,40 @@ const Index = forwardRef(
                               />
                             </div>
                           ) : null}
+                          {tableElement?.pythonApiSelect ? (
+                            <div className="">
+                              <Select
+                                styles={{
+                                  control: (provided) => ({
+                                    ...provided,
+                                    width: 180,
+                                  }), // Adjust width as needed
+                                }}
+                                value={selectedTableElements?.pythonApi}
+                                placeholder="API"
+                                onChange={(e) => {
+                                  if (
+                                    e?.value !==
+                                    selectedTableElements?.pythonApi?.value
+                                  ) {
+                                    handleTableActions("pythonId", e);
+                                    setSelectedTableElements({
+                                      ...selectedTableElements,
+                                      pythonApi: e,
+                                    });
+                                  }
+                                }}
+                                options={[
+                                  { label: "Select API", value: null },
+                                  ...(pythonApis?.map((item) => ({
+                                    label: item?.developerName,
+                                    value: item?.id,
+                                  })) || []),
+                                ]}
+                                classNamePrefix="filter-dropdown"
+                              />
+                            </div>
+                          ) : null}
                           {tableElement?.typeSelect ? (
                             <div className="">
                               <Select
@@ -2360,7 +2399,9 @@ const Index = forwardRef(
                           ) : null}
                           {!tableElement?.isDateRange &&
                           tableElement?.isDateTypeSelect &&
-                          (tableElement?.title == "Market Data Logs" || tableElement?.title == "Registration Pending" || tableElement?.title == "Registered Users")  ? (
+                          (tableElement?.title == "Market Data Logs" ||
+                            tableElement?.title == "Registration Pending" ||
+                            tableElement?.title == "Registered Users") ? (
                             <Select
                               value={dateType}
                               placeholder="Date Type"
