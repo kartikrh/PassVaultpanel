@@ -1,9 +1,8 @@
 import React,{useState, useEffect} from 'react'
-import {Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
-import Flatpickr from "react-flatpickr";
+import {Modal, ModalBody } from 'reactstrap';
 import axiosInstance from "../../../Features/axios";
 import { updateToastData } from "../../../Features/toasterSlice";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import ReactSelect from 'react-select';
 import { ERROR } from "../../Common/Const";
 
@@ -39,7 +38,7 @@ export const ChangePythonType = ({changeModelVisible, setChangeModelVisible, sel
     <div className="tablelist-form">
         <ModalBody>
             <div className="d-flex flex-column justify-content-center p-4">
-                <h4 className="form-label text-left text-lg modal-header-title">Change Python Type</h4>
+                <h4 className="form-label text-left text-lg modal-header-title">Change Python URI</h4>
                 <div className="d-flex my-4">
                 <div style={{marginRight:"20px"}}>
                     <span style={{marginRight:"10px", fontWeight:"700"}}>Event Name:</span>
@@ -60,7 +59,7 @@ export const ChangePythonType = ({changeModelVisible, setChangeModelVisible, sel
                       onChange={(e) => {
                         setSelectedCommentary({
                         pythonId: e?.value,
-                        pythonURI: e?.id,
+                        pythonURI: e?.label,
                         commentaryId: selectedCommentary?.commentaryId,
                         })
                       }}
@@ -69,7 +68,7 @@ export const ChangePythonType = ({changeModelVisible, setChangeModelVisible, sel
             </div>
             <div className="hstack gap-2 justify-content-end">
                 <button type="button" className="btn btn-light" onClick={() => {setChangeModelVisible(false)}}>Close</button>
-                <button type="submit" className="btn btn-primary" onClick={()=>{handleChange()}}>Change Python Type</button>
+                <button type="submit" className="btn btn-primary" onClick={()=>{handleChange()}}>Save</button>
             </div>
         </ModalBody>
     </div>
