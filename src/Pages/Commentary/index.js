@@ -31,6 +31,8 @@ import {
   convertDateUtcFormat,
   convertDateUTCToLocal2,
   convertDateLocalToUTC,
+  convertDateUTCToLocalWithoutSec,
+  convertDateUtcFormatWithoutSec,
 } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { ChnageMatchTypeModel } from "../../components/Model/ChangeMatchType";
@@ -47,6 +49,7 @@ import CommentaryMarketTemplateModel from "../../components/Model/CommentaryMark
 import LoadDataModal from "../../components/Model/LoadDataModal";
 import GenerateModal from "./GenerateModal";
 import { loadInit } from "../../config";
+import { ChangePythonType } from "../../components/Model/ChangePythonType";
 
 const Index = () => {
   const pageName = TAB_COMMENTARY;
@@ -60,8 +63,10 @@ const Index = () => {
   const [resultModelVisible, setResultModelVisible] = useState(false);
   const [delayModelVisible, setDelayModelVisible] = useState(false);
   const [eventRefModelVisible, setEventRefModelVisible] = useState(false);
+  const [changePythonModel, setChangePythonModel] = useState(false);
   const [matchType, setMatchType] = useState("");
   const [selectedCommentary, setSelectedCommentary] = useState({});
+  const [selectedPythonCommentary, setSelectedPythonCommentary] = useState({});
   const [selectedResult, setSelectedResult] = useState({});
   const [selectedDelay, setSelectedDelay] = useState({});
   const [selectedEventRef, setSelectedEventRef] = useState({});
@@ -705,6 +710,47 @@ const Index = () => {
         );
       });
   };
+  const handlePythonChange = async () => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/commentary/changeMatchType`, {
+        ...selectedPythonCommentary,
+      })
+      .then((response) => {
+        fetchData();
+        if (response?.result?.callPrediction?.predictioncallSuccess === false) {
+          const predictionMessage =
+            response?.result?.callPrediction?.predictionMessage;
+          const endPoint = response?.result?.callPrediction?.endPoint;
+          dispatch(
+            updateToastData({
+              data: `${endPoint}\n${predictionMessage}`,
+              title: "Call Prediction",
+              type: WARNING,
+            })
+          );
+        } else {
+          dispatch(
+            updateToastData({
+              data: response?.message,
+              title: response?.title,
+              type: SUCCESS,
+            })
+          );
+        }
+        setChangePythonModel(false);
+      })
+      .catch((error) => {
+        setChangePythonModel(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
   const handleChangeRunner = async () => {
     setIsLoading(true);
     const payload = [
@@ -1193,13 +1239,29 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
+      title: "",
+      key: "viewScoreCard",
+      printType: "ignore",
+      render: (text, record) => (
+        <Button
+          color="primary"
+          size="sm"
+          className="btn"
+          onClick={() => openScorecardIframe(record)}
+        >
+          S
+        </Button>
+      ),
+      style: { width: "4%", textAlign: "center" },
+    },
+    {
       title: "Date",
       dataIndex: "eventDate",
       render: (text, record) => (
         <span>
           {dateType?.value == 1
-            ? convertDateUTCToLocal2(text, "index")
-            : convertDateUtcFormat(text, "index")}
+            ? convertDateUTCToLocalWithoutSec(text, "index")
+            : convertDateUtcFormatWithoutSec(text, "index")}
         </span>
       ),
       key: "eventDate",
@@ -2102,22 +2164,6 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "ScoreCard",
-      key: "viewScoreCard",
-      printType: "ignore",
-      render: (text, record) => (
-        <Button
-          color="primary"
-          size="sm"
-          className="btn"
-          onClick={() => openScorecardIframe(record)}
-        >
-          S
-        </Button>
-      ),
-      style: { width: "4%", textAlign: "center" },
-    },
-    {
       title: "Day",
       dataIndex: "pitchAge",
       render: (text, record) => (
@@ -2139,6 +2185,31 @@ const Index = () => {
         </span>
       ),
       key: "pitchAge",
+      style: { width: "10%" },
+    },
+    {
+      title: "Algo",
+      dataIndex: "pythonId",
+      render: (text, record) => (
+        <span
+          onClick={() => {
+            setChangePythonModel(true);
+            setSelectedPythonCommentary(record);
+          }}
+          style={{ cursor: "pointer" }}
+        >
+          {record?.pythonURI}{" "}
+          <Tooltip
+            title="Edit Python Type"
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            {<a className="bx bx-edit-alt"></a>}
+          </Tooltip>
+        </span>
+      ),
+      key: "pythonId",
+      sort: true,
       style: { width: "10%" },
     },
   ];
@@ -2456,6 +2527,16 @@ const Index = () => {
               singleCheck={checekedList}
               selectedCommentary={selectedCommentary}
               setSelectedCommentary={setSelectedCommentary}
+            />
+          )}
+          {changePythonModel && (
+            <ChangePythonType
+              changeModelVisible={changePythonModel}
+              setChangeModelVisible={setChangePythonModel}
+              handleChange={handlePythonChange}
+              singleCheck={checekedList}
+              selectedCommentary={selectedPythonCommentary}
+              setSelectedCommentary={setSelectedPythonCommentary}
             />
           )}
           {resultModelVisible && (
