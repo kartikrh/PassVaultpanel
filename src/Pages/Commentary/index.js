@@ -28,8 +28,6 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import {
   checkPermission,
-  convertDateUtcFormat,
-  convertDateUTCToLocal2,
   convertDateLocalToUTC,
   convertDateUTCToLocalWithoutSec,
   convertDateUtcFormatWithoutSec,
