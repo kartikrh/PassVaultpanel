@@ -19,7 +19,7 @@ import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND
 import { addCompetitionToDb, updateSavedState } from "../../Features/Tabs/competitionSlice";
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
-import { convertObjtoFormData } from "../../components/Common/utilities";
+import { convertObjtoFormData2 } from "../../components/Common/utilities";
 import { checkPermission, convertDateLocalToUTC } from '../../components/Common/Reusables/reusableMethods';
 import { updateToastData } from "../../Features/toasterSlice";
 
@@ -132,6 +132,7 @@ function AddCompetitions() {
       const extraData = {
         competitionId,
         isTrending: dataToSave?.isTrending || false,
+        tpId: dataToSave?.tpId || null,
         isVirtual: dataToSave?.isVirtual || false,
         matchTypeId: dataToSave?.matchTypeId || null,
         pythonId: dataToSave?.pythonId || null,
@@ -147,7 +148,7 @@ function AddCompetitions() {
         startDate: convertDateLocalToUTC(dataToSave.startDate),
       }
       setCurrentSaveAction(saveAction);
-      dispatch(addCompetitionToDb(convertObjtoFormData({ ...dataToSave, ...extraData })))
+      dispatch(addCompetitionToDb(convertObjtoFormData2({ ...dataToSave, ...extraData })))
     }
   };
   const handleBackClick = () => {
