@@ -1831,7 +1831,7 @@ const Commentary = (props) => {
         });
         if (currentInningsTeams?.[BOWLING_TEAM]?.isBattingComplete) setTarget(targetToUpdate)
         propsData.commentaryData.commentaryPlayers.forEach(playerDetails => {
-            if (isEqual(playerDetails.currentInnings, commentaryDetails.currentInnings)) {
+            // if (isEqual(playerDetails.currentInnings, commentaryDetails.currentInnings)) {
                 const isBattingTeam = playerDetails.teamId === currentInningsTeams[BATTING_TEAM].teamId
                 // If player is from batting team, add them to the batting object list
                 if (isBattingTeam) {
@@ -1854,7 +1854,7 @@ const Commentary = (props) => {
                     }
                     bowlingTeam.push(playerDetails)
                 }
-            }
+            // }
         });
         // propsData.commentaryData.commentaryPartnership.forEach(partnershipDetails => {
         //     if (
@@ -2493,7 +2493,11 @@ const Commentary = (props) => {
                     },
                     overPopUpForBowler: overPopUpForBowler,
                     isBowler: (isChangeBowler.isChange || isBowlerrChange) ? true : false,
-                    playerList: changePlayerList,
+                    playerList: () => {
+                        return changePlayerList?.filter(
+                            (item) => item.currentInnings === commentaryDetails.currentInnings
+                        );
+                    },
                     selectPlayer: (newPlayerId) => {
                         if (isSwapPlayer) { setOverPopUpForBowler(undefined); setIsBowlerrChange(undefined); swapPlayer(newPlayerId) }
                         else if (isChangeBowler.isChange) { setOverPopUpForBowler(undefined); setIsBowlerrChange(undefined); onBowlerChange(newPlayerId) }
@@ -2651,7 +2655,10 @@ const Commentary = (props) => {
                 }}
                 overPopUpForBowler={overPopUpForBowler}
                 isBowler={(isChangeBowler.isChange || isBowlerrChange) ? true : false}
-                playerList={changePlayerList}
+                // playerList={changePlayerList}
+                playerList={changePlayerList?.filter(
+                    (item) => item.currentInnings === commentaryDetails.currentInnings
+                )}
                 selectPlayer={(newPlayerId) => {
                     setOverPopUpForBowler(undefined)
                     setIsBowlerrChange(undefined);
