@@ -107,21 +107,34 @@ const Index = () => {
   };
 
   const handleDelete = async (e) => {
-    setIsLoading(true)
+    setIsLoading(true);
     // e.preventDefault()
-    await axiosInstance.post(
-      `/admin/roles/delete`,
-      {
+    try {
+      const response = await axiosInstance.post(`/admin/roles/delete`, {
         roleIds: checekedList,
-      }).then((response) => {
-        setDeleteModelVisable(false);
-        fetchData();
-        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
-      }).catch((error) => {
-        setDeleteModelVisable(false);
-        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
       });
-  }
+      setDeleteModelVisable(false);
+      fetchData();
+      dispatch(
+        updateToastData({
+          data: response?.message,
+          title: response?.title,
+          type: SUCCESS,
+        })
+      );
+    } catch (error) {
+      setDeleteModelVisable(false);
+      dispatch(
+        updateToastData({
+          data: error?.message,
+          title: error?.title,
+          type: ERROR,
+        })
+      );
+    } finally {
+      setIsLoading(false); // always called
+    }
+  };
 
   const handleEdit = (roleId) => {
     navigate('/addRoles', { state: { roleId } });

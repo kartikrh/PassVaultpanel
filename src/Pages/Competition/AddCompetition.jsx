@@ -142,7 +142,7 @@ function AddCompetitions() {
         tiePoint: dataToSave?.tiePoint || null,
         lossPoint: dataToSave?.lossPoint || null,
         cancelPoint: dataToSave?.cancelPoint || null,
-        drsCount: dataToSave?.drsCount || 0,
+        drsCount: dataToSave?.drsCount || null,
         endDate: convertDateLocalToUTC(dataToSave.endDate),
         startDate: convertDateLocalToUTC(dataToSave.startDate),
       }

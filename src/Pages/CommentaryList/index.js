@@ -29,9 +29,10 @@ import {
 } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { ChnageMatchTypeModel } from "../../components/Model/ChangeMatchType";
+import { UpdateDayModel } from "../../components/Model/UpdateDayModel";
 import { ChangeResultModel } from "../../components/Model/ChangeResult";
-import { ChangeEventRefIdModel } from "../../components/Model/ChangeEventRefId"
-import "../Commentary/CommentaryCss.css"
+import { ChangeEventRefIdModel } from "../../components/Model/ChangeEventRefId";
+import "../Commentary/CommentaryCss.css";
 import { ChangeRunnerModel } from "../../components/Model/ChangeRunnerModel";
 import { Tooltip } from "antd";
 import AwardSelectionComponent from "../Commentary/CommentaryModels/AwardModal";
@@ -59,7 +60,7 @@ const Index = () => {
   const [selectedPythonCommentary, setSelectedPythonCommentary] = useState({});
   const [selectedResult, setSelectedResult] = useState({});
   const [selectedEventRef, setSelectedEventRef] = useState({});
-  const [dlsModalCommentary, setDlsModalCommentary] = useState(false)
+  const [dlsModalCommentary, setDlsModalCommentary] = useState(false);
   const [cloneValues, setCloneValues] = useState({
     eventName: "",
     eventRefId: "",
@@ -90,6 +91,8 @@ const Index = () => {
     useState(false);
   const [selectedCommentaryId, setSelectedCommentaryId] = useState(null);
   const loadInitData = useSelector((state) => state.loadInit.loadInitData);
+  const [updateDayModelVisible, setUpdateDayModelVisible] = useState(false);
+  const [selectedCommentaryDay, setSelectedCommentaryDay] = useState({});
 
   let scorecardFrameUrl = null;
 
@@ -99,11 +102,12 @@ const Index = () => {
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
-    const data = latestValueFromTable || tableActions
+    const data = latestValueFromTable || tableActions;
     let payload = {
       ...data,
       eventTypeId: data?.eventTypeId || 0,
-      competitionId: data?.eventTypeId !== eventTypeId ? 0 : data?.competitionId || 0,
+      competitionId:
+        data?.eventTypeId !== eventTypeId ? 0 : data?.competitionId || 0,
     };
     if (isSearch) {
       payload = {
@@ -139,7 +143,7 @@ const Index = () => {
       .then((response) => {
         setEventTypes(response.result);
       })
-      .catch((error) => { });
+      .catch((error) => {});
   };
   const fetchCompetitionData = async (value) => {
     await axiosInstance
@@ -149,7 +153,7 @@ const Index = () => {
       .then((response) => {
         setCompetitions(response.result);
       })
-      .catch((error) => { });
+      .catch((error) => {});
   };
   const handleSingleCheck = (e) => {
     let updateSingleCheck = [];
@@ -255,10 +259,10 @@ const Index = () => {
   };
   const handleDetailsClick = (id) => {
     // navigate("/commentaryMaster", { state: { commentaryId: id } });
-    localStorage.setItem('commentaryMasterId', "" + id);
-    localStorage.setItem('commentary', "commentaryList");
+    localStorage.setItem("commentaryMasterId", "" + id);
+    localStorage.setItem("commentary", "commentaryList");
     const url = new URL(window.location.origin + "/commentaryMaster");
-    window.open(url.href, '_blank');
+    window.open(url.href, "_blank");
   };
   const handleUpdatePlayersClick = (details) => {
     // navigate("/updateCommentaryPlayer", {
@@ -267,45 +271,54 @@ const Index = () => {
     //     commentaryDetails: details,
     //   },
     // });
-    localStorage.setItem('updatePlayerCommentaryId', "" + details?.commentaryId);
-    localStorage.setItem('updatePlayerCommentaryDetails', "" + JSON.stringify(details));
+    localStorage.setItem(
+      "updatePlayerCommentaryId",
+      "" + details?.commentaryId
+    );
+    localStorage.setItem(
+      "updatePlayerCommentaryDetails",
+      "" + JSON.stringify(details)
+    );
     const url = new URL(window.location.origin + "/updateCommentaryPlayer");
-    window.open(url.href, '_blank');
+    window.open(url.href, "_blank");
   };
   const handleCommentaryLogsClick = (details) => {
     const url = new URL(window.location.origin + "/commentaryLogs");
-    sessionStorage.setItem('commentaryLogsId', "" + details?.commentaryId);
-    sessionStorage.setItem('commentaryLogsDetails', "" + JSON.stringify(details));
-    window.open(url.href, '_blank');
+    sessionStorage.setItem("commentaryLogsId", "" + details?.commentaryId);
+    sessionStorage.setItem(
+      "commentaryLogsDetails",
+      "" + JSON.stringify(details)
+    );
+    window.open(url.href, "_blank");
     sessionStorage.removeItem("commentaryLogsId");
     sessionStorage.removeItem("commentaryLogsDetails");
   };
   const handleUndoLogsClick = (details) => {
     const url = new URL(window.location.origin + "/undoLogs");
-    sessionStorage.setItem('undoLogsId', "" + details?.commentaryId);
-    sessionStorage.setItem('undoLogsDetails', "" + JSON.stringify(details));
-    window.open(url.href, '_blank');
+    sessionStorage.setItem("undoLogsId", "" + details?.commentaryId);
+    sessionStorage.setItem("undoLogsDetails", "" + JSON.stringify(details));
+    window.open(url.href, "_blank");
     sessionStorage.removeItem("undoLogsId");
     sessionStorage.removeItem("undoLogsDetails");
   };
   const handleCommentaryEventSnapClick = (details) => {
     const url = new URL(window.location.origin + "/commentaryEventSnap");
-    sessionStorage.setItem('eventSnapId', "" + details?.commentaryId);
-    sessionStorage.setItem('eventSnapDetails', "" + JSON.stringify(details));
-    sessionStorage.setItem('eventSnapCommentaryHistory', true);
-    window.open(url.href, '_blank');
+    sessionStorage.setItem("eventSnapId", "" + details?.commentaryId);
+    sessionStorage.setItem("eventSnapDetails", "" + JSON.stringify(details));
+    sessionStorage.setItem("eventSnapCommentaryHistory", true);
+    window.open(url.href, "_blank");
   };
   const handleShortCommentaryClick = (id) => {
     // navigate("/shortCommentary", { state: { commentaryId: id } });
-    localStorage.setItem('shortCommentaryId', "" + id);
+    localStorage.setItem("shortCommentaryId", "" + id);
     const url = new URL(window.location.origin + "/shortCommentary");
-    window.open(url.href, '_blank');
+    window.open(url.href, "_blank");
   };
   const handleUpdateCommentaryClick = (id) => {
     // navigate("/updateCommentaryFeature", { state: { commentaryId: id } });
-    localStorage.setItem('updateCommentaryId', "" + id);
+    localStorage.setItem("updateCommentaryId", "" + id);
     const url = new URL(window.location.origin + "/updateCommentaryFeature");
-    window.open(url.href, '_blank');
+    window.open(url.href, "_blank");
   };
   const handleClone = async () => {
     if (cloneValues.name !== "" && cloneValues.refrenceId !== "") {
@@ -355,7 +368,8 @@ const Index = () => {
       .then((response) => {
         fetchData();
         if (response?.result?.callPrediction?.predictioncallSuccess === false) {
-          const predictionMessage = response?.result?.callPrediction?.predictionMessage;
+          const predictionMessage =
+            response?.result?.callPrediction?.predictionMessage;
           const endPoint = response?.result?.callPrediction?.endPoint;
           dispatch(
             updateToastData({
@@ -429,7 +443,10 @@ const Index = () => {
   };
   const handleChangeRunner = async () => {
     setIsLoading(true);
-    const payload = [selectedCommentaryRunner?.team1, selectedCommentaryRunner?.team2]
+    const payload = [
+      selectedCommentaryRunner?.team1,
+      selectedCommentaryRunner?.team2,
+    ];
     await axiosInstance
       .post(`/admin/ImportMarket/updateTeamId`, payload)
       .then((response) => {
@@ -453,7 +470,7 @@ const Index = () => {
           })
         );
         setIsLoading(false);
-      })
+      });
   };
   const handleChangeResult = async (dataToSend) => {
     setIsLoading(true);
@@ -490,7 +507,8 @@ const Index = () => {
       .then((response) => {
         fetchData();
         if (response?.result?.callPrediction?.predictioncallSuccess === false) {
-          const predictionMessage = response?.result?.callPrediction?.predictionMessage;
+          const predictionMessage =
+            response?.result?.callPrediction?.predictionMessage;
           const endPoint = response?.result?.callPrediction?.endPoint;
           dispatch(
             updateToastData({
@@ -668,59 +686,90 @@ const Index = () => {
     fetchEventTypeData();
   };
 
-   const handleLoadSingleCommentaryData = async (commentaryId, password) => {
-     setIsLoading(true);
-     try {
-       const response = await axiosInstance.post(`/loadPanelData`, {
-         module: [MODULE_SINGLE_COMMENTARY],
-         password,
-         commentaryId,
-       });
+  const handleLoadSingleCommentaryData = async (commentaryId, password) => {
+    setIsLoading(true);
+    try {
+      const response = await axiosInstance.post(`/loadPanelData`, {
+        module: [MODULE_SINGLE_COMMENTARY],
+        password,
+        commentaryId,
+      });
 
-       // setLoadDataModelVisable(false); // This will be handled by the wrapper function
-       dispatch(
-         updateToastData({
-           data: response?.message,
-           title: response?.title,
-           type: SUCCESS,
-         })
-       );
-     } catch (error) {
-       dispatch(
-         updateToastData({
-           data: error?.message,
-           title: error?.title,
-           type: ERROR,
-         })
-       );
-     } finally {
-       setIsLoading(false);
-     }
-   };
+      // setLoadDataModelVisable(false); // This will be handled by the wrapper function
+      dispatch(
+        updateToastData({
+          data: response?.message,
+          title: response?.title,
+          type: SUCCESS,
+        })
+      );
+    } catch (error) {
+      dispatch(
+        updateToastData({
+          data: error?.message,
+          title: error?.title,
+          type: ERROR,
+        })
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const openScorecardIframe = (record) => {
     if (record && loadInitData) {
-    const baseUrl = loadInitData.find(
-      (item) => item.key === loadInit.SCORECARD_FRAME_URL
-    )?.value;
+      const baseUrl = loadInitData.find(
+        (item) => item.key === loadInit.SCORECARD_FRAME_URL
+      )?.value;
       if (baseUrl) {
-        scorecardFrameUrl = baseUrl.replace(
-          "{eventId}",
-          record.eventRefId
-        );
+        scorecardFrameUrl = baseUrl.replace("{eventId}", record.eventRefId);
         window.open(scorecardFrameUrl, "_blank", "width=600,height=400");
         // console.log("url: ",scorecardFrameUrl);
       }
     }
   };
 
+  const handleUpdateDay = async (updatedData) => {
+    try {
+      setIsLoading(true);
+      const { data: response } = await axiosInstance.post(
+        `/admin/commentary/updatePitchAndSession`,
+        {
+          commentaryId: updatedData.commentaryId,
+          pitchAge: +updatedData.pitchAge,
+          session: updatedData.session,
+        }
+      );
+
+      fetchData();
+      dispatch(
+        updateToastData({
+          data: response?.message,
+          title: response?.title,
+          type: SUCCESS,
+        })
+      );
+    } catch (error) {
+      dispatch(
+        updateToastData({
+          data: error?.message,
+          title: error?.title,
+          type: ERROR,
+        })
+      );
+    } finally {
+      setIsLoading(false);
+      setUpdateDayModelVisible(false);
+    }
+  };
+
   const handleLoadSingleCommentaryDataWithModal = async (password) => {
-     if (selectedCommentaryId) {
-       await handleLoadSingleCommentaryData(selectedCommentaryId, password);
-       setLoadSingleDataModelVisible(false);
-       setSelectedCommentaryId(null);
-     }
-   };
+    if (selectedCommentaryId) {
+      await handleLoadSingleCommentaryData(selectedCommentaryId, password);
+      setLoadSingleDataModelVisible(false);
+      setSelectedCommentaryId(null);
+    }
+  };
   //table columns
   const columns = [
     {
@@ -1294,30 +1343,79 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-          title: "Algo",
-          dataIndex: "pythonId",
-          render: (text, record) => (
-            <span
-              onClick={() => {
-                setChangePythonModel(true);
-                setSelectedPythonCommentary(record);
-              }}
-              style={{ cursor: "pointer" }}
-            >
-              {record?.developerName}{" "}
-              <Tooltip
-                title="Edit Python Type"
-                color={"#e8e8ea"}
-                overlayInnerStyle={{ color: "#000" }}
-              >
-                {<a className="bx bx-edit-alt"></a>}
-              </Tooltip>
-            </span>
-          ),
-          key: "pythonId",
-          sort: true,
-          style: { width: "10%" },
-        },
+      title: "Algo",
+      dataIndex: "pythonId",
+      render: (text, record) => (
+        <span
+          onClick={() => {
+            setChangePythonModel(true);
+            setSelectedPythonCommentary(record);
+          }}
+          style={{ cursor: "pointer" }}
+        >
+          {record?.developerName}{" "}
+          <Tooltip
+            title="Edit Python Type"
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            {<a className="bx bx-edit-alt"></a>}
+          </Tooltip>
+        </span>
+      ),
+      key: "pythonId",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
+      title: "Day",
+      dataIndex: "pitchAge",
+      render: (text, record) => (
+        <span
+          onClick={() => {
+            setUpdateDayModelVisible(true);
+            setSelectedCommentaryDay(record);
+          }}
+          style={{ cursor: "pointer" }}
+        >
+          {text}{" "}
+          <Tooltip
+            title="Edit Day"
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            <a className="bx bx-edit-alt"></a>
+          </Tooltip>
+        </span>
+      ),
+      key: "pitchAge",
+      style: { width: "10%" },
+    },
+    {
+      title: "Algo",
+      dataIndex: "pythonId",
+      render: (text, record) => (
+        <span
+          onClick={() => {
+            setChangePythonModel(true);
+            setSelectedPythonCommentary(record);
+          }}
+          style={{ cursor: "pointer" }}
+        >
+          {record?.pythonURI}{" "}
+          <Tooltip
+            title="Edit Python Type"
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            {<a className="bx bx-edit-alt"></a>}
+          </Tooltip>
+        </span>
+      ),
+      key: "pythonId",
+      sort: true,
+      style: { width: "10%" },
+    },
   ];
 
   const getColumns = (data) => {
@@ -1344,25 +1442,33 @@ const Index = () => {
       key: "commentaryAward",
       printType: "ignore",
       render: (text, record) => (
-        <Tooltip title={"Awards"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip
+          title={"Awards"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
           <Button
             size="sm"
             className="award-button btn"
             onClick={() => {
-              setShowAwardModel(record.commentaryId)
+              setShowAwardModel(record.commentaryId);
             }}
           >
-            <i class='bx bxs-award'></i>
+            <i class="bx bxs-award"></i>
           </Button>
         </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
-    }
+    };
     const eventSnapColumn = {
       title: "Event Snap",
       dataIndex: "eventSnap",
       render: (text, record) => (
-        <Tooltip title={"Event Snap"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip
+          title={"Event Snap"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
           <Button
             color={"primary"}
             size="sm"
@@ -1371,7 +1477,7 @@ const Index = () => {
               handleCommentaryEventSnapClick(record);
             }}
           >
-            <i class='bx bxs-up-arrow-square' ></i>
+            <i class="bx bxs-up-arrow-square"></i>
           </Button>
         </Tooltip>
       ),
@@ -1381,7 +1487,7 @@ const Index = () => {
     };
     const updatedColumn = [...columns];
 
-    if (data.some(record => record?.commentaryStatus === 4)) {
+    if (data.some((record) => record?.commentaryStatus === 4)) {
       updatedColumn.splice(6, 0, AwardColumn);
       updatedColumn.splice(7, 0, resultColumn);
       updatedColumn.splice(8, 0, eventSnapColumn);
@@ -1455,13 +1561,13 @@ const Index = () => {
 
   useEffect(() => {
     fetchEventTypeData();
-  }, [])
+  }, []);
 
   useEffect(() => {
-      if(!eventTypeId) {
-        setCompetitions([]);
-      }
-  },[eventTypeId]);
+    if (!eventTypeId) {
+      setCompetitions([]);
+    }
+  }, [eventTypeId]);
 
   const handleReload = (value) => {
     fetchData();
@@ -1612,6 +1718,15 @@ const Index = () => {
               toggle={() => setIsGenerateModalOpen(!isGenerateModalOpen)}
               data={generateModalData}
               fetchData={fetchData}
+            />
+          )}
+          {updateDayModelVisible && (
+            <UpdateDayModel
+              updateDayModelVisible={updateDayModelVisible}
+              setUpdateDayModelVisible={setUpdateDayModelVisible}
+              handleUpdateDay={handleUpdateDay}
+              selectedCommentaryDay={selectedCommentaryDay}
+              setSelectedCommentaryDay={setSelectedCommentaryDay}
             />
           )}
         </Container>
