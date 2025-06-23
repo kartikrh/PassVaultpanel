@@ -1,4 +1,4 @@
-import { SELECT, SWITCH, TEXT } from "../../components/Common/Const";
+import { SELECT, SWITCH, TEXT, COUNTER } from "../../components/Common/Const";
 
 export const EventMarketFields = [
   {
@@ -340,6 +340,20 @@ export const EventMarketFields = [
     isRequired: true,
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
+  },
+  {
+    name: "autoSuspendAfterChase",
+    label:"Auto Suspend After Chase",
+    type: COUNTER,
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 4, lg: 4 }
+  },
+  {
+    name: "autoNotCreateAfterChase",
+    label:"Auto Not Create After Chase",
+    type: COUNTER,
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 4, lg: 4 }
   },
   {
     type: SWITCH,
