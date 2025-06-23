@@ -272,6 +272,7 @@ export const MatchDetailFields = [
     name: "pythonId",
     label: "Algo",
     options: [{ label: "Select a Python Type", value: "0" }],
+    isRequired: true,
     defaultValue: "0",
     type: SELECT,
     labelColspan: { xs: 12, md: 2, lg: 2 },
