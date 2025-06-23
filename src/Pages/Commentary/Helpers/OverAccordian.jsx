@@ -86,7 +86,6 @@ const RunsInfo = styled(Box)(({ theme }) => ({
 
 
 const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, currentOver }) => {
-    console.log("playersList", playersList)
     // console.log({ overBalls, teamDetails, overHistory, playersList, currentOver })
     // const viewportWidth = window.innerWidth;
     const [viewportWidth, setViewportWidth] = useState();
@@ -155,20 +154,12 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
     }, [sortedKeys, hasInitialized]); 
 
     useEffect(() => {
-        console.log("sortedKeys", sortedKeys, expanded)
         if (sortedKeys.length > 0 && (!expanded || expanded == undefined)) {
-            console.log("inside")
             setExpanded(sortedKeys[0]);
-        }else{
-            console.log("outside")
         }
     }, []);
-    // useEffect(() => {
-        console.log("sortedKeys", sortedKeys)
-    // }, [expanded])
 
     const handleChange = (panel) => (event, isExpanded) => {
-        console.log("panel", panel)
         setExpanded(isExpanded ? panel : false);
     };
 
