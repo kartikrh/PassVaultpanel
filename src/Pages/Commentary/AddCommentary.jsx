@@ -43,6 +43,7 @@ function AddCommentary() {
     const [initialEditData, setInitialEditData] = useState(undefined);
     const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
     const [competitionList, setCompetitionList] = useState([]);
+    const [pythonList, setPythonList] = useState([]);
     const [masterData, setMasterData] = useState({});
     const [disabledFields, setDisabledFields] = useState({});
     const { isSaved, isLoading, error } = useSelector(state => state.tabsData.commentary);
@@ -189,9 +190,10 @@ function AddCommentary() {
                     });
                 const selectedCompetition = competitionList.find(item => item?.competitionId == newFormData["competitionId"]);
                 if (selectedCompetition) {
-                    const { matchTypeId, drsCount, isVirtual } = selectedCompetition;
+                    const { matchTypeId, drsCount, isVirtual, pythonId } = selectedCompetition;
                     finalizeRef1.current.updateFormFromParent({ matchTypeId });
                     finalizeRef1.current.updateFormFromParent({ isVirtual });
+                    finalizeRef1.current.updateFormFromParent({ pythonId });
                     finalizeRef2.current.updateFormFromParent({ drsCount });
                 }
             } else {
@@ -416,6 +418,21 @@ function AddCommentary() {
                 dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
                 setIsApiLoading(false);
             });
+        axiosInstance.post('/admin/commentary/pythonAPIs')
+            .then((response) => {
+                const formattedData = response?.result?.map(item => {
+                    return { label: item?.developerName, value: item?.id }
+                })
+                setPythonList(response?.result || []);
+                setMasterData((preData) => ({
+                    ...preData,
+                    "pythonId": formattedData,
+                }));
+                setIsApiLoading(false);
+            }).catch((error) => {
+                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+                setIsApiLoading(false);
+            });
         // setIsApiLoading(true);
         // axiosInstance.post('/admin/commentary/teamList', {})
         //     .then((response) => {
@@ -454,7 +471,7 @@ function AddCommentary() {
         const dataToSave2 = finalizeRef2.current.finalizeData()
         const dataToSave3 = finalizeRef3.current.finalizeData()
         const dataToSave4 = finalizeRef4.current.finalizeData()
-        
+        const pythonURI = pythonList && pythonList.length > 0 && pythonList.find((item) => item?.id == dataToSave1?.pythonId)?.URI;
         if (dataToSave1 && dataToSave2 && dataToSave3 && dataToSave4) {
             const dataToSave = {
                 ...dataToSave1,
@@ -477,7 +494,8 @@ function AddCommentary() {
                 "addSystemPlayer" : dataToSave2?.addSystemPlayer ? dataToSave2.addSystemPlayer : false,
                 "systemPlayerCount" :dataToSave2.addSystemPlayer ? dataToSave2.systemPlayerCount : "0",
                 "drsCount": dataToSave2?.drsCount || 0,
-
+                "pythonId": dataToSave1?.pythonId,
+                "pythonURI": pythonURI,
             }
             const extraData = {
                 commentaryId: id,
@@ -521,7 +539,7 @@ function AddCommentary() {
                                 <Row>
                                     <Col className='mb-3 text-end' xs={12}>
                                         <button className="btn btn-danger mx-1" onClick={handleBackClick}>Back</button>
-                                        {(activeTab !== 1 && activeTab !== 2 && activeTab !== 3) &&
+                                        {activeTab !== 1 &&
                                             <ButtonDropdown
                                                 direction="down"
                                                 isOpen={drp_up}

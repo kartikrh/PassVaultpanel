@@ -25,8 +25,7 @@ import {
   checkPermission,
   convertDateUTCToLocalWithoutSec,
   convertDateLocalToUTC,
-  convertDateUTCToLocal2,
-  convertDateUtcFormat,
+  convertDateUtcFormatWithoutSec,
 } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { ChnageMatchTypeModel } from "../../components/Model/ChangeMatchType";
@@ -40,6 +39,8 @@ import { mapCommentaryStatus } from "../Commentary/functions";
 import { DlsModal } from "../Commentary/CommentaryModels/DlsModal";
 import LoadDataModal from "../../components/Model/LoadDataModal";
 import GenerateModal from "../Commentary/GenerateModal";
+import { ChangePythonType } from "../../components/Model/ChangePythonType";
+import { loadInit } from "../../config";
 
 const Index = () => {
   const pageName = TAB_COMMENTARY_LIST;
@@ -52,8 +53,10 @@ const Index = () => {
   const [changeModelVisible, setChangeModelVisible] = useState(false);
   const [resultModelVisible, setResultModelVisible] = useState(false);
   const [eventRefModelVisible, setEventRefModelVisible] = useState(false);
+  const [changePythonModel, setChangePythonModel] = useState(false);
   const [matchType, setMatchType] = useState("");
   const [selectedCommentary, setSelectedCommentary] = useState({});
+  const [selectedPythonCommentary, setSelectedPythonCommentary] = useState({});
   const [selectedResult, setSelectedResult] = useState({});
   const [selectedEventRef, setSelectedEventRef] = useState({});
   const [dlsModalCommentary, setDlsModalCommentary] = useState(false)
@@ -86,6 +89,9 @@ const Index = () => {
   const [loadSingleDataModelVisible, setLoadSingleDataModelVisible] =
     useState(false);
   const [selectedCommentaryId, setSelectedCommentaryId] = useState(null);
+  const loadInitData = useSelector((state) => state.loadInit.loadInitData);
+
+  let scorecardFrameUrl = null;
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -380,6 +386,47 @@ const Index = () => {
         );
       });
   };
+  const handlePythonChange = async () => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/commentary/updatePythonAPI`, {
+        ...selectedPythonCommentary,
+      })
+      .then((response) => {
+        fetchData();
+        if (response?.result?.callPrediction?.predictioncallSuccess === false) {
+          const predictionMessage =
+            response?.result?.callPrediction?.predictionMessage;
+          const endPoint = response?.result?.callPrediction?.endPoint;
+          dispatch(
+            updateToastData({
+              data: `${endPoint}\n${predictionMessage}`,
+              title: "Call Prediction",
+              type: WARNING,
+            })
+          );
+        } else {
+          dispatch(
+            updateToastData({
+              data: response?.message,
+              title: response?.title,
+              type: SUCCESS,
+            })
+          );
+        }
+        setChangePythonModel(false);
+      })
+      .catch((error) => {
+        setChangePythonModel(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
   const handleChangeRunner = async () => {
     setIsLoading(true);
     const payload = [selectedCommentaryRunner?.team1, selectedCommentaryRunner?.team2]
@@ -651,7 +698,23 @@ const Index = () => {
      }
    };
 
-   const handleLoadSingleCommentaryDataWithModal = async (password) => {
+  const openScorecardIframe = (record) => {
+    if (record && loadInitData) {
+    const baseUrl = loadInitData.find(
+      (item) => item.key === loadInit.SCORECARD_FRAME_URL
+    )?.value;
+      if (baseUrl) {
+        scorecardFrameUrl = baseUrl.replace(
+          "{eventId}",
+          record.eventRefId
+        );
+        window.open(scorecardFrameUrl, "_blank", "width=600,height=400");
+        // console.log("url: ",scorecardFrameUrl);
+      }
+    }
+  };
+
+  const handleLoadSingleCommentaryDataWithModal = async (password) => {
      if (selectedCommentaryId) {
        await handleLoadSingleCommentaryData(selectedCommentaryId, password);
        setLoadSingleDataModelVisible(false);
@@ -722,16 +785,29 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
+      title: "",
+      key: "viewScoreCard",
+      printType: "ignore",
+      render: (text, record) => (
+        <Button
+          color="primary"
+          size="sm"
+          className="btn"
+          onClick={() => openScorecardIframe(record)}
+        >
+          S
+        </Button>
+      ),
+      style: { width: "4%", textAlign: "center" },
+    },
+    {
       title: "Date",
       dataIndex: "eventDate",
       render: (text, record) => (
-        // <span>
-        //   {convertDateUTCToLocalWithoutSec(text, "index")}
-        // </span>
         <span>
           {dateType?.value == 1
-            ? convertDateUTCToLocal2(text, "index")
-            : convertDateUtcFormat(text, "index")}
+            ? convertDateUTCToLocalWithoutSec(text, "index")
+            : convertDateUtcFormatWithoutSec(text, "index")}
         </span>
       ),
       key: "eventDate",
@@ -1217,6 +1293,31 @@ const Index = () => {
       ),
       style: { width: "2%", textAlign: "center" },
     },
+    {
+          title: "Algo",
+          dataIndex: "pythonId",
+          render: (text, record) => (
+            <span
+              onClick={() => {
+                setChangePythonModel(true);
+                setSelectedPythonCommentary(record);
+              }}
+              style={{ cursor: "pointer" }}
+            >
+              {record?.developerName}{" "}
+              <Tooltip
+                title="Edit Python Type"
+                color={"#e8e8ea"}
+                overlayInnerStyle={{ color: "#000" }}
+              >
+                {<a className="bx bx-edit-alt"></a>}
+              </Tooltip>
+            </span>
+          ),
+          key: "pythonId",
+          sort: true,
+          style: { width: "10%" },
+        },
   ];
 
   const getColumns = (data) => {
@@ -1441,6 +1542,16 @@ const Index = () => {
               singleCheck={checekedList}
               selectedCommentary={selectedCommentary}
               setSelectedCommentary={setSelectedCommentary}
+            />
+          )}
+          {changePythonModel && (
+            <ChangePythonType
+              changeModelVisible={changePythonModel}
+              setChangeModelVisible={setChangePythonModel}
+              handleChange={handlePythonChange}
+              singleCheck={checekedList}
+              selectedCommentary={selectedPythonCommentary}
+              setSelectedCommentary={setSelectedPythonCommentary}
             />
           )}
           {resultModelVisible && (

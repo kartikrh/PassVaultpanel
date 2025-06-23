@@ -151,6 +151,19 @@ export const convertDateUTCToLocalWithoutSec = (UTCDate, page, format) => {
   return "";
 }
 
+export const convertDateUtcFormatWithoutSec = (UTCDate, page, format) => {
+  if (UTCDate) {
+    if (page === 'index') {
+      return moment.utc(UTCDate).format("DD/MM/YY, h:mm a"); // Removed seconds
+    }
+    if (format) {
+      return moment.utc(UTCDate).format(format.replace("ss", "")); // Removes seconds if present in custom format
+    }
+    return moment.utc(UTCDate).format("YYYY-MM-DDTHH:mm"); // Removed seconds
+  }
+  return "";
+};
+
 export const convertDateString = (dateString) => {
   if (dateString) {
     const date = new Date(dateString);

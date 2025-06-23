@@ -30,6 +30,7 @@ const Index = () => {
   const [isDrag, setIsDrag] = useState(false);
   const [eventTypes, setEventTypes] = useState([]);
   const [matchTypes, setMatchTypes] = useState([]);
+  const [pythonApis, setpythonApis] = useState([]);
   const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
   const [marketTemplateModelVisible, setMarketTemplateModelVisible] = useState(false);
   const [marketTemplateRecord, setMarketTemplateTimeRecord] = useState({});
@@ -81,6 +82,16 @@ const Index = () => {
       .post(`/admin/matchType/all`, {})
       .then((response) => {
         setMatchTypes(response.result);
+        setIsLoading(false);
+      })
+      .catch((error) => { });
+  };
+
+  const fetchPythonAPIData = async () => {
+    await axiosInstance
+      .post(`/admin/competition/pythonAPIs`, {})
+      .then((response) => {
+        setpythonApis(response.result);
         setIsLoading(false);
       })
       .catch((error) => { });
@@ -296,10 +307,16 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={data?.length > 0 && isEqual(checekedList?.sort(), dataIndexList?.sort())}
+            checked={
+              data?.length > 0 &&
+              isEqual(checekedList?.sort(), dataIndexList?.sort())
+            }
             onChange={() => {
-              setCheckedList(isEqual(checekedList?.sort(), dataIndexList?.sort()) ? [] : dataIndexList
-              )
+              setCheckedList(
+                isEqual(checekedList?.sort(), dataIndexList?.sort())
+                  ? []
+                  : dataIndexList
+              );
             }}
           />
         </div>
@@ -322,8 +339,7 @@ const Index = () => {
       key: "select",
       style: { width: "2%" },
     },
-    checkPermission(permissionObj, pageName, PERMISSION_EDIT)
-    && {
+    checkPermission(permissionObj, pageName, PERMISSION_EDIT) && {
       title: "Edit",
       key: "edit",
       render: (text, record) => (
@@ -345,11 +361,7 @@ const Index = () => {
         <div className="flex-shrink-0">
           {text ? (
             <div>
-              <img
-                className="avatar-xs"
-                alt=""
-                src={text}
-              />
+              <img className="avatar-xs" alt="" src={text} />
             </div>
           ) : (
             <Avatar src="#" alt="ET">
@@ -374,10 +386,11 @@ const Index = () => {
       title: "Match Type",
       dataIndex: "matchTypeId",
       render: (text, record) => {
-        const matchTypeName = matchTypes.length > 0 && matchTypes.find((item) => item.matchTypeId == record?.matchTypeId)?.matchType; 
-        return (
-          <span>{matchTypeName}</span>
-        );
+        const matchTypeName =
+          matchTypes.length > 0 &&
+          matchTypes.find((item) => item.matchTypeId == record?.matchTypeId)
+            ?.matchType;
+        return <span>{matchTypeName}</span>;
       },
       key: "matchTypeId",
       sort: true,
@@ -386,9 +399,7 @@ const Index = () => {
     {
       title: "Type",
       dataIndex: "type",
-      render: (text, record) => (
-        <span>{mapType(text)}</span>
-      ),
+      render: (text, record) => <span>{mapType(text)}</span>,
       key: "type",
       sort: true,
       style: { width: "10%" },
@@ -419,27 +430,41 @@ const Index = () => {
       title: "",
       key: "matchType",
       render: (text, record) => {
-        const matchTypeName = matchTypes.length > 0 && matchTypes.find((item) => item?.matchTypeId == record?.matchTypeId)?.matchType; 
+        const matchTypeName =
+          matchTypes.length > 0 &&
+          matchTypes.find((item) => item?.matchTypeId == record?.matchTypeId)
+            ?.matchType;
         return (
-        <div className="d-flex align-items-center gap-2">
-          <>
-            {parseInt(record.matchTypeId) ?
-              <Tooltip title={"Add Market Template"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
-                <Button
-                  color={"primary"}
-                  size="sm"
-                  className="btn"
-                  onClick={() => {
-                    setMarketTemplateModelVisible(true);
-                    setMarketTemplateTimeRecord({...record, matchType: matchTypeName});
-                  }}
+          <div className="d-flex align-items-center gap-2">
+            <>
+              {parseInt(record.matchTypeId) ? (
+                <Tooltip
+                  title={"Add Market Template"}
+                  color={"#e8e8ea"}
+                  overlayInnerStyle={{ color: "#000" }}
                 >
-                  <i className="bx bx-plus"></i>
-                </Button>
-              </Tooltip> : ""}
-          </>
-        </div>
-      )},
+                  <Button
+                    color={"primary"}
+                    size="sm"
+                    className="btn"
+                    onClick={() => {
+                      setMarketTemplateModelVisible(true);
+                      setMarketTemplateTimeRecord({
+                        ...record,
+                        matchType: matchTypeName,
+                      });
+                    }}
+                  >
+                    <i className="bx bx-plus"></i>
+                  </Button>
+                </Tooltip>
+              ) : (
+                ""
+              )}
+            </>
+          </div>
+        );
+      },
       style: { width: "2%", textAlign: "center" },
     },
     {
@@ -448,9 +473,9 @@ const Index = () => {
       render: (text, record) => {
         const statusLabels = {
           1: "Upcoming",
-          2: "Started", 
+          2: "Started",
           3: "Completed",
-          4: "Stop"
+          4: "Stop",
         };
         return (
           <span
@@ -475,21 +500,40 @@ const Index = () => {
       style: { width: "10%" },
     },
     {
+      title: "API",
+      dataIndex: "pythonId",
+      render: (text, record) => {
+        const pythonApiNames =
+          pythonApis.length > 0 &&
+          pythonApis.find((item) => item.id == record?.pythonId)?.developerName;
+        return <span>{pythonApiNames}</span>;
+      },
+      key: "pythonId",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
       title: "Active",
       key: "isActive",
       render: (text, record) => (
-      <Tooltip title={"Active/Inactive Competition"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-        <Button
-          color={`${record.isActive ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            handlePermissions("isActive", record, record.isActive);
-          }}
+        <Tooltip
+          title={"Active/Inactive Competition"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
         >
-          <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
-        </Button>
-      </Tooltip>
+          <Button
+            color={`${record.isActive ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handlePermissions("isActive", record, record.isActive);
+            }}
+          >
+            <i
+              className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}
+            ></i>
+          </Button>
+        </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -497,7 +541,11 @@ const Index = () => {
       title: "Virtual",
       key: "isVirtual",
       render: (text, record) => (
-        <Tooltip title={"Active/Inactive Virtual"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+        <Tooltip
+          title={"Active/Inactive Virtual"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
           <Button
             color={`${record.isVirtual ? "primary" : "danger"}`}
             size="sm"
@@ -526,7 +574,9 @@ const Index = () => {
             handleIsTrending("isTrending", record, record.isTrending);
           }}
         >
-          <i className={`bx ${record.isTrending ? "bx-check" : "bx-block"}`}></i>
+          <i
+            className={`bx ${record.isTrending ? "bx-check" : "bx-block"}`}
+          ></i>
         </Button>
       ),
       style: { width: "2%", textAlign: "center" },
@@ -560,7 +610,9 @@ const Index = () => {
             handleIsEventSnap("isEventSnap", record, record?.isEventSnap);
           }}
         >
-          <i className={`bx ${record.isEventSnap ? "bx-check" : "bx-block"}`}></i>
+          <i
+            className={`bx ${record.isEventSnap ? "bx-check" : "bx-block"}`}
+          ></i>
         </Button>
       ),
       style: { width: "2%", textAlign: "center" },
@@ -577,7 +629,9 @@ const Index = () => {
             handleIsPointTable("isPointTable", record, record?.isPointTable);
           }}
         >
-          <i className={`bx ${record.isPointTable ? "bx-check" : "bx-block"}`}></i>
+          <i
+            className={`bx ${record.isPointTable ? "bx-check" : "bx-block"}`}
+          ></i>
         </Button>
       ),
       style: { width: "2%", textAlign: "center" },
@@ -587,7 +641,11 @@ const Index = () => {
       key: "competitionId",
       render: (text, record) => (
         <>
-          <Tooltip title={"Snap"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Tooltip
+            title={"Snap"}
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
             <Button
               color={"primary"}
               size="sm"
@@ -596,18 +654,33 @@ const Index = () => {
                 handleTournament(record);
               }}
             >
-              <i class='bx bxs-store' ></i>
+              <i class="bx bxs-store"></i>
             </Button>
           </Tooltip>
         </>
       ),
       style: { width: "2%", textAlign: "center" },
     },
+    {
+      title: "TPID",
+      dataIndex: "tpId",
+      key: "tpId",
+      style: { width: "10%" },
+      sort: true,
+    },
+    {
+      title: "CID",
+      dataIndex: "competitionId",
+      key: "competitionId",
+      style: { width: "10%" },
+      sort: true,
+    },
   ];
 
   const handleReset = (value) => {
     fetchData(value)
   }
+  
   //elements required
   const tableElement = {
     title: "Competition",
@@ -615,6 +688,7 @@ const Index = () => {
     headerSelect: false,
     eventTypeSelect: true,
     matchTypeSelect: true,
+    pythonApiSelect: true,
     typeSelect: true,
     isActive: true,
     resetButton: true,
@@ -647,6 +721,7 @@ const Index = () => {
     fetchData();
     fetchEventTypeData();
     fetchMatchTypeData();
+    fetchPythonAPIData();
   }, []);
 
   const handleReload = (value) => {
@@ -668,6 +743,7 @@ const Index = () => {
             changeOrderApiName="competition"
             eventTypes={eventTypes}
             matchType={matchTypes}
+            pythonApis={pythonApis}
             singleCheck={checekedList}
             reFetchData={fetchData}
             handleReload={handleReload}

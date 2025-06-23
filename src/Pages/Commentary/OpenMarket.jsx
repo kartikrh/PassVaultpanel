@@ -30,6 +30,7 @@ export const OpenMarket = () => {
     const [players, setPlayers] = useState({});
     const [comPlayers, setComPlayers] = useState([]);
     const [comTeams, setComTeams] = useState([]);
+    const [partnership, setPartnership] = useState({});
     const [socketUpdateBallData, setSocketUpdateBallData] = useState({});
     const [categories, setCategories] = useState([]);
     const [fullCategories, setFullCategories] = useState([]);
@@ -154,6 +155,19 @@ export const OpenMarket = () => {
 
         const predefinedValue = (newPlayerLine - player.batRun) / (decay * SRPower);
         console.log("Re-calculated Predefined Value = (newPlayerLine - player.batRun) / (decay * SR^0.15) =", predefinedValue);
+        return predefinedValue;
+    }
+    function calculateFOWPredictedValue( partnershipRuns, oversCompleted, maxOvers, newPlayerLine, isSocket) {
+        console.log("INPUTS:",partnershipRuns, oversCompleted, maxOvers, newPlayerLine, isSocket);
+
+        const oversRatio = oversCompleted / maxOvers;
+        console.log("Overs Ratio = oversCompleted / maxOvers =", oversRatio);
+
+        const decay = Math.max(0.7, 1 - 0.4 * oversRatio);
+        console.log("Decay Factor = max(0.7, 1 - 0.4 * oversRatio) =", decay);
+
+        const predefinedValue = (newPlayerLine - partnershipRuns) / (decay);
+        console.log("Re-calculated Predefined Value = (newPlayerLine - partnershipRuns) / (decay) =", predefinedValue);
         return predefinedValue;
     }
 
@@ -606,7 +620,7 @@ export const OpenMarket = () => {
     };
 
     const handleValueChange = (record, key, value) => {
-        // console.log("record", record, key, value)
+      // console.log("record", record, key, value)
         setHasUnsavedChanges(true);
         setData(prevData => {
             let updatedData = [...prevData];
@@ -758,11 +772,46 @@ export const OpenMarket = () => {
                         const lineDifference = parseFloat(value) - (originalData.line || 0);
                         if (record.marketTypeId === 2 && record.marketTypeCategoryId == 12 && (typeof newPredifinedValue === "number" && Number.isFinite(newPredifinedValue))) {
                             updatedMarket.predefinedValue = newPredifinedValue.toFixed(2)
+                        } else if(record.marketTypeCategoryId == 31 && newCalculation) {
+                            if (!isEmpty(socketUpdateBallData)) {
+                                const overStr = socketUpdateBallData?.over?.toString();
+                                let overs = "0", balls = "0";
+
+                                if (overStr && overStr.includes(".")) {
+                                    [overs, balls] = overStr.split(".");
+                                } else if (overStr) {
+                                    overs = overStr;
+                                    balls = "0";
+                                }
+
+                                const ballsComplete = parseInt(overs, 10) * 6 + parseInt(balls, 10);
+                                const totalBalls = parseInt(socketUpdateBallData?.oversPerInings?.toString() || "0", 10) * 6;
+
+                                newPredifinedValue = calculateFOWPredictedValue(socketUpdateBallData?.currentPartnership.totalRuns, ballsComplete, totalBalls, value, true);
+
+                            } else {
+                                const team = comTeams.find(i => i.teamStatus == 1);
+                                const teamOverStr = team?.teamOver?.toString();
+                                let overs = "0", balls = "0";
+
+                                if (teamOverStr && teamOverStr.includes(".")) {
+                                    [overs, balls] = teamOverStr.split(".");
+                                } else if (teamOverStr) {
+                                    overs = teamOverStr;
+                                    balls = "0";
+                                }
+
+                                const ballsComplete = parseInt(overs, 10) * 6 + parseInt(balls, 10);
+                                const totalBalls = parseInt(team?.teamMaxOver?.toString() || "0", 10) * 6;
+
+                                newPredifinedValue = calculateFOWPredictedValue(partnership.totalRuns, ballsComplete, totalBalls, value, false
+                                );
+                            }
+                            updatedMarket.predefinedValue = newPredifinedValue.toFixed(2)
                         } else {
                             updatedMarket.predefinedValue = parseFloat((originalData.predefinedValue || 0) + lineDifference).toFixed(2);
                         }
-                        if (updatedMarket.marketTypeCategoryId === 31) {
-                            // Calculate lineDiff only for the changed market
+                        if (updatedMarket.marketTypeCategoryId === 31 && !newCalculation) {
                             updatedMarket.lineDiff = lineDifference;
 
                             updatedMarket.runner = [{
@@ -776,20 +825,17 @@ export const OpenMarket = () => {
                             }];
 
                             updatedData[marketIndex] = generateOverUnderLineType(updatedMarket, marketTypeObj);
-
                             const category31Markets = updatedData.filter(m => {
                                 return m.marketTypeCategoryId === 31 &&
                                     ((m.inningsId === updatedMarket.inningsId) && (m.teamId === updatedMarket.teamId))
                             });
                             const currentIndex = category31Markets.findIndex(m => m.marketId === record.marketId);
-
                             let previousLine = parseFloat(value);
                             for (let i = currentIndex + 1; i < category31Markets.length; i++) {
                                 const nextMarket = category31Markets[i];
                                 const nextMarketIndex = updatedData.findIndex(m => m.marketId === nextMarket.marketId);
-
                                 if (nextMarketIndex !== -1) {
-                                    const nextNewLine = previousLine + parseFloat(nextMarket.predefinedValue || 0);
+                                    const nextNewLine = previousLine + parseFloat(newCalculation ? nextMarket.predefinedValue + 1 : nextMarket.predefinedValue || 0);
                                     updatedData[nextMarketIndex] = {
                                         ...nextMarket,
                                         runner: [{
@@ -1379,6 +1425,7 @@ export const OpenMarket = () => {
                     const formattedData = formatAPIDataForState({ responseData: response?.result?.marketList || [], teamData: teamsObj })
                     setComPlayers(response?.result?.comPlayer)
                     setComTeams(response?.result?.teams)
+                    setPartnership(response?.result?.partnership)
                     setPlayers(playersObj)
                     setTeams(teamsObj)
                     setData(formattedData.data);

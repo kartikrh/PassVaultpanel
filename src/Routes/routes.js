@@ -156,7 +156,8 @@ import Venue from "../Pages/Venue";
 import AddVenue from "../Pages/Venue/AddVenue.jsx";
 import AddCardType from "../Pages/CardType/AddCardType.jsx";
 import ImportEntity from "../Pages/ImportEntity/ImportEntityTable.js";
-
+import PythonApi from "../Pages/PythonApi";
+import AddPythonAPI from "../Pages/PythonApi/AddPythonApi.jsx";
 
 const authProtectedRoutes = [
   //dashboard
@@ -216,6 +217,8 @@ const authProtectedRoutes = [
   { path: "/venue", component: <Venue /> },
   { path: "/addVenue", component: <AddVenue /> },
   { path: "/importEntity", component: <ImportEntity /> },
+  { path: "/pythonAPI", component: <PythonApi /> },
+  { path: "/addpythonAPI", component: <AddPythonAPI /> },
   {
     path: "/commentaryMarketTemplate",
     component: <CommentaryMarketTemplate />,

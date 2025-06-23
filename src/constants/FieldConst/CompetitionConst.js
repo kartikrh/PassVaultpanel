@@ -1,4 +1,4 @@
-import { DATE_TIME_PICKER, IMAGE, SELECT, SWITCH, TEXT } from "../../components/Common/Const";
+import { DATE_TIME_PICKER, IMAGE, SELECT, SWITCH, TEXT, COUNTER } from "../../components/Common/Const";
 
 export const CompetitionFields = [
     {
@@ -106,15 +106,39 @@ export const CompetitionFields = [
         type: DATE_TIME_PICKER,
     },
     {
+        name: "pythonId",
+        label: "API",
+        parentclassName: "",
+        type: SELECT,
+        options: [{ label: "Select API", value: "0" }],
+        defaultValue: "0",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
+    },
+    {
+        name: "tpId",
+        label: "TPID",
+        type: COUNTER,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
+    },
+    {
+        name: "isVirtual",
+        label: "Virtual",
+        defaultValue: false,
+        parentclassName: "",
+        type: SWITCH,
+    },
+    {
         name: "isMen",
         label: "Is Men",
         defaultValue: false,
         parentclassName: "",
         type: SWITCH,
     },
-    {
-        name: "isVirtual",
-        label: "Virtual",
+     {
+        name: "isTrending",
+        label: "Trending",
         defaultValue: false,
         parentclassName: "",
         type: SWITCH,
@@ -127,30 +151,19 @@ export const CompetitionFields = [
         type: SWITCH,
     },
     {
-        name: "isPointTable",
-        label: "Is Point Table",
-        defaultValue: false,
-        parentclassName: "",
-        type: SWITCH,
-    },
-    {
-        name: "isTrending",
-        label: "Trending",
-        defaultValue: false,
-        parentclassName: "",
-        type: SWITCH,
-    },
-    {
         name: "isActive",
         label: "Active",
         defaultValue: true,
         parentclassName: "",
         type: SWITCH,
     },
-
-
-
-    
+     {
+        name: "isPointTable",
+        label: "Is Point Table",
+        defaultValue: false,
+        parentclassName: "",
+        type: SWITCH,
+    },
     {
         type: TEXT,
         name: "winPoint",
