@@ -89,7 +89,9 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
     // console.log({ overBalls, teamDetails, overHistory, playersList, currentOver })
     // const viewportWidth = window.innerWidth;
     const [viewportWidth, setViewportWidth] = useState();
-    const [expanded, setExpanded] = useState();
+    const [expanded, setExpanded] = useState(false);
+    const [hasInitialized, setHasInitialized] = useState(false); // ✅ to track one-time init
+
     const processedHistory = React.useMemo(() => {
         if (!overHistory?.length) return [];
 
@@ -143,11 +145,19 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
         return b.localeCompare(a);
     });
 
+    
     useEffect(() => {
-        if (sortedKeys.length > 0 && !expanded) {
+        if (!hasInitialized && sortedKeys.length > 0) {
+            setExpanded(sortedKeys[0]);
+            setHasInitialized(true); // ✅ prevent future runs
+        }
+    }, [sortedKeys, hasInitialized]); 
+
+    useEffect(() => {
+        if (sortedKeys.length > 0 && (!expanded || expanded == undefined)) {
             setExpanded(sortedKeys[0]);
         }
-    }, [sortedKeys]);
+    }, []);
 
     const handleChange = (panel) => (event, isExpanded) => {
         setExpanded(isExpanded ? panel : false);
@@ -410,8 +420,7 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                         className='right-panel-over-accordian'
                         key={key}
                         // disabled
-                        // expanded={sortedKeys.length > 1 ? expanded === key : expanded}
-                        expanded={expanded === key}
+                        expanded={sortedKeys.length > 1 ? expanded === key : expanded}
                         onChange={handleChange(key)}
                         sx={{
                             '&:before': { display: 'none' },
