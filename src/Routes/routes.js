@@ -80,7 +80,7 @@ import Login from "../Pages/Authentication/Login";
 // import ForgetPasswordPage from "../Pages/Authentication/ForgetPassword";
 import Logout from "../Pages/Authentication/Logout";
 // import Register from "../Pages/Authentication/Register";
-
+import ManualOddMarketsPage from '../Pages/ManualOddMarketsPage'
 // Import Authentication Inner Pages
 import Login1 from "../Pages/AuthenticationPages/Login";
 // import Register1 from "../Pages/AuthenticationPages/Register";
@@ -260,6 +260,7 @@ const authProtectedRoutes = [
   { path: "/addMarketTemplate", component: <AddMarketTemplate /> },
   { path: "/marketTemplateRunner", component: <MarketTemplateRunner /> },
   { path: "/eventMarkets", component: <EventMarkets /> },
+  { path: "/manualOddsMarkets", component: <ManualOddMarketsPage /> },
   { path: "/addEventMarket", component: <AddEventMarket /> },
   { path: "/marketLogs", component: <MarketLogs /> },
   { path: "/marketDataLogs", component: <MarketDataLogs /> },

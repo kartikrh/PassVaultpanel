@@ -61,6 +61,7 @@ export const TAB_ERROR_LOGS = "Error Logs";
 export const TAB_EVENT_TYPES = "Event Types";
 export const TAB_EVENT_HISTORY = "Event History";
 export const TAB_EVENT_MARKETS = "Event Markets";
+export const MANUALODDS_MARKETS = "Manual Odds Markets";
 export const TAB_EVENT_RESULT = "Event Result";
 export const TAB_MANUAL_EVENT = "Manual Event";
 export const TAB_MARKET_TEMPLATE = "Market Templates";

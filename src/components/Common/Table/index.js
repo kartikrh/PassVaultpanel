@@ -1970,7 +1970,7 @@ const Index = forwardRef(
                               />
                             </div>
                           ) : null}
-                          {tableElement.title !== "Event Markets" &&
+                          {tableElement.title !== "Event Markets" && tableElement.title !== "Manual Odds Markets" &&
                           tableElement?.marketTypeSelect ? (
                             <div className="">
                               <Select
@@ -2010,7 +2010,7 @@ const Index = forwardRef(
                               />
                             </div>
                           ) : null}
-                          {tableElement.title !== "Event Markets" &&
+                          {tableElement.title !== "Event Markets" && tableElement.title !== "Manual Odds Markets" &&
                           tableElement?.categorySelect ? (
                             <div className="">
                               <Select
@@ -2857,7 +2857,7 @@ const Index = forwardRef(
                     tableElement?.delayTextBox ? (
                       <Row className="">
                         <div className="d-flex flex-wrap align-items-center gap-2">
-                          {tableElement.title === "Event Markets" &&
+                          {(tableElement.title === "Event Markets" || tableElement.title === "Manual Odds Markets") &&
                           tableElement?.marketTypeSelect ? (
                             <div className="">
                               <Select
@@ -2867,7 +2867,7 @@ const Index = forwardRef(
                                     width: 180,
                                   }), // Adjust width as needed
                                 }}
-                                value={selectedTableElements?.marketTypeName}
+                                value={selectedTableElements?.marketTypeName || selectedTableElementsLogs?.marketTypeName}
                                 placeholder="Market Type"
                                 onChange={(e) => {
                                   if (
@@ -2893,11 +2893,14 @@ const Index = forwardRef(
                                     value: item?.marketTypeId,
                                   })),
                                 ]}
+                                isDisabled={
+                                  selectedTableElementsLogs?.marketTypeName
+                                }
                                 classNamePrefix="filter-dropdown"
                               />
                             </div>
                           ) : null}
-                          {tableElement.title === "Event Markets" &&
+                          {(tableElement.title === "Event Markets" || tableElement.title === "Manual Odds Markets") &&
                           tableElement?.categorySelect ? (
                             <div className="">
                               <Select
@@ -2907,7 +2910,7 @@ const Index = forwardRef(
                                     width: 180,
                                   }),
                                 }}
-                                value={selectedTableElements?.categoryName}
+                                value={selectedTableElements?.categoryName || selectedTableElementsLogs?.categoryName}
                                 placeholder="Category"
                                 onChange={(e) => {
                                   if (
@@ -2931,6 +2934,9 @@ const Index = forwardRef(
                                     value: item?.marketTypeCategoryId,
                                   })),
                                 ]}
+                                isDisabled={
+                                  selectedTableElementsLogs?.categoryName
+                                }
                                 classNamePrefix="filter-dropdown"
                               />
                             </div>
