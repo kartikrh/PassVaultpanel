@@ -1552,6 +1552,8 @@ export const CreateEventMarket = () => {
                     beforeCloseMin: market.beforeCloseMin,
                     isPredefineRunnerValue: market.isPredefineRunnerValue,
                     predefinedValue: predefinedValue, // Add predefinedValue at market level
+                    autoSuspendAfterChase: market.autoSuspendAfterChase || null,
+                    autoNotCreateAfterChase: market.autoNotCreateAfterChase || null,
                     runners: selectedRunners?.map(runner => {
                         // Remove predefinedValue from runner level
                         const { predefinedValue: _, ...runnerWithoutPredefined } = runner;
@@ -1588,7 +1590,6 @@ export const CreateEventMarket = () => {
             const response = await axiosInstance.post(`/admin/eventMarket/saveEventMarketV1`, {
                 eventMarket: savedData,
             });
-
             // Show success message
             dispatch(updateToastData({
                 data: response?.message,

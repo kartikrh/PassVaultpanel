@@ -473,20 +473,27 @@ export const UpdateManualOdds = () => {
             const updatedPrices = { ...prevSavedPrices };
 
             // Find selected runner
-            const selectedRunner = runners.find(r => r.isSelected);
+            const currentRunners = runnersRef.current;
+            console.log('Runners from runnersRef:', currentRunners);
+
+            if (!currentRunners || currentRunners.length === 0) {
+                console.log('No runners available, returning');
+                return prevSavedPrices;
+            }
+
+            const selectedRunner = currentRunners.find(r => r.isSelected);
             if (!selectedRunner) {
                 console.log('No selected runner found');
                 return prevSavedPrices;
             }
-            console.log('Selected runner:', selectedRunner.runnerId);
 
-            // Get non-selected runner
-            const nonSelectedRunners = runners.filter(r => !r.isSelected);
+            const nonSelectedRunners = currentRunners.filter(r => !r.isSelected);
             if (!nonSelectedRunners.length) {
                 console.log('No non-selected runners found');
                 return prevSavedPrices;
             }
             const nonSelectedRunner = nonSelectedRunners[0];
+            console.log('Selected runner:', selectedRunner.runnerId);
             console.log('Non-selected runner:', nonSelectedRunner.runnerId);
 
             // Get current selected back price
@@ -523,7 +530,7 @@ export const UpdateManualOdds = () => {
             console.log('Updated saved prices:', updatedPrices);
             return updatedPrices;
         });
-    }, [runners]);
+    }, []);
 
     const setTempRateDiffWithRef = useCallback((value) => {
         setTempRateDiff(value);
@@ -1376,6 +1383,10 @@ export const UpdateManualOdds = () => {
     const handleKeyPress = useCallback((event) => {
         const key = event.key.toUpperCase();
         console.log(`Key pressed: ${key}`);
+        if (key === '-') {
+            console.log('⛔ Key "-" pressed — ignoring.');
+            return;
+        }
 
         // Check if we're in manual mode
         const isManualMode = !isLive && !directLineEnabled;
@@ -1420,12 +1431,11 @@ export const UpdateManualOdds = () => {
         // FIRST: Handle shortcut keys (Q, W, E, R, T, Y, U, I, O, P) - ALWAYS prevent default for these
         // const shortcutKeys = ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'];
         // shortcutKeys.includes(key)
-        if (key === 'E' || key === 'e') {
-        
-            // ALWAYS prevent default for shortcut keys to avoid input field issues
+        if (settings.shortcutValues.hasOwnProperty(key.toUpperCase())) {
             event.preventDefault();
 
-            if (value && value !== '') {
+            const value = settings.shortcutValues[key.toUpperCase()];
+            if (value && value.trim() !== '') {
                 console.log(`✅ Valid shortcut key: ${key} with value: ${value}`);
 
                 const newRateDiff = parseFloat(value);
@@ -1457,6 +1467,8 @@ export const UpdateManualOdds = () => {
                 console.log('Updating saved prices with new rate diff');
                 updateSavedPricesWithNewRateDiff(newRateDiff);
                 return;
+            } else {
+                console.log(`⚠️ Shortcut key "${key}" exists but has an empty value. Skipping.`);
             }
         }
 
@@ -3419,6 +3431,14 @@ export const UpdateManualOdds = () => {
                                                 label="Main"
                                                 value={selectedRunnerDetails.main}
                                                 onChange={(e) => {
+                                                    const inputValue = e.target.value;
+                                                    console.log("Input value:", inputValue);
+
+                                                    // If input is just "-" or empty, skip logic (wait for valid number)
+                                                    if (inputValue === '-' || inputValue.trim() === '') {
+                                                        console.log("⛔ Ignored input:", inputValue);
+                                                        return;
+                                                    }
                                                     const mainValue = Math.max(0, parseInt(e.target.value) || 0);
                                                     const pointValue = parseInt(selectedRunnerDetails.point) || 0;
                                                     const combinedValue = mainValue + (pointValue / 100);
@@ -3446,17 +3466,25 @@ export const UpdateManualOdds = () => {
                                                 label="Point"
                                                 value={selectedRunnerDetails.point}
                                                 onChange={(e) => {
-                                                    const pointValue = Math.max(0, Math.min(99, parseInt(e.target.value) || 0));
-                                                    const mainValue = parseInt(selectedRunnerDetails.main) || 0;
-                                                    const combinedValue = mainValue + (pointValue / 100);
+                                                        const inputValue = e.target.value;
+                                                        console.log("Input value:", inputValue);
 
-                                                    setSelectedRunnerDetails(prev => ({
-                                                        ...prev,
-                                                        point: pointValue.toString().padStart(2, '0')
-                                                    }));
-
-                                                    // Immediately update saved prices
-                                                    handleSavedRunnerChange(selectedRunner, 'back', combinedValue.toFixed(2));
+                                                        // If input is just "-" or empty, skip logic (wait for valid number)
+                                                        if (inputValue === '-' || inputValue.trim() === '') {
+                                                            console.log("⛔ Ignored input:", inputValue);
+                                                            return;
+                                                        }
+                                                        const pointValue = Math.max(0, Math.min(99, parseInt(e.target.value) || 0));
+                                                        const mainValue = parseInt(selectedRunnerDetails.main) || 0;
+                                                        const combinedValue = mainValue + (pointValue / 100);
+    
+                                                        setSelectedRunnerDetails(prev => ({
+                                                            ...prev,
+                                                            point: pointValue.toString().padStart(2, '0')
+                                                        }));
+    
+                                                        // Immediately update saved prices
+                                                        handleSavedRunnerChange(selectedRunner, 'back', combinedValue.toFixed(2));
                                                 }}
                                                 disabled={marketStatus === CLOSE_VALUE.toString()}
                                                 inputProps={{
