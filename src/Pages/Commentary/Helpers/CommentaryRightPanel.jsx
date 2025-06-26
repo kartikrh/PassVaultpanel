@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import OversAccordion from "./OverAccordian";
 import { useEffect } from "react";
 import PartnershipAccordian from "./PartnershipAccordian";
+import DRSAccordion from "./DRSAccordion";
 
-const CommentaryRightPanel = ({ overBalls, partnerships, teamDetails, overHistory, players, currentOver, refId }) => {
-    const [activeTab, setActiveTab] = useState('overs'); // 'overs' or 'partnerships'
+const CommentaryRightPanel = ({ overBalls, partnerships, teamDetails, overHistory, players, currentOver, refId, allteams }) => {
+    const [activeTab, setActiveTab] = useState('overs'); // 'overs' or 'partnerships' or 'drs'
     // const renderPartnerships = () => {
     //     return partnerships.map((partnership, index) => {
     //         return (
@@ -81,6 +82,12 @@ const CommentaryRightPanel = ({ overBalls, partnerships, teamDetails, overHistor
                 >
                     Partnerships
                 </button>
+                <button
+                    className={`tab-button ${activeTab === 'drs' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('drs')}
+                >
+                    DRS
+                </button>
                 </div>
                 <p className="d-flex align-items-center m-0 modal-header-title">refId: {refId}</p>
             </div>
@@ -94,7 +101,7 @@ const CommentaryRightPanel = ({ overBalls, partnerships, teamDetails, overHistor
                         playersList={players}
                         currentOver={currentOver}
                     />
-                ) : (
+                ) : activeTab === 'partnerships' ? (
                     <div className="partnerships-container">
                         <PartnershipAccordian
                             partnerships={partnerships}
@@ -106,7 +113,15 @@ const CommentaryRightPanel = ({ overBalls, partnerships, teamDetails, overHistor
                         />
                         {/* {renderPartnerships()} */}
                     </div>
-                )}
+                ) : activeTab === 'drs' ? (
+                    <div className="drs-container">
+                        <DRSAccordion
+                            overBalls={overBalls}
+                            teamDetails={allteams}
+                            currentOver={currentOver}
+                        />
+                    </div>
+                ) : null}
             </div>
         </div>
     );

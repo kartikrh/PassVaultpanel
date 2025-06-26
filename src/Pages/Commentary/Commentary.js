@@ -47,6 +47,7 @@ const Commentary = (props) => {
     const [_currentPartnership, _setCurrentPartnership] = useState({})
     const [currentBall, setCurrentBall] = useState({})
     const [currentWicket, setCurrentWicket] = useState({})
+    const [allInningaTeams, setAllIningsTeams] = useState([])
     const [teams, setTeams] = useState(undefined)
     const [_teams, _setTeams] = useState(undefined)
     const [players, setPlayers] = useState(undefined)
@@ -1906,6 +1907,7 @@ const Commentary = (props) => {
             "isActive": true,
         }
         setTeams(currentInningsTeams)
+        setAllIningsTeams(propsData.commentaryData.commentaryTeams)
         setPlayers({ [BATTING_TEAM]: battingTeam, [BOWLING_TEAM]: bowlingTeam })
         setOnPitchPlayers(onPitchPlayers)
         setOverBallByBallDisplay(getBallsForAllOver(ballByBallHistoryData))
@@ -2639,6 +2641,7 @@ const Commentary = (props) => {
                 isPredict={props?.isPredict}
                 isPredictToggle={props?.isPredictToggle}
                 setIsPredictToggle={props?.setIsPredictToggle}
+                allteams={allInningaTeams}
             />}
         {!props?.isNewUi && !(isCommentaryBallLoading || inningsChangePopup || superOverModal || showRretiredHurt || isPaneltyPopup || props.isDataLoading ||
             winnerAnnouncement || showUpdateInnings || completeMatchModal || superOverModal || showCricketFieldModal) &&

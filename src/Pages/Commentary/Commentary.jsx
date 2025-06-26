@@ -11,7 +11,7 @@ export const CommentaryScreen = ({
     refId, teamDetails, onPitchPlayers, updateRuns, changePlayer, changeOver, updateExtras, onWicketClick,
     onUndoClick, changeStrike, endInnings, isLoading, changeBowler, updateDisplayStatus, showPaneltyRuns,
     overBalls, anyPopup, handleRetiredHurt = {}, target, partnerships, commentaryId, handleWheelShowToggle, handleRemainingBallsShowToggle, isRemainingBallsShow, isWheelShow, overHistory,
-    players, currentOver, currentInnings, isPredict, isPredictToggle, setIsPredictToggle }) => {
+    players, currentOver, currentInnings, isPredict, isPredictToggle, setIsPredictToggle,allteams }) => {
     const [actionPopup, setActionPopup] = useState(undefined);
     
     const OffSymbolStatus = () => {
@@ -475,6 +475,7 @@ export const CommentaryScreen = ({
                     overHistory={overHistory}
                     players={players}
                     currentOver={currentOver}
+                    allteams={allteams}
                 />
             </Col>
         </Row >
