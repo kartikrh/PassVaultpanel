@@ -1655,7 +1655,7 @@ const Index = () => {
               </Tooltip>
             )}
 
-            {record.isPredictMarket && (
+            {/* {record.isPredictMarket && (
               <Tooltip
                 title={"Manual Odds"}
                 color={"#e8e8ea"}
@@ -1672,7 +1672,7 @@ const Index = () => {
                   <i class="bx bx-arrow-to-right"></i>
                 </Button>
               </Tooltip>
-            )}
+            )} */}
           </>
         </div>
       ),
@@ -2046,7 +2046,7 @@ const Index = () => {
                     }}
                   >
                     {/* <i class="bx bxs-up-arrow-square"></i> */}
-                    MO
+                    B
                   </Button>
                 </Tooltip>
               )}

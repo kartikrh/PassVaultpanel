@@ -12,7 +12,7 @@ import axiosInstance from "../../Features/axios";
 import { updateToastData } from "../../Features/toasterSlice";
 import { ERROR, MARKET_RUNNER_CONNECT, MARKET_RUNNER_DATA, COMMENTARY_STATUS_CONNECT, SUCCESS, UPDATE_BALL_STATUS, INNINGS_CONNECT, INNINGS_RUN_DATA } from "../../components/Common/Const";
 import { useDispatch } from "react-redux";
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import createSocket from '../../Features/socket.js';
 import { RiRefreshLine } from 'react-icons/ri';
 import { AUTO_STATUS, BALL_START_STATUS, CLOSE_VALUE, CUSTOM_STATUS, INACTIVE_VALUE, OPEN_VALUE, SCORING_STATUS, SUSPEND_VALUE } from './CommentartConst.js';
@@ -379,10 +379,11 @@ export const UpdateManualOdds = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const socket = createSocket();
+    const location = useLocation()
     // const commentaryId = localStorage.getItem("updateManualOddsCommentaryId");
     // const commentaryDetails = JSON.parse(localStorage.getItem('updateManualOddsCommentaryDetails') || "{}");
 
-    const commentaryId = sessionStorage.getItem("updateManualOddsCommentaryId");
+    const commentaryId = sessionStorage.getItem("updateManualOddsCommentaryId") || location?.state?.eventName?.value;
     const commentaryDetails = JSON.parse(sessionStorage.getItem('updateManualOddsCommentaryDetails') || "{}");
 
     // const [isSocketConnected, setIsSocketConnected] = useState(false);
@@ -1987,7 +1988,7 @@ export const UpdateManualOdds = () => {
     const fetchMarketData = async () => {
         setIsLoading(true);
         try {
-            const response = await axiosInstance.post('/admin/eventMarket/getManualMarket', { commentaryId });
+            const response = await axiosInstance.post('/admin/eventMarket/getManualMarket', { commentaryId: commentaryId ? commentaryId : location?.state?.eventName?.value });
             if (response?.result) {
                 if (Number(response?.result?.market?.[0]?.rateSourceRefID) == 0) {
                     setIsLive(false)

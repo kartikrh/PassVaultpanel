@@ -8,11 +8,31 @@ import { updateToastData } from "../../Features/toasterSlice.js";
 import { ERROR, INNINGS_CONNECT, INNINGS_RUN_DATA, SUCCESS } from "../../components/Common/Const.js";
 import { useDispatch } from "react-redux";
 import SpinnerModel from "../../components/Model/SpinnerModel";
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import createSocket from '../../Features/socket.js';
+import Select from "react-select";
+import { convertDateUTCToLocal } from '../../components/Common/Reusables/reusableMethods.js';
 
 export const ManualOddsMarket = () => {
     const dispatch = useDispatch();
+    const location = useLocation();
+    const [selectedTableElements, setSelectedTableElements] = useState({
+        eventType: {label : "Cricket", value : 1},
+        competition: null,
+        eventName: null,
+    });
+    
+    const commentaryId = sessionStorage.getItem("updateManualOddsCommentaryId") || location?.state?.eventName?.value || selectedTableElements?.eventName?.value;
+    const commentaryDetails = JSON.parse(sessionStorage.getItem('updateManualOddsCommentaryDetails') || "{}");
+    
+    const [eventTypes, setEventTypes] = useState([]);
+    const [eventList, setEventList] = useState([]);
+    const [competitionList, setCompetitionList] = useState([]);
+    const [eventTypeId, setEventTypeId] = useState(null);
+    const [competitionId, setCompetitionId] = useState(
+        commentaryId ? commentaryDetails?.competitionId : null
+      );
+    const [EventTypeActive, setEventTypeActive] = useState(true);
     const [formData, setFormData] = useState({
         marketName: '',
         runners: [
@@ -30,12 +50,24 @@ export const ManualOddsMarket = () => {
         rateSourceRefID: "",
         favRatio: "",
     });
+    
+
+    useEffect(() => {
+        if (location?.state) {
+            setSelectedTableElements({
+            eventType: location?.state?.eventType ?? null,
+            competition: location?.state?.competition ?? null,
+            eventName: location?.state?.eventName ?? null,
+            });
+
+            // Optional: Set related IDs if needed
+            setEventTypeId(location?.state?.eventType?.value || null);
+            setCompetitionId(location?.state?.competition?.value || null);
+        }
+    }, [location?.state]);
     // const commentaryId = localStorage.getItem("updateManualOddsCommentaryId");
     // const commentaryDetails = JSON.parse(localStorage.getItem('updateManualOddsCommentaryDetails') || "{}");
 
-    const commentaryId = sessionStorage.getItem("updateManualOddsCommentaryId");
-    const commentaryDetails = JSON.parse(sessionStorage.getItem('updateManualOddsCommentaryDetails') || "{}");
-    
     let navigate = useNavigate();
     const [eventData, setEventData] = useState({
         comDetails: null,
@@ -50,13 +82,27 @@ export const ManualOddsMarket = () => {
     useEffect(() => {
         if (!isEmpty(commentaryDetails)) {
             document.title = `Bookmakers - ${commentaryDetails?.eventName} [${commentaryDetails?.eventRefId}]`;
-            setFormData({ ...formData, eventRefId: commentaryDetails?.eventRefId })
+
+            if (formData.eventRefId !== commentaryDetails?.eventRefId) {
+                setFormData((prev) => ({
+                    ...prev,
+                    eventRefId: commentaryDetails?.eventRefId,
+                }));
+            }
+        } else if (location?.state && eventData?.comDetails?.eventRefId) {
+            if (formData.eventRefId !== eventData?.comDetails?.eventRefId) {
+                setFormData((prev) => ({
+                    ...prev,
+                    eventRefId: eventData?.comDetails?.eventRefId,
+                }));
+            }
         }
-    }, [commentaryDetails])
+    }, [commentaryDetails, location?.state, eventData?.comDetails?.eventRefId, formData.eventRefId]);
+
 
     const fetchMarketData = async () => {
         setIsLoading(true);
-        await axiosInstance.post('/admin/eventMarket/getManualMarket', { commentaryId })
+        await axiosInstance.post('/admin/eventMarket/getManualMarket', { commentaryId: commentaryId ? commentaryId : location?.state ? location?.state?.eventName.value : selectedTableElements?.eventName?.value })
             .then((response) => {
                 if (response?.result) {
                     if (response.result.market) {
@@ -83,9 +129,79 @@ export const ManualOddsMarket = () => {
             });
     };
 
+    const fetchEventTypeData = async () => {
+        await axiosInstance
+          .post(`/admin/eventMarket/eventTypeList`, {
+            isActive: EventTypeActive,
+          })
+          .then((response) => {
+            setEventTypes(response.result);
+            setIsLoading(false);
+          })
+          .catch((error) => {});
+      };
+    const fetchCompetitionList = async (eventTypeId) => {
+    await axiosInstance
+        .post(`/admin/eventMarket/competitionListByEventTypeId`, {
+        eventTypeId: eventTypeId,
+        })
+        .then((response) => {
+        setCompetitionList(response.result);
+        setIsLoading(false);
+        })
+        .catch((error) => {});
+    };
+    const fetchEventList = async (competitionId) => {
+    await axiosInstance
+        .post(`/admin/eventMarket/commListByCompetitionId`, {
+        competitionId: competitionId,
+        })
+        .then((response) => {
+            const result = response.result || [];
+            setEventList(result);
+            setIsLoading(false);
+
+            const matchedEvent = result.find(
+            (event) => event.commentaryId === Number(commentaryId)
+            );
+
+            if (matchedEvent) {
+            setSelectedTableElements((prev) => ({
+                ...prev,
+                eventName: {
+                value: matchedEvent.commentaryId,
+                label: matchedEvent.eventName,
+                },
+            }));
+            setIsLoading(false);
+            }
+        })
+        .catch((error) => {});
+    };
+    useEffect(() => {
+        fetchEventTypeData()
+        fetchCompetitionList(commentaryDetails?.eventTypeId || eventTypeId);
+        fetchEventList(commentaryDetails?.competitionId || competitionId);
+    }, [
+        commentaryId,
+        commentaryDetails?.eventTypeId,
+        commentaryDetails?.competitionId,
+        commentaryDetails?.commentaryId,
+        competitionId
+    ])
+
+    useEffect(() => {
+    if (eventTypeId) {
+        fetchCompetitionList(eventTypeId);
+    } else if (!eventTypeId) {
+        setCompetitionList([]);
+        setEventList([]);
+    }
+    }, [eventTypeId]);
+
     useEffect(() => {
         fetchMarketData();
-    }, []);
+    }, [selectedTableElements?.eventName?.value]);
 
     useEffect(() => {
         if (!socket) return;
@@ -143,7 +259,7 @@ export const ManualOddsMarket = () => {
     }, [eventData.teams, eventData.tpMarkets]);
 
     const handleDynamicNavigation = (navigateTo) => {
-        navigate(navigateTo);
+        navigate(navigateTo, {state: selectedTableElements.eventName != null ? selectedTableElements : location?.state });
     };
 
 
@@ -239,7 +355,6 @@ export const ManualOddsMarket = () => {
             )
         });
     };
-
     return (
         <React.Fragment>
             <div className="page-content">
@@ -256,6 +371,7 @@ export const ManualOddsMarket = () => {
                                         <Button color="danger" onClick={handleBackClick}>Exit</Button>
                                     </Col>
                                 </Row>
+                                
                                 {isLoading && <SpinnerModel />}
                                 <Row>
                                     {!isEmpty(eventData?.comDetails) && (
@@ -269,7 +385,78 @@ export const ManualOddsMarket = () => {
                                         </Col>
                                     )}
                                 </Row>
+                                <Row>
+                                    <div className='d-flex'>
+                                    {/* Event Type */}
+                                    <Select
+                                        styles={{ control: (base) => ({ ...base, width: 180 }) }}
+                                        value={selectedTableElements?.eventType}
+                                        isDisabled = {location?.state?.eventType}
+                                        placeholder="Event Type"
+                                        onChange={(e) => {
+                                        setSelectedTableElements({
+                                            eventType: e,
+                                            competition: null,
+                                            eventName: null,
+                                        });
+                                        setEventTypeId(e?.value);
+                                        setCompetitionId(null);
+                                        }}
+                                        options={[
+                                        { label: "Select Event Type", value: null },
+                                        ...eventTypes.map((item) => ({
+                                            label: item?.eventType,
+                                            value: item?.eventTypeId,
+                                        })),
+                                        ]}
+                                        classNamePrefix="filter-dropdown"
+                                    />
 
+                                    {/* Competition */}
+                                    <Select
+                                        styles={{ control: (base) => ({ ...base, width: 180 }) }}
+                                        value={selectedTableElements?.competition}
+                                        isDisabled = {location?.state?.competition}
+                                        placeholder="Competition List"
+                                        onChange={(e) => {
+                                        setCompetitionId(e?.value);
+                                        setSelectedTableElements((prev) => ({
+                                            ...prev,
+                                            competition: e,
+                                            eventName: null,
+                                        }));
+                                        }}
+                                        options={competitionList.map((item) => {
+                                            return {
+                                            label: item?.competition,
+                                            value: item?.competitionId,
+                                            }
+                                        })}
+                                        classNamePrefix="filter-dropdown"
+                                    />
+
+                                    {/* Event List */}
+                                    <Select
+                                        styles={{ control: (base) => ({ ...base, width: 180 }) }}
+                                        value={selectedTableElements?.eventName}
+                                        isDisabled = {location?.state?.eventName}
+                                        placeholder="Event List"
+                                        onChange={(e) => {
+                                        setSelectedTableElements((prev) => ({
+                                            ...prev,
+                                            eventName: e,
+                                        }));
+                                        }}
+                                        options={eventList
+                                        .sort((a, b) => new Date(a.eventDate) - new Date(b.eventDate))
+                                        .map((item) => ({
+                                            label: `${item?.eventName} (${convertDateUTCToLocal(item?.eventDate, "index")})`,
+                                            value: item?.commentaryId,
+                                        }))}
+                                        classNamePrefix="filter-dropdown"
+                                    />
+                                    </div>
+                                </Row>
                                 <Row>
                                     {!isEmpty(eventData?.commentaryDetails) && (
                                         <Col className='mb-3'>
