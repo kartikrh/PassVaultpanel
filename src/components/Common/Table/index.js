@@ -1339,7 +1339,7 @@ const Index = forwardRef(
                               onClick={() => {
                                 const data = isCommentaryList
                                   ? { state: "isPredict" }
-                                  : {};
+                                  : onAddNavigate === '/manualOddsMarket' ? {state: selectedTableElementsLogs} : {};
 
                                 navigate(onAddNavigate, data);
                                 // navigate(onAddNavigate);
