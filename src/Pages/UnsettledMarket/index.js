@@ -16,8 +16,8 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   checkPermission,
   convertDateLocalToUTC,
-  convertDateUTCToLocal2,
-   convertDateUtcFormat,
+  convertDateUTCToLocalWithoutSec,
+  convertDateUtcFormatWithoutSec
 } from "../../components/Common/Reusables/reusableMethods";
 import CancelModal from "./CancelModal";
 import ResultModal from "./ResultModal";
@@ -354,31 +354,24 @@ const Index = () => {
       style: { width: "2%" },
     },
     {
-      title: "Event Date",
+      title: "ID",
+      dataIndex: "eventMarketId",
+      key: "eventMarketId",
+      style: { width: "5%" },
+      sort: true,
+    },
+    {
+      title: "Date",
       dataIndex: "eventDate",
       render: (text, record) => (
         <span style={{ cursor: "pointer" }}>
           {dateType?.value == 1
-            ? convertDateUTCToLocal2(text, "index")
-            : convertDateUtcFormat(text, "index")}
+            ? convertDateUTCToLocalWithoutSec(text, "index")
+            : convertDateUtcFormatWithoutSec(text, "index")}
         </span>
       ),
       key: "eventDate",
       style: { width: "10%" },
-      sort: true,
-    },
-    {
-      title: "Event Id",
-      dataIndex: "eventRefId",
-      key: "eventRefId",
-      style: { width: "10%" },
-      sort: true,
-    },
-    {
-      title: "Id",
-      dataIndex: "eventMarketId",
-      key: "eventMarketId",
-      style: { width: "5%" },
       sort: true,
     },
     // {
@@ -389,41 +382,16 @@ const Index = () => {
     //   style: { width: "10%" },
     // },
     {
-      title: "Event Type",
-      dataIndex: "eventTypeName",
-      render: (text, record) => (
-        <span style={{ cursor: "pointer" }}>{text}</span>
-      ),
-      key: "eventTypeName",
-      style: { width: "10%" },
-      sort: true,
-    },
-    {
-      title: "Competition",
-      dataIndex: "competitionName",
-      key: "competitionName",
-      sort: true,
-      style: { width: "20%" },
-    },
-    {
       title: "Event",
-      dataIndex: "eventName",
-      key: "eventName",
-      sort: true,
-      style: { width: "10%" },
-    },
-    {
-      title: "Market Type",
-      dataIndex: "marketTypeName",
-      key: "marketTypeName",
-      style: { width: "10%" },
-      sort: true,
-    },
-    {
-      title: "Category",
-      dataIndex: "categoryName",
-      key: "categoryName",
-      style: { width: "10%" },
+      key: "event",
+      render: (text, record) => (
+        <span style={{ cursor: "pointer" }}>
+          {`${record.eventTypeName || ""}/ ${record.competitionName || ""}/ ${
+            record.eventName || ""
+          }`}
+        </span>
+      ),
+      style: { width: "60%" },
       sort: true,
     },
     {
@@ -434,9 +402,34 @@ const Index = () => {
       sort: true,
     },
     {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      style: { width: "10%" },
+      render: (text, record) => <span>{getStatusText(record.status)}</span>,
+    },
+    {
       title: "Team",
       dataIndex: "teamName",
       key: "teamName",
+      style: { width: "10%" },
+      sort: true,
+    },
+    {
+      title: "Market Type",
+      key: "market",
+      render: (text, record) => (
+        <span>
+          {`${record.marketTypeName || ""}/ ${record.categoryName || ""}`}
+        </span>
+      ),
+      style: { width: "60%" },
+      sort: true,
+    },
+    {
+      title: "Event Id",
+      dataIndex: "eventRefId",
+      key: "eventRefId",
       style: { width: "10%" },
       sort: true,
     },
@@ -446,37 +439,7 @@ const Index = () => {
       key: "inningsId",
       style: { width: "10%", textAlign: "center" },
       sort: true,
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      style: { width: "10%" },
-      render: (text, record) => <span>{getStatusText(record.status)}</span>,
-    },
-    {
-      title: "Cancel",
-      key: "cancel",
-      render: (text, record) => (
-        <Tooltip
-          title={"Cancel Market"}
-          color={"#e8e8ea"}
-          overlayInnerStyle={{ color: "#000" }}
-        >
-          <Button
-            color="danger"
-            size="sm"
-            className="btn"
-            onClick={() => {
-              handleCancel(record);
-            }}
-          >
-            Cancel
-          </Button>
-        </Tooltip>
-      ),
-      style: { width: "10%", textAlign: "center" },
-    },
+    },  
     {
       title: "Set Result",
       key: "result",
@@ -495,6 +458,29 @@ const Index = () => {
             }}
           >
             Set Result
+          </Button>
+        </Tooltip>
+      ),
+      style: { width: "10%", textAlign: "center" },
+    },  
+    {
+      title: "Cancel",
+      key: "cancel",
+      render: (text, record) => (
+        <Tooltip
+          title={"Cancel Market"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
+          <Button
+            color="danger"
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleCancel(record);
+            }}
+          >
+            Cancel
           </Button>
         </Tooltip>
       ),
