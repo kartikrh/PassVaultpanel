@@ -594,21 +594,33 @@ const Index = () => {
       style: { width: "6%" },
       sort: true,
     },
-    checkPermission(permissionObj, pageName, PERMISSION_ADD) && {
+    checkPermission(permissionObj, pageName, PERMISSION_ADD) && 
+    {
       title: "Add",
       key: "add",
       render: (text, record) => {
         if ([3, 4, 6].includes(record.status)) return null;
-        return <i
-          className="bx bx-plus"
-          style={{ cursor: "pointer" }}
-          onClick={() => {
-            handleUpdateManualOddsClick(record);
-          }}
-        ></i>
-        },
+
+        return (
+          <Button
+            color="primary"
+            size="sm"
+            className="btn"
+            // className="dls-button btn"
+            onClick={() => {
+              handleUpdateManualOddsClick(record);
+            }}
+          >
+            <i
+            className="bx bx-plus"
+            style={{ cursor: "pointer" }}
+          ></i>
+          </Button>
+        );
+      },
       style: { width: "2%", textAlign: "center" },
     },
+
     {
       title: "Event Date",
       dataIndex: "eventDate",

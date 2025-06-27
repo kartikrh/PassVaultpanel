@@ -106,25 +106,25 @@ export const AddManualOdds = () => {
         if (eventData?.market?.length > 0) {
             const selectedMarket = eventData.market[0]; // or filter by some ID if needed
             const {
-            marketName,
-            isActive,
-            isAllow,
-            margin,
-            delay,
-            eventRefId,
-            inningsId,
-            rateDiff,
-            rateSourceRefID,
-            favRatio,
-            lineRatio,
-            runners = [],
-            teamId
+                marketName,
+                isActive,
+                isAllow,
+                margin,
+                delay,
+                eventRefId,
+                inningsId,
+                rateDiff,
+                rateSourceRefID,
+                favRatio,
+                lineRatio,
+                runners = [],
+                teamId
             } = selectedMarket;
 
             const formattedRunners = runners.map((runner, index) => ({
-            id: index + 1,
-            name: runner.runner || '',
-            teamId: runner.teamId || ''
+                id: index + 1,
+                name: runner.runner || '',
+                teamId: runner.teamId || ''
             }));
 
             setFormData(prev => ({
@@ -165,9 +165,22 @@ export const AddManualOdds = () => {
                         market: selectedMarket
                     });
 
-                    if (response.result.market) {
-                        setFormData(selectedMarket);
-                        // setFormData(response.result.market);
+                    if (selectedMarket) {
+                        setFormData({
+                            marketName: selectedMarket.marketName || '',
+                            runners: selectedMarket.runners || [{ id: 1, name: '', teamId: '' }],
+                            isActive: selectedMarket.isActive ?? false,
+                            isAllow: selectedMarket.isAllow ?? false,
+                            margin: Number(selectedMarket.margin) || '',
+                            delay: Number(selectedMarket.delay) || '',
+                            lineRatio: Number(selectedMarket.lineRatio) || '',
+                            isConnectedMarket: selectedMarket.isConnectedMarket ?? false,
+                            eventRefId: selectedMarket.eventRefId || '',
+                            inningsId: selectedMarket.inningsId || '',
+                            rateDiff: selectedMarket.rateDiff || '0.01',
+                            rateSourceRefID: selectedMarket.rateSourceRefID || '',
+                            favRatio: selectedMarket.favRatio || '',
+                        });
                     }
                 }
             })
@@ -418,56 +431,57 @@ export const AddManualOdds = () => {
             inningsId: formData.inningsId || "0",
             rateSourceRefID: formData?.rateSourceRefID || 0,
         };
-        await axiosInstance.post('/admin/eventMarket/saveManualMarket', dataToSend)
-            .then((response) => {
-                if (response?.result?.success || response?.success) {
-                    dispatch(updateToastData({
-                        data: response?.result || response?.message,
-                        title: response?.title || "Success",
-                        type: SUCCESS
-                    }));
-                    if(type === "SAVE_AND_CLOSE"){
-                        handleDynamicNavigation("/manualOddsMarkets")
-                    }else if(SAVE_AND_NEW){
-                        // fetchMarketData()
-                        setSelectedTableElements({
-                            eventType: null,
-                            competition: null,
-                            eventName: null,
-                        })
-                        setFormData({
-                            commentaryId: dataToSend.commentaryId,
-                            eventRefId: dataToSend.eventRefId,
-                            marketName: '',
-                            runners: [
-                                { id: 1, name: '', teamId: '' }
-                            ],
-                            isActive: false,
-                            isAllow: false,
-                            margin: '',
-                            delay: '',
-                            lineRatio: '',
-                            isConnectedMarket: false,
-                            inningsId: "",
-                            rateDiff: '0.01',
-                            rateSourceRefID: "",
-                            favRatio: "",
-                        })
-                        setEventData({
-                            comDetails: null,
-                            teams: [],
-                            commentaryDetails: null,
-                            tpMarkets: [] // Add this
-                        })
-                    }
-                }
-            })
-            .catch((error) => {
-                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-            })
-            .finally(() => {
-                setIsLoading(false);
-            });
+        console.log("dataToSend",dataToSend)
+        // await axiosInstance.post('/admin/eventMarket/saveManualMarket', dataToSend)
+        //     .then((response) => {
+        //         if (response?.result?.success || response?.success) {
+        //             dispatch(updateToastData({
+        //                 data: response?.result || response?.message,
+        //                 title: response?.title || "Success",
+        //                 type: SUCCESS
+        //             }));
+        //             if(type === "SAVE_AND_CLOSE"){
+        //                 handleDynamicNavigation("/manualOddsMarkets")
+        //             }else if(SAVE_AND_NEW){
+        //                 // fetchMarketData()
+        //                 setSelectedTableElements({
+        //                     eventType: null,
+        //                     competition: null,
+        //                     eventName: null,
+        //                 })
+        //                 setFormData({
+        //                     commentaryId: dataToSend.commentaryId,
+        //                     eventRefId: dataToSend.eventRefId,
+        //                     marketName: '',
+        //                     runners: [
+        //                         { id: 1, name: '', teamId: '' }
+        //                     ],
+        //                     isActive: false,
+        //                     isAllow: false,
+        //                     margin: '',
+        //                     delay: '',
+        //                     lineRatio: '',
+        //                     isConnectedMarket: false,
+        //                     inningsId: "",
+        //                     rateDiff: '0.01',
+        //                     rateSourceRefID: "",
+        //                     favRatio: "",
+        //                 })
+        //                 setEventData({
+        //                     comDetails: null,
+        //                     teams: [],
+        //                     commentaryDetails: null,
+        //                     tpMarkets: [] // Add this
+        //                 })
+        //             }
+        //         }
+        //     })
+        //     .catch((error) => {
+        //         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+        //     })
+        //     .finally(() => {
+        //         setIsLoading(false);
+        //     });
     };
 
     const handleBackClick = () => {
