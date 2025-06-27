@@ -26,28 +26,25 @@ import CloseIcon from "@mui/icons-material/Close";
 import axiosInstance from "../../../Features/axios";
 import { updateToastData } from "../../../Features/toasterSlice";
 import { ERROR, SUCCESS } from "../../../components/Common/Const.js";
-import _ from "lodash";
 
-const DRSAccordion = ({ teamDetails = [], commentaryDetails }) => {
+const DRSAccordion = ({ teamDetails = [], commentaryDetails, fetchData }) => {
   console.log(teamDetails);
   const dispatch = useDispatch();
   const [expanded, setExpanded] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const [selectedDRS, setSelectedDRS] = useState(null);
+  const [selectedDRSLog, setSelectedDRSLog] = useState(null);
   const [modalData, setModalData] = useState({
     result: true,
-    isCount: false, //default false
+    isCount: false,
   });
 
   const [drsLogs, setDrsLogs] = useState({});
   const [loadingLogs, setLoadingLogs] = useState({});
   const [submittingDRS, setSubmittingDRS] = useState(false);
   const [logExpanded, setLogExpanded] = useState({});
-  const [editRowKey, setEditRowKey] = useState(null);
-  const [editedDRS, setEditedDRS] = useState({});
 
   // Group teams by batting order (higher order first)
-  const groupedTeams = React.useMemo(() => {
+  const sortedTeams = React.useMemo(() => {
     if (!teamDetails || !Array.isArray(teamDetails)) return [];
 
     // Sort by teamBattingOrder (higher order first)
@@ -55,8 +52,6 @@ const DRSAccordion = ({ teamDetails = [], commentaryDetails }) => {
       (a, b) => (b.teamBattingOrder || 0) - (a.teamBattingOrder || 0)
     );
   }, [teamDetails]);
-
-  const sortedTeams = groupedTeams;
 
   // Set default expanded team
   React.useEffect(() => {
@@ -78,15 +73,88 @@ const DRSAccordion = ({ teamDetails = [], commentaryDetails }) => {
     }
   };
 
-  const handleTakeAction = (drsItem) => {
-    setSelectedDRS(drsItem);
-    setModalOpen(true);
+  const handleTakeAction = async (drsItem) => {
+    setSubmittingDRS(true);
+
+    const payload = {
+      id: 0,
+      commentaryId: commentaryDetails?.commentaryId || drsItem.commentaryId,
+      commentaryTeamId: drsItem.commentaryTeamId,
+      teamId: drsItem.teamId,
+    };
+
+    console.log("Taking DRS with payload:", payload);
+
+    try {
+      const response = await axiosInstance.post(
+        "/admin/commentary/takeDrs",
+        payload
+      );
+      console.log("DRS taken successfully");
+      dispatch(
+        updateToastData({
+          data: response?.message,
+          title: response?.title,
+          type: SUCCESS,
+        })
+      );
+
+      // Refresh the logs if they are currently expanded
+      const logKey = `${drsItem.teamId}_${drsItem.currentInnings}`;
+      if (logExpanded[logKey]) {
+        await fetchDRSLogs(drsItem, logKey);
+      }
+    } catch (error) {
+      console.error("Failed to take DRS", error);
+      dispatch(
+        updateToastData({
+          data: error?.message,
+          title: error?.title,
+          type: ERROR,
+        })
+      );
+    } finally {
+      setSubmittingDRS(false);
+    }
+  };
+
+  const fetchDRSLogs = async (drsItem, logKey) => {
+    setLoadingLogs((prev) => ({ ...prev, [logKey]: true }));
+
+    try {
+      const response = await axiosInstance.post(
+        "/admin/commentary/drsByCommId",
+        {
+          commentaryTeamId: drsItem.commentaryTeamId,
+          commentaryId: commentaryDetails?.commentaryId || drsItem.commentaryId,
+        }
+      );
+      console.log("Log data:", response?.result);
+      if (response?.result) {
+        setDrsLogs((prev) => ({
+          ...prev,
+          [logKey]: response?.result,
+        }));
+      } else {
+        console.error("No data in response");
+        setDrsLogs((prev) => ({
+          ...prev,
+          [logKey]: [],
+        }));
+      }
+    } catch (error) {
+      console.error("Error fetching DRS logs:", error);
+      setDrsLogs((prev) => ({
+        ...prev,
+        [logKey]: [],
+      }));
+    } finally {
+      setLoadingLogs((prev) => ({ ...prev, [logKey]: false }));
+    }
   };
 
   const handleLogAction = async (drsItem) => {
     const logKey = `${drsItem.teamId}_${drsItem.currentInnings}`;
-
-    // Toggle accordion
     const isCurrentlyExpanded = logExpanded[logKey];
     setLogExpanded((prev) => ({
       ...prev,
@@ -95,126 +163,117 @@ const DRSAccordion = ({ teamDetails = [], commentaryDetails }) => {
 
     // If expanding and no data exists, fetch the data
     if (!isCurrentlyExpanded && !drsLogs[logKey]) {
-      setLoadingLogs((prev) => ({ ...prev, [logKey]: true }));
-
-      try {
-        const response = await axiosInstance.post(
-          "/admin/commentary/drsByCommId",
-          {
-            commentaryTeamId: drsItem.commentaryTeamId,
-            commentaryId:
-              commentaryDetails?.commentaryId || drsItem.commentaryId,
-          }
-        );
-        console.log("Log data:", response?.result);
-        if (response?.result) {
-          setDrsLogs((prev) => ({
-            ...prev,
-            [logKey]: response?.result,
-          }));
-        } else {
-          console.error("No data in response");
-          setDrsLogs((prev) => ({
-            ...prev,
-            [logKey]: [],
-          }));
-        }
-      } catch (error) {
-        console.error("Error fetching DRS logs:", error);
-        setDrsLogs((prev) => ({
-          ...prev,
-          [logKey]: [],
-        }));
-      } finally {
-        setLoadingLogs((prev) => ({ ...prev, [logKey]: false }));
-      }
+      await fetchDRSLogs(drsItem, logKey);
     }
+  };
+
+  const handleUpdateDRSClick = (log) => {
+    setSelectedDRSLog(log);
+    setModalData({
+      result: true,
+      isCount: false,
+    });
+    setModalOpen(true);
   };
 
   const handleModalClose = () => {
     setModalOpen(false);
-    setSelectedDRS(null);
-    setModalData(modalData);
+    setSelectedDRSLog(null);
+    setModalData({
+      result: true,
+      isCount: false,
+    });
   };
 
-  const handleSubmitDRS = async () => {
-    console.log("Submitting DRS with:", selectedDRS);
-    console.log("Submitting DRS with cd:", commentaryDetails);
-    if (!selectedDRS) return;
+  const handleUpdateDrs = async () => {
+    if (!selectedDRSLog) return;
+
     setSubmittingDRS(true);
 
     const payload = {
-      id: 0,
-      commentaryId: commentaryDetails?.commentaryId || selectedDRS.commentaryId,
-      commentaryTeamId: selectedDRS.commentaryTeamId || 0,
-      teamId: selectedDRS.teamId,
+      id: selectedDRSLog.id,
+      teamId: selectedDRSLog.teamId,
       result: modalData.result,
       isCount: modalData.isCount,
     };
-    console.log("Sending DRS payload:", payload);
-    await axiosInstance
-      .post("/admin/commentary/saveDrs", payload)
-      .then((response) => {
-        console.log("DRS saved successfully");
-        handleModalClose();
-        dispatch(
-          updateToastData({
-            data: response?.message,
-            title: response?.title,
-            type: SUCCESS,
-          })
-        );
-      })
-      .catch((error) => {
-        console.error("Failed to save DRS", error);
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
-      })
-      .finally(() => {
-        setSubmittingDRS(false);
-      });
-  };
-  const handleSaveEdit = async (drsItem) => {
-    const drsAttempt = editedDRS.drsPass + editedDRS.drsFail;
 
-    const payload = {
-      commentaryId: drsItem.commentaryId,
-      commentaryTeamId: drsItem.commentaryTeamId,
-      teamId: drsItem.teamId,
-      drsCount: editedDRS.drsCount,
-      drsFail: editedDRS.drsFail,
-      drsAttempt,
-    };
+    console.log("Updating DRS with payload:", payload);
 
     try {
-      await axiosInstance.post("/admin/commentary/updateDrsValue", payload);
-      // After save, exit edit mode
-      setEditRowKey(null);
-      setEditedDRS({});
+      const response = await axiosInstance.post(
+        "/admin/commentary/upDrs",
+        payload
+      );
+      console.log("DRS updated successfully");
+      dispatch(
+        updateToastData({
+          data: response?.message,
+          title: response?.title,
+          type: SUCCESS,
+        })
+      );
 
-      const updatedTeamDetails = teamDetails.map((team) => {
-        if (team.teamId === drsItem.teamId) {
-          return {
-            ...team,
-            drsCount: editedDRS.drsCount,
-            drsFail: editedDRS.drsFail,
-            drsAttempt,
-          };
-        }
-        return team;
-      });
+      await fetchData();
+
+      const logKey = `${selectedDRSLog.teamId}_${selectedDRSLog.currentInnings}`;
+      const drsItem = {
+        teamId: selectedDRSLog.teamId,
+        currentInnings: selectedDRSLog.currentInnings,
+        commentaryTeamId: selectedDRSLog.commentaryTeamId,
+        commentaryId: selectedDRSLog.commentaryId,
+      };
+      await fetchDRSLogs(drsItem, logKey);
+
+      handleModalClose();
     } catch (error) {
-      console.error("Error saving DRS edits:", error);
+      console.error("Failed to update DRS", error);
+      dispatch(
+        updateToastData({
+          data: error?.message,
+          title: error?.title,
+          type: ERROR,
+        })
+      );
+    } finally {
+      setSubmittingDRS(false);
     }
   };
-  const handleCancelEdit = (drsItem) => {
-    setEditRowKey(null);
-    setEditedDRS({});
+
+  const handleDelete = async (log) => {
+    console.log("Drs Id:", log.id);
+
+    try {
+      const response = await axiosInstance.post("/admin/commentary/dltDrs", {
+        id: log.id,
+      });
+
+      dispatch(
+        updateToastData({
+          data: response?.message,
+          title: response?.title,
+          type: SUCCESS,
+        })
+      );
+
+      await fetchData();
+
+      const logKey = `${log.teamId}_${log.currentInnings}`;
+      const drsItem = {
+        teamId: log.teamId,
+        currentInnings: log.currentInnings,
+        commentaryTeamId: log.commentaryTeamId,
+        commentaryId: log.commentaryId,
+      };
+      await fetchDRSLogs(drsItem, logKey);
+    } catch (error) {
+      dispatch(
+        updateToastData({
+          data: error?.message,
+          title: error?.title,
+          type: ERROR,
+        })
+      );
+    }
   };
 
   const renderDRSTable = (team) => {
@@ -238,14 +297,12 @@ const DRSAccordion = ({ teamDetails = [], commentaryDetails }) => {
       commentaryId: team.commentaryId,
     };
 
+    // Teams Accordion Table Head
     return (
       <TableContainer component={Paper} elevation={0}>
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell>
-                <strong>Edit</strong>
-              </TableCell>
               <TableCell>
                 <strong>Team</strong>
               </TableCell>
@@ -268,114 +325,19 @@ const DRSAccordion = ({ teamDetails = [], commentaryDetails }) => {
           </TableHead>
           <TableBody>
             <TableRow>
-              {/* ✅ Action Column */}
-              <TableCell>
-                {editRowKey === drsItem.teamId ? (
-                  <>
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      color="success"
-                      onClick={() => handleSaveEdit(drsItem)}
-                      sx={{
-                        minWidth: "auto",
-                        fontSize: "0.7rem",
-                        px: 0.5,
-                        py: 0.5,
-                        ml: 1,
-                      }}
-                    >
-                      Save
-                    </Button>
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      color="error"
-                      onClick={() => handleCancelEdit(drsItem)}
-                      sx={{
-                        minWidth: "auto",
-                        fontSize: "0.7rem",
-                        px: 0.5,
-                        py: 0.5,
-                        ml: 1,
-                      }}
-                    >
-                      Back
-                    </Button>
-                  </>
-                ) : (
-                  <span
-                    style={{ cursor: "pointer" }}
-                    onClick={() => {
-                      setEditRowKey(drsItem.teamId);
-                      setEditedDRS({
-                        drsCount: drsItem.drsLeft,
-                        drsPass: drsItem.drsPass,
-                        drsFail: drsItem.drsFail,
-                      });
-                    }}
-                  >
-                    <i className="bx bx-edit" />
-                  </span>
-                )}
-              </TableCell>
               <TableCell>
                 <Typography variant="body2" fontWeight="medium">
                   {drsItem.teamName}
                 </Typography>
               </TableCell>
               <TableCell align="center">
-                {editRowKey === drsItem.teamId ? (
-                  <input
-                    type="number"
-                    value={editedDRS.drsCount ?? drsItem.drsLeft}
-                    onChange={(e) =>
-                      setEditedDRS((prev) => ({
-                        ...prev,
-                        drsCount: parseInt(e.target.value) || 0,
-                      }))
-                    }
-                    style={{ width: "40px", textAlign: "center" }}
-                  />
-                ) : (
-                  <Typography variant="body2">{drsItem.drsLeft}</Typography>
-                )}
+                <Typography variant="body2">{drsItem.drsLeft}</Typography>
               </TableCell>
-
               <TableCell align="center">
-                {editRowKey === drsItem.teamId ? (
-                  <input
-                    type="number"
-                    value={editedDRS.drsPass ?? drsItem.drsPass}
-                    onChange={(e) =>
-                      setEditedDRS((prev) => ({
-                        ...prev,
-                        drsPass: parseInt(e.target.value) || 0,
-                      }))
-                    }
-                    style={{ width: "40px", textAlign: "center" }}
-                  />
-                ) : (
-                  <Typography variant="body2">{drsItem.drsPass}</Typography>
-                )}
+                <Typography variant="body2">{drsItem.drsPass}</Typography>
               </TableCell>
-
               <TableCell align="center">
-                {editRowKey === drsItem.teamId ? (
-                  <input
-                    type="number"
-                    value={editedDRS.drsFail ?? drsItem.drsFail}
-                    onChange={(e) =>
-                      setEditedDRS((prev) => ({
-                        ...prev,
-                        drsFail: parseInt(e.target.value) || 0,
-                      }))
-                    }
-                    style={{ width: "40px", textAlign: "center" }}
-                  />
-                ) : (
-                  <Typography variant="body2">{drsItem.drsFail}</Typography>
-                )}
+                <Typography variant="body2">{drsItem.drsFail}</Typography>
               </TableCell>
               <TableCell align="center">
                 <Button
@@ -390,7 +352,7 @@ const DRSAccordion = ({ teamDetails = [], commentaryDetails }) => {
                     fontSize: "0.75rem",
                   }}
                 >
-                  Take
+                  {submittingDRS ? "Taking..." : "Take"}
                 </Button>
               </TableCell>
               <TableCell align="center">
@@ -456,19 +418,19 @@ const DRSAccordion = ({ teamDetails = [], commentaryDetails }) => {
                     <strong>DRS</strong>
                   </TableCell>
                   <TableCell>
-                    <strong>Team ID</strong>
-                  </TableCell>
-                  <TableCell>
-                    <strong>Commentary ID</strong>
+                    <strong>Created</strong>
                   </TableCell>
                   <TableCell>
                     <strong>Result</strong>
                   </TableCell>
                   <TableCell>
-                    <strong>Count Review</strong>
+                    <strong>Count</strong>
                   </TableCell>
-                  <TableCell>
-                    <strong>Created</strong>
+                  <TableCell align="center" sx={{ px: 1, py: 0.5 }}>
+                    <strong>R</strong>
+                  </TableCell>
+                  <TableCell align="center" sx={{ px: 1, py: 0.5 }}>
+                    <strong>D</strong>
                   </TableCell>
                 </TableRow>
               </TableHead>
@@ -476,18 +438,58 @@ const DRSAccordion = ({ teamDetails = [], commentaryDetails }) => {
                 {logs
                   .sort((a, b) => b.order - a.order)
                   .map((log, index) => (
-                    <TableRow>
+                    <TableRow key={log.id || index}>
                       <TableCell>{log.order}</TableCell>
-                      <TableCell>{log.teamId}</TableCell>
-                      <TableCell>{log.commentaryId}</TableCell>
-                      <TableCell>
-                        {log.result ? "Successful" : "Failed"}
-                      </TableCell>
-                      <TableCell>{log.isCount ? "Yes" : "No"}</TableCell>
                       <TableCell>
                         {log.createdAt
                           ? new Date(log.createdAt).toLocaleString()
                           : "—"}
+                      </TableCell>
+                      <TableCell>
+                        {log.result === null || log.result === undefined
+                          ? "Not Set"
+                          : log.result
+                          ? "Successful"
+                          : "Failed"}
+                      </TableCell>
+                      <TableCell>
+                        {log.isCount === null || log.isCount === undefined
+                          ? "Not Set"
+                          : log.isCount
+                          ? "Yes"
+                          : "No"}
+                      </TableCell>
+                      <TableCell align="center" sx={{ px: 1, py: 0.5 }}>
+                        <Button
+                          variant="contained"
+                          size="small"
+                          onClick={() => handleUpdateDRSClick(log)}
+                          sx={{
+                            width: 32,
+                            height: 32,
+                            minWidth: 0,
+                            fontSize: "0.75rem",
+                            padding: 0,
+                          }}
+                        >
+                          R
+                        </Button>
+                      </TableCell>
+                      <TableCell align="center" sx={{ px: 1, py: 0.5 }}>
+                        <Button
+                          variant="contained"
+                          color="soft-danger"
+                          onClick={() => handleDelete(log)}
+                          sx={{
+                            width: 32,
+                            height: 32,
+                            minWidth: 0,
+                            // fontSize: "0.75rem",
+                            padding: 0,
+                          }}
+                        >
+                          <i className="ri-delete-bin-2-line"></i>
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -571,7 +573,7 @@ const DRSAccordion = ({ teamDetails = [], commentaryDetails }) => {
         </Box>
       ))}
 
-      {/* DRS Action Modal */}
+      {/* DRS Update Modal - Opens from R button */}
       <Modal
         open={modalOpen}
         onClose={handleModalClose}
@@ -606,7 +608,7 @@ const DRSAccordion = ({ teamDetails = [], commentaryDetails }) => {
 
           <Box mb={3}>
             <Typography variant="body2" color="text.secondary" mb={2}>
-              Set the DRS outcome for {selectedDRS?.teamName || "this team"}:
+              Set the DRS outcome:
             </Typography>
 
             <Box mb={2} display="flex" alignItems="center">
@@ -623,16 +625,17 @@ const DRSAccordion = ({ teamDetails = [], commentaryDetails }) => {
                 }}
               />
             </Box>
+
+            {/* Only show Count Review when result is false */}
             {!modalData.result && (
               <Box mb={2} display="flex" alignItems="center">
                 <Typography>Count Review:</Typography>
                 <Switch
                   checked={modalData.isCount}
                   onChange={(e) => {
-                    const newIsCount = e.target.checked;
                     setModalData({
                       ...modalData,
-                      isCount: newIsCount,
+                      isCount: e.target.checked,
                     });
                   }}
                 />
@@ -641,11 +644,19 @@ const DRSAccordion = ({ teamDetails = [], commentaryDetails }) => {
           </Box>
 
           <Box display="flex" gap={2} justifyContent="flex-end">
-            <Button variant="outlined" onClick={handleModalClose}>
+            <Button
+              variant="outlined"
+              onClick={handleModalClose}
+              disabled={submittingDRS}
+            >
               Cancel
             </Button>
-            <Button variant="contained" onClick={handleSubmitDRS}>
-              Submit DRS
+            <Button
+              variant="contained"
+              onClick={handleUpdateDrs}
+              disabled={submittingDRS}
+            >
+              {submittingDRS ? "Saving..." : "Update DRS"}
             </Button>
           </Box>
         </Box>

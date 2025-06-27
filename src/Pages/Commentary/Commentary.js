@@ -2642,6 +2642,7 @@ const Commentary = (props) => {
                 isPredictToggle={props?.isPredictToggle}
                 setIsPredictToggle={props?.setIsPredictToggle}
                 allteams={allInningaTeams}
+                fetchData={props.fetchData}
             />}
         {!props?.isNewUi && !(isCommentaryBallLoading || inningsChangePopup || superOverModal || showRretiredHurt || isPaneltyPopup || props.isDataLoading ||
             winnerAnnouncement || showUpdateInnings || completeMatchModal || superOverModal || showCricketFieldModal) &&

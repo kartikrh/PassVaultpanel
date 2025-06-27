@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import PartnershipAccordian from "./PartnershipAccordian";
 import DRSAccordion from "./DRSAccordion";
 
-const CommentaryRightPanel = ({ overBalls, partnerships, teamDetails, overHistory, players, currentOver, refId, allteams }) => {
+const CommentaryRightPanel = ({ overBalls, partnerships, teamDetails, overHistory, players, currentOver, refId, allteams, fetchData }) => {
     const [activeTab, setActiveTab] = useState('overs'); // 'overs' or 'partnerships' or 'drs'
     // const renderPartnerships = () => {
     //     return partnerships.map((partnership, index) => {
@@ -116,6 +116,7 @@ const CommentaryRightPanel = ({ overBalls, partnerships, teamDetails, overHistor
                 ) : activeTab === 'drs' ? (
                     <div className="drs-container">
                         <DRSAccordion
+                            fetchData={fetchData}
                             overBalls={overBalls}
                             teamDetails={allteams}
                             currentOver={currentOver}
