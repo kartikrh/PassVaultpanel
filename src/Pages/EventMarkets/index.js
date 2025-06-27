@@ -20,9 +20,9 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import {
   checkPermission,
-  convertDateUtcFormat,
-  convertDateUTCToLocal2,
   convertDateLocalToUTC,
+  convertDateUTCToLocalWithoutSec,
+  convertDateUtcFormatWithoutSec
 } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import CloseModal from "./CloseModal";
@@ -567,45 +567,24 @@ const Index = () => {
       key: "select",
       style: { width: "2%" },
     },
-    checkPermission(permissionObj, pageName, PERMISSION_EDIT) && {
-      title: "Edit",
-      key: "edit",
-      render: (text, record) => (
-        <i
-          className="bx bx-edit"
-          style={{ cursor: "pointer" }}
-          onClick={() => {
-            handleEdit(record.eventMarketId);
-          }}
-        ></i>
-      ),
-      style: { width: "2%", textAlign: "center" },
+    {
+      title: "ID",
+      dataIndex: "eventMarketId",
+      key: "eventMarketId",
+      style: { width: "10%" },
+      sort: true,
     },
     {
-      title: "Event Date",
+      title: "Date",
       dataIndex: "eventDate",
       render: (text, record) => (
         <span style={{ cursor: "pointer" }}>
           {dateType?.value == 1
-            ? convertDateUTCToLocal2(text, "index")
-            : convertDateUtcFormat(text, "index")}
+            ? convertDateUTCToLocalWithoutSec(text, "index")
+            : convertDateUtcFormatWithoutSec(text, "index")}
         </span>
       ),
       key: "eventDate",
-      style: { width: "10%" },
-      sort: true,
-    },
-    {
-      title: "Event Id",
-      dataIndex: "eventRefId",
-      key: "eventRefId",
-      style: { width: "10%" },
-      sort: true,
-    },
-    {
-      title: "Id",
-      dataIndex: "eventMarketId",
-      key: "eventMarketId",
       style: { width: "10%" },
       sort: true,
     },
@@ -616,42 +595,41 @@ const Index = () => {
     //   sort: true,
     //   style: { width: "10%" },
     // },
-    {
-      title: "Event Type",
-      dataIndex: "eventTypeName",
-      render: (text, record) => (
-        <span style={{ cursor: "pointer" }}>{text}</span>
-      ),
-      key: "eventTypeName",
-      style: { width: "20%" },
-      sort: true,
-    },
-    {
-      title: "Competition",
-      dataIndex: "competitionName",
-      key: "competitionName",
-      sort: true,
-      style: { width: "20%" },
-    },
+    // {
+    //   title: "Event Type",
+    //   dataIndex: "eventTypeName",
+    //   render: (text, record) => (
+    //     <span style={{ cursor: "pointer" }}>{text}</span>
+    //   ),
+    //   key: "eventTypeName",
+    //   style: { width: "20%" },
+    //   sort: true,
+    // },
+    // {
+    //   title: "Competition",
+    //   dataIndex: "competitionName",
+    //   key: "competitionName",
+    //   sort: true,
+    //   style: { width: "20%" },
+    // },
+    // {
+    //   title: "Event",
+    //   dataIndex: "eventName",
+    //   key: "eventName",
+    //   sort: true,
+    //   style: { width: "20%" },
+    // },
     {
       title: "Event",
-      dataIndex: "eventName",
-      key: "eventName",
-      sort: true,
-      style: { width: "20%" },
-    },
-    {
-      title: "Market Type",
-      dataIndex: "marketTypeName",
-      key: "marketTypeName",
-      style: { width: "10%" },
-      sort: true,
-    },
-    {
-      title: "Category",
-      dataIndex: "categoryName",
-      key: "categoryName",
-      style: { width: "10%" },
+      key: "event",
+      render: (text, record) => (
+        <span style={{ cursor: "pointer" }}>
+          {`${record.eventTypeName || ""}/ ${record.competitionName || ""}/ ${
+            record.eventName || ""
+          }`}
+        </span>
+      ),
+      style: { width: "60%" },
       sort: true,
     },
     {
@@ -662,6 +640,13 @@ const Index = () => {
       sort: true,
     },
     {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      style: { width: "20%" },
+      render: (text, record) => <span>{getStatusText(record.status)}</span>,
+    },
+    {
       title: "Team",
       dataIndex: "teamName",
       key: "teamName",
@@ -669,18 +654,43 @@ const Index = () => {
       sort: true,
     },
     {
+      title: "Market Type",
+      key: "market",
+      render: (text, record) => (
+        <span>
+          {`${record.marketTypeName || ""}/ ${record.categoryName || ""}`}
+        </span>
+      ),
+      style: { width: "60%" },
+      sort: true,
+    },
+    {
+      title: "Event Id",
+      dataIndex: "eventRefId",
+      key: "eventRefId",
+      style: { width: "10%" },
+      sort: true,
+    },
+    // {
+    //   title: "Market Type",
+    //   dataIndex: "marketTypeName",
+    //   key: "marketTypeName",
+    //   style: { width: "10%" },
+    //   sort: true,
+    // },
+    // {
+    //   title: "Category",
+    //   dataIndex: "categoryName",
+    //   key: "categoryName",
+    //   style: { width: "10%" },
+    //   sort: true,
+    // },
+    {
       title: "Inning",
       dataIndex: "inningsId",
       key: "inningsId",
       style: { width: "10%", textAlign: "center" },
       sort: true,
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      style: { width: "20%" },
-      render: (text, record) => <span>{getStatusText(record.status)}</span>,
     },
     {
       title: "Delay",
@@ -742,6 +752,45 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
+      title: "Close",
+      key: "close",
+      render: (text, record) => (
+        <>
+          <Tooltip
+            title={"Close Market"}
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            <Button
+              color="danger"
+              size="sm"
+              className="btn"
+              disabled={record.status === 4}
+              onClick={() => {
+                handleClose(record);
+              }}
+            >
+              Close
+            </Button>{" "}
+          </Tooltip>
+        </>
+      ),
+      style: { width: "5%", textAlign: "center" },
+    },
+    {
+      title: "Result",
+      dataIndex: "result",
+      key: "result",
+      style: { width: "5%", textAlign: "center" },
+      sort: true,
+      render: (text, record) => {
+        return record?.marketTypeId == marketTypeObj?.Fancy ||
+          record?.marketTypeId == marketTypeObj?.LineMarket
+          ? text
+          : record?.resultRunner;
+      },
+    },
+    {
       title: "Inning Run",
       key: "isInningRun",
       render: (text, record) => (
@@ -771,44 +820,44 @@ const Index = () => {
       ),
       style: { width: "2%", textAlign: "center" },
     },
-    {
-      title: "Close",
-      key: "close",
-      render: (text, record) => (
-        <>
-          <Tooltip
-            title={"Close Market"}
-            color={"#e8e8ea"}
-            overlayInnerStyle={{ color: "#000" }}
-          >
-            <Button
-              color="danger"
-              size="sm"
-              className="btn"
-              onClick={() => {
-                handleClose(record);
-              }}
-            >
-              Close
-            </Button>{" "}
-          </Tooltip>
-        </>
-      ),
-      style: { width: "5%", textAlign: "center" },
-    },
-    {
-      title: "Result",
-      dataIndex: "result",
-      key: "result",
-      style: { width: "5%", textAlign: "center" },
-      sort: true,
-      render: (text, record) => {
-        return record?.marketTypeId == marketTypeObj?.Fancy ||
-          record?.marketTypeId == marketTypeObj?.LineMarket
-          ? text
-          : record?.resultRunner;
-      },
-    },
+    // {
+    //   title: "Close",
+    //   key: "close",
+    //   render: (text, record) => (
+    //     <>
+    //       <Tooltip
+    //         title={"Close Market"}
+    //         color={"#e8e8ea"}
+    //         overlayInnerStyle={{ color: "#000" }}
+    //       >
+    //         <Button
+    //           color="danger"
+    //           size="sm"
+    //           className="btn"
+    //           onClick={() => {
+    //             handleClose(record);
+    //           }}
+    //         >
+    //           Close
+    //         </Button>{" "}
+    //       </Tooltip>
+    //     </>
+    //   ),
+    //   style: { width: "5%", textAlign: "center" },
+    // },
+    // {
+    //   title: "Result",
+    //   dataIndex: "result",
+    //   key: "result",
+    //   style: { width: "5%", textAlign: "center" },
+    //   sort: true,
+    //   render: (text, record) => {
+    //     return record?.marketTypeId == marketTypeObj?.Fancy ||
+    //       record?.marketTypeId == marketTypeObj?.LineMarket
+    //       ? text
+    //       : record?.resultRunner;
+    //   },
+    // },
     {
       render: (text, record) => (
         <>
@@ -864,6 +913,20 @@ const Index = () => {
         </>
       ),
       style: { width: "10%", textAlign: "center" },
+    },
+    checkPermission(permissionObj, pageName, PERMISSION_EDIT) && {
+      title: " ",
+      key: "edit",
+      render: (text, record) => (
+        <i
+          className="bx bx-edit"
+          style={{ cursor: "pointer" }}
+          onClick={() => {
+            handleEdit(record.eventMarketId);
+          }}
+        ></i>
+      ),
+      style: { width: "2%", textAlign: "center" },
     },
   ];
   //elements required
