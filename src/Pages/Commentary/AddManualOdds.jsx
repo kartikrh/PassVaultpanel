@@ -74,7 +74,8 @@ export const AddManualOdds = () => {
         comDetails: null,
         teams: [],
         commentaryDetails: null,
-        tpMarkets: [] // Add this
+        tpMarkets: [], // Add this
+        market: []
     });
     const socket = createSocket();
 
@@ -100,25 +101,73 @@ export const AddManualOdds = () => {
         }
     }, [commentaryDetails, location?.state, eventData?.comDetails?.eventRefId, formData.eventRefId]);
 
+    
+    useEffect(() => {
+        if (eventData?.market?.length > 0) {
+            const selectedMarket = eventData.market[0]; // or filter by some ID if needed
+            const {
+            marketName,
+            isActive,
+            isAllow,
+            margin,
+            delay,
+            eventRefId,
+            inningsId,
+            rateDiff,
+            rateSourceRefID,
+            favRatio,
+            lineRatio,
+            runners = [],
+            teamId
+            } = selectedMarket;
+
+            const formattedRunners = runners.map((runner, index) => ({
+            id: index + 1,
+            name: runner.runner || '',
+            teamId: runner.teamId || ''
+            }));
+
+            setFormData(prev => ({
+                ...prev,
+                marketName: marketName || '',
+                isActive: isActive ?? false,
+                isAllow: isAllow ?? false,
+                margin: margin || '',
+                delay: delay || '',
+                eventRefId: eventRefId || '',
+                inningsId: inningsId ?? '',
+                rateDiff: rateDiff?.toString() || '0.01',
+                rateSourceRefID: rateSourceRefID?.toString() || '',
+                favRatio: favRatio?.toString() || '',
+                lineRatio: lineRatio?.toString() || '',
+                runners: formattedRunners,
+            }));
+        }
+    }, [eventData.market]);
 
     const fetchMarketData = async () => {
         setIsLoading(true);
-        await axiosInstance.post('/admin/eventMarket/getManualMarket', { commentaryId: commentaryId ? commentaryId : location?.state ? location?.state?.eventName.value : selectedTableElements?.eventName?.value })
+        await axiosInstance.post('/admin/eventMarket/getManualMarket', { commentaryId, eventMarketId: location?.state?.eventMarketId ? location?.state?.eventMarketId : null})
             .then((response) => {
                 if (response?.result) {
                     // if (response.result.market) {
                     //     handleDynamicNavigation("/updateManualOdds")
                     //     return;
                     // }
+                    const selectedMarket = response.result.market?.find(
+                        (m) => m.eventMarketId === location?.state?.eventMarketId
+                    ) || null;
                     setEventData({
                         comDetails: response.result.comDetails || null,
                         teams: response.result.teams || [],
                         commentaryDetails: response.result.commentaryDetails || null,
-                        tpMarkets: response.result.tpMarkets || [] // Add this
+                        tpMarkets: response.result.tpMarkets || [], // Add this
+                        market: selectedMarket
                     });
 
                     if (response.result.market) {
-                        setFormData(response.result.market);
+                        setFormData(selectedMarket);
+                        // setFormData(response.result.market);
                     }
                 }
             })
@@ -186,32 +235,32 @@ export const AddManualOdds = () => {
         commentaryDetails?.commentaryId,
     ])
 
-    useEffect(() => {
-        if (location?.state?.isEdit) {
-            const {
-            marketName,
-            isActive,
-            isAllow,
-            margin,
-            delay,
-            eventRefId,
-            inningsId,
-            lineRatio
-            } = location.state;
+    // useEffect(() => {
+    //     if (location?.state?.isEdit) {
+    //         const {
+    //         marketName,
+    //         isActive,
+    //         isAllow,
+    //         margin,
+    //         delay,
+    //         eventRefId,
+    //         inningsId,
+    //         lineRatio
+    //         } = location.state;
 
-            setFormData((prev) => ({
-            ...prev,
-            marketName: marketName || '',
-            isActive: isActive ?? false,
-            isAllow: isAllow ?? false,
-            margin: Number(margin) || 0,
-            delay: Number(delay) || 0,
-            eventRefId: eventRefId || '',
-            inningsId: inningsId ?? '',
-            lineRatio: Number(lineRatio)|| 0
-            }));
-        }
-    }, [location?.state]);
+    //         setFormData((prev) => ({
+    //         ...prev,
+    //         marketName: marketName || '',
+    //         isActive: isActive ?? false,
+    //         isAllow: isAllow ?? false,
+    //         margin: Number(margin) || 0,
+    //         delay: Number(delay) || 0,
+    //         eventRefId: eventRefId || '',
+    //         inningsId: inningsId ?? '',
+    //         lineRatio: Number(lineRatio)|| 0
+    //         }));
+    //     }
+    // }, [location?.state]);
 
     // useEffect(() => {
     //     const commentaryDetails = JSON.parse(sessionStorage.getItem('updateManualOddsCommentaryDetails') || '{}');
@@ -293,13 +342,13 @@ export const AddManualOdds = () => {
     }, [eventData.tpMarkets]);
 
     useEffect(() => {
-        // Initialize with 2 default runners using team data
         if (eventData.teams.length > 0) {
-            const defaultRunners = eventData.teams.slice(0, 2).sort((a,b)=> a?.teamNo - b?.teamNo).map((team, index) => {
-                const tpRunner = eventData.tpMarkets?.[0]?.runners?.find(r => r.teamId === team.teamId);
-                const selectionId = tpRunner ?
-                    tpRunner.selectionId :
-                    `${commentaryId}0${index}`;
+            const defaultRunners = eventData.teams.slice(0, 2).sort((a, b) => a?.teamNo - b?.teamNo).map((team, index) => {
+                let selectionId = `${commentaryId}0${index}`;
+
+                if (isEdit && eventData.tpMarkets?.[0]?.runners?.[index]?.selectionId) {
+                    selectionId = eventData.tpMarkets[0].runners[index].selectionId;
+                }
 
                 return {
                     id: index + 1,
@@ -311,10 +360,37 @@ export const AddManualOdds = () => {
 
             setFormData(prev => ({
                 ...prev,
-                runners: defaultRunners
+                runners: defaultRunners,
             }));
         }
-    }, [eventData.teams, eventData.tpMarkets]);
+    }, [eventData.teams, eventData.tpMarkets, isEdit, commentaryId]);
+
+
+    // useEffect(() => {
+    //     // Initialize with 2 default runners using team data
+    //     if (eventData.teams.length > 0) {
+    //         const defaultRunners = eventData.teams.slice(0, 2).sort((a,b)=> a?.teamNo - b?.teamNo).map((team, index) => {
+    //             console.log("eventData.tpMarkets", eventData.tpMarkets?.[0]?.runners)
+    //             const tpRunner = eventData.tpMarkets?.[0]?.runners?.find(r => r.teamId === team.teamId);
+    //             console.log("tpRunner",tpRunner)
+    //             const selectionId = tpRunner ?
+    //                 tpRunner.selectionId :
+    //                 `${commentaryId}0${index}`;
+
+    //             return {
+    //                 id: index + 1,
+    //                 name: team.teamName,
+    //                 teamId: team.teamId,
+    //                 selectionId,
+    //             };
+    //         });
+
+    //         setFormData(prev => ({
+    //             ...prev,
+    //             runners: defaultRunners
+    //         }));
+    //     }
+    // }, [eventData.teams, eventData.tpMarkets]);
 
     const handleDynamicNavigation = (navigateTo) => {
         navigate(navigateTo, {state: selectedTableElements.eventName != null ? selectedTableElements : location?.state });
@@ -384,8 +460,6 @@ export const AddManualOdds = () => {
                             tpMarkets: [] // Add this
                         })
                     }
-                    sessionStorage.removeItem("updateManualOddsCommentaryId");
-                    sessionStorage.removeItem("updateManualOddsCommentaryDetails");
                 }
             })
             .catch((error) => {
