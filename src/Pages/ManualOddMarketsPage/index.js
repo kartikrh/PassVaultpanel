@@ -104,12 +104,11 @@ const Index = () => {
     const dataSource = latestValueFromTable || tableActions;
 
     setEventTypeActive(dataSource?.isActive);
-
     let payload = {
       ...dataSource,
       rateSourceRefId:
         dataSource?.rateSourceRefId || ratesource?.rateSourceRefId,
-      marketTypeId: 5,
+      marketTypeId: dataSource?.marketTypeCategoryId || ratesource?.marketTypeCategoryId,
       marketTypeCategoryId: 8,
       eventTypeId: dataSource?.eventTypeId || 0,
       competitionId:
@@ -434,8 +433,30 @@ const Index = () => {
   const handleReset = (value) => {
     fetchData(value);
   };
-  const handleEdit = (id) => {
-    navigate("/manualOddsMarket", { state: { userId: id } });
+  const handleEdit = (state) => {
+    navigate("/addManualOddsMarket", { state: { ...state, isEdit: true}, });
+  };
+  const handleUpdateManualOddsClick = (details) => {
+    // navigate("/updateCommentaryFeature", { state: { commentaryId: id } });
+    // localStorage.setItem(
+    //   "updateManualOddsCommentaryId",
+    //   "" + details?.commentaryId
+    // );
+    // localStorage.setItem(
+    //   "updateManualOddsCommentaryDetails",
+    //   "" + JSON.stringify(details)
+    // );
+
+    sessionStorage.setItem(
+      "updateManualOddsCommentaryId",
+      "" + details?.commentaryId
+    );
+    sessionStorage.setItem(
+      "updateManualOddsCommentaryDetails",
+      "" + JSON.stringify(details)
+    );
+    const url = new URL(window.location.origin + "/updateManualOdds");
+    window.open(url.href, "_blank");
   };
   const handleSL = (details) => {
     const url = new URL(window.location.origin + "/marketLogs");
@@ -564,20 +585,28 @@ const Index = () => {
         </div>
       ),
       key: "select",
-      style: { width: "2%" },
+      style: { width: "10%" },
     },
-    checkPermission(permissionObj, pageName, PERMISSION_EDIT) && {
-      title: "Edit",
-      key: "edit",
-      render: (text, record) => (
-        <i
-          className="bx bx-edit"
+    {
+      title: "Id",
+      dataIndex: "eventMarketId",
+      key: "eventMarketId",
+      style: { width: "6%" },
+      sort: true,
+    },
+    checkPermission(permissionObj, pageName, PERMISSION_ADD) && {
+      title: "Add",
+      key: "add",
+      render: (text, record) => {
+        if ([3, 4, 6].includes(record.status)) return null;
+        return <i
+          className="bx bx-plus"
           style={{ cursor: "pointer" }}
           onClick={() => {
-            handleEdit(record.eventMarketId);
+            handleUpdateManualOddsClick(record);
           }}
         ></i>
-      ),
+        },
       style: { width: "2%", textAlign: "center" },
     },
     {
@@ -591,74 +620,29 @@ const Index = () => {
         </span>
       ),
       key: "eventDate",
-      style: { width: "10%" },
+      style: { width: "8%" },
       sort: true,
-    },
-    {
-      title: "Event Id",
-      dataIndex: "eventRefId",
-      key: "eventRefId",
-      style: { width: "10%" },
-      sort: true,
-    },
-    {
-      title: "Id",
-      dataIndex: "eventMarketId",
-      key: "eventMarketId",
-      style: { width: "10%" },
-      sort: true,
-    },
-    // {
-    //   title: "Center ID",
-    //   dataIndex: "commentaryId",
-    //   key: "commentaryId",
-    //   sort: true,
-    //   style: { width: "10%" },
-    // },
-    {
-      title: "Event Type",
-      dataIndex: "eventTypeName",
-      render: (text, record) => (
-        <span style={{ cursor: "pointer" }}>{text}</span>
-      ),
-      key: "eventTypeName",
-      style: { width: "20%" },
-      sort: true,
-    },
-    {
-      title: "Competition",
-      dataIndex: "competitionName",
-      key: "competitionName",
-      sort: true,
-      style: { width: "20%" },
     },
     {
       title: "Event",
       dataIndex: "eventName",
       key: "eventName",
       sort: true,
-      style: { width: "20%" },
-    },
-    {
-      title: "Market Type",
-      dataIndex: "marketTypeName",
-      key: "marketTypeName",
-      style: { width: "10%" },
-      sort: true,
-    },
-    {
-      title: "Category",
-      dataIndex: "categoryName",
-      key: "categoryName",
-      style: { width: "10%" },
-      sort: true,
+      style: { width: "12%" },
     },
     {
       title: "Market",
       dataIndex: "marketName",
       key: "marketName",
-      style: { width: "20%" },
+      style: { width: "2%" },
       sort: true,
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      style: { width: "10%" },
+      render: (text, record) => <span>{getStatusText(record.status)}</span>,
     },
     {
       title: "Team",
@@ -668,24 +652,24 @@ const Index = () => {
       sort: true,
     },
     {
-      title: "Inning",
-      dataIndex: "inningsId",
-      key: "inningsId",
-      style: { width: "10%", textAlign: "center" },
+      title: "Market Type",
+      dataIndex: "marketTypeName",
+      key: "marketTypeName",
+      style: { width: "8%" },
       sort: true,
     },
     {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      style: { width: "20%" },
-      render: (text, record) => <span>{getStatusText(record.status)}</span>,
+      title: "Event Id",
+      dataIndex: "eventRefId",
+      key: "eventRefId",
+      style: { width: "6%" },
+      sort: true,
     },
     {
       title: "Delay",
       dataIndex: "delay",
       key: "delay",
-      style: { width: "5%", textAlign: "center" },
+      style: { width: "2%", textAlign: "center" },
       sort: true,
     },
     {
@@ -741,58 +725,29 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Inning Run",
-      key: "isInningRun",
-      render: (text, record) => (
-        <Tooltip
-          title={"Inactive Inning Run"}
-          color={"#e8e8ea"}
-          overlayInnerStyle={{ color: "#000" }}
-        >
-          <Button
-            color={`${record.isInningRun ? "primary" : "danger"}`}
-            size="sm"
-            className="btn"
-            disabled={!record.isInningRun}
-            onClick={() => {
-              handleActiveInactiveInningRun(
-                "isInningRun",
-                record,
-                record.isInningRun
-              );
-            }}
-          >
-            <i
-              className={`bx ${record.isInningRun ? "bx-check" : "bx-block"}`}
-            ></i>
-          </Button>
-        </Tooltip>
-      ),
-      style: { width: "2%", textAlign: "center" },
-    },
-    {
       title: "Close",
       key: "close",
-      render: (text, record) => (
-        <>
+      render: (text, record) => {
+
+        if (record.status === 4) return null;
+
+        return (
           <Tooltip
-            title={"Close Market"}
-            color={"#e8e8ea"}
+            title="Close Market"
+            color="#e8e8ea"
             overlayInnerStyle={{ color: "#000" }}
           >
             <Button
               color="danger"
               size="sm"
               className="btn"
-              onClick={() => {
-                handleClose(record);
-              }}
+              onClick={() => handleClose(record)}
             >
               Close
-            </Button>{" "}
+            </Button>
           </Tooltip>
-        </>
-      ),
+        );
+      },
       style: { width: "5%", textAlign: "center" },
     },
     {
@@ -808,62 +763,156 @@ const Index = () => {
           : record?.resultRunner;
       },
     },
-    {
+    checkPermission(permissionObj, pageName, PERMISSION_EDIT) && {
+      title: "Edit",
+      key: "edit",
       render: (text, record) => (
-        <>
-          <Tooltip
-            title={"View Status Logs"}
-            color={"#e8e8ea"}
-            overlayInnerStyle={{ color: "#000" }}
-          >
-            <Button
-              color="primary"
-              size="sm"
-              className="btn"
-              onClick={() => {
-                handleSL(record);
-              }}
-            >
-              SL
-            </Button>
-          </Tooltip>{" "}
-          <Tooltip
-            title={"View Data Logs"}
-            color={"#e8e8ea"}
-            overlayInnerStyle={{ color: "#000" }}
-          >
-            <Button
-              color="primary"
-              size="sm"
-              className="btn"
-              onClick={() => {
-                handleDS(record);
-              }}
-            >
-              DS
-            </Button>
-          </Tooltip>
-          <Tooltip
-            title={"Close Suspend Time"}
-            color={"#e8e8ea"}
-            overlayInnerStyle={{ color: "#000" }}
-          >
-            <Button
-              color="primary"
-              size="sm"
-              className="btn mx-1"
-              onClick={() => {
-                setCloseSuspendTimeModelVisible(true);
-                setCloseSuspendTimeRecord(record);
-              }}
-            >
-              AT
-            </Button>
-          </Tooltip>
-        </>
+        <i
+          className="bx bx-edit"
+          style={{ cursor: "pointer" }}
+          onClick={() => {
+            handleEdit(record);
+          }}
+        ></i>
       ),
-      style: { width: "10%", textAlign: "center" },
+      style: { width: "2%", textAlign: "center" },
     },
+
+    
+    // {
+    //   title: "Center ID",
+    //   dataIndex: "commentaryId",
+    //   key: "commentaryId",
+    //   sort: true,
+    //   style: { width: "10%" },
+    // },
+    // {
+    //   title: "Event Type",
+    //   dataIndex: "eventTypeName",
+    //   render: (text, record) => (
+    //     <span style={{ cursor: "pointer" }}>{text}</span>
+    //   ),
+    //   key: "eventTypeName",
+    //   style: { width: "20%" },
+    //   sort: true,
+    // },
+    // {
+    //   title: "Competition",
+    //   dataIndex: "competitionName",
+    //   key: "competitionName",
+    //   sort: true,
+    //   style: { width: "20%" },
+    // },
+    
+    
+    // {
+    //   title: "Category",
+    //   dataIndex: "categoryName",
+    //   key: "categoryName",
+    //   style: { width: "10%" },
+    //   sort: true,
+    // },
+    
+    
+    // {
+    //   title: "Inning",
+    //   dataIndex: "inningsId",
+    //   key: "inningsId",
+    //   style: { width: "10%", textAlign: "center" },
+    //   sort: true,
+    // },
+    
+    
+    
+    
+    // {
+    //   title: "Inning Run",
+    //   key: "isInningRun",
+    //   render: (text, record) => (
+    //     <Tooltip
+    //       title={"Inactive Inning Run"}
+    //       color={"#e8e8ea"}
+    //       overlayInnerStyle={{ color: "#000" }}
+    //     >
+    //       <Button
+    //         color={`${record.isInningRun ? "primary" : "danger"}`}
+    //         size="sm"
+    //         className="btn"
+    //         disabled={!record.isInningRun}
+    //         onClick={() => {
+    //           handleActiveInactiveInningRun(
+    //             "isInningRun",
+    //             record,
+    //             record.isInningRun
+    //           );
+    //         }}
+    //       >
+    //         <i
+    //           className={`bx ${record.isInningRun ? "bx-check" : "bx-block"}`}
+    //         ></i>
+    //       </Button>
+    //     </Tooltip>
+    //   ),
+    //   style: { width: "2%", textAlign: "center" },
+    // },
+    
+    
+    // {
+    //   render: (text, record) => (
+    //     <>
+    //       <Tooltip
+    //         title={"View Status Logs"}
+    //         color={"#e8e8ea"}
+    //         overlayInnerStyle={{ color: "#000" }}
+    //       >
+    //         <Button
+    //           color="primary"
+    //           size="sm"
+    //           className="btn"
+    //           onClick={() => {
+    //             handleSL(record);
+    //           }}
+    //         >
+    //           SL
+    //         </Button>
+    //       </Tooltip>{" "}
+    //       <Tooltip
+    //         title={"View Data Logs"}
+    //         color={"#e8e8ea"}
+    //         overlayInnerStyle={{ color: "#000" }}
+    //       >
+    //         <Button
+    //           color="primary"
+    //           size="sm"
+    //           className="btn"
+    //           onClick={() => {
+    //             handleDS(record);
+    //           }}
+    //         >
+    //           DS
+    //         </Button>
+    //       </Tooltip>
+    //       <Tooltip
+    //         title={"Close Suspend Time"}
+    //         color={"#e8e8ea"}
+    //         overlayInnerStyle={{ color: "#000" }}
+    //       >
+    //         <Button
+    //           color="primary"
+    //           size="sm"
+    //           className="btn mx-1"
+    //           onClick={() => {
+    //             setCloseSuspendTimeModelVisible(true);
+    //             setCloseSuspendTimeRecord(record);
+    //           }}
+    //         >
+    //           AT
+    //         </Button>
+    //       </Tooltip>
+    //     </>
+    //   ),
+    //   style: { width: "10%", textAlign: "center" },
+    // },
   ];
   //elements required
   const tableElement = {
@@ -979,7 +1028,8 @@ const Index = () => {
             deleteModelFunction={setDeleteModelVisable}
             closeAllModelFunction={setCloseAllModelVisable}
             closeMarketModelFunction={setCloseModelVisable}
-            onAddNavigate={"/manualOddsMarket"}
+            onAddNavigate={"/addManualOddsMarket"}
+            // onAddNavigate={"/manualOddsMarket"}
             singleCheck={checekedList}
             eventTypes={eventTypes}
             competitionList={competitionList}

@@ -1339,7 +1339,7 @@ const Index = forwardRef(
                               onClick={() => {
                                 const data = isCommentaryList
                                   ? { state: "isPredict" }
-                                  : onAddNavigate === '/manualOddsMarket' ? {state: selectedTableElementsLogs} : {};
+                                  : onAddNavigate === '/addManualOddsMarket' ? {state: selectedTableElementsLogs} : {};
 
                                 navigate(onAddNavigate, data);
                                 // navigate(onAddNavigate);
@@ -2927,16 +2927,29 @@ const Index = forwardRef(
                                     });
                                   }
                                 }}
+                                // options={[
+                                //   { label: "Select Category", value: 0 },
+                                //   ...categories?.map((item) => ({
+                                //     label: item?.categoryName,
+                                //     value: item?.marketTypeCategoryId,
+                                //   })),
+                                // ]}
                                 options={[
-                                  { label: "Select Category", value: 0 },
-                                  ...categories?.map((item) => ({
-                                    label: item?.categoryName,
-                                    value: item?.marketTypeCategoryId,
-                                  })),
+                                  { label: "Select Market Type", value: 0 },
+                                  ...(tableElement.title === "Manual Odds Markets"
+                                    ? marketTypes?.map((item) => ({
+                                        label: item?.marketTypeName,
+                                        value: item?.marketTypeId,
+                                      })) || []
+                                    : categories?.map((item) => ({
+                                        label: item?.categoryName,
+                                        value: item?.marketTypeCategoryId,
+                                      })) || [])
                                 ]}
-                                isDisabled={
-                                  selectedTableElementsLogs?.categoryName
-                                }
+
+                                // isDisabled={
+                                //   selectedTableElementsLogs?.categoryName
+                                // }
                                 classNamePrefix="filter-dropdown"
                               />
                             </div>

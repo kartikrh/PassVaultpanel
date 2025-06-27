@@ -158,6 +158,8 @@ import AddCardType from "../Pages/CardType/AddCardType.jsx";
 import ImportEntity from "../Pages/ImportEntity/ImportEntityTable.js";
 import PythonApi from "../Pages/PythonApi";
 import AddPythonAPI from "../Pages/PythonApi/AddPythonApi.jsx";
+import { AddManualOdds } from "../Pages/Commentary/AddManualOdds.jsx";
+import { NewUpdateManualOdds } from "../Pages/Commentary/NewUpdateManualOdds.jsx";
 
 const authProtectedRoutes = [
   //dashboard
@@ -305,8 +307,10 @@ const authProtectedRoutes = [
   { path: "/videoLibrary", component: <VideoLibrary /> },
   { path: "/CardType", component: <CardType /> },
   { path: "/addCardType", component: <AddCardType /> },
+  { path: "/addManualOddsMarket", component: <AddManualOdds /> },
   { path: "/manualOddsMarket", component: <ManualOddsMarket /> },
-  { path: "/updateManualOdds", component: <UpdateManualOdds /> },
+  // { path: "/updateManualOdds", component: <UpdateManualOdds /> },
+  { path: "/updateManualOdds", component: <NewUpdateManualOdds /> },
   { path: "/AddVideoLibrary", component: <AddVideoLibrary /> },
   { path: "/dataprovider", component: <DataproviderPage /> },
   { path: "/dataproviderMarkets", component: <EventDetails /> },
