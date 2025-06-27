@@ -180,15 +180,22 @@ export const ManualOddsMarket = () => {
     };
     useEffect(() => {
         fetchEventTypeData()
-        fetchCompetitionList(commentaryDetails?.eventTypeId || eventTypeId);
-        fetchEventList(commentaryDetails?.competitionId || competitionId);
     }, [
         commentaryId,
-        commentaryDetails?.eventTypeId,
-        commentaryDetails?.competitionId,
         commentaryDetails?.commentaryId,
-        competitionId
     ])
+
+    useEffect(() => {
+        if(commentaryDetails?.competitionId || competitionId){
+            fetchEventList(commentaryDetails?.competitionId || competitionId);
+        }
+    }, [commentaryDetails?.competitionId, competitionId])
+    
+    useEffect(() => {
+        if(commentaryDetails?.eventTypeId || eventTypeId){
+            fetchCompetitionList(commentaryDetails?.eventTypeId || eventTypeId);
+        }
+    }, [commentaryDetails?.eventTypeId, eventTypeId])
 
     useEffect(() => {
     if (eventTypeId) {

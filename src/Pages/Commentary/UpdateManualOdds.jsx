@@ -1994,7 +1994,7 @@ export const UpdateManualOdds = () => {
                     setIsLive(false)
                 }
                 if (!response.result.market) {
-                    navigate("/manualOddsMarket");
+                    navigate("/manualOddsMarket", {state: location.state});
                     return;
                 }
                 setEventData({
@@ -2061,7 +2061,6 @@ export const UpdateManualOdds = () => {
                             lay: runner.layPrice
                         };
                     });
-                    console.log("Hello 1")
                     setSavedPrices(initialSavedPrices);
                     handleSettingChange('volumeType', CUSTOM_STATUS)
                 }
@@ -2238,7 +2237,7 @@ export const UpdateManualOdds = () => {
     // Separate useEffect for fetching market data after settings are loaded
     useEffect(() => {
         fetchMarketData();
-    }, []);
+    }, [location.state]);
 
     // useEffect(() => {
     //     // Ensure shortcut values are properly set with defaults if empty
@@ -2347,7 +2346,6 @@ export const UpdateManualOdds = () => {
                 lay: getNonZeroSavedData(runner.layPrice, runner.runnerId, "lay")
             };
         });
-        console.log("Hello 2")
         setSavedPrices(newSavedPrices);
         return newSavedPrices;
     }, [savedPrices]);
@@ -2366,7 +2364,6 @@ export const UpdateManualOdds = () => {
 
         // For directLineEnabled and !isLive mode, if value < 1.01, set it to 0
         const adjustedValue = !isLive && directLineEnabled && numericValue < 1.01 ? 0 : numericValue;
-        console.log("Hello 3")
         setSavedPrices(prevValue => {
             const newSavedPrices = {
                 ...prevValue,
