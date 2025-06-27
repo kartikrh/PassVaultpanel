@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-import { Tooltip, Modal } from "antd";
+import { Modal } from "antd";
 import Table from "../../components/Common/Table";
-import { Container, Row, Col } from "reactstrap";
+import { Container } from "reactstrap";
+import Select from "react-select";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
@@ -21,17 +22,25 @@ import { updateToastData } from "../../Features/toasterSlice";
 import { loadInit } from "../../config";
 import MatchCard from "./MatchCard";
 
-// Match status enum mapping
-const MatchStatus = {
-  LIVE: 1,
-  COMPLETED: 2,
-  UPCOMING: 3,
-};
+// Status options for Competition Status filter
+const statusOptions = [
+  { value: null, label: "Status" },
+  { value: "live", label: "Live" },
+  { value: "result", label: "Result" },//Completed
+  { value: "fixture", label: "Fixture" },//Upcoming
+];
+
+// Status options for Match Status filter
+const statusOptionsforMatch = [
+  { value: null, label: "Status" },
+  { value: 1, label: "Live" },
+  { value: 2, label: "Result" },//Completed
+  { value: 3, label: "Fixture" },//Upcoming
+];
 
 export default function ImportEntity() {
   const pageName = TAB_IMPORT_ENTITYIMPORT;
   document.title = "Import EntityImport";
-
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   const navigate = useNavigate();
@@ -47,24 +56,27 @@ export default function ImportEntity() {
   const [pageSize, setPageSize] = useState(globalPageSize);
   const [total, setTotal] = useState(0);
   const [permissionChecked, setPermissionChecked] = useState(false);
+  const [selectedFilter, setSelectedFilter] = useState({
+    status: null
+  });
 
-  // Navigation state
+  // Navigation state - Default to season competitions with a default season
   const [selectedLevel, setSelectedLevel] = useState({
-    seasonId: null,
+    seasonId: 2025, // Default to current year or set a specific season ID
     competitionId: null,
     matchId: null,
-    level: "seasons", // 'seasons', 'seasonCompetitions', 'competitionMatches'
-    year: null,
+    level: "seasonCompetitions", // Start with season competitions
+    year: 2025,
   });
   const [navigationHistory, setNavigationHistory] = useState([
     {
-      label: "Home",
+      label: "Season Competitions",
       value: {
-        seasonId: null,
+        seasonId: 2025,
         competitionId: null,
         matchId: null,
-        level: "seasons",
-        year: null,
+        level: "seasonCompetitions",
+        year: 2025,
       },
     },
   ]);
@@ -73,7 +85,6 @@ export default function ImportEntity() {
   const [matchModalVisible, setMatchModalVisible] = useState(false);
   const [matchData, setMatchData] = useState(null);
   const [dataToDB, setDataToDB] = useState({});
-
   let entitySportUrl =
     loadInitData.find((item) => item.key === loadInit.ENTITYSPORTURL)?.value ||
     "https://es.deployed.live";
@@ -131,36 +142,37 @@ export default function ImportEntity() {
 
     try {
       switch (selectedLevel.level) {
-        case "seasons":
-          endpoint = `${entitySportUrl}/admin/list/seasons`;
-          payload = {
-            page: currentPage == 0 ? 1 : currentPage,
-            limit: pageSize,
-          };
-          break;
         case "seasonCompetitions":
           if (!selectedLevel.seasonId) {
             setIsLoading(false);
             return;
           }
-          endpoint = `${entitySportUrl}/admin/list/seasonCompetitions`;
+          endpoint = `${entitySportUrl}/admin/v3/competitions`;
           payload = {
             sid: +selectedLevel.seasonId,
             page: currentPage == 0 ? 1 : currentPage,
             limit: pageSize,
           };
+          // Add status filter if selected
+          if (selectedFilter.status !== null && selectedFilter.status !== undefined) {
+            payload.status = selectedFilter.status;
+          }
           break;
         case "competitionMatches":
           if (!selectedLevel.competitionId) {
             setIsLoading(false);
             return;
           }
-          endpoint = `${entitySportUrl}/admin/list/competitionMatches`;
+          endpoint = `${entitySportUrl}/admin/v3/competitions/matches`;
           payload = {
             cid: selectedLevel.competitionId,
             page: currentPage == 0 ? 1 : currentPage,
             limit: pageSize,
           };
+          // Add status filter if selected
+         if (selectedFilter.status !== null && selectedFilter.status !== undefined) {
+            payload.status = selectedFilter.status;
+          }
           break;
         default:
           setIsLoading(false);
@@ -169,48 +181,49 @@ export default function ImportEntity() {
 
       const response = await axiosInstance.post(endpoint, payload);
 
-      let apiData = [];
-      let totalCount = 0;
+      // let apiData = [];
+      // let totalCount = 0;
+
+      const items = response?.result?.response?.items;
+      const totalItems = response?.result?.response?.total_items;
+
+      let apiData = Array.isArray(items) ? items : [];
+      let totalCount = +totalItems || apiData.length;
 
       // Handle different response structures
-      if (selectedLevel.level === "seasons") {
-        apiData = response?.result?.data || [];
-        totalCount = response?.result?.totalRecords || apiData.length || 0;
-        // Sort seasons by year in descending order
-        apiData = apiData.sort((a, b) => b.sid - a.sid);
-      } else if (response?.data?.result?.appdata) {
-        apiData = response.data.result.appdata;
-        totalCount =
-          response.data.result.totalRecordsl ||
-          response.data.result.appdata.length;
-      } else if (response?.result?.response?.items) {
-        apiData = response.result.response.items;
-        totalCount =
-          response.result.response.totalRecords ||
-          response.result.response.total ||
-          0;
-      } else if (
-        response?.result?.response &&
-        Array.isArray(response.result.response)
-      ) {
-        apiData = response.result.response;
-        totalCount =
-          response?.result?.totalRecords || response.result.response.length;
-      } else if (
-        response?.result?.data &&
-        Array.isArray(response.result.data)
-      ) {
-        apiData = response.result.data;
-        totalCount =
-          response?.result?.totalRecords || response.result.data.length;
-      } else if (response?.result && Array.isArray(response.result)) {
-        apiData = response.result;
-        totalCount = response?.totalRecords || response.result.length;
-      } else {
-        console.error("Unexpected API response structure:", response);
-        apiData = [];
-        totalCount = 0;
-      }
+      // if (response?.data?.result?.appdata) {
+      //   apiData = response.data.result.appdata;
+      //   totalCount =
+      //     response.data.result.totalRecordsl ||
+      //     response.data.result.appdata.length;
+      // } else if (response?.result?.response?.items) {
+      //   apiData = response.result.response.items;
+      //   totalCount =
+      //     response.result.response.totalRecords ||
+      //     response.result.response.total ||
+      //     0;
+      // } else if (
+      //   response?.result?.response &&
+      //   Array.isArray(response.result.response)
+      // ) {
+      //   apiData = response.result.response;
+      //   totalCount =
+      //     response?.result?.totalRecords || response.result.response.length;
+      // } else if (
+      //   response?.result?.data &&
+      //   Array.isArray(response.result.data)
+      // ) {
+      //   apiData = response.result.data;
+      //   totalCount =
+      //     response?.result?.totalRecords || response.result.data.length;
+      // } else if (response?.result && Array.isArray(response.result)) {
+      //   apiData = response.result;
+      //   totalCount = response?.totalRecords || response.result.length;
+      // } else {
+      //   console.error("Unexpected API response structure:", response);
+      //   apiData = [];
+      //   totalCount = 0;
+      // }
 
       // Sort data in descending order by date
       if (selectedLevel.level === "seasonCompetitions") {
@@ -222,8 +235,6 @@ export default function ImportEntity() {
           (a, b) => new Date(b.date_start_ist) - new Date(a.date_start_ist)
         );
       }
-
-      totalCount = +totalCount || 0;
 
       setData(apiData);
       setTotal(totalCount);
@@ -243,6 +254,7 @@ export default function ImportEntity() {
     selectedLevel,
     currentPage,
     pageSize,
+    selectedFilter,
     entitySportUrl,
     dispatch,
   ]);
@@ -257,7 +269,7 @@ export default function ImportEntity() {
     setIsLoading(true);
     try {
       const response = await axiosInstance.post(
-        `${entitySportUrl}/admin/list/matchInfo`,
+        `${entitySportUrl}/admin/v3/matches/info`,
         {
           mid: +matchId,
         }
@@ -292,7 +304,7 @@ export default function ImportEntity() {
     setIsLoading(true);
     finalizeRef.current.getTableAction();
     await axiosInstance
-      .post(`/admin/import/commentary`, matchData)
+      .post(`${entitySportUrl}/admin/import/commentary`, {matchId: matchData.match_id})
       .then((response) => {
         dispatch(
           updateToastData({
@@ -316,29 +328,6 @@ export default function ImportEntity() {
   };
 
   // Handle item clicks for navigation
-  const handleSeasonClick = (record) => {
-    const newSelectedLevel = {
-      seasonId: record.sid,
-      competitionId: null,
-      matchId: null,
-      level: "seasonCompetitions",
-      year: record.name,
-    };
-
-    const newHistory = [
-      ...navigationHistory,
-      {
-        label: `Season (${record.name})`,
-        value: newSelectedLevel,
-      },
-    ];
-
-    setNavigationHistory(newHistory);
-    setSelectedLevel(newSelectedLevel);
-    setData([]);
-    setCurrentPage(1);
-  };
-
   const handleCompetitionClick = (record) => {
     const newSelectedLevel = {
       ...selectedLevel,
@@ -375,7 +364,17 @@ export default function ImportEntity() {
     setCurrentPage(1);
   };
 
-  // Fixed pagination handlers
+   // Handle status filter change
+  const handleFilterChange = (key, value) => {
+    const filterDataToUpdate = { ...selectedFilter, [key]: value };
+    setSelectedFilter(filterDataToUpdate);
+    setCurrentPage(1); // Reset to first page when filter changes
+  };
+
+  useEffect(() => {
+    handleFilterChange("status", null);
+  }, [selectedLevel.level]);
+
   const handlePageChange = (page) => {
     if (page !== currentPage && !isLoading) {
       setCurrentPage(page);
@@ -390,27 +389,14 @@ export default function ImportEntity() {
     }
   };
 
-  // Column configurations
-  const getSeasonsColumns = () => [
-    {
-      title: "Year",
-      dataIndex: "sid",
-      key: "sid",
-      width: "100%",
-      render: (text, record) => (
-        <span
-          className="cursor-pointer"
-          onClick={() => handleSeasonClick(record)}
-          style={{
-            cursor: "pointer",
-          }}
-        >
-          {text}
-        </span>
-      ),
-    },
-  ];
+  const handleReset = () => {
+    setSelectedFilter({
+      status: null
+    });
+    setCurrentPage(1);
+  };
 
+  // Column configurations
   const getSeasonCompetitionsColumns = () => [
     {
       title: "ID",
@@ -531,7 +517,7 @@ export default function ImportEntity() {
         const location = venue?.location;
         const country = venue?.country;
 
-        const parts = [name, location, country].filter(Boolean); // removes undefined/null/empty
+        const parts = [name, location, country].filter(Boolean);
         return parts.length > 0 ? parts.join(", ") : "N/A";
       },
     },
@@ -544,31 +530,35 @@ export default function ImportEntity() {
     },
   ];
 
+  const getCurrentStatusOptions = () => {
+    if (selectedLevel.level === "competitionMatches") {
+      return statusOptionsforMatch;
+    }
+    return statusOptions; // default: for seasonCompetitions or others
+  };
+
+
   // Get current columns based on level
   const getCurrentColumns = () => {
     switch (selectedLevel.level) {
-      case "seasons":
-        return getSeasonsColumns();
       case "seasonCompetitions":
         return getSeasonCompetitionsColumns();
       case "competitionMatches":
         return getCompetitionMatchesColumns();
       default:
-        return getSeasonsColumns();
+        return getSeasonCompetitionsColumns();
     }
   };
 
   // Get current title based on level
   const getCurrentTitle = () => {
     switch (selectedLevel.level) {
-      case "seasons":
-        return "Import EntityImport";
       case "seasonCompetitions":
-        return `Season Competitions for Year ${selectedLevel.year}`;
+        return "Season Competitions";
       case "competitionMatches":
         return "Competition Matches";
       default:
-        return "Import EntityImport";
+        return "Entity Import";
     }
   };
 
@@ -578,9 +568,10 @@ export default function ImportEntity() {
     headerSelect: false,
     isActive: false,
     dragDrop: false,
-    subTable: selectedLevel.level !== "seasons",
+    subTable: selectedLevel.level !== "seasonCompetitions",
     isServerPagination: true,
-    isNonCrud: true,
+    resetButton:true,
+    // isNonCrud: true,
   };
 
   return (
@@ -604,6 +595,25 @@ export default function ImportEntity() {
             setServerPageSize={handlePageSizeChange}
             onBreadCrumbsClick={handleBreadcrumbClick}
             breadCrumbs={navigationHistory}
+            handleCustomReset={handleReset}
+            renderCustomFilter={() => (
+              <div className="d-flex align-items-center">
+                <Select
+                  styles={{
+                    control: (provided) => ({ ...provided, width: 180 }),
+                  }}
+                  value={getCurrentStatusOptions().find(
+                    (option) => option.value === selectedFilter?.status
+                  )}
+                  placeholder={"Filter by Status"}
+                  onChange={(e) => {
+                    handleFilterChange("status", e?.value ?? null);
+                  }}
+                  options={getCurrentStatusOptions()}
+                  classNamePrefix="filter-dropdown"
+                />
+              </div>
+            )}
           />
 
           {/* Match Details Modal */}
