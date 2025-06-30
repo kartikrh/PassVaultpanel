@@ -599,7 +599,7 @@ const Index = () => {
       title: "Add",
       key: "add",
       render: (text, record) => {
-        if ([3, 4, 6].includes(record.status)) return null;
+        if ([5, 4, 6].includes(record.status)) return null;
 
         return (
           <Button

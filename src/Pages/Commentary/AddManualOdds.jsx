@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AiOutlinePlus, AiOutlineMinus } from 'react-icons/ai';
-import { Container, Row, Col, ButtonDropdown, DropdownItem, DropdownToggle, DropdownMenu, Card, CardBody, Button } from 'reactstrap';
+import { Container, Row, Col, ButtonDropdown, DropdownItem, DropdownToggle, DropdownMenu, Card, CardBody, Button, Input } from 'reactstrap';
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { isEmpty } from 'lodash';
 import axiosInstance from "../../Features/axios.js";
@@ -34,11 +34,12 @@ export const AddManualOdds = () => {
     const [competitionId, setCompetitionId] = useState(
         commentaryId ? commentaryDetails?.competitionId : null
       );
+    const [formErrors, setFormErrors] = useState({});
     const [EventTypeActive, setEventTypeActive] = useState(true);
     const [formData, setFormData] = useState({
         marketName: '',
-        runners: [
-            { id: 1, name: '', teamId: '' }
+        runner: [
+            { id: 1, name: '', teamId: '', runnerId: 0 }
         ],
         isActive: false,
         isAllow: false,
@@ -103,8 +104,8 @@ export const AddManualOdds = () => {
 
     
     useEffect(() => {
-        if (eventData?.market?.length > 0) {
-            const selectedMarket = eventData.market[0]; // or filter by some ID if needed
+        if (eventData?.market) {
+            const selectedMarket = eventData.market; // or filter by some ID if needed
             const {
                 marketName,
                 isActive,
@@ -121,11 +122,13 @@ export const AddManualOdds = () => {
                 teamId
             } = selectedMarket;
 
-            const formattedRunners = runners.map((runner, index) => ({
+            const formattedRunners = runners.map((runner, index) => {
+                return {
                 id: index + 1,
                 name: runner.runner || '',
-                teamId: runner.teamId || ''
-            }));
+                teamId: runner.teamId || '',
+                runnerId: runner.runnerId || 0
+            }});
 
             setFormData(prev => ({
                 ...prev,
@@ -140,7 +143,7 @@ export const AddManualOdds = () => {
                 rateSourceRefID: rateSourceRefID?.toString() || '',
                 favRatio: favRatio?.toString() || '',
                 lineRatio: lineRatio?.toString() || '',
-                runners: formattedRunners,
+                runner: formattedRunners,
             }));
         }
     }, [eventData.market]);
@@ -168,7 +171,7 @@ export const AddManualOdds = () => {
                     if (selectedMarket) {
                         setFormData({
                             marketName: selectedMarket.marketName || '',
-                            runners: selectedMarket.runners || [{ id: 1, name: '', teamId: '' }],
+                            runner: selectedMarket.runners || [{ id: 1, name: '', teamId: ''}],
                             isActive: selectedMarket.isActive ?? false,
                             isAllow: selectedMarket.isAllow ?? false,
                             margin: Number(selectedMarket.margin) || '',
@@ -308,20 +311,20 @@ export const AddManualOdds = () => {
         }
     }, [commentaryDetails?.eventTypeId, eventTypeId])
 
-    useEffect(() => {
-    if (eventTypeId) {
-        fetchCompetitionList(eventTypeId);
-    } else if (!eventTypeId) {
-        setCompetitionList([]);
-        setEventList([]);
-    }
-    }, [eventTypeId]);
+    // useEffect(() => {
+    // if (eventTypeId) {
+    //     fetchCompetitionList(eventTypeId);
+    // } else if (!eventTypeId) {
+    //     setCompetitionList([]);
+    //     setEventList([]);
+    // }
+    // }, [eventTypeId]);
 
     useEffect(() => {
         if(commentaryId){
             fetchMarketData();
         }
-    }, [selectedTableElements?.eventName?.value]);
+    }, [commentaryId]);
 
     useEffect(() => {
         if (!socket) return;
@@ -360,20 +363,24 @@ export const AddManualOdds = () => {
                 let selectionId = `${commentaryId}0${index}`;
 
                 if (isEdit && eventData.tpMarkets?.[0]?.runners?.[index]?.selectionId) {
-                    selectionId = eventData.tpMarkets[0].runners[index].selectionId;
+                   selectionId = eventData.market.runners[index].selectionId;
                 }
 
+                const previousRunner = formData?.runner?.find(
+                    (r) => r.selectionId?.toString() === selectionId?.toString()
+                );
                 return {
                     id: index + 1,
                     name: team.teamName,
                     teamId: team.teamId,
-                    selectionId,
+                    runnerId: previousRunner?.runnerId ?? undefined,
+                    selectionId: isEdit ? eventData.market.runners[index].selectionId : selectionId,
                 };
             });
 
             setFormData(prev => ({
                 ...prev,
-                runners: defaultRunners,
+                runner: defaultRunners,
             }));
         }
     }, [eventData.teams, eventData.tpMarkets, isEdit, commentaryId]);
@@ -409,10 +416,37 @@ export const AddManualOdds = () => {
         navigate(navigateTo, {state: selectedTableElements.eventName != null ? selectedTableElements : location?.state });
     };
 
+    const validateForm = () => {
+        const errors = {};
+
+        if (!formData.marketName || formData.marketName.trim() === "") {
+            errors.marketName = "Market name is required";
+        }
+        if (!formData.margin) {
+            errors.margin = "Margin is required";
+        }
+
+        if (!formData.lineRatio) {
+            errors.lineRatio = "Line Ratio is required";
+        }
+
+        if (!formData.delay) {
+            errors.delay = "Delay is required";
+        }
+
+        return errors;
+    };
+
 
     const handleSave = async (type) => {
-        setIsLoading(true); // Use the same loading state
-        const formattedRunners = formData.runners.map((runner, index) => {
+        const errors = validateForm();
+
+        if (Object.keys(errors).length > 0) {
+            setFormErrors(errors);
+            return; // Stop submission
+        }
+        // setIsLoading(true); // Use the same loading state
+        const formattedRunners = formData.runner.map((runner, index) => {
             if (runner.selectionId && runner.selectionId.includes(commentaryId)) {
                 return {
                     ...runner,
@@ -424,12 +458,14 @@ export const AddManualOdds = () => {
 
         const dataToSend = {
             ...formData,
-            runners: formattedRunners,
+            runner: formattedRunners,
             commentaryId,
             marketTypeId: 5,
             marketTypeCategoryId: 8,
+            eventMarketId: isEdit ? location?.state?.eventMarketId : 0,
             inningsId: formData.inningsId || "0",
             rateSourceRefID: formData?.rateSourceRefID || 0,
+            status: isEdit && eventData.market.status
         };
         await axiosInstance.post('/admin/eventMarket/saveManualMarket', dataToSend)
             .then((response) => {
@@ -441,19 +477,20 @@ export const AddManualOdds = () => {
                     }));
                     if(type === "SAVE_AND_CLOSE"){
                         handleDynamicNavigation("/manualOddsMarkets")
-                    }else if(SAVE_AND_NEW){
-                        // fetchMarketData()
-                        setSelectedTableElements({
-                            eventType: null,
-                            competition: null,
-                            eventName: null,
-                        })
+                    }else if(type === 'SAVE_AND_NEW'){
+                        fetchMarketData()
+                        setFormErrors({})
+                        // setSelectedTableElements({
+                        //     eventType: null,
+                        //     competition: null,
+                        //     eventName: null,
+                        // })
                         setFormData({
                             commentaryId: dataToSend.commentaryId,
                             eventRefId: dataToSend.eventRefId,
                             marketName: '',
-                            runners: [
-                                { id: 1, name: '', teamId: '' }
+                            runner: [
+                                { id: 1, name: '', teamId: '', runnerId: 0 }
                             ],
                             isActive: false,
                             isAllow: false,
@@ -472,6 +509,8 @@ export const AddManualOdds = () => {
                             commentaryDetails: null,
                             tpMarkets: [] // Add this
                         })
+                    }else if(type === "SAVE"){
+                        setFormErrors({})
                     }
                 }
             })
@@ -488,7 +527,7 @@ export const AddManualOdds = () => {
     };
 
     const addRunner = () => {
-        const newId = formData.runners.length + 1;
+        const newId = formData.runner.length + 1;
         const newRunner = {
             id: newId,
             name: '',
@@ -498,16 +537,16 @@ export const AddManualOdds = () => {
 
         setFormData({
             ...formData,
-            runners: [...formData.runners, newRunner]
+            runner: [...formData.runner, newRunner]
         });
     };
 
     const removeRunner = (id) => {
-        if (formData.runners.length <= 1) {
+        if (formData.runner.length <= 1) {
             return;
         }
 
-        const updatedRunners = formData.runners
+        const updatedRunners = formData.runner
             .filter(runner => runner.id !== id)
             .map((runner, index) => ({
                 ...runner,
@@ -519,14 +558,14 @@ export const AddManualOdds = () => {
 
         setFormData({
             ...formData,
-            runners: updatedRunners
+            runner: updatedRunners
         });
     };
 
     const handleRunnerChange = (id, field, value) => {
         setFormData({
             ...formData,
-            runners: formData.runners.map(runner =>
+            runner: formData.runner.map(runner =>
                 runner.id === id
                     ? field === 'runner'
                         ? value  // If updating entire runner object
@@ -535,6 +574,8 @@ export const AddManualOdds = () => {
             )
         });
     };
+
+    
     return (
         <React.Fragment>
             <div className="page-content">
@@ -544,72 +585,34 @@ export const AddManualOdds = () => {
                             <CardBody>
                                 <Row className="align-items-center">
                                     <Col xs={8}>
-                                        <Breadcrumbs title="ScoreCard" breadcrumbItem="Manual Odds Market" page="updatecp" />
+                                        <Breadcrumbs title="ScoreCard" breadcrumbItem="Add Manual Odds Market" page="updatecp" />
                                     </Col>
                                     <Col xs={4} className="text-end">
-                                        {/* <Button color="primary" className="me-2" onClick={handleSave}>Save</Button> */}
-                                        <ButtonDropdown
+                                        <div className="d-flex gap-2 justify-content-end">
+                                            <Button color="danger" onClick={handleBackClick}>Exit</Button>
+                                            <ButtonDropdown
                                             direction="down"
                                             isOpen={drp_up}
                                             toggle={() => setDrp_up(!drp_up)}
-                                        >
-                                            <Button
-                                            // disabled={
-                                            //     !(
-                                            //     checkPermission(
-                                            //         permissionObj,
-                                            //         pageName,
-                                            //         PERMISSION_ADD
-                                            //     ) ||
-                                            //     checkPermission(
-                                            //         permissionObj,
-                                            //         pageName,
-                                            //         PERMISSION_EDIT
-                                            //     )
-                                            //     )
-                                            // }
-                                            id="caret"
-                                            color="primary"
-                                            onClick={() => {
-                                                handleSave(SAVE_AND_CLOSE);
-                                            }}
                                             >
-                                            Save & Close
+                                            <Button
+                                                id="caret"
+                                                color="primary"
+                                                onClick={() => handleSave(SAVE_AND_CLOSE)}
+                                            >
+                                                Save & Close
                                             </Button>
                                             <DropdownToggle caret color="primary">
-                                            <i className="mdi mdi-chevron-down" />
+                                                <i className="mdi mdi-chevron-down" />
                                             </DropdownToggle>
                                             <DropdownMenu>
-                                            {/* {checkPermission(
-                                                permissionObj,
-                                                pageName,
-                                                PERMISSION_EDIT
-                                            ) && ( */}
-                                                <DropdownItem
-                                                onClick={() => {
-                                                    handleSave(SAVE);
-                                                }}
-                                                >
-                                                Save
-                                                </DropdownItem>
-                                            {/* )} */}
-                                            {/* {checkPermission(
-                                                permissionObj,
-                                                pageName,
-                                                PERMISSION_ADD
-                                            ) && ( */}
-                                                <DropdownItem
-                                                onClick={() => {
-                                                    handleSave(SAVE_AND_NEW);
-                                                }}
-                                                >
-                                                Save & New
-                                                </DropdownItem>
-                                            {/* )} */}
+                                                <DropdownItem onClick={() => handleSave(SAVE)}>Save</DropdownItem>
+                                                <DropdownItem onClick={() => handleSave(SAVE_AND_NEW)}>Save & New</DropdownItem>
                                             </DropdownMenu>
-                                        </ButtonDropdown>
-                                        <Button color="danger" onClick={handleBackClick}>Exit</Button>
+                                            </ButtonDropdown>
+                                        </div>
                                     </Col>
+
                                 </Row>
                                 
                                 {isLoading && <SpinnerModel />}
@@ -625,106 +628,106 @@ export const AddManualOdds = () => {
                                         </Col>
                                     )}
                                 </Row>
-                                { (!isEdit) && 
+                                
+                                
+
                                 <Row>
-                                    <div className='d-flex'>
-                                    {/* Event Type */}
-                                    <Select
-                                        styles={{ control: (base) => ({ ...base, width: 180 }) }}
-                                        value={selectedTableElements?.eventType}
-                                        isDisabled = {location?.state?.eventType}
-                                        placeholder="Event Type"
-                                        onChange={(e) => {
-                                        setSelectedTableElements({
-                                            eventType: e,
-                                            competition: null,
-                                            eventName: null,
-                                        });
-                                        setEventTypeId(e?.value);
-                                        setCompetitionId(null);
-                                        }}
-                                        options={[
-                                        { label: "Select Event Type", value: null },
-                                        ...eventTypes.map((item) => ({
-                                            label: item?.eventType,
-                                            value: item?.eventTypeId,
-                                        })),
-                                        ]}
-                                        classNamePrefix="filter-dropdown"
-                                    />
-
-                                    {/* Competition */}
-                                    <Select
-                                        styles={{ control: (base) => ({ ...base, width: 180 }) }}
-                                        value={selectedTableElements?.competition}
-                                        isDisabled = {location?.state?.competition}
-                                        placeholder="Competition List"
-                                        onChange={(e) => {
-                                        setCompetitionId(e?.value);
-                                        setSelectedTableElements((prev) => ({
-                                            ...prev,
-                                            competition: e,
-                                            eventName: null,
-                                        }));
-                                        }}
-                                        options={competitionList.map((item) => {
-                                            return {
-                                            label: item?.competition,
-                                            value: item?.competitionId,
-                                            }
-                                        })}
-                                        classNamePrefix="filter-dropdown"
-                                    />
-
-                                    {/* Event List */}
-                                    <Select
-                                        styles={{ control: (base) => ({ ...base, width: 180 }) }}
-                                        value={selectedTableElements?.eventName}
-                                        isDisabled = {location?.state?.eventName}
-                                        placeholder="Event List"
-                                        onChange={(e) => {
-                                        setSelectedTableElements((prev) => ({
-                                            ...prev,
-                                            eventName: e,
-                                        }));
-                                        }}
-                                        options={eventList
-                                        .sort((a, b) => new Date(a.eventDate) - new Date(b.eventDate))
-                                        .map((item) => ({
-                                            label: `${item?.eventName} (${convertDateUTCToLocal(item?.eventDate, "index")})`,
-                                            value: item?.commentaryId,
-                                        }))}
-                                        classNamePrefix="filter-dropdown"
-                                    />
-                                    </div>
-                                </Row> }
-                                <Row>
-                                    {!isEmpty(eventData?.commentaryDetails) && (
-                                        <Col className='mb-3'>
-                                            <div className='match-details-breadcrumbs'>
-                                                {`${eventData.commentaryDetails.ety}/ ${eventData.commentaryDetails.com}/ ${eventData.commentaryDetails.en}`}
-                                            </div>
-                                            <div>
-                                                {`Ref: ${eventData.commentaryDetails.eid} [ ${eventData.commentaryDetails.ed + " " + eventData.commentaryDetails.et} ]`}
-                                            </div>
-                                        </Col>
-                                    )}
-                                </Row>
-
-                                <Row className="mt-4">
                                     {/* Left Side Form Fields */}
                                     <Col md={6}>
                                         <Card className="h-100">
-                                            <CardBody>
+                                            <CardBody className="py-0">
+                                                {!isEdit && <div className='d-flex justify-content-between gap-2 mb-3'>
+                                                    {/* Event Type */}
+                                                    <div>
+                                                        <label className="form-label">Event Type:</label>
+                                                        <Select
+                                                            styles={{ control: (base) => ({ ...base, width: 180 }) }}
+                                                            value={selectedTableElements?.eventType}
+                                                            isDisabled = {location?.state?.eventType}
+                                                            placeholder="Event Type"
+                                                            onChange={(e) => {
+                                                            setSelectedTableElements({
+                                                                eventType: e,
+                                                                competition: null,
+                                                                eventName: null,
+                                                            });
+                                                            setEventTypeId(e?.value);
+                                                            setCompetitionId(null);
+                                                            }}
+                                                            options={[
+                                                            { label: "Select Event Type", value: null },
+                                                            ...eventTypes.map((item) => ({
+                                                                label: item?.eventType,
+                                                                value: item?.eventTypeId,
+                                                            })),
+                                                            ]}
+                                                            classNamePrefix="filter-dropdown"
+                                                        />
+                                                    </div>
+
+                                                    {/* Competition */}
+                                                    <div>
+                                                        <label className="form-label">Competition:</label>
+                                                        <Select
+                                                            styles={{ control: (base) => ({ ...base, width: 180 }) }}
+                                                            value={selectedTableElements?.competition}
+                                                            isDisabled = {location?.state?.competition}
+                                                            placeholder="Competition List"
+                                                            onChange={(e) => {
+                                                            setCompetitionId(e?.value);
+                                                            setSelectedTableElements((prev) => ({
+                                                                ...prev,
+                                                                competition: e,
+                                                                eventName: null,
+                                                            }));
+                                                            }}
+                                                            options={competitionList.map((item) => {
+                                                                return {
+                                                                label: item?.competition,
+                                                                value: item?.competitionId,
+                                                                }
+                                                            })}
+                                                            classNamePrefix="filter-dropdown"
+                                                        />
+                                                    </div>
+
+                                                    {/* Event List */}
+                                                    <div>
+                                                        <label className="form-label">Event List:</label>
+                                                        <Select
+                                                            styles={{ control: (base) => ({ ...base, width: 180 }) }}
+                                                            value={selectedTableElements?.eventName}
+                                                            isDisabled = {location?.state?.eventName}
+                                                            placeholder="Event List"
+                                                            onChange={(e) => {
+                                                            setSelectedTableElements((prev) => ({
+                                                                ...prev,
+                                                                eventName: e,
+                                                            }));
+                                                            }}
+                                                            options={eventList
+                                                            .sort((a, b) => new Date(a.eventDate) - new Date(b.eventDate))
+                                                            .map((item) => ({
+                                                                label: `${item?.eventName} (${convertDateUTCToLocal(item?.eventDate, "index")})`,
+                                                                value: item?.commentaryId,
+                                                            }))}
+                                                            classNamePrefix="filter-dropdown"
+                                                        />
+                                                    </div>
+                                                </div>}
                                                 <div className="space-y-4">
                                                     <div className="mb-3">
-                                                        <label className="form-label">Market Name:</label>
-                                                        <input
+                                                        <span className="text-danger">*&nbsp;</span><label className="form-label">Market Name:</label>
+                                                        <Input
+                                                            required={true}
+                                                            invalid={formErrors?.marketName}
                                                             type="text"
                                                             className="form-control"
+                                                            disabled={isEdit}
                                                             value={formData.marketName}
                                                             onChange={(e) => setFormData({ ...formData, marketName: e.target.value })}
                                                         />
+                                                        {formErrors?.marketName && <span style={{ color: "red" }}>{formErrors?.marketName}</span>}
                                                     </div>
 
                                                     <div className="mb-3 d-flex gap-4">
@@ -747,37 +750,46 @@ export const AddManualOdds = () => {
                                                             <label className="form-check-label">Is Allow</label>
                                                         </div>
                                                     </div>
+                                                    <div className='d-flex justify-content-between mb-3 gap-2'>
+                                                        <div>
+                                                            <span className="text-danger">*&nbsp;</span><label className="form-label">Margin:</label>
+                                                            <Input
+                                                                required={true}
+                                                                invalid={formErrors?.margin}
+                                                                type="number"
+                                                                className="form-control"
+                                                                value={formData.margin}
+                                                                onChange={(e) => setFormData({ ...formData, margin: e.target.value })}
+                                                            />
+                                                            {formErrors?.margin && <span style={{ color: "red" }}>{formErrors?.margin}</span>}
+                                                        </div>
 
-                                                    <div className="mb-3">
-                                                        <label className="form-label">Margin:</label>
-                                                        <input
-                                                            type="text"
-                                                            className="form-control"
-                                                            value={formData.margin}
-                                                            onChange={(e) => setFormData({ ...formData, margin: e.target.value })}
-                                                        />
+                                                        <div>
+                                                            <span className="text-danger">*&nbsp;</span><label className="form-label">Delay:</label>
+                                                            <Input
+                                                                required={true}
+                                                                invalid={formErrors?.delay}
+                                                                type="number"
+                                                                className="form-control"
+                                                                value={formData.delay}
+                                                                onChange={(e) => setFormData({ ...formData, delay: e.target.value })}
+                                                            />
+                                                            {formErrors?.delay && <span style={{ color: "red" }}>{formErrors?.delay}</span>}
+                                                        </div>
+
+                                                        <div>
+                                                            <span className="text-danger">*&nbsp;</span><label className="form-label">Line Ratio:</label>
+                                                            <Input
+                                                                invalid={formErrors?.lineRatio}
+                                                                required={true}
+                                                                type="number"
+                                                                className="form-control"
+                                                                value={formData.lineRatio}
+                                                                onChange={(e) => setFormData({ ...formData, lineRatio: e.target.value })}
+                                                            />
+                                                            {formErrors?.lineRatio && <span style={{ color: "red" }}>{formErrors?.lineRatio}</span>}
+                                                        </div>
                                                     </div>
-
-                                                    <div className="mb-3">
-                                                        <label className="form-label">Delay:</label>
-                                                        <input
-                                                            type="text"
-                                                            className="form-control"
-                                                            value={formData.delay}
-                                                            onChange={(e) => setFormData({ ...formData, delay: e.target.value })}
-                                                        />
-                                                    </div>
-
-                                                    <div className="mb-3">
-                                                        <label className="form-label">Line Ration:</label>
-                                                        <input
-                                                            type="text"
-                                                            className="form-control"
-                                                            value={formData.lineRatio}
-                                                            onChange={(e) => setFormData({ ...formData, lineRatio: e.target.value })}
-                                                        />
-                                                    </div>
-
                                                     <div className="mb-3">
                                                         <label className="form-label d-block">IsConnected market:</label>
                                                         <div className="form-check form-check-inline">
@@ -836,12 +848,12 @@ export const AddManualOdds = () => {
                                     </Col>
 
                                     {/* Right Side - Runners */}
-                                    <Col md={6}>
+                                    <Col md={6} className="mt-4">
                                         <Card className="h-100">
-                                            <CardBody>
+                                            <CardBody className="py-0">
                                                 <div className="d-flex justify-content-between align-items-center mb-3">
                                                     <h5 className="mb-0 modal-header-title">Runners</h5>
-                                                    <Button
+                                                    {!isEdit && <Button
                                                         color="primary"
                                                         size="sm"
                                                         onClick={addRunner}
@@ -849,11 +861,15 @@ export const AddManualOdds = () => {
                                                     >
                                                         <AiOutlinePlus size={16} className="me-1" />
                                                         Add Runner
-                                                    </Button>
+                                                    </Button>}
                                                 </div>
                                                 <div className="runners-container">
-                                                    {formData.runners?.map((runner, index) => (
-                                                        <Card key={runner.id} className="mb-2 runner-card">
+                                                    {formData.runner?.map((runner, index) => {
+                                                        const matchedRunner = eventData.tpMarkets?.[0]?.runners?.find(
+                                                            tpRunner => tpRunner.selectionId?.toString() === runner.selectionId?.toString()
+                                                        );
+                                                        // console.log("matchedRunner", matchedRunner, runner)
+                                                        return <Card key={runner.id} className="mb-2 runner-card">
                                                             <CardBody className="py-2">
                                                                 <div className="d-flex align-items-center gap-2">
                                                                     <span className="fw-bold" style={{ minWidth: '25px' }}>{index + 1}.</span>
@@ -864,15 +880,19 @@ export const AddManualOdds = () => {
                                                                         value={runner.name}
                                                                         onChange={(e) => handleRunnerChange(runner.id, 'name', e.target.value)}
                                                                         style={{ width: '120px' }}
+                                                                        disabled={isEdit}
                                                                     />
+                                                                    {/* {console.log("runner.selectionId eventData.eventData.tpMarkets[0].runners", eventData?.tpMarkets[0]?.runners)} */}
                                                                     {eventData.tpMarkets?.length > 0 && (
                                                                         <select
                                                                             className="form-select form-select-sm"
-                                                                            value={runner.selectionId || ''}
+                                                                            value={runner.selectionId}
                                                                             onChange={(e) => {
+                                                                                
                                                                                 const selectedRunner = eventData.tpMarkets[0].runners.find(
                                                                                     r => r.selectionId === e.target.value
                                                                                 );
+                                                                                
 
                                                                                 if (selectedRunner) {
                                                                                     // Create a new runner object with all fields from the selected TP runner
@@ -898,14 +918,14 @@ export const AddManualOdds = () => {
                                                                             style={{ width: '150px' }}
                                                                         >
                                                                             <option value="">None</option>
-                                                                            {eventData.tpMarkets[0].runners.map(tpRunner => (
-                                                                                <option key={tpRunner.selectionId} value={tpRunner.selectionId}>
+                                                                            {eventData.tpMarkets[0].runners.map(tpRunner => {
+                                                                                return <option key={tpRunner.selectionId} value={tpRunner.selectionId}>
                                                                                     {tpRunner.runner}
                                                                                 </option>
-                                                                            ))}
+                                                                            })}
                                                                         </select>
                                                                     )}
-                                                                    {index >= 0 && (
+                                                                    {(index >= 0 && !isEdit) && (
                                                                         <Button
                                                                             color="danger"
                                                                             size="sm"
@@ -918,7 +938,7 @@ export const AddManualOdds = () => {
                                                                 </div>
                                                             </CardBody>
                                                         </Card>
-                                                    ))}
+                                                    })}
                                                 </div>
                                             </CardBody>
                                         </Card>
