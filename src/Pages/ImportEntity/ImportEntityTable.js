@@ -9,6 +9,7 @@ import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
 import _, { isEmpty } from "lodash";
 import moment from "moment";
+import config from '../../config';
 
 import {
   ERROR,
@@ -60,7 +61,6 @@ export default function ImportEntity() {
     status: null
   });
 
-  // Navigation state - Default to season competitions with a default season
   const [selectedLevel, setSelectedLevel] = useState({
     seasonId: 2025, // Default to current year or set a specific season ID
     competitionId: null,
@@ -81,15 +81,13 @@ export default function ImportEntity() {
     },
   ]);
 
-  // Modal state for match details
   const [matchModalVisible, setMatchModalVisible] = useState(false);
   const [matchData, setMatchData] = useState(null);
   const [dataToDB, setDataToDB] = useState({});
   let entitySportUrl =
-    loadInitData.find((item) => item.key === loadInit.ENTITYSPORTURL)?.value ||
+    loadInitData.find((item) => item.key === config.loadInit.ENTITYSPORT_URL)?.value ||
     "https://es.deployed.live";
 
-  // Helper functions
   const getCompetitionStatus = (status) => {
     switch (status) {
       case "live":
@@ -121,7 +119,6 @@ export default function ImportEntity() {
     return moment(dateTime).format("DD/MM/YYYY HH:mm");
   };
 
-  // Initial permission check - separated from data loading
   useEffect(() => {
     if (!isEmpty(permissionObj)) {
       if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
@@ -132,7 +129,6 @@ export default function ImportEntity() {
     }
   }, [permissionObj, navigate]);
 
-  // Unified data fetching function
   const fetchData = useCallback(async () => {
     if (!permissionChecked) return;
 
@@ -153,7 +149,7 @@ export default function ImportEntity() {
             page: currentPage == 0 ? 1 : currentPage,
             limit: pageSize,
           };
-          // Add status filter if selected
+          //status filter if selected
           if (selectedFilter.status !== null && selectedFilter.status !== undefined) {
             payload.status = selectedFilter.status;
           }
@@ -169,7 +165,7 @@ export default function ImportEntity() {
             page: currentPage == 0 ? 1 : currentPage,
             limit: pageSize,
           };
-          // Add status filter if selected
+          //status filter if selected
          if (selectedFilter.status !== null && selectedFilter.status !== undefined) {
             payload.status = selectedFilter.status;
           }
@@ -327,7 +323,6 @@ export default function ImportEntity() {
       });
   };
 
-  // Handle item clicks for navigation
   const handleCompetitionClick = (record) => {
     const newSelectedLevel = {
       ...selectedLevel,
@@ -353,7 +348,6 @@ export default function ImportEntity() {
     fetchMatchDetails(record.match_id || record.id);
   };
 
-  // Handle breadcrumb navigation
   const handleBreadcrumbClick = (value) => {
     let historyList = _.clone(navigationHistory);
     const index = historyList.findIndex((item) => _.isEqual(item.value, value));
@@ -364,11 +358,10 @@ export default function ImportEntity() {
     setCurrentPage(1);
   };
 
-   // Handle status filter change
   const handleFilterChange = (key, value) => {
     const filterDataToUpdate = { ...selectedFilter, [key]: value };
     setSelectedFilter(filterDataToUpdate);
-    setCurrentPage(1); // Reset to first page when filter changes
+    setCurrentPage(1);
   };
 
   useEffect(() => {
