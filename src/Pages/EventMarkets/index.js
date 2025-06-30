@@ -751,75 +751,6 @@ const Index = () => {
       ),
       style: { width: "2%", textAlign: "center" },
     },
-    {
-      title: "Close",
-      key: "close",
-      render: (text, record) => (
-        <>
-          <Tooltip
-            title={"Close Market"}
-            color={"#e8e8ea"}
-            overlayInnerStyle={{ color: "#000" }}
-          >
-            <Button
-              color="danger"
-              size="sm"
-              className="btn"
-              disabled={record.status === 4}
-              onClick={() => {
-                handleClose(record);
-              }}
-            >
-              Close
-            </Button>{" "}
-          </Tooltip>
-        </>
-      ),
-      style: { width: "5%", textAlign: "center" },
-    },
-    {
-      title: "Result",
-      dataIndex: "result",
-      key: "result",
-      style: { width: "5%", textAlign: "center" },
-      sort: true,
-      render: (text, record) => {
-        return record?.marketTypeId == marketTypeObj?.Fancy ||
-          record?.marketTypeId == marketTypeObj?.LineMarket
-          ? text
-          : record?.resultRunner;
-      },
-    },
-    {
-      title: "Inning Run",
-      key: "isInningRun",
-      render: (text, record) => (
-        <Tooltip
-          title={"Inactive Inning Run"}
-          color={"#e8e8ea"}
-          overlayInnerStyle={{ color: "#000" }}
-        >
-          <Button
-            color={`${record.isInningRun ? "primary" : "danger"}`}
-            size="sm"
-            className="btn"
-            disabled={!record.isInningRun}
-            onClick={() => {
-              handleActiveInactiveInningRun(
-                "isInningRun",
-                record,
-                record.isInningRun
-              );
-            }}
-          >
-            <i
-              className={`bx ${record.isInningRun ? "bx-check" : "bx-block"}`}
-            ></i>
-          </Button>
-        </Tooltip>
-      ),
-      style: { width: "2%", textAlign: "center" },
-    },
     // {
     //   title: "Close",
     //   key: "close",
@@ -834,6 +765,7 @@ const Index = () => {
     //           color="danger"
     //           size="sm"
     //           className="btn"
+    //           disabled={record.status === 4}
     //           onClick={() => {
     //             handleClose(record);
     //           }}
@@ -858,6 +790,40 @@ const Index = () => {
     //       : record?.resultRunner;
     //   },
     // },
+    {
+      title: " ",
+      key: "result_close",
+      style: { width: "10%", textAlign: "center" },
+      render: (text, record) => {
+        const resultText =
+          record?.marketTypeId == marketTypeObj?.Fancy ||
+          record?.marketTypeId == marketTypeObj?.LineMarket
+            ? record?.result
+            : record?.resultRunner;
+
+        return (
+          <div className="d-flex flex-column align-items-center gap-1">
+            <div>{resultText}</div>
+            {record.status !== 4 && (
+              <Tooltip
+                title={"Close Market"}
+                color={"#e8e8ea"}
+                overlayInnerStyle={{ color: "#000" }}
+              >
+                <Button
+                  color="danger"
+                  size="sm"
+                  className="btn"
+                  onClick={() => handleClose(record)}
+                >
+                  Close
+                </Button>
+              </Tooltip>
+            )}
+          </div>
+        );
+      },
+    },
     {
       render: (text, record) => (
         <>
@@ -913,6 +879,36 @@ const Index = () => {
         </>
       ),
       style: { width: "10%", textAlign: "center" },
+    },
+    {
+      title: "Inning Run",
+      key: "isInningRun",
+      render: (text, record) => (
+        <Tooltip
+          title={"Inactive Inning Run"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
+          <Button
+            color={`${record.isInningRun ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            disabled={!record.isInningRun}
+            onClick={() => {
+              handleActiveInactiveInningRun(
+                "isInningRun",
+                record,
+                record.isInningRun
+              );
+            }}
+          >
+            <i
+              className={`bx ${record.isInningRun ? "bx-check" : "bx-block"}`}
+            ></i>
+          </Button>
+        </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
     },
     checkPermission(permissionObj, pageName, PERMISSION_EDIT) && {
       title: " ",

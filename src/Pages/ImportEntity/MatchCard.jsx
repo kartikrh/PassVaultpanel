@@ -57,9 +57,11 @@ const MatchCard = ({ matchData }) => {
             <h2 className="mt-1 mb-1 text-primary h4">{title}</h2>
           </Col>
           <Col>
-            <Tag color={getStatusColor(status)} className="px-3 py-1 mx-5">
-              {status_str.toUpperCase()}
-            </Tag>
+            {status_str && (
+              <Tag color={getStatusColor(status)} className="px-3 py-1 mx-5">
+                {status_str.toUpperCase()}
+              </Tag>
+            )}
           </Col>
         </Row>
       </div>
@@ -182,7 +184,10 @@ const MatchCard = ({ matchData }) => {
               <strong>Season:</strong> {competition?.season}
             </div>
             <div className="mb-2">
-              <strong>Category:</strong> {competition?.category?.toUpperCase()}
+              <strong>Category:</strong>{" "}
+              {competition?.category
+                ? competition.category.toUpperCase()
+                : "N/A"}
             </div>
             {umpires && (
               <div className="mt-3">
