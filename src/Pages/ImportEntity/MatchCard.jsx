@@ -8,8 +8,11 @@ import {
 import moment from "moment";
 
 const MatchCard = ({ matchData }) => {
-  if (!matchData) return null;
+  if (!matchData || !matchData.response || !matchData.response.match_info) {
+    return null;
+  }
 
+  // Extract match_info from the nested structure
   const {
     title,
     short_title,
@@ -28,7 +31,7 @@ const MatchCard = ({ matchData }) => {
     result,
     toss,
     umpires,
-  } = matchData;
+  } = matchData.response.match_info;
 
   // Status color mapping
   const getStatusColor = (status) => {
@@ -128,7 +131,7 @@ const MatchCard = ({ matchData }) => {
       </Row>
 
       {/* Result Section */}
-      {status_note && status === 2 && (
+      {result && status === 2 && (
         <div className="text-center mb-3">
           <Card
             className="bg-light-success border border-success rounded p-2"
