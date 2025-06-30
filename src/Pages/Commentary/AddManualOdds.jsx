@@ -23,7 +23,7 @@ export const AddManualOdds = () => {
     });
     
     const commentaryId = location?.state?.eventName?.value || selectedTableElements?.eventName?.value || location?.state?.commentaryId;
-    console.log("location?.state?.commentaryId", location?.state?.commentaryId)
+
     // const rawDetails = sessionStorage.getItem('updateManualOddsCommentaryDetails');
     const commentaryDetails = {};
     const [drp_up, setDrp_up] = useState(false);
@@ -58,7 +58,6 @@ export const AddManualOdds = () => {
 
     useEffect(() => {
         if (location?.state && typeof location.state?.eventType == 'object') {
-            console.log("location1")
             setSelectedTableElements({
                 eventType: location?.state?.eventType ?? null,
                 competition: location?.state?.competition ?? null,
@@ -190,7 +189,6 @@ export const AddManualOdds = () => {
                 }
             })
             .catch((error) => {
-                console.log("error?.message", error?.message)
                 dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
             })
             .finally(() => {
@@ -620,7 +618,6 @@ export const AddManualOdds = () => {
     };
     useEffect(() => {
         if (location?.state && isEdit) {
-        console.log("location2")
             setSelectedTableElements({
                 eventType: {
                     value: location.state.eventTypeId,
@@ -637,10 +634,6 @@ export const AddManualOdds = () => {
             });
         }
     }, [location?.state]);
-
-    useEffect(()=> {
-        console.log("sele", location.state)
-    }, [location.state])
 
     return (
         <React.Fragment>
