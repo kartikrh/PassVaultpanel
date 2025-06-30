@@ -189,6 +189,36 @@ const Index = () => {
         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
       });
   };
+
+  const handleIsPython = async (pType, record, cState) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/marketTemplate/isPython`, {
+        marketTemplateId: record.marketTemplateId,
+        [pType]: cState ? false : true,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+
   const handleIsPerEvent = async (pType, record, cState) => {
     setIsLoading(true);
     await axiosInstance
@@ -433,6 +463,25 @@ const Index = () => {
           <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
         </Button>
       </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Python Code",
+      key: "isPython",
+      render: (text, record) => (
+        <Tooltip title={"Toggle Python"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Button
+            color={record.isPython ? "primary" : "danger"}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleIsPython("isPython", record, record.isPython);
+            }}
+          >
+            <i className={`bx ${record.isPython ? "bx-check" : "bx-block"}`}></i>
+          </Button>
+        </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
