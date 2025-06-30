@@ -1594,6 +1594,7 @@ export const NewUpdateManualOdds = () => {
     };
 
     const handleSave = useCallback(async (options = {}) => {
+        console.log("Margin updated handleSave")
         setIsLoading(true);
         try {
             const marketData = prepareMarketData(options);
@@ -1917,6 +1918,7 @@ export const NewUpdateManualOdds = () => {
         // Handle display value for saved price
         const displaySavedPrice = !isLive && directLineEnabled && savedPrice < 1.01 ? '' :
             isActive ? savedPrice : '-';
+            // console.log("displaySavedPrice", displaySavedPrice)
         const isManualMode = !isLive && !directLineEnabled;
         return (
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
@@ -2093,13 +2095,6 @@ export const NewUpdateManualOdds = () => {
     const fetchMarketData = async () => {
         setIsLoading(true);
         try {
-            // Step 1: Get commentary data
-            const response = await axiosInstance.post('/admin/eventMarket/getManualMarket', { commentaryId });
-
-            if (!response?.result) return;
-
-            const { comDetails, teams } = response.result;
-
             // ✅ Get eventMarketId from commentaryDetails or location.state
             const eventMarketId = commentaryDetails?.eventMarketId;
 
@@ -2111,19 +2106,28 @@ export const NewUpdateManualOdds = () => {
                 updatedMarket = marketResponse?.result || {};
             }
 
-            // Step 2: Set event data using market from second API
+            // Step 2: Set event data using market from API
             setEventData({
-                comDetails: comDetails || null,
-                teams: teams?.sort((a, b) => a?.teamNo - b?.teamNo) || [],
-                market: updatedMarket,
+                comDetails: {
+                    commentaryId : updatedMarket.commentaryId,
+                    eventDate: updatedMarket.eventDate,
+                    eventName : updatedMarket.eventName,
+                    eventRefId : updatedMarket.eventRefId
+                },
+                // teams: teams?.sort((a, b) => a?.teamNo - b?.teamNo) || [],
+                market: updatedMarket.market,
             });
 
-            const marketData = updatedMarket;
+            const marketData = updatedMarket.market;
             const currentMarketStatus = marketData?.status?.toString();
             setMarketStatus(currentMarketStatus);
 
             if (Number(marketData?.rateSourceRefID) === 0) {
                 setIsLive(false);
+            }
+            console.log("updatedMarket.market", updatedMarket.market)
+            if (marketData?.rateSourceRefID) {
+                setRateSourceRefID([updatedMarket.market.rateSourceRefID]);
             }
 
             // Step 3: Handle market status & settings
@@ -2323,7 +2327,7 @@ export const NewUpdateManualOdds = () => {
                 ...prevSettings,
                 ...savedSettings
             }));
-            console.log('Loaded settings from local storage:', savedSettings);
+            // console.log('Loaded settings from local storage:', savedSettings);
         }
 
         // Set up event listener
@@ -2368,6 +2372,7 @@ export const NewUpdateManualOdds = () => {
     }, []);
 
     useEffect(() => {
+        // console.log("margin updated 2379")
         const handleKeyUp = (event) => {
             const key = event.key.toUpperCase();
             const isManualMode = !isLive && !directLineEnabled;
@@ -2552,6 +2557,7 @@ export const NewUpdateManualOdds = () => {
     }, [settings.bfRateDiff, isLive, processMarketRunnerData, originalMarketRunnerData]);
 
     useEffect(() => {
+        console.log("margin updated 2564")
         // Handle margin changes for different modes
         if (isLive && originalMarketRunnerData.length > 0) {
             // In live mode, recalculate with socket data
@@ -2567,22 +2573,35 @@ export const NewUpdateManualOdds = () => {
 
             // Find selected runner
             const selectedRunnerData = runners.find(r => r.isSelected);
+            // console.log("selectedRunnerData", selectedRunnerData)
+            // console.log("runners", runners)
             if (selectedRunnerData) {
                 const selectedBackPrice = savedPrices[selectedRunnerData.runnerId]?.back || 0;
+                // console.log("selectedBackPrice", selectedBackPrice)
                 if (selectedBackPrice > 0) {
                     // Recalculate lay price with new margin
                     const newSettings = { ...settings }; // This will have the updated margin
+                    // console.log("ne margin", newSettings.margin)
                     const newRates = calculateRunnerRates({
                         back: { price: selectedBackPrice }
                     }, newSettings, { forceCalculateLay: true });
+                    // console.log("newRates 2589", newRates)
 
                     // Update saved prices for both runners
                     const nonSelectedRunner = runners.find(r => !r.isSelected);
+                    // console.log("nonSelectedRunner", nonSelectedRunner)
                     if (nonSelectedRunner) {
                         const selectedLayPrice = newRates.lay;
                         const nonSelectedBackPrice = parseFloat((1 / (1 - (1 / selectedLayPrice))).toFixed(2));
                         const nonSelectedLayPrice = parseFloat((1 / (1 - (1 / selectedBackPrice))).toFixed(2));
-
+                        console.log("selectedRunnerData", selectedRunnerData.runnerId, {
+                                back: selectedBackPrice,
+                                lay: selectedLayPrice
+                            })
+                        console.log("nonSelectedRunner", nonSelectedRunner.runnerId, {
+                                back: nonSelectedBackPrice,
+                                lay: nonSelectedLayPrice
+                            })
                         setSavedPrices(prev => ({
                             ...prev,
                             [selectedRunnerData.runnerId]: {
@@ -2615,6 +2634,8 @@ export const NewUpdateManualOdds = () => {
     }, [settings.margin]);
 
     useEffect(() => {
+        // console.log("margin updated 2628");
+        
         const handleKeyDown = async (e) => {
             // Cannot perform operations on closed markets
             if (+marketStatus === +CLOSE_VALUE) return;
@@ -2890,18 +2911,18 @@ export const NewUpdateManualOdds = () => {
 
     // TODO: test method Remove after development 
     useEffect(() => {
-        console.log("Setting up keydown event listener"); // Debug log
+        // console.log("Setting up keydown event listener"); // Debug log
 
         // Add a test function to check if the listener works
         const testKeyPress = (event) => {
-            console.log(`TEST: Key pressed: ${event.key.toUpperCase()}`);
+            // console.log(`TEST: Key pressed: ${event.key.toUpperCase()}`);
         };
 
         window.addEventListener('keydown', testKeyPress);
         window.addEventListener('keydown', handleKeyPress);
 
         return () => {
-            console.log("Removing keydown event listener"); // Debug log
+            // console.log("Removing keydown event listener"); // Debug log
             window.removeEventListener('keydown', testKeyPress);
             window.removeEventListener('keydown', handleKeyPress);
         };
