@@ -699,7 +699,7 @@ export const AddManualOdds = () => {
                                                         <Select
                                                             styles={{ control: (base) => ({ ...base, width: 180 }) }}
                                                             value={selectedTableElements?.eventType}
-                                                            isDisabled = {location?.state?.eventType?.value || location?.state?.eventTypeName && isEdit}
+                                                            isDisabled = {location?.state?.eventType?.value || location?.state?.eventTypeName || isEdit}
                                                             placeholder="Event Type"
                                                             onChange={(e) => {
                                                             setSelectedTableElements({
@@ -727,7 +727,7 @@ export const AddManualOdds = () => {
                                                         <Select
                                                             styles={{ control: (base) => ({ ...base, width: 180 }) }}
                                                             value={selectedTableElements?.competition}
-                                                            isDisabled = {location?.state?.competition || location?.state?.competitionName && isEdit}
+                                                            isDisabled = {location?.state?.competition || location?.state?.competitionName || isEdit}
                                                             placeholder="Competition List"
                                                             onChange={(e) => {
                                                             setCompetitionId(e?.value);
@@ -753,7 +753,7 @@ export const AddManualOdds = () => {
                                                         <Select
                                                             styles={{ control: (base) => ({ ...base, width: 180 }) }}
                                                             value={selectedTableElements?.eventName}
-                                                            isDisabled = {location?.state?.eventName && isEdit}
+                                                            isDisabled = {location?.state?.eventName || isEdit}
                                                             placeholder="Event List"
                                                             onChange={(e) => {
                                                             setSelectedTableElements((prev) => ({
