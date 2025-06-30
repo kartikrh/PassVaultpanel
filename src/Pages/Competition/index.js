@@ -79,7 +79,7 @@ const Index = () => {
 
   const fetchMatchTypeData = async () => {
     await axiosInstance
-      .post(`/admin/matchType/all`, {})
+      .post(`/admin/competition/getMatchTypes`, {})
       .then((response) => {
         setMatchTypes(response.result);
         setIsLoading(false);
