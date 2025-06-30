@@ -23,6 +23,7 @@ export const AddManualOdds = () => {
     });
     
     const commentaryId = location?.state?.eventName?.value || selectedTableElements?.eventName?.value || location?.state?.commentaryId;
+
     // const rawDetails = sessionStorage.getItem('updateManualOddsCommentaryDetails');
     const commentaryDetails = {};
     const [drp_up, setDrp_up] = useState(false);
@@ -30,6 +31,7 @@ export const AddManualOdds = () => {
     const [eventTypes, setEventTypes] = useState([]);
     const [eventList, setEventList] = useState([]);
     const [competitionList, setCompetitionList] = useState([]);
+    const [eventMarketId, setEventMarketId] = useState(location?.state?.eventMarketId || 0);
     const [eventTypeId, setEventTypeId] = useState(null);
     const [competitionId, setCompetitionId] = useState(
         commentaryId ? commentaryDetails?.competitionId : null
@@ -43,9 +45,9 @@ export const AddManualOdds = () => {
         ],
         isActive: false,
         isAllow: false,
-        margin: '',
-        delay: '',
-        lineRatio: '',
+        margin: 1,
+        delay: 2,
+        lineRatio: 3,
         isConnectedMarket: false,
         eventRefId: '',
         inningsId: "",
@@ -55,11 +57,11 @@ export const AddManualOdds = () => {
     });
 
     useEffect(() => {
-        if (location?.state) {
+        if (location?.state && typeof location.state?.eventType == 'object') {
             setSelectedTableElements({
-            eventType: location?.state?.eventType ?? null,
-            competition: location?.state?.competition ?? null,
-            eventName: location?.state?.eventName ?? null,
+                eventType: location?.state?.eventType ?? null,
+                competition: location?.state?.competition ?? null,
+                eventName: location?.state?.eventName ?? null,
             });
 
             // Optional: Set related IDs if needed
@@ -122,7 +124,7 @@ export const AddManualOdds = () => {
                 teamId
             } = selectedMarket;
 
-            const formattedRunners = runners.map((runner, index) => {
+            const formattedRunners = runners?.map((runner, index) => {
                 return {
                 id: index + 1,
                 name: runner.runner || '',
@@ -135,22 +137,22 @@ export const AddManualOdds = () => {
                 marketName: marketName || '',
                 isActive: isActive ?? false,
                 isAllow: isAllow ?? false,
-                margin: margin || '',
-                delay: delay || '',
+                margin: margin || 1,
+                delay: delay || 2,
                 eventRefId: eventRefId || '',
                 inningsId: inningsId ?? '',
                 rateDiff: rateDiff?.toString() || '0.01',
                 rateSourceRefID: rateSourceRefID?.toString() || '',
                 favRatio: favRatio?.toString() || '',
-                lineRatio: lineRatio?.toString() || '',
+                lineRatio: lineRatio || 3,
                 runner: formattedRunners,
             }));
         }
     }, [eventData.market]);
 
-    const fetchMarketData = async () => {
+    const fetchMarketData = async (e) => {
         setIsLoading(true);
-        await axiosInstance.post('/admin/eventMarket/getManualMarket', { commentaryId, eventMarketId: location?.state?.eventMarketId ? location?.state?.eventMarketId : null})
+        await axiosInstance.post('/admin/eventMarket/getManualMarket', { commentaryId, eventMarketId: e})
             .then((response) => {
                 if (response?.result) {
                     // if (response.result.market) {
@@ -167,16 +169,15 @@ export const AddManualOdds = () => {
                         tpMarkets: response.result.tpMarkets || [], // Add this
                         market: selectedMarket
                     });
-
                     if (selectedMarket) {
                         setFormData({
                             marketName: selectedMarket.marketName || '',
-                            runner: selectedMarket.runners || [{ id: 1, name: '', teamId: ''}],
+                            runner: selectedMarket?.runners || [{ id: 1, name: '', teamId: ''}],
                             isActive: selectedMarket.isActive ?? false,
                             isAllow: selectedMarket.isAllow ?? false,
-                            margin: Number(selectedMarket.margin) || '',
-                            delay: Number(selectedMarket.delay) || '',
-                            lineRatio: Number(selectedMarket.lineRatio) || '',
+                            margin: Number(selectedMarket.margin) || 1,
+                            delay: Number(selectedMarket.delay) || 2,
+                            lineRatio: Number(selectedMarket.lineRatio) || 3,
                             isConnectedMarket: selectedMarket.isConnectedMarket ?? false,
                             eventRefId: selectedMarket.eventRefId || '',
                             inningsId: selectedMarket.inningsId || '',
@@ -322,7 +323,7 @@ export const AddManualOdds = () => {
 
     useEffect(() => {
         if(commentaryId){
-            fetchMarketData();
+            fetchMarketData(eventMarketId);
         }
     }, [commentaryId]);
 
@@ -358,23 +359,24 @@ export const AddManualOdds = () => {
     }, [eventData.tpMarkets]);
 
     useEffect(() => {
-        if (eventData.teams.length > 0) {
+        if (eventData.teams.length > 0 && !isEdit) {
             const defaultRunners = eventData.teams.slice(0, 2).sort((a, b) => a?.teamNo - b?.teamNo).map((team, index) => {
                 let selectionId = `${commentaryId}0${index}`;
 
                 if (isEdit && eventData.tpMarkets?.[0]?.runners?.[index]?.selectionId) {
-                   selectionId = eventData.market.runners[index].selectionId;
+                   selectionId = eventData.market?.runners[index].selectionId;
                 }
 
                 const previousRunner = formData?.runner?.find(
                     (r) => r.selectionId?.toString() === selectionId?.toString()
                 );
+
                 return {
                     id: index + 1,
                     name: team.teamName,
                     teamId: team.teamId,
                     runnerId: previousRunner?.runnerId ?? undefined,
-                    selectionId: isEdit ? eventData.market.runners[index].selectionId : selectionId,
+                    selectionId: isEdit ? eventData.market?.runners[index].selectionId : selectionId,
                 };
             });
 
@@ -383,34 +385,33 @@ export const AddManualOdds = () => {
                 runner: defaultRunners,
             }));
         }
+        if(eventData?.market?.runners && isEdit){
+            const defaultRunners = eventData.market.runners.map((runner, index) => {
+            const matchingTpRunner = eventData.tpMarkets?.[0]?.runners?.find(
+                (tp) => tp.selectionId?.toString() === runner.selectionId?.toString()
+            );
+
+            // const previousRunner = formData?.runner?.find(
+            //     (r) => r.selectionId?.toString() === runner.selectionId?.toString()
+            // );
+
+            return {
+                id: index + 1,
+                name: runner.runner,
+                teamId: matchingTpRunner?.teamId ?? runner.teamId ?? null,
+                runnerId: runner?.runnerId,
+                selectionId: runner.selectionId
+            };
+        });
+
+
+
+            setFormData(prev => ({
+                ...prev,
+                runner: defaultRunners,
+            }));
+        }
     }, [eventData.teams, eventData.tpMarkets, isEdit, commentaryId]);
-
-
-    // useEffect(() => {
-    //     // Initialize with 2 default runners using team data
-    //     if (eventData.teams.length > 0) {
-    //         const defaultRunners = eventData.teams.slice(0, 2).sort((a,b)=> a?.teamNo - b?.teamNo).map((team, index) => {
-    //             console.log("eventData.tpMarkets", eventData.tpMarkets?.[0]?.runners)
-    //             const tpRunner = eventData.tpMarkets?.[0]?.runners?.find(r => r.teamId === team.teamId);
-    //             console.log("tpRunner",tpRunner)
-    //             const selectionId = tpRunner ?
-    //                 tpRunner.selectionId :
-    //                 `${commentaryId}0${index}`;
-
-    //             return {
-    //                 id: index + 1,
-    //                 name: team.teamName,
-    //                 teamId: team.teamId,
-    //                 selectionId,
-    //             };
-    //         });
-
-    //         setFormData(prev => ({
-    //             ...prev,
-    //             runners: defaultRunners
-    //         }));
-    //     }
-    // }, [eventData.teams, eventData.tpMarkets]);
 
     const handleDynamicNavigation = (navigateTo) => {
         navigate(navigateTo, {state: selectedTableElements.eventName != null ? selectedTableElements : location?.state });
@@ -437,7 +438,6 @@ export const AddManualOdds = () => {
         return errors;
     };
 
-
     const handleSave = async (type) => {
         const errors = validateForm();
 
@@ -458,6 +458,9 @@ export const AddManualOdds = () => {
 
         const dataToSend = {
             ...formData,
+            margin: Number(formData.margin),
+            delay: Number(formData.delay),
+            lineRatio: Number(formData.lineRatio),
             runner: formattedRunners,
             commentaryId,
             marketTypeId: 5,
@@ -478,13 +481,28 @@ export const AddManualOdds = () => {
                     if(type === "SAVE_AND_CLOSE"){
                         handleDynamicNavigation("/manualOddsMarkets")
                     }else if(type === 'SAVE_AND_NEW'){
-                        fetchMarketData()
+                        if(commentaryId){
+                            if(isEdit){
+                                setEventMarketId(0)
+                                setIsEdit(false)
+                            }else{
+                            setSelectedTableElements({
+                                eventType: location.state.eventType,
+                                competition: location.state.competition,
+                                eventName: location.state.eventName,
+                            })}
+                        }
+                        else{
+                            setSelectedTableElements({
+                                eventType: null,
+                                competition: null,
+                                eventName: null,
+                            })
+                        }
+                        if(location.state.eventName){
+                            fetchMarketData()
+                        }
                         setFormErrors({})
-                        // setSelectedTableElements({
-                        //     eventType: null,
-                        //     competition: null,
-                        //     eventName: null,
-                        // })
                         setFormData({
                             commentaryId: dataToSend.commentaryId,
                             eventRefId: dataToSend.eventRefId,
@@ -494,9 +512,9 @@ export const AddManualOdds = () => {
                             ],
                             isActive: false,
                             isAllow: false,
-                            margin: '',
-                            delay: '',
-                            lineRatio: '',
+                            margin: 1,
+                            delay: 2,
+                            lineRatio: 3,
                             isConnectedMarket: false,
                             inningsId: "",
                             rateDiff: '0.01',
@@ -575,7 +593,48 @@ export const AddManualOdds = () => {
         });
     };
 
-    
+    const handleFormFieldChange = (fieldName, isRequired = true) => (e) => {
+        const rawValue = e.target.value;
+        const trimmedValue = rawValue.trimStart(); // Remove leading spaces
+
+        // Update the form data
+        setFormData((prev) => ({
+            ...prev,
+            [fieldName]: trimmedValue,
+        }));
+
+        // Update form errors
+        setFormErrors((prevErrors) => {
+            const newErrors = { ...prevErrors };
+
+            if (isRequired && trimmedValue.trim() === "") {
+                newErrors[fieldName] = `${fieldName[0].toUpperCase() + fieldName.slice(1)} is required`;
+            } else {
+                delete newErrors[fieldName];
+            }
+
+            return newErrors;
+        });
+    };
+    useEffect(() => {
+        if (location?.state && isEdit) {
+            setSelectedTableElements({
+                eventType: {
+                    value: location.state.eventTypeId,
+                    label: location.state.eventTypeName,
+                },
+                competition: {
+                    value: location.state.competitionId,
+                    label: location.state.competitionName,
+                },
+                eventName: {
+                    value: location.state.commentaryId,
+                    label: location.state.eventName,
+                },
+            });
+        }
+    }, [location?.state]);
+
     return (
         <React.Fragment>
             <div className="page-content">
@@ -585,7 +644,7 @@ export const AddManualOdds = () => {
                             <CardBody>
                                 <Row className="align-items-center">
                                     <Col xs={8}>
-                                        <Breadcrumbs title="ScoreCard" breadcrumbItem="Add Manual Odds Market" page="updatecp" />
+                                        <Breadcrumbs title="ScoreCard" breadcrumbItem={isEdit ? 'Update Manual Odds Market' : 'Add Manual Odds Market'} page="updatecp" />
                                     </Col>
                                     <Col xs={4} className="text-end">
                                         <div className="d-flex gap-2 justify-content-end">
@@ -628,22 +687,19 @@ export const AddManualOdds = () => {
                                         </Col>
                                     )}
                                 </Row>
-                                
-                                
-
                                 <Row>
                                     {/* Left Side Form Fields */}
                                     <Col md={6}>
                                         <Card className="h-100">
                                             <CardBody className="py-0">
-                                                {!isEdit && <div className='d-flex justify-content-between gap-2 mb-3'>
+                                                {<div className='d-flex justify-content-between gap-2 mb-3'>
                                                     {/* Event Type */}
                                                     <div>
                                                         <label className="form-label">Event Type:</label>
                                                         <Select
                                                             styles={{ control: (base) => ({ ...base, width: 180 }) }}
                                                             value={selectedTableElements?.eventType}
-                                                            isDisabled = {location?.state?.eventType}
+                                                            isDisabled = {location?.state?.eventType?.value || location?.state?.eventTypeName && isEdit}
                                                             placeholder="Event Type"
                                                             onChange={(e) => {
                                                             setSelectedTableElements({
@@ -671,7 +727,7 @@ export const AddManualOdds = () => {
                                                         <Select
                                                             styles={{ control: (base) => ({ ...base, width: 180 }) }}
                                                             value={selectedTableElements?.competition}
-                                                            isDisabled = {location?.state?.competition}
+                                                            isDisabled = {location?.state?.competition || location?.state?.competitionName && isEdit}
                                                             placeholder="Competition List"
                                                             onChange={(e) => {
                                                             setCompetitionId(e?.value);
@@ -697,7 +753,7 @@ export const AddManualOdds = () => {
                                                         <Select
                                                             styles={{ control: (base) => ({ ...base, width: 180 }) }}
                                                             value={selectedTableElements?.eventName}
-                                                            isDisabled = {location?.state?.eventName}
+                                                            isDisabled = {location?.state?.eventName && isEdit}
                                                             placeholder="Event List"
                                                             onChange={(e) => {
                                                             setSelectedTableElements((prev) => ({
@@ -725,7 +781,21 @@ export const AddManualOdds = () => {
                                                             className="form-control"
                                                             disabled={isEdit}
                                                             value={formData.marketName}
-                                                            onChange={(e) => setFormData({ ...formData, marketName: e.target.value })}
+                                                            // onChange={(e) => {
+                                                            //     setFormData({ ...formData, marketName: e.target.value.trimStart() })
+                                                            //     setFormErrors((prevErrors) => {
+                                                            //         const newErrors = { ...prevErrors };
+
+                                                            //         if (e.target.value.trim() === "") {
+                                                            //             newErrors.marketName = "Market name is required";
+                                                            //         } else {
+                                                            //             delete newErrors.marketName;
+                                                            //         }
+
+                                                            //         return newErrors;
+                                                            //     });
+                                                            // }}
+                                                            onChange={handleFormFieldChange("marketName")}
                                                         />
                                                         {formErrors?.marketName && <span style={{ color: "red" }}>{formErrors?.marketName}</span>}
                                                     </div>
@@ -759,7 +829,27 @@ export const AddManualOdds = () => {
                                                                 type="number"
                                                                 className="form-control"
                                                                 value={formData.margin}
-                                                                onChange={(e) => setFormData({ ...formData, margin: e.target.value })}
+                                                                // onChange={(e) => {
+                                                                //     const value = e.target.value;
+
+                                                                //     setFormData((prev) => ({
+                                                                //         ...prev,
+                                                                //         margin: value.trimStart(), // optional: trim leading spaces
+                                                                //     }));
+
+                                                                //     setFormErrors((prevErrors) => {
+                                                                //         const newErrors = { ...prevErrors };
+
+                                                                //         if (value.trim() === "") {
+                                                                //             newErrors.margin = "Margin is required";
+                                                                //         } else {
+                                                                //             delete newErrors.margin;
+                                                                //         }
+
+                                                                //         return newErrors;
+                                                                //     });
+                                                                // }}
+                                                                onChange={handleFormFieldChange("margin")}
                                                             />
                                                             {formErrors?.margin && <span style={{ color: "red" }}>{formErrors?.margin}</span>}
                                                         </div>
@@ -772,7 +862,8 @@ export const AddManualOdds = () => {
                                                                 type="number"
                                                                 className="form-control"
                                                                 value={formData.delay}
-                                                                onChange={(e) => setFormData({ ...formData, delay: e.target.value })}
+                                                                onChange={handleFormFieldChange("delay")}
+                                                                // onChange={(e) => setFormData({ ...formData, delay: e.target.value })}
                                                             />
                                                             {formErrors?.delay && <span style={{ color: "red" }}>{formErrors?.delay}</span>}
                                                         </div>
@@ -785,7 +876,8 @@ export const AddManualOdds = () => {
                                                                 type="number"
                                                                 className="form-control"
                                                                 value={formData.lineRatio}
-                                                                onChange={(e) => setFormData({ ...formData, lineRatio: e.target.value })}
+                                                                onChange={handleFormFieldChange("lineRatio")}
+                                                                // onChange={(e) => setFormData({ ...formData, lineRatio: e.target.value })}
                                                             />
                                                             {formErrors?.lineRatio && <span style={{ color: "red" }}>{formErrors?.lineRatio}</span>}
                                                         </div>
@@ -865,10 +957,6 @@ export const AddManualOdds = () => {
                                                 </div>
                                                 <div className="runners-container">
                                                     {formData.runner?.map((runner, index) => {
-                                                        const matchedRunner = eventData.tpMarkets?.[0]?.runners?.find(
-                                                            tpRunner => tpRunner.selectionId?.toString() === runner.selectionId?.toString()
-                                                        );
-                                                        // console.log("matchedRunner", matchedRunner, runner)
                                                         return <Card key={runner.id} className="mb-2 runner-card">
                                                             <CardBody className="py-2">
                                                                 <div className="d-flex align-items-center gap-2">
@@ -889,7 +977,7 @@ export const AddManualOdds = () => {
                                                                             value={runner.selectionId}
                                                                             onChange={(e) => {
                                                                                 
-                                                                                const selectedRunner = eventData.tpMarkets[0].runners.find(
+                                                                                const selectedRunner = eventData.tpMarkets[0]?.runners.find(
                                                                                     r => r.selectionId === e.target.value
                                                                                 );
                                                                                 
@@ -918,7 +1006,7 @@ export const AddManualOdds = () => {
                                                                             style={{ width: '150px' }}
                                                                         >
                                                                             <option value="">None</option>
-                                                                            {eventData.tpMarkets[0].runners.map(tpRunner => {
+                                                                            {eventData.tpMarkets[0]?.runners.map(tpRunner => {
                                                                                 return <option key={tpRunner.selectionId} value={tpRunner.selectionId}>
                                                                                     {tpRunner.runner}
                                                                                 </option>
