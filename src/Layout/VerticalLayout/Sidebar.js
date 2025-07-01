@@ -169,11 +169,33 @@ const Sidebar = (props) => {
     }
   }
 
+  // useEffect(() => {
+  //   ref.current.recalculate();
+  //   new MetisMenu("#side-menu-item");
+  //   activeMenu();
+  // }, [newTabList]);
+
   useEffect(() => {
-    ref.current.recalculate();
-    new MetisMenu("#side-menu-item");
-    activeMenu();
-  }, [newTabList]);
+    const initMenu = () => {
+      const menuElement = document.getElementById("side-menu-item");
+      if (menuElement && ref.current) {
+        ref.current.recalculate();
+        // Destroy existing instance if any
+        if (window.metisMenuInstance) {
+          try {
+            window.metisMenuInstance.dispose();
+          } catch (e) {}
+        }
+        window.metisMenuInstance = new MetisMenu("#side-menu-item");
+        activeMenu();
+      }
+    };
+    console.log("newTabList", newTabList);
+    console.log("UL Element", document.getElementById("side-menu-item"));
+    // Small delay to ensure DOM is ready
+    const timer = setTimeout(initMenu, 100);
+    return () => clearTimeout(timer);
+  }, [newTabList, activeMenu]);
 
   return (
     <React.Fragment>
