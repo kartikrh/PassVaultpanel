@@ -1338,8 +1338,7 @@ const Index = forwardRef(
                               className="add-btn"
                               onClick={() => {
                                 const data = isCommentaryList
-                                  ? { state: "isPredict" }
-                                  : onAddNavigate === '/addManualOddsMarket' ? {state: selectedTableElementsLogs} : {};
+                                  ? { state: "isPredict" } : {};
 
                                 navigate(onAddNavigate, data);
                                 // navigate(onAddNavigate);
