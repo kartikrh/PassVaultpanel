@@ -434,7 +434,8 @@ const Index = () => {
     fetchData(value);
   };
   const handleEdit = (state) => {
-    navigate("/addManualOddsMarket", { state: { ...state, isEdit: true}, });
+    navigate("/addManualOddsMarket");
+    sessionStorage.setItem("EditManualOddsData", JSON.stringify(state))
   };
   const handleUpdateManualOddsClick = (details) => {
     // navigate("/updateCommentaryFeature", { state: { commentaryId: id } });
