@@ -26,16 +26,17 @@ const statusOptions = [
   { value: null, label: "Status" },
   { value: "live", label: "Live" },
   { value: "result", label: "Completed" }, //Completed
-  { value: "fixture", label: "Upcoming" }, //Upcoming
+  { value: "fixture", label: "Scheduled" }, //Upcoming
 ];
 
 // Status options for Match Status filter
-const statusOptionsforMatch = [
-  { value: null, label: "Status" },
-  { value: 1, label: "Live" },
-  { value: 2, label: "Completed" }, //Completed
-  { value: 3, label: "Upcoming" }, //Upcoming
-];
+// const statusOptionsforMatch = [
+//   { value: null, label: "Status" },
+//   { value: 1, label: "Upcoming" },
+//   { value: 2, label: "Completed" }, //Completed
+//   { value: 3, label: "Live" },
+//   { value: 4, label: "Cancelled" },
+// ];
 
 export default function ImportEntity() {
   const pageName = TAB_IMPORT_ENTITYIMPORT;
@@ -56,7 +57,7 @@ export default function ImportEntity() {
   const [total, setTotal] = useState(0);
   const [permissionChecked, setPermissionChecked] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState({
-    status: null,
+    status: "live",
   });
 
   const [selectedLevel, setSelectedLevel] = useState({
@@ -85,24 +86,22 @@ export default function ImportEntity() {
   let entitySportUrl =
     loadInitData.find((item) => item.key === loadInit.ENTITYSPORT_URL)?.value ||
     "https://es.deployed.live";
-    
+
   // console.log({ pageSize, total, currentPage });
   const getCompetitionStatus = (status) => {
     const statusLower = String(status).toLowerCase();
     switch (statusLower) {
       case "live":
-      case "1":
         return "LIVE";
       case "result":
       case "completed":
-      case "2":
         return "COMPLETED";
       case "fixture":
       case "upcoming":
-      case "3":
-        return "UPCOMING";
+      case "scheduled":
+        return "SCHEDULED";
       case "cancelled":
-      case "4":
+      case "abandoned":
         return "CANCELLED";
       default:
         return " ";
@@ -169,12 +168,12 @@ export default function ImportEntity() {
             limit: pageSize,
           };
           //status filter if selected
-          if (
-            selectedFilter.status !== null &&
-            selectedFilter.status !== undefined
-          ) {
-            payload.status = selectedFilter.status;
-          }
+          // if (
+          //   selectedFilter.status !== null &&
+          //   selectedFilter.status !== undefined
+          // ) {
+          //   payload.status = selectedFilter.status;
+          // }
           break;
         default:
           setIsLoading(false);
@@ -232,13 +231,9 @@ export default function ImportEntity() {
           })
           .sort((a, b) => new Date(a.datestart) - new Date(b.datestart));
       } else if (selectedLevel.level === "competitionMatches") {
-        apiData = apiData
-          .map((item) => {
-            return { ...item, status: getCompetitionStatus(item.status) };
-          })
-          .sort(
-            (a, b) => new Date(a.date_start_ist) - new Date(b.date_start_ist)
-          );
+        apiData = apiData.sort(
+          (a, b) => new Date(a.date_start_ist) - new Date(b.date_start_ist)
+        );
       }
 
       setData(apiData);
@@ -309,7 +304,7 @@ export default function ImportEntity() {
     setIsLoading(true);
     finalizeRef.current.getTableAction();
     await axiosInstance
-      .post(`${entitySportUrl}/admin/import/competition`, {
+      .post(`${entitySportUrl}/admin/import/commentary`, {
         matchId: matchData.match_id,
       })
       .then((response) => {
@@ -339,7 +334,7 @@ export default function ImportEntity() {
     finalizeRef.current.getTableAction();
     await axiosInstance
       .post(`${entitySportUrl}/admin/import/competition`, {
-        cid: data.cid,
+        cId: data.cid,
       })
       .then((response) => {
         dispatch(
@@ -405,7 +400,7 @@ export default function ImportEntity() {
   };
 
   useEffect(() => {
-    handleFilterChange("status", null);
+    handleFilterChange("status", "live");
   }, [selectedLevel.level]);
 
   const handlePageChange = (page) => {
@@ -427,7 +422,7 @@ export default function ImportEntity() {
 
   const handleReset = () => {
     setSelectedFilter({
-      status: null,
+      status: "live",
     });
     setCurrentPage(1);
     fetchData();
@@ -490,6 +485,12 @@ export default function ImportEntity() {
           {text}
         </span>
       ),
+    },
+    {
+      title: "Format",
+      dataIndex: "game_format",
+      key: "game_format",
+      width: "10%",
     },
     {
       title: "Status",
@@ -594,10 +595,10 @@ export default function ImportEntity() {
     },
     {
       title: "Status",
-      dataIndex: "status",
-      key: "status",
+      dataIndex: "status_str",
+      key: "status_str",
       width: "10%",
-      // render: (text) => text?.toUpperCase(),
+      render: (text) => text?.toUpperCase(),
       // render: (status) => getCompetitionStatus(status),
     },
     {
@@ -624,10 +625,13 @@ export default function ImportEntity() {
     },
   ];
 
+  const handleReload = () => {
+    fetchData();
+  };
   const getCurrentStatusOptions = () => {
-    if (selectedLevel.level === "competitionMatches") {
-      return statusOptionsforMatch;
-    }
+    // if (selectedLevel.level === "competitionMatches") {
+    //   return statusOptionsforMatch;
+    // }
     return statusOptions; // default: for competitions or others
   };
 
@@ -654,17 +658,19 @@ export default function ImportEntity() {
         return "Entity Import";
     }
   };
+  const currentTitle = getCurrentTitle();
 
   // Table element configuration
   const tableElement = {
-    title: getCurrentTitle(),
+    title: currentTitle,
     headerSelect: false,
     isActive: false,
     dragDrop: false,
     subTable: selectedLevel.level !== "competitions",
     isServerPagination: true,
-    resetButton: true,
-    // isNonCrud: true,
+    resetButton: currentTitle === "Competitions",
+    reloadButton: currentTitle === "Competition Matches",
+    // isNonCrud: currentTitle === "Competition Matches",
   };
 
   return (
@@ -689,25 +695,30 @@ export default function ImportEntity() {
             onBreadCrumbsClick={handleBreadcrumbClick}
             breadCrumbs={navigationHistory}
             handleCustomReset={handleReset}
-            renderCustomFilter={() => (
-              <div className="d-flex align-items-center gap-2">
-                {/* Status Filter */}
-                <Select
-                  styles={{
-                    control: (provided) => ({ ...provided, width: 180 }),
-                  }}
-                  value={getCurrentStatusOptions().find(
-                    (option) => option.value === selectedFilter?.status
-                  )}
-                  placeholder={"Filter by Status"}
-                  onChange={(e) => {
-                    handleFilterChange("status", e?.value ?? null);
-                  }}
-                  options={getCurrentStatusOptions()}
-                  classNamePrefix="filter-dropdown"
-                />
-              </div>
-            )}
+            handleReload={handleReload}
+            renderCustomFilter={
+              currentTitle === "Competitions"
+                ? () => (
+                    <div className="d-flex align-items-center gap-2">
+                      {/* Status Filter */}
+                      <Select
+                        styles={{
+                          control: (provided) => ({ ...provided, width: 180 }),
+                        }}
+                        value={getCurrentStatusOptions().find(
+                          (option) => option.value === selectedFilter?.status
+                        )}
+                        placeholder={"Filter by Status"}
+                        onChange={(e) => {
+                          handleFilterChange("status", e?.value ?? null);
+                        }}
+                        options={getCurrentStatusOptions()}
+                        classNamePrefix="filter-dropdown"
+                      />
+                    </div>
+                  )
+                : null
+            }
           />
 
           {/* Match Details Modal */}
