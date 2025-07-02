@@ -97,7 +97,7 @@ export const AddManualOdds = () => {
 
     useEffect(() => {
         if (!isEmpty(commentaryDetails) && !(eventData?.comDetails)) {
-            document.title = `Bookmakers - ${commentaryDetails?.eventName} [${commentaryDetails?.eventRefId}]`;
+            document.title = `Manual Odds - ${commentaryDetails?.eventName} [${commentaryDetails?.eventRefId}]`;
 
             if (formData.eventRefId !== commentaryDetails?.eventRefId) {
                 setFormData((prev) => ({
@@ -106,6 +106,7 @@ export const AddManualOdds = () => {
                 }));
             }
         } else if (eventData?.comDetails?.eventRefId) {
+            document.title = `Manual Odds - ${eventData?.comDetails?.eventName}`;
             if (formData.eventRefId !== eventData?.comDetails?.eventRefId) {
                 setFormData((prev) => ({
                     ...prev,
@@ -676,7 +677,7 @@ export const AddManualOdds = () => {
                             <CardBody>
                                 <Row className="align-items-center">
                                     <Col xs={8}>
-                                        <Breadcrumbs title="ScoreCard" breadcrumbItem={isEdit ? 'Update Manual Odds Market' : 'Add Manual Odds Market'} page="updatecp" />
+                                        <Breadcrumbs title="ScoreCard" breadcrumbItem={`Manual Odds Market : ${!isEmpty(eventData?.comDetails) ? eventData.comDetails.eventName : ''}`} page="updatecp" />
                                     </Col>
                                     <Col xs={4} className="text-end">
                                         <div className="d-flex gap-2 justify-content-end">
@@ -710,9 +711,9 @@ export const AddManualOdds = () => {
                                 <Row>
                                     {!isEmpty(eventData?.comDetails) && (
                                         <Col className="mb-3">
-                                            <div className="match-details-breadcrumbs">
+                                            {/* <div className="match-details-breadcrumbs">
                                                 {eventData.comDetails.eventName}
-                                            </div>
+                                            </div> */}
                                             <div>
                                                 {`Ref: ${eventData.comDetails.eventRefId} [ ${new Date(eventData.comDetails.eventDate).toLocaleString()} ]`}
                                             </div>
@@ -726,10 +727,10 @@ export const AddManualOdds = () => {
                                             <CardBody className="py-0">
                                                 {<div className='d-flex flex-wrap flex-lg-nowrap justify-content-between gap-2 mb-3'>
                                                     {/* Event Type */}
-                                                    <div>
+                                                    <div style={{ flex: '1 1 50%' }}>
                                                         <label className="form-label">Event Type:</label>
                                                         <Select
-                                                            styles={{ control: (base) => ({ ...base, width: 180 }) }}
+                                                            styles={{ control: (base) => ({ ...base, minWidth: 180 }) }}
                                                             value={selectedTableElements?.eventType}
                                                             isDisabled = {eventMarketId || storedData}
                                                             // isDisabled = {location?.state?.eventType?.value || location?.state?.eventTypeName || isEdit}
@@ -755,10 +756,10 @@ export const AddManualOdds = () => {
                                                     </div>
 
                                                     {/* Competition */}
-                                                    <div>
+                                                    <div style={{ flex: '1 1 50%' }}>
                                                         <label className="form-label">Competition:</label>
                                                         <Select
-                                                            styles={{ control: (base) => ({ ...base, width: 180 }) }}
+                                                            styles={{ control: (base) => ({ ...base, minWidth: 180 }) }}
                                                             value={selectedTableElements?.competition}
                                                             isDisabled = {eventMarketId || storedData}
                                                             // isDisabled = {location?.state?.competition || location?.state?.competitionName || isEdit}
@@ -782,10 +783,10 @@ export const AddManualOdds = () => {
                                                     </div>
 
                                                     {/* Event List */}
-                                                    <div>
+                                                    {/* <div>
                                                         <label className="form-label">Event List:</label>
                                                         <Select
-                                                            styles={{ control: (base) => ({ ...base, width: 180 }) }}
+                                                            styles={{ control: (base) => ({ ...base, minWidth: 180 }) }}
                                                             value={selectedTableElements?.eventName}
                                                             isDisabled = {eventMarketId || storedData}
                                                             // isDisabled = {location?.state?.eventName || isEdit}
@@ -805,35 +806,62 @@ export const AddManualOdds = () => {
                                                             }))}
                                                             classNamePrefix="filter-dropdown"
                                                         />
-                                                    </div>
+                                                    </div> */}
                                                 </div>}
                                                 <div className="space-y-4">
-                                                    <div className="mb-3">
-                                                        <span className="text-danger">*&nbsp;</span><label className="form-label">Market Name:</label>
-                                                        <Input
-                                                            required={true}
-                                                            invalid={formErrors?.marketName}
-                                                            type="text"
-                                                            className="form-control"
-                                                            disabled={isEdit}
-                                                            value={formData.marketName}
-                                                            // onChange={(e) => {
-                                                            //     setFormData({ ...formData, marketName: e.target.value.trimStart() })
-                                                            //     setFormErrors((prevErrors) => {
-                                                            //         const newErrors = { ...prevErrors };
+                                                    <div className="d-flex flex-wrap flex-lg-nowrap justify-content-between gap-2 mb-3">
 
-                                                            //         if (e.target.value.trim() === "") {
-                                                            //             newErrors.marketName = "Market name is required";
-                                                            //         } else {
-                                                            //             delete newErrors.marketName;
-                                                            //         }
+                                                        <div style={{ flex: '1 1 50%' }}>
+                                                            <label className="form-label">Event List:</label>
+                                                            <Select
+                                                                styles={{ control: (base) => ({ ...base, minWidth: 180 }) }}
+                                                                value={selectedTableElements?.eventName}
+                                                                isDisabled = {eventMarketId || storedData}
+                                                                // isDisabled = {location?.state?.eventName || isEdit}
+                                                                placeholder="Event List"
+                                                                onChange={(e) => {
+                                                                // fetchMarketData(0)
+                                                                    setSelectedTableElements((prev) => ({
+                                                                        ...prev,
+                                                                        eventName: e,
+                                                                    }));
+                                                                }}
+                                                                options={eventList
+                                                                .sort((a, b) => new Date(a.eventDate) - new Date(b.eventDate))
+                                                                .map((item) => ({
+                                                                    label: `${item?.eventName} (${convertDateUTCToLocal(item?.eventDate, "index")})`,
+                                                                    value: item?.commentaryId,
+                                                                }))}
+                                                                classNamePrefix="filter-dropdown"
+                                                            />
+                                                        </div>
+                                                        <div style={{ flex: '1 1 50%' }}>
+                                                            <span className="text-danger">*&nbsp;</span><label className="form-label">Market Name:</label>
+                                                            <Input
+                                                                required={true}
+                                                                invalid={formErrors?.marketName}
+                                                                type="text"
+                                                                className="form-control"
+                                                                disabled={isEdit}
+                                                                value={formData.marketName}
+                                                                // onChange={(e) => {
+                                                                //     setFormData({ ...formData, marketName: e.target.value.trimStart() })
+                                                                //     setFormErrors((prevErrors) => {
+                                                                //         const newErrors = { ...prevErrors };
 
-                                                            //         return newErrors;
-                                                            //     });
-                                                            // }}
-                                                            onChange={handleFormFieldChange("marketName")}
-                                                        />
-                                                        {formErrors?.marketName && <span style={{ color: "red" }}>{formErrors?.marketName}</span>}
+                                                                //         if (e.target.value.trim() === "") {
+                                                                //             newErrors.marketName = "Market name is required";
+                                                                //         } else {
+                                                                //             delete newErrors.marketName;
+                                                                //         }
+
+                                                                //         return newErrors;
+                                                                //     });
+                                                                // }}
+                                                                onChange={handleFormFieldChange("marketName")}
+                                                            />
+                                                            {formErrors?.marketName && <span style={{ color: "red" }}>{formErrors?.marketName}</span>}
+                                                        </div>
                                                     </div>
 
                                                     <div className="mb-3 d-flex gap-4">
@@ -856,7 +884,7 @@ export const AddManualOdds = () => {
                                                             <label className="form-check-label">Is Allow</label>
                                                         </div>
                                                     </div>
-                                                    <div className='d-flex justify-content-between mb-3 gap-2'>
+                                                    <div className='d-flex flex-wrap flex-lg-nowrap justify-content-between mb-3 gap-2'>
                                                         <div>
                                                             <span className="text-danger">*&nbsp;</span><label className="form-label">Margin:</label>
                                                             <Input
@@ -951,24 +979,25 @@ export const AddManualOdds = () => {
                                                             onChange={(e) => setFormData({ ...formData, rateSourceRefID: e.target.value })}
                                                         />
                                                     </div>}
-
-                                                    <div className="mb-3">
-                                                        <label className="form-label">Rate Difference:</label>
-                                                        <input
-                                                            type="text"
-                                                            className="form-control"
-                                                            value={formData.rateDiff}
-                                                            onChange={(e) => setFormData({ ...formData, rateDiff: e.target.value })}
-                                                        />
-                                                    </div>
-                                                    <div className="mb-3">
-                                                        <label className="form-label">Fav Ratio:</label>
-                                                        <input
-                                                            type="text"
-                                                            className="form-control"
-                                                            value={formData.favRatio}
-                                                            onChange={(e) => setFormData({ ...formData, favRatio: e.target.value })}
-                                                        />
+                                                    <div className='d-flex justify-content-between mb-3 gap-2'>
+                                                        <div style={{ flex: '1 1 50%' }}>
+                                                            <label className="form-label">Rate Difference:</label>
+                                                            <input
+                                                                type="text"
+                                                                className="form-control"
+                                                                value={formData.rateDiff}
+                                                                onChange={(e) => setFormData({ ...formData, rateDiff: e.target.value })}
+                                                            />
+                                                        </div>
+                                                        <div style={{ flex: '1 1 50%' }}>
+                                                            <label className="form-label">Fav Ratio:</label>
+                                                            <input
+                                                                type="text"
+                                                                className="form-control"
+                                                                value={formData.favRatio}
+                                                                onChange={(e) => setFormData({ ...formData, favRatio: e.target.value })}
+                                                            />
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </CardBody>
