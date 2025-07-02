@@ -9,8 +9,6 @@ import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
 import _, { isEmpty } from "lodash";
 import moment from "moment";
-import config from '../../config';
-
 import {
   ERROR,
   PERMISSION_VIEW,
@@ -27,16 +25,16 @@ import MatchCard from "./MatchCard";
 const statusOptions = [
   { value: null, label: "Status" },
   { value: "live", label: "Live" },
-  { value: "result", label: "Result" },//Completed
-  { value: "fixture", label: "Fixture" },//Upcoming
+  { value: "result", label: "Completed" }, //Completed
+  { value: "fixture", label: "Upcoming" }, //Upcoming
 ];
 
 // Status options for Match Status filter
 const statusOptionsforMatch = [
   { value: null, label: "Status" },
   { value: 1, label: "Live" },
-  { value: 2, label: "Result" },//Completed
-  { value: 3, label: "Fixture" },//Upcoming
+  { value: 2, label: "Completed" }, //Completed
+  { value: 3, label: "Upcoming" }, //Upcoming
 ];
 
 export default function ImportEntity() {
@@ -58,24 +56,24 @@ export default function ImportEntity() {
   const [total, setTotal] = useState(0);
   const [permissionChecked, setPermissionChecked] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState({
-    status: null
+    status: null,
   });
 
   const [selectedLevel, setSelectedLevel] = useState({
     seasonId: 2025, // Default to current year or set a specific season ID
     competitionId: null,
     matchId: null,
-    level: "seasonCompetitions", // Start with season competitions
+    level: "competitions", // Start with season competitions
     year: 2025,
   });
   const [navigationHistory, setNavigationHistory] = useState([
     {
-      label: "Season Competitions",
+      label: "Competitions",
       value: {
         seasonId: 2025,
         competitionId: null,
         matchId: null,
-        level: "seasonCompetitions",
+        level: "competitions",
         year: 2025,
       },
     },
@@ -85,33 +83,35 @@ export default function ImportEntity() {
   const [matchData, setMatchData] = useState(null);
   const [dataToDB, setDataToDB] = useState({});
   let entitySportUrl =
-    loadInitData.find((item) => item.key === config.loadInit.ENTITYSPORT_URL)?.value ||
+    loadInitData.find((item) => item.key === loadInit.ENTITYSPORT_URL)?.value ||
     "https://es.deployed.live";
-
+    
+  // console.log({ pageSize, total, currentPage });
   const getCompetitionStatus = (status) => {
-    switch (status) {
+    const statusLower = String(status).toLowerCase();
+    switch (statusLower) {
       case "live":
+      case "1":
         return "LIVE";
       case "result":
+      case "completed":
+      case "2":
         return "COMPLETED";
       case "fixture":
+      case "upcoming":
+      case "3":
         return "UPCOMING";
+      case "cancelled":
+      case "4":
+        return "CANCELLED";
       default:
-        return "UNKNOWN";
+        return " ";
     }
   };
 
-  const getMatchStatus = (status) => {
-    switch (parseInt(status)) {
-      case 1:
-        return "LIVE";
-      case 2:
-        return "COMPLETED";
-      case 3:
-        return "UPCOMING";
-      default:
-        return "UNKNOWN";
-    }
+  const formatDate = (dateTime) => {
+    if (!dateTime) return "N/A";
+    return moment(dateTime).format("DD/MM/YYYY");
   };
 
   const formatDateTime = (dateTime) => {
@@ -138,7 +138,7 @@ export default function ImportEntity() {
 
     try {
       switch (selectedLevel.level) {
-        case "seasonCompetitions":
+        case "competitions":
           if (!selectedLevel.seasonId) {
             setIsLoading(false);
             return;
@@ -150,7 +150,10 @@ export default function ImportEntity() {
             limit: pageSize,
           };
           //status filter if selected
-          if (selectedFilter.status !== null && selectedFilter.status !== undefined) {
+          if (
+            selectedFilter.status !== null &&
+            selectedFilter.status !== undefined
+          ) {
             payload.status = selectedFilter.status;
           }
           break;
@@ -166,7 +169,10 @@ export default function ImportEntity() {
             limit: pageSize,
           };
           //status filter if selected
-         if (selectedFilter.status !== null && selectedFilter.status !== undefined) {
+          if (
+            selectedFilter.status !== null &&
+            selectedFilter.status !== undefined
+          ) {
             payload.status = selectedFilter.status;
           }
           break;
@@ -176,9 +182,6 @@ export default function ImportEntity() {
       }
 
       const response = await axiosInstance.post(endpoint, payload);
-
-      // let apiData = [];
-      // let totalCount = 0;
 
       const items = response?.result?.response?.items;
       const totalItems = response?.result?.response?.total_items;
@@ -221,15 +224,21 @@ export default function ImportEntity() {
       //   totalCount = 0;
       // }
 
-      // Sort data in descending order by date
-      if (selectedLevel.level === "seasonCompetitions") {
-        apiData = apiData.sort(
-          (a, b) => new Date(b.datestart) - new Date(a.datestart)
-        );
+      // Sort data in ascending order by date
+      if (selectedLevel.level === "competitions") {
+        apiData = apiData
+          .map((item) => {
+            return { ...item, status: getCompetitionStatus(item.status) };
+          })
+          .sort((a, b) => new Date(a.datestart) - new Date(b.datestart));
       } else if (selectedLevel.level === "competitionMatches") {
-        apiData = apiData.sort(
-          (a, b) => new Date(b.date_start_ist) - new Date(a.date_start_ist)
-        );
+        apiData = apiData
+          .map((item) => {
+            return { ...item, status: getCompetitionStatus(item.status) };
+          })
+          .sort(
+            (a, b) => new Date(a.date_start_ist) - new Date(b.date_start_ist)
+          );
       }
 
       setData(apiData);
@@ -260,7 +269,7 @@ export default function ImportEntity() {
     fetchData();
   }, [fetchData]);
 
-  // Fetch match details for modal
+  // Fetch match details for modal popup
   const fetchMatchDetails = async (matchId) => {
     setIsLoading(true);
     try {
@@ -300,7 +309,38 @@ export default function ImportEntity() {
     setIsLoading(true);
     finalizeRef.current.getTableAction();
     await axiosInstance
-      .post(`${entitySportUrl}/admin/import/commentary`, {matchId: matchData.match_id})
+      .post(`${entitySportUrl}/admin/import/competition`, {
+        matchId: matchData.match_id,
+      })
+      .then((response) => {
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+
+  const addCompetitionData = async (data) => {
+    setIsLoading(true);
+    finalizeRef.current.getTableAction();
+    await axiosInstance
+      .post(`${entitySportUrl}/admin/import/competition`, {
+        cid: data.cid,
+      })
       .then((response) => {
         dispatch(
           updateToastData({
@@ -369,6 +409,7 @@ export default function ImportEntity() {
   }, [selectedLevel.level]);
 
   const handlePageChange = (page) => {
+    if (page === currentPage || isLoading) return;
     if (page !== currentPage && !isLoading) {
       setCurrentPage(page);
     }
@@ -376,21 +417,57 @@ export default function ImportEntity() {
 
   const handlePageSizeChange = (size) => {
     if (size !== pageSize && !isLoading) {
-      setPageSize(size);
-      setCurrentPage(1); // Reset to first page when changing page size
+      setPageSize(() => {
+        setCurrentPage(1); // only after pageSize is updated
+        return size;
+      });
       localStorage.setItem("pageSize", size);
     }
   };
 
   const handleReset = () => {
     setSelectedFilter({
-      status: null
+      status: null,
     });
     setCurrentPage(1);
+    fetchData();
   };
 
   // Column configurations
-  const getSeasonCompetitionsColumns = () => [
+  const getCompetitionsColumns = () => [
+    {
+      title: "Import",
+      dataIndex: "import",
+      key: "import",
+      width: "7.5%",
+      render: (text, record) => (
+        <button
+          color={"primary"}
+          size="sm"
+          className="btn-primary"
+          onClick={() => {
+            setDataToDB({
+              ...dataToDB,
+              ...record,
+            });
+            addCompetitionData({
+              ...dataToDB,
+              ...record,
+            });
+          }}
+        >
+          <i className="bx bx-plus"></i>
+        </button>
+      ),
+    },
+    {
+      title: "Start Date",
+      dataIndex: "datestart",
+      key: "datestart",
+      width: "20%",
+      sort: true,
+      render: (text) => formatDate(text),
+    },
     {
       title: "ID",
       dataIndex: "cid",
@@ -415,25 +492,40 @@ export default function ImportEntity() {
       ),
     },
     {
-      title: "Start Date",
-      dataIndex: "datestart",
-      key: "datestart",
-      width: "20%",
-      render: (text) => formatDateTime(text),
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      width: "10%",
+      // render: (status) => getCompetitionStatus(status),
+    },
+    {
+      title: "Season",
+      dataIndex: "season",
+      key: "season",
+      width: "10%",
+      style: { textAlign: "center" },
+    },
+    {
+      title: "Total Matches",
+      dataIndex: "total_matches",
+      key: "total_matches",
+      width: "10%",
+      style: { textAlign: "center" },
+    },
+    {
+      title: "Total rounds",
+      dataIndex: "total_rounds",
+      key: "total_rounds",
+      width: "10%",
+      style: { textAlign: "center" },
     },
     {
       title: "End Date",
       dataIndex: "dateend",
       key: "dateend",
       width: "20%",
-      render: (text) => formatDateTime(text),
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      width: "10%",
-      render: (status) => getCompetitionStatus(status),
+      sort: true,
+      render: (text) => formatDate(text),
     },
   ];
 
@@ -464,6 +556,14 @@ export default function ImportEntity() {
       ),
     },
     {
+      title: "Start Date",
+      dataIndex: "date_start_ist",
+      key: "date_start_ist",
+      width: "15%",
+      sort: true,
+      render: (text) => formatDateTime(text),
+    },
+    {
       title: "Match ID",
       dataIndex: "match_id",
       key: "match_id",
@@ -487,18 +587,18 @@ export default function ImportEntity() {
       ),
     },
     {
-      title: "Start Date",
-      dataIndex: "date_start_ist",
-      key: "date_start_ist",
-      width: "15%",
-      render: (text) => formatDateTime(text),
+      title: "Format",
+      dataIndex: "format_str",
+      key: "format_str",
+      width: "10%",
     },
     {
-      title: "End Date",
-      dataIndex: "date_end_ist",
-      key: "date_end_ist",
-      width: "15%",
-      render: (text) => formatDateTime(text),
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      width: "10%",
+      // render: (text) => text?.toUpperCase(),
+      // render: (status) => getCompetitionStatus(status),
     },
     {
       title: "Venue",
@@ -515,11 +615,12 @@ export default function ImportEntity() {
       },
     },
     {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      width: "10%",
-      render: (status) => getMatchStatus(status),
+      title: "End Date",
+      dataIndex: "date_end_ist",
+      key: "date_end_ist",
+      width: "15%",
+      sort: true,
+      render: (text) => formatDateTime(text),
     },
   ];
 
@@ -527,27 +628,26 @@ export default function ImportEntity() {
     if (selectedLevel.level === "competitionMatches") {
       return statusOptionsforMatch;
     }
-    return statusOptions; // default: for seasonCompetitions or others
+    return statusOptions; // default: for competitions or others
   };
-
 
   // Get current columns based on level
   const getCurrentColumns = () => {
     switch (selectedLevel.level) {
-      case "seasonCompetitions":
-        return getSeasonCompetitionsColumns();
+      case "competitions":
+        return getCompetitionsColumns();
       case "competitionMatches":
         return getCompetitionMatchesColumns();
       default:
-        return getSeasonCompetitionsColumns();
+        return getCompetitionsColumns();
     }
   };
 
   // Get current title based on level
   const getCurrentTitle = () => {
     switch (selectedLevel.level) {
-      case "seasonCompetitions":
-        return "Season Competitions";
+      case "competitions":
+        return "Competitions";
       case "competitionMatches":
         return "Competition Matches";
       default:
@@ -561,9 +661,9 @@ export default function ImportEntity() {
     headerSelect: false,
     isActive: false,
     dragDrop: false,
-    subTable: selectedLevel.level !== "seasonCompetitions",
+    subTable: selectedLevel.level !== "competitions",
     isServerPagination: true,
-    resetButton:true,
+    resetButton: true,
     // isNonCrud: true,
   };
 
@@ -590,7 +690,8 @@ export default function ImportEntity() {
             breadCrumbs={navigationHistory}
             handleCustomReset={handleReset}
             renderCustomFilter={() => (
-              <div className="d-flex align-items-center">
+              <div className="d-flex align-items-center gap-2">
+                {/* Status Filter */}
                 <Select
                   styles={{
                     control: (provided) => ({ ...provided, width: 180 }),
