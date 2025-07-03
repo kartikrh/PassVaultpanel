@@ -108,7 +108,7 @@ const Index = () => {
       ...dataSource,
       rateSourceRefId:
         dataSource?.rateSourceRefId || ratesource?.rateSourceRefId,
-      marketTypeId: dataSource?.marketTypeCategoryId || ratesource?.marketTypeCategoryId,
+      marketTypeId: dataSource?.marketTypeCategoryId || ratesource?.marketTypeCategoryId || 5,
       marketTypeCategoryId: 8,
       eventTypeId: dataSource?.eventTypeId || 0,
       competitionId:
@@ -127,6 +127,8 @@ const Index = () => {
         rateSourceRefId:
           dataSource?.rateSourceRefId || ratesource?.rateSourceRefId,
         commentaryId: commentaryId,
+        marketTypeCategoryId: 8,
+        marketTypeId: dataSource?.marketTypeCategoryId || ratesource?.marketTypeCategoryId || 5,
       };
     }
     if (isSearch) {
