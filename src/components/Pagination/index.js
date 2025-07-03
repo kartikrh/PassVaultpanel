@@ -9,16 +9,24 @@ const Index = ({
   setPageSize,
 }) => {
   const shouldShowSizeChanger = total >= 10;
-  const [prev, setPrev] = useState(pageSize)
+  const [prev, setPrev] = useState(pageSize);
   const onShowSizeChange = (currentPage, pageSize) => {
-    localStorage.setItem("pageSize", pageSize)
+    localStorage.setItem("pageSize", pageSize);
     setPageSize(pageSize);
-    Number(pageSize) === Number(prev) ? setCurrentPage(currentPage) : setCurrentPage(0)
-    setPrev(pageSize)
+    Number(pageSize) === Number(prev)
+      ? setCurrentPage(currentPage)
+      : setCurrentPage(0);
+    setPrev(pageSize);
   };
-
+  console.log({
+    total,
+    pageSize,
+    currentPage,
+    fetchData,
+    setCurrentPage,
+    setPageSize,
+  });
   useEffect(() => {
-
     fetchData();
   }, [currentPage, pageSize]);
   return (
@@ -27,10 +35,19 @@ const Index = ({
       onShowSizeChange={onShowSizeChange}
       onChange={onShowSizeChange}
       current={currentPage}
+      pageSizeOptions={[
+        "10",
+        "20",
+        "50",
+        "100",
+        "500",
+        "1000",
+        "5000",
+        "10000",
+      ]}
       // defaultCurrent={currentPage}
       total={total}
       pageSize={pageSize}
-
     />
   );
 };
