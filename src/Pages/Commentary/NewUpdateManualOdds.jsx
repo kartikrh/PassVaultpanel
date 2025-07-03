@@ -379,12 +379,11 @@ export const NewUpdateManualOdds = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const socket = createSocket();
-
     // const commentaryId = localStorage.getItem("updateManualOddsCommentaryId");
     // const commentaryDetails = JSON.parse(localStorage.getItem('updateManualOddsCommentaryDetails') || "{}");
 
     const commentaryId = sessionStorage.getItem("updateManualOddsCommentaryId");
-    const commentaryDetails = JSON.parse(sessionStorage.getItem('updateManualOddsCommentaryDetails'));
+    const commentaryDetails = JSON.parse(sessionStorage.getItem('updateManualOddsCommentaryDetails') || "{}");
 
     // const [isSocketConnected, setIsSocketConnected] = useState(false);
     const [isLive, setIsLive] = useState(true);
@@ -1156,12 +1155,14 @@ export const NewUpdateManualOdds = () => {
     };
 
     const handleSettingChange = useCallback((key, value, isShortcut = false) => {
+        console.log('handleSettingChange', key, value, isShortcut)
         // Validate minimum values for rate-related settings
         if (['rateDifferent', 'bRateDifferent', 'lRateDifferent'].includes(key)) {
             const numValue = parseFloat(value);
             if (numValue < 0.01) {
                 value = '0.01';
             }
+
         }
 
         if (isShortcut) {
@@ -1427,6 +1428,7 @@ export const NewUpdateManualOdds = () => {
 
         // Manual mode & Direct Line: Check for shortcut values
         const value = settings.shortcutValues[key];
+        console.log("value", value)
         console.log(`Shortcut value for ${key}:`, value);
 
         // FIRST: Handle shortcut keys (Q, W, E, R, T, Y, U, I, O, P) - ALWAYS prevent default for these
@@ -1594,7 +1596,6 @@ export const NewUpdateManualOdds = () => {
     };
 
     const handleSave = useCallback(async (options = {}) => {
-        console.log("Margin updated handleSave")
         setIsLoading(true);
         try {
             const marketData = prepareMarketData(options);
@@ -1918,7 +1919,6 @@ export const NewUpdateManualOdds = () => {
         // Handle display value for saved price
         const displaySavedPrice = !isLive && directLineEnabled && savedPrice < 1.01 ? '' :
             isActive ? savedPrice : '-';
-            // console.log("displaySavedPrice", displaySavedPrice)
         const isManualMode = !isLive && !directLineEnabled;
         return (
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
@@ -1987,195 +1987,108 @@ export const NewUpdateManualOdds = () => {
         const max = Math.pow(10, length) - 1;
         return Math.floor(Math.random() * (max - min + 1) + min);
     };
-    // const fetchMarketData = async () => {
-    //     setIsLoading(true);
-    //     try {
-    //         const response = await axiosInstance.post('/admin/eventMarket/getManualMarket', { commentaryId/* , eventMarketId: commentaryDetails?.eventMarketId */ });
-    //         if (response?.result) {
-    //             if (Number(response?.result?.market?.[0]?.rateSourceRefID) == 0) {
-    //                 setIsLive(false)
-    //             }
-    //             // if (!response.result.market) {
-    //             //     navigate("/manualOddsMarket");
-    //             //     return;
-    //             // }
-    //             setEventData({
-    //                 comDetails: response.result.comDetails || null,
-    //                 teams: response.result.teams?.sort((a, b) => a?.teamNo - b?.teamNo) || [],
-    //                 market: response.result.market?.[0] || {},
-    //             });
-    //             const marketData = response.result.market?.[0];
-    //             const currentMarketStatus = marketData?.status?.toString();
-    //             setMarketStatus(currentMarketStatus);
-    //             if (response?.result?.rsMarket) {
-    //                 setSocketMarketData([response.result.rsMarket]);
-    //             }
-    //             // Disable all interactions if market is closed
-    //             if (currentMarketStatus === CLOSE_VALUE.toString()) {
-    //                 setSettings(prev => ({
-    //                     ...prev,
-    //                     betAllow: false,
-    //                     active: false
-    //                 }));
-    //                 setIsLive(false);
-    //                 setAbOpen(false);
-    //                 setAbSuspend(false);
-    //             } else {
-    //                  setSettings(prevSettings => ({
-    //                     ...prevSettings,
-    //                     betAllow: marketData?.isAllow || prevSettings.betAllow,
-    //                     active: marketData?.isActive || prevSettings.active,
-    //                     rateDifferent: marketData?.rateDiff || prevSettings.rateDifferent,
-    //                     bRateVolume: marketData?.defaultBackSize || prevSettings.bRateVolume,
-    //                     lRateVolume: marketData?.defaultLaySize || prevSettings.lRateVolume,
-    //                     margin: marketData?.margin || prevSettings.margin,
-    //                     delay: marketData?.delay || prevSettings.delay,
-    //                     lineRatio: marketData?.lineRatio || prevSettings.lineRatio,
-    //                     favRatio: marketData?.favRatio || prevSettings.favRatio,
-    //                 }));
-    //                 // const settingDataToUpdate = {
-    //                 //     ...settings,
-    //                 //     betAllow: marketData?.isAllow || settings.betAllow,
-    //                 //     active: marketData?.isActive || settings.active,
-    //                 //     rateDifferent: marketData?.rateDiff || settings.rateDifferent,
-    //                 //     bRateVolume: marketData?.defaultBackSize || settings.bRateVolume,
-    //                 //     lRateVolume: marketData?.defaultLaySize || settings.lRateVolume,
-    //                 //     margin: marketData?.margin || settings.margin,
-    //                 //     delay: marketData?.delay || settings.delay,
-    //                 //     lineRatio: marketData?.lineRatio || settings.lineRatio,
-    //                 //     favRatio: marketData?.favRatio || settings.favRatio,
-    //                 // };
-    //                 // setSettings(settingDataToUpdate);
-    //             }
-
-    //             if (marketData?.rateSourceRefID) {
-    //                 setRateSourceRefID([response.result.market[0].rateSourceRefID]);
-    //             }
-
-    //             // Initialize runners with proper status handling
-    //             if (marketData?.runners) {
-    //                 initializeRunners(response.result.market[0].runners);
-    //                 // Then set saved prices from the initial data
-    //                 const initialSavedPrices = {};
-    //                 response.result.market[0].runners.forEach(runner => {
-    //                     initialSavedPrices[runner.runnerId] = {
-    //                         back: runner.backPrice,
-    //                         lay: runner.layPrice
-    //                     };
-    //                 });
-    //                 console.log("Hello 1")
-    //                 setSavedPrices(initialSavedPrices);
-    //                 handleSettingChange('volumeType', CUSTOM_STATUS)
-    //             }
-
-    //             if (socket && commentaryId) {
-    //                 // console.log("Connecting COMMENTARY_STATUS_CONNECT");
-    //                 socket.emit(COMMENTARY_STATUS_CONNECT, { commentaryId: +commentaryId });
-
-    //                 if (directLineEnabled && !isLive) {
-    //                     // console.log("Connecting to INNINGS_CONNECT");
-    //                     socket.emit(INNINGS_CONNECT, commentaryId);
-    //                 } else {
-    //                     // console.log("Connecting to MARKET_RUNNER_CONNECT");
-    //                     // socket.emit(MARKET_RUNNER_CONNECT, rateSourceRefID);
-    //                 }
-    //             }
-    //         }
-
-    //     } catch (error) {
-    //         dispatch(updateToastData({
-    //             data: error?.message,
-    //             title: error?.title,
-    //             type: ERROR
-    //         }));
-    //     } finally {
-    //         setIsLoading(false);
-    //     }
-    // };
     const fetchMarketData = async () => {
+        const eventMarketId = commentaryDetails?.eventMarketId;
         setIsLoading(true);
         try {
-            // ✅ Get eventMarketId from commentaryDetails or location.state
-            const eventMarketId = commentaryDetails?.eventMarketId;
-
-            let updatedMarket = {};
-            if (eventMarketId) {
-                const marketResponse = await axiosInstance.post('/admin/eventMarket/marketInfo', {
+            const response = await axiosInstance.post('/admin/eventMarket/marketInfo', {
                     eventMarketId,
                 });
-                updatedMarket = marketResponse?.result || {};
-            }
-
-            // Step 2: Set event data using market from API
-            setEventData({
-                comDetails: {
-                    commentaryId : updatedMarket.commentaryId,
-                    eventDate: updatedMarket.eventDate,
-                    eventName : updatedMarket.eventName,
-                    eventRefId : updatedMarket.eventRefId
-                },
-                // teams: teams?.sort((a, b) => a?.teamNo - b?.teamNo) || [],
-                market: updatedMarket.market,
-            });
-
-            const marketData = updatedMarket.market;
-            const currentMarketStatus = marketData?.status?.toString();
-            setMarketStatus(currentMarketStatus);
-
-            if (Number(marketData?.rateSourceRefID) === 0) {
-                setIsLive(false);
-            }
-            console.log("updatedMarket.market", updatedMarket.market)
-            if (marketData?.rateSourceRefID) {
-                setRateSourceRefID([updatedMarket.market.rateSourceRefID]);
-            }
-
-            // Step 3: Handle market status & settings
-            if (currentMarketStatus === CLOSE_VALUE.toString()) {
-                setSettings(prev => ({
-                    ...prev,
-                    betAllow: false,
-                    active: false
-                }));
-                setIsLive(false);
-                setAbOpen(false);
-                setAbSuspend(false);
-            } else {
-                setSettings(prev => ({
-                    ...prev,
-                    betAllow: marketData?.isAllow ?? prev.betAllow,
-                    active: marketData?.isActive ?? prev.active,
-                    rateDifferent: marketData?.rateDiff ?? prev.rateDifferent,
-                    bRateVolume: marketData?.defaultBackSize ?? prev.bRateVolume,
-                    lRateVolume: marketData?.defaultLaySize ?? prev.lRateVolume,
-                    margin: marketData?.margin ?? prev.margin,
-                    delay: marketData?.delay ?? prev.delay,
-                    lineRatio: marketData?.lineRatio ?? prev.lineRatio,
-                    favRatio: marketData?.favRatio ?? prev.favRatio,
-                }));
-            }
-
-            // Step 4: Handle runners
-            if (marketData?.runners) {
-                initializeRunners(marketData.runners);
-
-                const initialSavedPrices = {};
-                marketData.runners.forEach(runner => {
-                    initialSavedPrices[runner.runnerId] = {
-                        back: runner.backPrice,
-                        lay: runner.layPrice,
-                    };
+                console.log("response", response.result)
+            if (response?.result) {
+                if (Number(response?.result?.market?.rateSourceRefID) == 0) {
+                    setIsLive(false)
+                }
+                if (!response.result.market) {
+                    // navigate("/manualOddsMarket");
+                    return;
+                }
+                let commentaryDetailsFromAPi = {
+                    commentaryId : response?.result.commentaryId,
+                    eventDate: response?.result.eventDate,
+                    eventName : response?.result.eventName,
+                    eventRefId : response?.result.eventRefId
+                }
+                setEventData({
+                    comDetails: commentaryDetailsFromAPi || null,
+                    teams: response.result.teams?.sort((a, b) => a?.teamNo - b?.teamNo) || [],
+                    market: response.result.market || {},
                 });
-                setSavedPrices(initialSavedPrices);
-                handleSettingChange('volumeType', CUSTOM_STATUS);
-            }
+                const marketData = response.result.market;
+                const currentMarketStatus = marketData?.status?.toString();
+                setMarketStatus(currentMarketStatus);
+                if (response?.result?.rsMarket) {
+                    setSocketMarketData([response.result.rsMarket]);
+                }
+                // Disable all interactions if market is closed
+                if (currentMarketStatus === CLOSE_VALUE.toString()) {
+                    setSettings(prev => ({
+                        ...prev,
+                        betAllow: false,
+                        active: false
+                    }));
+                    setIsLive(false);
+                    setAbOpen(false);
+                    setAbSuspend(false);
+                } else {
+                     setSettings(prevSettings => ({
+                        ...prevSettings,
+                        betAllow: marketData?.isAllow || prevSettings.betAllow,
+                        active: marketData?.isActive || prevSettings.active,
+                        rateDifferent: marketData?.rateDiff || prevSettings.rateDifferent,
+                        bRateVolume: marketData?.defaultBackSize || prevSettings.bRateVolume,
+                        lRateVolume: marketData?.defaultLaySize || prevSettings.lRateVolume,
+                        margin: marketData?.margin || prevSettings.margin,
+                        delay: marketData?.delay || prevSettings.delay,
+                        lineRatio: marketData?.lineRatio || prevSettings.lineRatio,
+                        favRatio: marketData?.favRatio || prevSettings.favRatio,
+                    }));
+                    // const settingDataToUpdate = {
+                    //     ...settings,
+                    //     betAllow: marketData?.isAllow || settings.betAllow,
+                    //     active: marketData?.isActive || settings.active,
+                    //     rateDifferent: marketData?.rateDiff || settings.rateDifferent,
+                    //     bRateVolume: marketData?.defaultBackSize || settings.bRateVolume,
+                    //     lRateVolume: marketData?.defaultLaySize || settings.lRateVolume,
+                    //     margin: marketData?.margin || settings.margin,
+                    //     delay: marketData?.delay || settings.delay,
+                    //     lineRatio: marketData?.lineRatio || settings.lineRatio,
+                    //     favRatio: marketData?.favRatio || settings.favRatio,
+                    // };
+                    // setSettings(settingDataToUpdate);
+                }
 
-            // Step 5: Socket
-            if (socket && commentaryId) {
-                socket.emit(COMMENTARY_STATUS_CONNECT, { commentaryId: +commentaryId });
+                if (marketData?.rateSourceRefID) {
+                    setRateSourceRefID([response.result.market.rateSourceRefID]);
+                }
 
-                if (directLineEnabled && !isLive) {
-                    socket.emit(INNINGS_CONNECT, commentaryId);
+                // Initialize runners with proper status handling
+                if (marketData?.runners) {
+                    initializeRunners(response.result.market.runners);
+                    // Then set saved prices from the initial data
+                    const initialSavedPrices = {};
+                    response.result.market.runners.forEach(runner => {
+                        initialSavedPrices[runner.runnerId] = {
+                            back: runner.backPrice,
+                            lay: runner.layPrice
+                        };
+                    });
+                    console.log("Hello 1")
+                    setSavedPrices(initialSavedPrices);
+                    handleSettingChange('volumeType', CUSTOM_STATUS)
+                }
+
+                if (socket && commentaryId) {
+                    // console.log("Connecting COMMENTARY_STATUS_CONNECT");
+                    socket.emit(COMMENTARY_STATUS_CONNECT, { commentaryId: +commentaryId });
+
+                    if (directLineEnabled && !isLive) {
+                        // console.log("Connecting to INNINGS_CONNECT");
+                        socket.emit(INNINGS_CONNECT, commentaryId);
+                    } else {
+                        // console.log("Connecting to MARKET_RUNNER_CONNECT");
+                        // socket.emit(MARKET_RUNNER_CONNECT, rateSourceRefID);
+                    }
                 }
             }
 
@@ -2189,7 +2102,6 @@ export const NewUpdateManualOdds = () => {
             setIsLoading(false);
         }
     };
-
     const handleMarketClose = () => {
         const confirmed = window.confirm("Are you sure you want to close the market? This action cannot be undone.");
         if (confirmed) {
@@ -2327,7 +2239,7 @@ export const NewUpdateManualOdds = () => {
                 ...prevSettings,
                 ...savedSettings
             }));
-            // console.log('Loaded settings from local storage:', savedSettings);
+            console.log('Loaded settings from local storage:', savedSettings);
         }
 
         // Set up event listener
@@ -2364,7 +2276,7 @@ export const NewUpdateManualOdds = () => {
     // }, []);
 
     useEffect(() => {
-        // fetchMarketData();
+        fetchMarketData();
         // Store original shortcut values
         setOriginalShortcutValues(settings.shortcutValues);
         window.addEventListener('keydown', handleKeyPress);
@@ -2372,7 +2284,6 @@ export const NewUpdateManualOdds = () => {
     }, []);
 
     useEffect(() => {
-        // console.log("margin updated 2379")
         const handleKeyUp = (event) => {
             const key = event.key.toUpperCase();
             const isManualMode = !isLive && !directLineEnabled;
@@ -2448,11 +2359,13 @@ export const NewUpdateManualOdds = () => {
                 lay: getNonZeroSavedData(runner.layPrice, runner.runnerId, "lay")
             };
         });
+        console.log("Hello 2")
         setSavedPrices(newSavedPrices);
         return newSavedPrices;
     }, [savedPrices]);
 
     const handleSavedRunnerChange = (runnerId, field, value) => {
+        console.log("handleSavedRunnerChange", runnerId, field, value)
         // Don't allow manual changes when in temporary state
         if (tempRateDiffRef.current !== null) {
             console.log('Ignoring manual change - in temporary state');
@@ -2463,9 +2376,13 @@ export const NewUpdateManualOdds = () => {
         const isSelectedRunner = runner?.isSelected;
         const otherRunner = runners.find(r => r.runnerId !== runnerId);
         const numericValue = Number(parseFloat(value).toFixed(2));
+        console.log("otherRunner", otherRunner)
+        console.log("isSelectedRunner", isSelectedRunner)
 
         // For directLineEnabled and !isLive mode, if value < 1.01, set it to 0
         const adjustedValue = !isLive && directLineEnabled && numericValue < 1.01 ? 0 : numericValue;
+        console.log("adjustedValue", adjustedValue)
+        console.log("Hello 3")
         setSavedPrices(prevValue => {
             const newSavedPrices = {
                 ...prevValue,
@@ -2480,6 +2397,7 @@ export const NewUpdateManualOdds = () => {
                     const newLayPrice = Number((adjustedValue + parseFloat(settings.rateDifferent)).toFixed(2));
                     const newNonSelectedBack = Number((1 / (1 - (1 / newLayPrice))).toFixed(2));
                     const newNonSelectedLay = Number((1 / (1 - (1 / adjustedValue))).toFixed(2));
+                    console.log("isSelectedRunner && otherRunner", newLayPrice, newNonSelectedBack, newNonSelectedLay)
 
                     newSavedPrices[runnerId] = {
                         ...newSavedPrices[runnerId],
@@ -2557,7 +2475,6 @@ export const NewUpdateManualOdds = () => {
     }, [settings.bfRateDiff, isLive, processMarketRunnerData, originalMarketRunnerData]);
 
     useEffect(() => {
-        console.log("margin updated 2564")
         // Handle margin changes for different modes
         if (isLive && originalMarketRunnerData.length > 0) {
             // In live mode, recalculate with socket data
@@ -2573,35 +2490,22 @@ export const NewUpdateManualOdds = () => {
 
             // Find selected runner
             const selectedRunnerData = runners.find(r => r.isSelected);
-            // console.log("selectedRunnerData", selectedRunnerData)
-            // console.log("runners", runners)
             if (selectedRunnerData) {
                 const selectedBackPrice = savedPrices[selectedRunnerData.runnerId]?.back || 0;
-                // console.log("selectedBackPrice", selectedBackPrice)
                 if (selectedBackPrice > 0) {
                     // Recalculate lay price with new margin
                     const newSettings = { ...settings }; // This will have the updated margin
-                    // console.log("ne margin", newSettings.margin)
                     const newRates = calculateRunnerRates({
                         back: { price: selectedBackPrice }
                     }, newSettings, { forceCalculateLay: true });
-                    // console.log("newRates 2589", newRates)
 
                     // Update saved prices for both runners
                     const nonSelectedRunner = runners.find(r => !r.isSelected);
-                    // console.log("nonSelectedRunner", nonSelectedRunner)
                     if (nonSelectedRunner) {
                         const selectedLayPrice = newRates.lay;
                         const nonSelectedBackPrice = parseFloat((1 / (1 - (1 / selectedLayPrice))).toFixed(2));
                         const nonSelectedLayPrice = parseFloat((1 / (1 - (1 / selectedBackPrice))).toFixed(2));
-                        console.log("selectedRunnerData", selectedRunnerData.runnerId, {
-                                back: selectedBackPrice,
-                                lay: selectedLayPrice
-                            })
-                        console.log("nonSelectedRunner", nonSelectedRunner.runnerId, {
-                                back: nonSelectedBackPrice,
-                                lay: nonSelectedLayPrice
-                            })
+
                         setSavedPrices(prev => ({
                             ...prev,
                             [selectedRunnerData.runnerId]: {
@@ -2634,8 +2538,6 @@ export const NewUpdateManualOdds = () => {
     }, [settings.margin]);
 
     useEffect(() => {
-        // console.log("margin updated 2628");
-        
         const handleKeyDown = async (e) => {
             // Cannot perform operations on closed markets
             if (+marketStatus === +CLOSE_VALUE) return;
@@ -2911,18 +2813,18 @@ export const NewUpdateManualOdds = () => {
 
     // TODO: test method Remove after development 
     useEffect(() => {
-        // console.log("Setting up keydown event listener"); // Debug log
+        console.log("Setting up keydown event listener"); // Debug log
 
         // Add a test function to check if the listener works
         const testKeyPress = (event) => {
-            // console.log(`TEST: Key pressed: ${event.key.toUpperCase()}`);
+            console.log(`TEST: Key pressed: ${event.key.toUpperCase()}`);
         };
 
         window.addEventListener('keydown', testKeyPress);
         window.addEventListener('keydown', handleKeyPress);
 
         return () => {
-            // console.log("Removing keydown event listener"); // Debug log
+            console.log("Removing keydown event listener"); // Debug log
             window.removeEventListener('keydown', testKeyPress);
             window.removeEventListener('keydown', handleKeyPress);
         };
@@ -3048,7 +2950,7 @@ export const NewUpdateManualOdds = () => {
                                 <Box width="15%" sx={{ textAlign: 'right' }}>
                                     <Button color="danger"
                                         className="w-100"
-                                        onClick={() => navigate("/manualOddsMarkets")}>Exit</Button>
+                                        onClick={() => navigate("/commentary")}>Exit</Button>
                                 </Box>
                             </Box>
 
