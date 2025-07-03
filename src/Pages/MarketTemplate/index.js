@@ -451,7 +451,7 @@ const Index = () => {
       title: "Active",
       key: "isActive",
       render: (text, record) => (
-      <Tooltip title={"Toggle Status"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+      <Tooltip title={"Status"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${record.isActive ? "primary" : "danger"}`}
           size="sm"
@@ -470,7 +470,7 @@ const Index = () => {
       title: "Python Code",
       key: "isPython",
       render: (text, record) => (
-        <Tooltip title={"Toggle Python"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip title={"Python"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
           <Button
             color={record.isPython ? "primary" : "danger"}
             size="sm"
@@ -489,7 +489,7 @@ const Index = () => {
       title: "Per Event",
       key: "isPerEvent",
       render: (text, record) => (
-      <Tooltip title={"Toggle Per-Event"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+      <Tooltip title={"Per-Event"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${record.isPerEvent ? "primary" : "danger"}`}
           size="sm"
@@ -508,7 +508,7 @@ const Index = () => {
       title: "Default Send Data",
       key: "defaultIsSendData",
       render: (text, record) => (
-      <Tooltip title={"Toggle Is Send Data"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+      <Tooltip title={"Send Data"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${record.defaultIsSendData ? "primary" : "danger"}`}
           size="sm"
@@ -527,7 +527,7 @@ const Index = () => {
       title: "Show Adv. Market",
       key: "isShowInAdvanceMarket",
       render: (text, record) => (
-      <Tooltip title={"Toggle Show Adv. Market"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+      <Tooltip title={"Show Adv. Market"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${record.isShowInAdvanceMarket ? "primary" : "danger"}`}
           size="sm"
@@ -546,7 +546,7 @@ const Index = () => {
       title: "P-Runner Value",
       key: "isPredefineRunnerValue",
       render: (text, record) => (
-      <Tooltip title={"Toggle Runner Value"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+      <Tooltip title={"Runner Value"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${record.isPredefineRunnerValue ? "primary" : "danger"}`}
           size="sm"
@@ -573,7 +573,7 @@ const Index = () => {
       key: "marketTemplate",
       printType: "ignore",
       render: (text, record) => (
-      <Tooltip title={"View Runner"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+      <Tooltip title={"Runner"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={"primary"}
           size="sm"
