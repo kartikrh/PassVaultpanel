@@ -106,6 +106,7 @@ export const newsFields = [
     name: "news",
     label: "News",
     parentclassName: "",
+    isRequired: true,
     type: TEXT_EDITOR,
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 10, lg: 10 },

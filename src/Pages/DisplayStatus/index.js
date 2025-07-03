@@ -176,7 +176,7 @@ const Index = () => {
       title: "Active",
       key: "isActive",
       render: (text, record) => (
-      <Tooltip title={"Active/Inactive Display Status"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+      <Tooltip title={"Display Status"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${record.isActive ? "primary" : "danger"}`}
           size="sm"

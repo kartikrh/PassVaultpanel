@@ -2,8 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
 import { Tooltip } from "antd";
-import { Button } from "reactstrap";
-import { Container } from "reactstrap";
+import { Button, Container } from "reactstrap";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
@@ -256,7 +255,7 @@ const Index = () => {
       title: "Active",
       key: "isActive",
       render: (text, record) => (
-        <Tooltip title={"Active/Inactive package"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip title={"Package"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
           <Button
             color={`${record.isActive ? "primary" : "danger"}`}
             size="sm"
