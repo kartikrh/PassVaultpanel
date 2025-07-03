@@ -16,8 +16,8 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   checkPermission,
   convertDateLocalToUTC,
-  convertDateUTCToLocal2,
-  convertDateUtcFormat,
+  convertDateUTCToLocalWithoutSec,
+  convertDateUtcFormatWithoutSec
 } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { ChangeSessionResult } from "../../components/Model/ChangeSessionResult";
@@ -344,13 +344,13 @@ const Index = () => {
       style: { width: "2%" },
     },
     {
-      title: "Event Date",
+      title: "Date",
       dataIndex: "eventDate",
       render: (text, record) => (
         <span style={{ cursor: "pointer" }}>
           {dateType?.value == 1
-            ? convertDateUTCToLocal2(text, "index")
-            : convertDateUtcFormat(text, "index")}
+            ? convertDateUTCToLocalWithoutSec(text, "index")
+            : convertDateUtcFormatWithoutSec(text, "index")}
         </span>
       ),
       key: "eventDate",
@@ -358,11 +358,11 @@ const Index = () => {
       style: { width: "10%" },
     },
     {
-      title: "Event Id",
-      dataIndex: "eventRefId",
-      key: "eventRefId",
-      style: { width: "10%" },
+      title: "ID",
+      dataIndex: "eventMarketId",
+      key: "eventMarketId",
       sort: true,
+      style: { width: "10%" },
     },
     // {
     //   title: "Center ID",
@@ -372,45 +372,16 @@ const Index = () => {
     //   style: { width: "10%" },
     // },
     {
-      title: "ID",
-      dataIndex: "eventMarketId",
-      key: "eventMarketId",
-      sort: true,
-      style: { width: "10%" },
-    },
-    {
-      title: "Event Type",
-      dataIndex: "eventTypeName",
-      key: "eventTypeName",
-      sort: true,
-      style: { width: "10%" },
-    },
-    {
-      title: "Competition",
-      dataIndex: "competitionName",
-      key: "competitionName",
-      sort: true,
-      style: { width: "10%" },
-    },
-    {
       title: "Event",
-      dataIndex: "eventName",
-      key: "eventName",
-      sort: true,
-      style: { width: "10%" },
-    },
-    {
-      title: "Market Type",
-      dataIndex: "marketTypeName",
-      key: "marketTypeName",
-      style: { width: "10%" },
-      sort: true,
-    },
-    {
-      title: "Category",
-      dataIndex: "categoryName",
-      key: "categoryName",
-      style: { width: "10%" },
+      key: "event",
+      render: (text, record) => (
+        <span>
+          {`${record.eventTypeName || ""}/ ${record.competitionName || ""}/ ${
+            record.eventName || ""
+          }`}
+        </span>
+      ),
+      style: { width: "30%" },
       sort: true,
     },
     {
@@ -421,18 +392,11 @@ const Index = () => {
       style: { width: "10%" },
     },
     {
-      title: "Team",
-      dataIndex: "teamName",
-      key: "teamName",
-      style: { width: "10%" },
-      sort: true,
-    },
-    {
-      title: "Inning",
-      dataIndex: "inningsId",
-      key: "inningsId",
-      style: { width: "10%", textAlign: "center" },
-      sort: true,
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      style: { width: "20%" },
+      render: (text, record) => <span>{getStatusText(record.status)}</span>,
     },
     {
       title: "Result",
@@ -463,13 +427,6 @@ const Index = () => {
       sort: true,
     },
     {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      style: { width: "20%" },
-      render: (text, record) => <span>{getStatusText(record.status)}</span>,
-    },
-    {
       title: "Result",
       key: "isResult",
       render: (text, record) => (
@@ -494,6 +451,38 @@ const Index = () => {
         </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Market Type",
+      key: "market",
+      render: (text, record) => (
+        <span>
+          {`${record.marketTypeName || ""}/ ${record.categoryName || ""}`}
+        </span>
+      ),
+      style: { width: "60%" },
+      sort: true,
+    },
+    {
+      title: "Team",
+      dataIndex: "teamName",
+      key: "teamName",
+      style: { width: "10%" },
+      sort: true,
+    },
+    {
+      title: "Inning",
+      dataIndex: "inningsId",
+      key: "inningsId",
+      style: { width: "10%", textAlign: "center" },
+      sort: true,
+    },
+    {
+      title: "Event Id",
+      dataIndex: "eventRefId",
+      key: "eventRefId",
+      style: { width: "10%" },
+      sort: true,
     },
     {
       title: "Cancel",

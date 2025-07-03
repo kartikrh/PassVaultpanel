@@ -97,7 +97,7 @@ function AddCompetitions() {
       });
 
     await axiosInstance
-    .post("/admin/matchType/all", {})
+    .post("/admin/competition/getMatchTypes", {})
     .then((response) => {
       setMasterData((preData) => ({
         ...preData,

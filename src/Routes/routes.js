@@ -80,7 +80,7 @@ import Login from "../Pages/Authentication/Login";
 // import ForgetPasswordPage from "../Pages/Authentication/ForgetPassword";
 import Logout from "../Pages/Authentication/Logout";
 // import Register from "../Pages/Authentication/Register";
-
+import ManualOddMarketsPage from '../Pages/ManualOddMarketsPage'
 // Import Authentication Inner Pages
 import Login1 from "../Pages/AuthenticationPages/Login";
 // import Register1 from "../Pages/AuthenticationPages/Register";
@@ -158,6 +158,8 @@ import AddCardType from "../Pages/CardType/AddCardType.jsx";
 import ImportEntity from "../Pages/ImportEntity/ImportEntityTable.js";
 import PythonApi from "../Pages/PythonApi";
 import AddPythonAPI from "../Pages/PythonApi/AddPythonApi.jsx";
+import { AddManualOdds } from "../Pages/Commentary/AddManualOdds.jsx";
+import { NewUpdateManualOdds } from "../Pages/Commentary/NewUpdateManualOdds.jsx";
 
 const authProtectedRoutes = [
   //dashboard
@@ -260,6 +262,7 @@ const authProtectedRoutes = [
   { path: "/addMarketTemplate", component: <AddMarketTemplate /> },
   { path: "/marketTemplateRunner", component: <MarketTemplateRunner /> },
   { path: "/eventMarkets", component: <EventMarkets /> },
+  { path: "/manualOddsMarkets", component: <ManualOddMarketsPage /> },
   { path: "/addEventMarket", component: <AddEventMarket /> },
   { path: "/marketLogs", component: <MarketLogs /> },
   { path: "/marketDataLogs", component: <MarketDataLogs /> },
@@ -304,8 +307,10 @@ const authProtectedRoutes = [
   { path: "/videoLibrary", component: <VideoLibrary /> },
   { path: "/CardType", component: <CardType /> },
   { path: "/addCardType", component: <AddCardType /> },
+  { path: "/addManualOddsMarket", component: <AddManualOdds /> },
   { path: "/manualOddsMarket", component: <ManualOddsMarket /> },
-  { path: "/updateManualOdds", component: <UpdateManualOdds /> },
+  // { path: "/updateManualOdds", component: <UpdateManualOdds /> },
+  { path: "/updateManualOdds", component: <NewUpdateManualOdds /> },
   { path: "/AddVideoLibrary", component: <AddVideoLibrary /> },
   { path: "/dataprovider", component: <DataproviderPage /> },
   { path: "/dataproviderMarkets", component: <EventDetails /> },

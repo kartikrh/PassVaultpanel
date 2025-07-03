@@ -8,8 +8,11 @@ import {
 import moment from "moment";
 
 const MatchCard = ({ matchData }) => {
-  if (!matchData) return null;
+  if (!matchData || !matchData.response || !matchData.response.match_info) {
+    return null;
+  }
 
+  // Extract match_info from the nested structure
   const {
     title,
     short_title,
@@ -28,7 +31,7 @@ const MatchCard = ({ matchData }) => {
     result,
     toss,
     umpires,
-  } = matchData;
+  } = matchData.response.match_info;
 
   // Status color mapping
   const getStatusColor = (status) => {
@@ -57,9 +60,11 @@ const MatchCard = ({ matchData }) => {
             <h2 className="mt-1 mb-1 text-primary h4">{title}</h2>
           </Col>
           <Col>
-            <Tag color={getStatusColor(status)} className="px-3 py-1 mx-5">
-              {status_str.toUpperCase()}
-            </Tag>
+            {status_str && (
+              <Tag color={getStatusColor(status)} className="px-3 py-1 mx-5">
+                {status_str.toUpperCase()}
+              </Tag>
+            )}
           </Col>
         </Row>
       </div>
@@ -126,7 +131,7 @@ const MatchCard = ({ matchData }) => {
       </Row>
 
       {/* Result Section */}
-      {status_note && status === 2 && (
+      {result && status === 2 && (
         <div className="text-center mb-3">
           <Card
             className="bg-light-success border border-success rounded p-2"
@@ -182,7 +187,10 @@ const MatchCard = ({ matchData }) => {
               <strong>Season:</strong> {competition?.season}
             </div>
             <div className="mb-2">
-              <strong>Category:</strong> {competition?.category?.toUpperCase()}
+              <strong>Category:</strong>{" "}
+              {competition?.category
+                ? competition.category.toUpperCase()
+                : "N/A"}
             </div>
             {umpires && (
               <div className="mt-3">

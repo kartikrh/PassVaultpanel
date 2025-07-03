@@ -563,6 +563,20 @@ const Index = () => {
     sessionStorage.removeItem("commentaryEventMarketId");
     sessionStorage.removeItem("commentaryEventMarketDetails");
   };
+  const handleManualOddsMarketClick = (details) => {
+    const url = new URL(window.location.origin + "/manualOddsMarkets");
+    sessionStorage.setItem(
+      "commentaryManualOddsMarketId",
+      "" + details?.commentaryId
+    );
+    sessionStorage.setItem(
+      "commentaryManualOddsMarketDetails",
+      "" + JSON.stringify(details)
+    );
+    window.open(url.href, "_blank");
+    sessionStorage.removeItem("commentaryManualOddsMarketId");
+    sessionStorage.removeItem("commentaryManualOddsMarketDetails");
+  };
   const handleCommentaryMarketTemplateClick = (id) => {
     // navigate("/commentaryMarketTemplate", { state: { commentaryId: id } });
     localStorage.setItem("marketTemplateCommentaryId", "" + id);
@@ -1641,7 +1655,7 @@ const Index = () => {
               </Tooltip>
             )}
 
-            {record.isPredictMarket && (
+            {/* {record.isPredictMarket && (
               <Tooltip
                 title={"Manual Odds"}
                 color={"#e8e8ea"}
@@ -1658,7 +1672,7 @@ const Index = () => {
                   <i class="bx bx-arrow-to-right"></i>
                 </Button>
               </Tooltip>
-            )}
+            )} */}
           </>
         </div>
       ),
@@ -2013,6 +2027,26 @@ const Index = () => {
                     }}
                   >
                     <i class="bx bxs-up-arrow-square"></i>
+                  </Button>
+                </Tooltip>
+              )}
+              {record.isPredictMarket && (
+                <Tooltip
+                  title={"Manual Odds Market"}
+                  color={"#e8e8ea"}
+                  overlayInnerStyle={{ color: "#000" }}
+                >
+                  <Button
+                    color={"danger"}
+                    size="sm"
+                    // className="bstn"
+                    className="dls-button btn"
+                    onClick={() => {
+                      handleManualOddsMarketClick(record);
+                    }}
+                  >
+                    {/* <i class="bx bxs-up-arrow-square"></i> */}
+                    B
                   </Button>
                 </Tooltip>
               )}

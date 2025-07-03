@@ -375,7 +375,7 @@ const StyledRadio = styled(Radio)(({ theme }) => ({
     },
 }));
 
-export const UpdateManualOdds = () => {
+export const NewUpdateManualOdds = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const socket = createSocket();
@@ -1155,12 +1155,14 @@ export const UpdateManualOdds = () => {
     };
 
     const handleSettingChange = useCallback((key, value, isShortcut = false) => {
+        console.log('handleSettingChange', key, value, isShortcut)
         // Validate minimum values for rate-related settings
         if (['rateDifferent', 'bRateDifferent', 'lRateDifferent'].includes(key)) {
             const numValue = parseFloat(value);
             if (numValue < 0.01) {
                 value = '0.01';
             }
+
         }
 
         if (isShortcut) {
@@ -1426,6 +1428,7 @@ export const UpdateManualOdds = () => {
 
         // Manual mode & Direct Line: Check for shortcut values
         const value = settings.shortcutValues[key];
+        console.log("value", value)
         console.log(`Shortcut value for ${key}:`, value);
 
         // FIRST: Handle shortcut keys (Q, W, E, R, T, Y, U, I, O, P) - ALWAYS prevent default for these
@@ -1985,23 +1988,33 @@ export const UpdateManualOdds = () => {
         return Math.floor(Math.random() * (max - min + 1) + min);
     };
     const fetchMarketData = async () => {
+        const eventMarketId = commentaryDetails?.eventMarketId;
         setIsLoading(true);
         try {
-            const response = await axiosInstance.post('/admin/eventMarket/getManualMarket', { commentaryId });
+            const response = await axiosInstance.post('/admin/eventMarket/marketInfo', {
+                    eventMarketId,
+                });
+                console.log("response", response.result)
             if (response?.result) {
-                if (Number(response?.result?.market?.[0]?.rateSourceRefID) == 0) {
+                if (Number(response?.result?.market?.rateSourceRefID) == 0) {
                     setIsLive(false)
                 }
                 if (!response.result.market) {
-                    navigate("/manualOddsMarket");
+                    // navigate("/manualOddsMarket");
                     return;
                 }
+                let commentaryDetailsFromAPi = {
+                    commentaryId : response?.result.commentaryId,
+                    eventDate: response?.result.eventDate,
+                    eventName : response?.result.eventName,
+                    eventRefId : response?.result.eventRefId
+                }
                 setEventData({
-                    comDetails: response.result.comDetails || null,
+                    comDetails: commentaryDetailsFromAPi || null,
                     teams: response.result.teams?.sort((a, b) => a?.teamNo - b?.teamNo) || [],
-                    market: response.result.market?.[0] || {},
+                    market: response.result.market || {},
                 });
-                const marketData = response.result.market?.[0];
+                const marketData = response.result.market;
                 const currentMarketStatus = marketData?.status?.toString();
                 setMarketStatus(currentMarketStatus);
                 if (response?.result?.rsMarket) {
@@ -2046,20 +2059,21 @@ export const UpdateManualOdds = () => {
                 }
 
                 if (marketData?.rateSourceRefID) {
-                    setRateSourceRefID([response.result.market[0].rateSourceRefID]);
+                    setRateSourceRefID([response.result.market.rateSourceRefID]);
                 }
 
                 // Initialize runners with proper status handling
                 if (marketData?.runners) {
-                    initializeRunners(response.result.market[0].runners);
+                    initializeRunners(response.result.market.runners);
                     // Then set saved prices from the initial data
                     const initialSavedPrices = {};
-                    response.result.market[0].runners.forEach(runner => {
+                    response.result.market.runners.forEach(runner => {
                         initialSavedPrices[runner.runnerId] = {
                             back: runner.backPrice,
                             lay: runner.layPrice
                         };
                     });
+                    console.log("Hello 1")
                     setSavedPrices(initialSavedPrices);
                     handleSettingChange('volumeType', CUSTOM_STATUS)
                 }
@@ -2345,11 +2359,13 @@ export const UpdateManualOdds = () => {
                 lay: getNonZeroSavedData(runner.layPrice, runner.runnerId, "lay")
             };
         });
+        console.log("Hello 2")
         setSavedPrices(newSavedPrices);
         return newSavedPrices;
     }, [savedPrices]);
 
     const handleSavedRunnerChange = (runnerId, field, value) => {
+        console.log("handleSavedRunnerChange", runnerId, field, value)
         // Don't allow manual changes when in temporary state
         if (tempRateDiffRef.current !== null) {
             console.log('Ignoring manual change - in temporary state');
@@ -2360,9 +2376,13 @@ export const UpdateManualOdds = () => {
         const isSelectedRunner = runner?.isSelected;
         const otherRunner = runners.find(r => r.runnerId !== runnerId);
         const numericValue = Number(parseFloat(value).toFixed(2));
+        console.log("otherRunner", otherRunner)
+        console.log("isSelectedRunner", isSelectedRunner)
 
         // For directLineEnabled and !isLive mode, if value < 1.01, set it to 0
         const adjustedValue = !isLive && directLineEnabled && numericValue < 1.01 ? 0 : numericValue;
+        console.log("adjustedValue", adjustedValue)
+        console.log("Hello 3")
         setSavedPrices(prevValue => {
             const newSavedPrices = {
                 ...prevValue,
@@ -2377,6 +2397,7 @@ export const UpdateManualOdds = () => {
                     const newLayPrice = Number((adjustedValue + parseFloat(settings.rateDifferent)).toFixed(2));
                     const newNonSelectedBack = Number((1 / (1 - (1 / newLayPrice))).toFixed(2));
                     const newNonSelectedLay = Number((1 / (1 - (1 / adjustedValue))).toFixed(2));
+                    console.log("isSelectedRunner && otherRunner", newLayPrice, newNonSelectedBack, newNonSelectedLay)
 
                     newSavedPrices[runnerId] = {
                         ...newSavedPrices[runnerId],
