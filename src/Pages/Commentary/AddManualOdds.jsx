@@ -41,7 +41,7 @@ export const AddManualOdds = () => {
     const [formErrors, setFormErrors] = useState({});
     const [EventTypeActive, setEventTypeActive] = useState(true);
     const [formData, setFormData] = useState({
-        marketName: '',
+        marketName: 'Bookmaker',
         runner: [
             { id: 1, name: '', teamId: '', runnerId: 0 }
         ],
@@ -55,31 +55,9 @@ export const AddManualOdds = () => {
         inningsId: "",
         rateDiff: '0.01',
         rateSourceRefID: "",
-        favRatio: "",
+        favRatio: 30,
     });
 
-    useEffect(() => {
-        const storedData = sessionStorage.getItem('commentaryManualOddsMarketDetails');
-        if (commentaryDetails && storedData ) {
-            setSelectedTableElements({
-                eventType: {
-                    label: commentaryDetails?.eventType,
-                    value: commentaryDetails?.eventTypeId,
-                },
-                competition: {
-                    label: commentaryDetails.competition,
-                    value: commentaryDetails.competitionId,
-                },
-                eventName: {
-                    label: commentaryDetails?.eventName,
-                    value: commentaryDetails?.commentaryId,
-                }
-            });
-
-            setEventTypeId(commentaryDetails?.eventTypeId || null);
-            setCompetitionId(commentaryDetails?.competitionId || null);
-        }
-    }, [commentaryDetails]);
     // const commentaryId = localStorage.getItem("updateManualOddsCommentaryId");
     // const commentaryDetails = JSON.parse(localStorage.getItem('updateManualOddsCommentaryDetails') || "{}");
 
@@ -119,7 +97,7 @@ export const AddManualOdds = () => {
     // useEffect()
     
     useEffect(() => {
-        if (eventData?.market) {
+        if (eventData?.market && eventMarketId) {
             const selectedMarket = eventData.market; // or filter by some ID if needed
             const {
                 marketName,
@@ -147,7 +125,7 @@ export const AddManualOdds = () => {
 
             setFormData(prev => ({
                 ...prev,
-                marketName: marketName || '',
+                marketName: marketName || 'Bookmaker',
                 isActive: isActive ?? false,
                 isAllow: isAllow ?? false,
                 margin: margin || 1,
@@ -156,12 +134,12 @@ export const AddManualOdds = () => {
                 inningsId: inningsId ?? '',
                 rateDiff: rateDiff?.toString() || '0.01',
                 rateSourceRefID: rateSourceRefID?.toString() || '',
-                favRatio: favRatio?.toString() || '',
+                favRatio: favRatio || 30,
                 lineRatio: lineRatio || 3,
                 runner: formattedRunners,
             }));
         }
-    }, [eventData.market]);
+    }, [eventData.market, eventMarketId]);
 
     const fetchMarketData = async (e) => {
         setIsLoading(true);
@@ -184,7 +162,7 @@ export const AddManualOdds = () => {
                     });
                     if (selectedMarket) {
                         setFormData({
-                            marketName: selectedMarket.marketName || '',
+                            marketName: selectedMarket.marketName || 'Bookmaker',
                             runner: selectedMarket?.runners || [{ id: 1, name: '', teamId: ''}],
                             isActive: selectedMarket.isActive ?? false,
                             isAllow: selectedMarket.isAllow ?? false,
@@ -196,7 +174,7 @@ export const AddManualOdds = () => {
                             inningsId: selectedMarket.inningsId || '',
                             rateDiff: selectedMarket.rateDiff || '0.01',
                             rateSourceRefID: selectedMarket.rateSourceRefID || '',
-                            favRatio: selectedMarket.favRatio || '',
+                            favRatio: selectedMarket.favRatio || 30,
                         });
                     }
                 }
@@ -210,6 +188,7 @@ export const AddManualOdds = () => {
     };
 
     const fetchEventTypeData = async () => {
+        setIsLoading(true)
         await axiosInstance
           .post(`/admin/eventMarket/eventTypeList`, {
             isActive: EventTypeActive,
@@ -221,9 +200,10 @@ export const AddManualOdds = () => {
           .catch((error) => {});
       };
     const fetchCompetitionList = async (eventTypeId) => {
-    await axiosInstance
-        .post(`/admin/eventMarket/competitionListByEventTypeId`, {
-        eventTypeId: eventTypeId,
+        setIsLoading(true)
+        await axiosInstance
+            .post(`/admin/eventMarket/competitionListByEventTypeId`, {
+            eventTypeId: eventTypeId,
         })
         .then((response) => {
         setCompetitionList(response.result);
@@ -232,14 +212,14 @@ export const AddManualOdds = () => {
         .catch((error) => {});
     };
     const fetchEventList = async (competitionId) => {
-    await axiosInstance
+        setIsLoading(true);
+        await axiosInstance
         .post(`/admin/eventMarket/commListByCompetitionId`, {
         competitionId: competitionId,
         })
         .then((response) => {
             const result = response.result || [];
             setEventList(result);
-            setIsLoading(false);
 
             const matchedEvent = result.find(
             (event) => event.commentaryId === Number(commentaryId)
@@ -253,8 +233,8 @@ export const AddManualOdds = () => {
                     label: matchedEvent?.eventName,
                     },
                 }));
-                setIsLoading(false);
             }
+            setIsLoading(false);
         })
         .catch((error) => {});
     };
@@ -262,65 +242,17 @@ export const AddManualOdds = () => {
         fetchEventTypeData()
     }, [])
 
-    // useEffect(() => {
-    //     if (location?.state?.isEdit) {
-    //         const {
-    //         marketName,
-    //         isActive,
-    //         isAllow,
-    //         margin,
-    //         delay,
-    //         eventRefId,
-    //         inningsId,
-    //         lineRatio
-    //         } = location.state;
-
-    //         setFormData((prev) => ({
-    //         ...prev,
-    //         marketName: marketName || '',
-    //         isActive: isActive ?? false,
-    //         isAllow: isAllow ?? false,
-    //         margin: Number(margin) || 0,
-    //         delay: Number(delay) || 0,
-    //         eventRefId: eventRefId || '',
-    //         inningsId: inningsId ?? '',
-    //         lineRatio: Number(lineRatio)|| 0
-    //         }));
-    //     }
-    // }, [location?.state]);
-
-    // useEffect(() => {
-    //     const commentaryDetails = JSON.parse(sessionStorage.getItem('updateManualOddsCommentaryDetails') || '{}');
-
-    //     if (Object.keys(commentaryDetails).length > 0) {
-    //         setSelectedTableElements({
-    //             eventType: {
-    //                 label: commentaryDetails.eventTypeName,
-    //                 value: commentaryDetails.eventTypeName, // or an ID if available
-    //             },
-    //             competition: {
-    //                 label: commentaryDetails.competitionName,
-    //                 value: commentaryDetails.competitionName, // or an ID if available
-    //             },
-    //             eventName: {
-    //                 label: commentaryDetails.eventName,
-    //                 value: commentaryDetails.eventName, // or eventRefId or similar unique value
-    //             },
-    //         });
-    //     }
-    // }, []);
-
     useEffect(() => {
-        if(commentaryDetails?.competitionId || competitionId){
-            fetchEventList(commentaryDetails?.competitionId || competitionId);
+        if(competitionId){
+            fetchEventList(competitionId);
         }
-    }, [commentaryDetails?.competitionId, competitionId])
+    }, [competitionId])
     
     useEffect(() => {
-        if(commentaryDetails?.eventTypeId || eventTypeId){
-            fetchCompetitionList(commentaryDetails?.eventTypeId || eventTypeId);
+        if(eventTypeId){
+            fetchCompetitionList(eventTypeId);
         }
-    }, [commentaryDetails?.eventTypeId, eventTypeId])
+    }, [eventTypeId])
 
     // useEffect(() => {
     // if (eventTypeId) {
@@ -472,6 +404,7 @@ export const AddManualOdds = () => {
             margin: Number(formData.margin),
             delay: Number(formData.delay),
             lineRatio: Number(formData.lineRatio),
+            favRatio: Number(formData.favRatio),
             runner: formattedRunners,
             commentaryId: commentaryId ? commentaryId : selectedTableElements.eventName.value,
             marketTypeId: 5,
@@ -499,7 +432,7 @@ export const AddManualOdds = () => {
                         setFormData({
                             commentaryId: dataToSend?.commentaryId,
                             eventRefId: dataToSend?.eventRefId,
-                            marketName: '',
+                            marketName: 'Bookmaker',
                             runner: [
                                 { id: 1, name: '', teamId: '', runnerId: 0 }
                             ],
@@ -512,7 +445,7 @@ export const AddManualOdds = () => {
                             inningsId: "",
                             rateDiff: '0.01',
                             rateSourceRefID: "",
-                            favRatio: "",
+                            favRatio: 30,
                         })
                         setEventData({
                             comDetails: null,
@@ -521,34 +454,26 @@ export const AddManualOdds = () => {
                             tpMarkets: [] // Add this
                         })
                         if(storedData){
-                            setSelectedTableElements({
-                                eventType: eventMarketData?.eventType,
-                                competition: eventMarketData?.competition,
-                                eventName: eventMarketData?.eventName,
-                            })
                             if(!eventMarketId){
-                                fetchMarketData()
+                                fetchMarketData(0)
                             }
+                            // sessionStorage.removeItem('commentaryManualOddsMarketDetails')
+                            // sessionStorage.removeItem('commentaryManualOddsMarketId')
                         }
                         if(eventMarketId){
                             if(storedData){
-                                fetchMarketData()
-                                setSelectedTableElements({
-                                    eventType: eventMarketData?.eventType,
-                                    competition: eventMarketData?.competition,
-                                    eventName: eventMarketData?.eventName,
-                                })
+                                fetchMarketData(0)
                             }
-                            setIsEdit(false)
-                            setEventMarketId(0)
                             setSelectedTableElements({
                                 eventType: null,
                                 competition: null,
                                 eventName: null,
                             })
-                            if(!storedData){
-                                sessionStorage.removeItem("EditManualOddsData")
-                            }
+                            setIsEdit(false)
+                            setEventMarketId(0)
+                            // if(!storedData){
+                            // }
+                            sessionStorage.removeItem("EditManualOddsData")
                         }
                         if(!storedData && !eventMarketId){
                             setSelectedTableElements({
@@ -649,24 +574,69 @@ export const AddManualOdds = () => {
             return newErrors;
         });
     };
+
     useEffect(() => {
-        if (eventMarketData && isEdit) {
-            setSelectedTableElements({
-                eventType: {
-                    value: eventMarketData.eventTypeId,
-                    label: eventMarketData.eventTypeName,
-                },
-                competition: {
-                    value: eventMarketData.competitionId,
-                    label: eventMarketData.competitionName,
-                },
-                eventName: {
-                    value: eventMarketData?.commentaryId,
-                    label: eventMarketData?.eventName,
-                },
-            });
+        if(commentaryId && eventMarketId || storedData){
+            setEventTypeId(eventData.comDetails?.eventTypeId || null);
+            setCompetitionId(eventData.comDetails?.competitionId || null);
         }
-    }, [eventMarketData, isEdit]);
+    }, [commentaryId, eventData])
+
+    useEffect(() => {
+        if (eventTypes && eventTypeId) {
+            const selectedEventType = eventTypes.find(
+                (item) => item.eventTypeId === eventTypeId
+            );
+
+            if (selectedEventType) {
+                setSelectedTableElements((prev) => ({
+                    ...prev,
+                    eventType: {
+                        value: selectedEventType.eventTypeId,
+                        label: selectedEventType.eventType,
+                    },
+                }));
+            }
+        }
+    }, [eventTypes, eventTypeId]);
+
+    useEffect(() => {
+        if (competitionList && competitionId) {
+            const selectedCompetition = competitionList.find(
+                (item) => item.competitionId === competitionId
+            );
+
+            if (selectedCompetition) {
+                setSelectedTableElements((prev) => ({
+                    ...prev,
+                    competition: {
+                        value: selectedCompetition.competitionId,
+                        label: selectedCompetition.competition,
+                    },
+                }));
+            }
+        }
+    }, [competitionList, competitionId])
+
+    useEffect(() => {
+        if (eventList && commentaryId) {
+            const selectedEvent = eventList.find(
+                (item) => item.commentaryId === commentaryId
+            );
+
+            if (selectedEvent) {
+                setSelectedTableElements((prev) => ({
+                    ...prev,
+                    eventName: {
+                        value: selectedEvent.commentaryId,
+                        label: selectedEvent.eventName,
+                    },
+                }));
+            }
+        }
+    }, [eventList, commentaryId])
+
+    console.log("formData", formData)
 
     return (
         <React.Fragment>
@@ -681,7 +651,7 @@ export const AddManualOdds = () => {
                                     </Col>
                                     <Col xs={4} className="text-end">
                                         <div className="d-flex gap-2 justify-content-end">
-                                            <Button color="danger" onClick={handleBackClick}>Exit</Button>
+                                            <Button color="danger" onClick={handleBackClick}>Back</Button>
                                             <ButtonDropdown
                                             direction="down"
                                             isOpen={drp_up}
@@ -730,7 +700,7 @@ export const AddManualOdds = () => {
                                                     <div style={{ flex: '1 1 50%' }}>
                                                         <label className="form-label">Event Type:</label>
                                                         <Select
-                                                            styles={{ control: (base) => ({ ...base, minWidth: 180 }) }}
+                                                            styles={{ control: (base) => ({ ...base }) }}
                                                             value={selectedTableElements?.eventType}
                                                             isDisabled = {eventMarketId || storedData}
                                                             // isDisabled = {location?.state?.eventType?.value || location?.state?.eventTypeName || isEdit}
@@ -759,7 +729,7 @@ export const AddManualOdds = () => {
                                                     <div style={{ flex: '1 1 50%' }}>
                                                         <label className="form-label">Competition:</label>
                                                         <Select
-                                                            styles={{ control: (base) => ({ ...base, minWidth: 180 }) }}
+                                                            styles={{ control: (base) => ({ ...base}) }}
                                                             value={selectedTableElements?.competition}
                                                             isDisabled = {eventMarketId || storedData}
                                                             // isDisabled = {location?.state?.competition || location?.state?.competitionName || isEdit}
@@ -814,7 +784,7 @@ export const AddManualOdds = () => {
                                                         <div style={{ flex: '1 1 50%' }}>
                                                             <label className="form-label">Event List:</label>
                                                             <Select
-                                                                styles={{ control: (base) => ({ ...base, minWidth: 180 }) }}
+                                                                styles={{ control: (base) => ({ ...base }) }}
                                                                 value={selectedTableElements?.eventName}
                                                                 isDisabled = {eventMarketId || storedData}
                                                                 // isDisabled = {location?.state?.eventName || isEdit}
@@ -992,7 +962,7 @@ export const AddManualOdds = () => {
                                                         <div style={{ flex: '1 1 50%' }}>
                                                             <label className="form-label">Fav Ratio:</label>
                                                             <input
-                                                                type="text"
+                                                                type="number"
                                                                 className="form-control"
                                                                 value={formData.favRatio}
                                                                 onChange={(e) => setFormData({ ...formData, favRatio: e.target.value })}
