@@ -16,6 +16,7 @@ function AddTabs() {
     const finalizeRef = useRef(null);
     const [drp_up, setDrp_up] = useState(false);
     const [initialEditData, setInitialEditData] = useState(undefined);
+    const [isApiLoading, setIsApiLoading] = useState(false);
     const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
     const [masterData, setMasterData] = useState({});
     const { isSaved, isLoading, error } = useSelector(state => state.tabsData.matchType);
@@ -35,6 +36,7 @@ function AddTabs() {
         if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
             navigate("/dashboard")
         }
+        fetchMasterData()
     }, []);
 
     useEffect(() => {
@@ -85,6 +87,36 @@ function AddTabs() {
         navigate("/matchType");
     };
 
+    const fetchMasterData = async () => {
+        setIsApiLoading(true);
+        try {
+            const response = await axiosInstance.post('/admin/list/matchType');
+            const result = response?.result;
+
+            if (result && typeof result === 'object') {
+            const formattedData = Object.entries(result).map(([key, value]) => ({
+                label: key,
+                value: value
+            }));
+
+            setMasterData((preData) => ({
+                ...preData,
+                entityEnum: [
+                { label: "Select Module Type", value: "0" },
+                ...formattedData
+                ]
+            }));
+            } else {
+            console.error("Invalid response format", result);
+            }
+        } catch (error) {
+            dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+        } finally {
+            setIsApiLoading(false);
+        }
+    };
+
+
     return (
         <React.Fragment>
             <div className="page-content">
@@ -95,7 +127,7 @@ function AddTabs() {
                         </Col>
                         <Card>
                             <CardBody>
-                                {isLoading && <SpinnerModel />}
+                                {isLoading || isApiLoading && <SpinnerModel />}
                                 <Row>
                                     <Col className='mb-3' xs={12} md={{ span: 4, offset: 8 }} lg={{ span: 3, offset: 9 }}>
                                         <button className="btn btn-danger mx-1" onClick={handleBackClick}>Back</button>
