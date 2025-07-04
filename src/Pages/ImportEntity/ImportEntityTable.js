@@ -21,22 +21,6 @@ import { updateToastData } from "../../Features/toasterSlice";
 import { loadInit } from "../../config";
 import MatchCard from "./MatchCard";
 
-// Status options for Competition Status filter
-const statusOptions = [
-  { value: null, label: "Status" },
-  { value: "live", label: "Live" },
-  { value: "result", label: "Completed" }, //Completed
-  { value: "fixture", label: "Scheduled" }, //Upcoming
-];
-
-// Status options for Match Status filter
-const statusOptionsforMatch = [
-  { value: null, label: "Status" },
-  { value: 1, label: "Scheduled" },
-  { value: 2, label: "Completed" },
-  { value: 3, label: "Live" },
-  { value: 4, label: "Cancelled" },
-];
 
 export default function ImportEntity() {
   const pageName = TAB_IMPORT_ENTITYIMPORT;
