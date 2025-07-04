@@ -37,8 +37,6 @@ import MatchCard from "./MatchCard";
 //   { value: 3, label: "Upcoming" }, //Upcoming
 // ];
 
-// let statusOptionsforMatch
-
 export default function ImportEntity() {
   const pageName = TAB_IMPORT_ENTITYIMPORT;
   document.title = "Import EntityImport";
@@ -50,6 +48,7 @@ export default function ImportEntity() {
   // State variables
   const [data, setData] = useState([]);
   const [allCompetitionMatches, setAllCompetitionMatches] = useState([]);
+  const [rawData, setRawData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [checekedList, setCheckedList] = useState([]);
   const loadInitData = useSelector((state) => state.loadInit.loadInitData);
@@ -60,9 +59,16 @@ export default function ImportEntity() {
   const [statusOptionsforMatch, setStatusOptionsforMatch] = useState([]);
   const [statusOptions, setStatusOptions] = useState([]);
   const [permissionChecked, setPermissionChecked] = useState(false);
-  const [selectedFilter, setSelectedFilter] = useState({
-    status: null,
-  });
+
+  // Initialize filter based on level
+  const getDefaultFilter = (level) => {
+    if (level === "competitionMatches") {
+      return { status: 3 }; // Live for matches (enum value)
+    }
+    return { status: "live" }; // Live for competitions (string value)
+  };
+
+  const [selectedFilter, setSelectedFilter] = useState(getDefaultFilter("competitions"));
 
   const [selectedLevel, setSelectedLevel] = useState({
     seasonId: 2025, // Default to current year or set a specific season ID
@@ -90,24 +96,21 @@ export default function ImportEntity() {
   let entitySportUrl =
     loadInitData.find((item) => item.key === loadInit.ENTITYSPORT_URL)?.value ||
     "https://es.deployed.live";
-    
-  // console.log({ pageSize, total, currentPage });
+
   const getCompetitionStatus = (status) => {
     const statusLower = String(status).toLowerCase();
     switch (statusLower) {
       case "live":
-      case "1":
         return "LIVE";
       case "result":
       case "completed":
-      case "2":
         return "COMPLETED";
       case "fixture":
       case "upcoming":
-      case "3":
-        return "UPCOMING";
+      case "scheduled":
+        return "SCHEDULED";
       case "cancelled":
-      case "4":
+      case "abandoned":
         return "CANCELLED";
       default:
         return " ";
@@ -134,6 +137,26 @@ export default function ImportEntity() {
     }
   }, [permissionObj, navigate]);
 
+  // Client-side filtering function for matches
+  const filterMatchData = useCallback((rawData, statusFilter) => {
+    if (!rawData || rawData.length === 0) return [];
+    if (statusFilter === null || statusFilter === undefined) {
+      return rawData;
+    }
+
+    // For matches, statusFilter is enum
+    return rawData.filter((item) => item.status === statusFilter);
+  }, []);
+
+  // Apply client-side filtering when filter changes for matches
+  useEffect(() => {
+    if (selectedLevel.level === "competitionMatches" && rawData.length > 0) {
+      const filteredData = filterMatchData(rawData, selectedFilter.status);
+      setData(filteredData);
+      setTotal(filteredData.length);
+    }
+  }, [selectedFilter.status, rawData, selectedLevel.level, filterMatchData]);
+
   const fetchData = useCallback(async () => {
     if (!permissionChecked) return;
 
@@ -158,7 +181,7 @@ export default function ImportEntity() {
             page: currentPage == 0 ? 1 : currentPage,
             limit: pageSize,
           };
-          //status filter if selected
+          //status filter if selected - server-side filtering for competitions
           if (
             selectedFilter.status !== null &&
             selectedFilter.status !== undefined
@@ -184,6 +207,7 @@ export default function ImportEntity() {
           // ) {
           //   payload.status = selectedFilter.status;
           // }
+          //client-side filtering in Matches
           break;
         default:
           setIsLoading(false);
@@ -240,6 +264,7 @@ export default function ImportEntity() {
             return { ...item, status: getCompetitionStatus(item.status) };
           })
           .sort((a, b) => new Date(a.datestart) - new Date(b.datestart));
+          
       } 
       // else if (selectedLevel.level === "competitionMatches") {
       //   apiData = apiData
@@ -264,10 +289,23 @@ export default function ImportEntity() {
         setTotal(+totalItems || formattedItems.length);
         return;
       }
+        setData(apiData);
+        setTotal(totalCount);
+      } 
+      // else if (selectedLevel.level === "competitionMatches") {
+      //   apiData = apiData.sort(
+      //     (a, b) => new Date(a.date_start_ist) - new Date(b.date_start_ist)
+      //   );
 
-      setData(apiData);
-      setTotal(totalCount);
-    } catch (error) {
+      //   // Store raw data for client-side filtering
+      //   setRawData(apiData);
+
+      //   // Apply client-side filtering
+      //   const filteredData = filterMatchData(apiData, selectedFilter.status);
+      //   setData(filteredData);
+      //   setTotal(filteredData.length);
+      // }
+     catch (error) {
       console.error(`Error fetching ${selectedLevel.level}:`, error);
       dispatch(
         updateToastData({
@@ -280,12 +318,16 @@ export default function ImportEntity() {
     }
   }, [
     permissionChecked,
-    selectedLevel,
+    selectedLevel.level,
+    selectedLevel.seasonId,
+    selectedLevel.competitionId,
     currentPage,
     pageSize,
-    selectedFilter,
+    // Only include selectedFilter.status for competitions (server-side filtering)
+    ...(selectedLevel.level === "competitions" ? [selectedFilter.status] : []),
     entitySportUrl,
     dispatch,
+    filterMatchData,
   ]);
 
   useEffect(() => {
@@ -348,8 +390,11 @@ export default function ImportEntity() {
     setIsLoading(true);
     finalizeRef.current.getTableAction();
     await axiosInstance
-      .post(`${entitySportUrl}/admin/import/competition`, {
-        matchId: matchData.match_id,
+      .post(`${entitySportUrl}/admin/autoImportData/save`, {
+        // matchId: matchData.match_id,
+        refId: matchData.match_id,
+        refType: 3,
+        sourceId: 3,
       })
       .then((response) => {
         dispatch(
@@ -377,8 +422,11 @@ export default function ImportEntity() {
     setIsLoading(true);
     finalizeRef.current.getTableAction();
     await axiosInstance
-      .post(`${entitySportUrl}/admin/import/competition`, {
-        cid: data.cid,
+      .post(`${entitySportUrl}/admin/autoImportData/save`, {
+        // cId: data.cid,
+        refId: data.cid,
+        refType: 2,
+        sourceId: 3,
       })
       .then((response) => {
         dispatch(
@@ -420,7 +468,9 @@ export default function ImportEntity() {
     setNavigationHistory(newHistory);
     setSelectedLevel(newSelectedLevel);
     setData([]);
-    setCurrentPage(1);
+    setRawData([]);
+    setCurrentPage(0);
+    setSelectedFilter(getDefaultFilter("competitionMatches"));
   };
 
   const handleMatchClick = (record) => {
@@ -434,18 +484,21 @@ export default function ImportEntity() {
     setNavigationHistory(historyList);
     setSelectedLevel(value);
     setData([]);
-    setCurrentPage(1);
+    setRawData([]);
+    setCurrentPage(0);
+    // Set appropriate default filter based on level
+    setSelectedFilter(getDefaultFilter(value.level));
   };
 
   const handleFilterChange = (key, value) => {
     const filterDataToUpdate = { ...selectedFilter, [key]: value };
     setSelectedFilter(filterDataToUpdate);
-    setCurrentPage(1);
-  };
 
-  useEffect(() => {
-    handleFilterChange("status", null);
-  }, [selectedLevel.level]);
+    // Reset to first page only for competitions (server-side filtering)
+    if (selectedLevel.level === "competitions") {
+      setCurrentPage(0);
+    }
+  };
 
   const handlePageChange = (page) => {
     if (page === currentPage || isLoading) return;
@@ -457,7 +510,7 @@ export default function ImportEntity() {
   const handlePageSizeChange = (size) => {
     if (size !== pageSize && !isLoading) {
       setPageSize(() => {
-        setCurrentPage(1); // only after pageSize is updated
+        setCurrentPage(0); // only after pageSize is updated
         return size;
       });
       localStorage.setItem("pageSize", size);
@@ -465,11 +518,8 @@ export default function ImportEntity() {
   };
 
   const handleReset = () => {
-    setSelectedFilter({
-      status: null,
-    });
-    setCurrentPage(1);
-    fetchData();
+    setSelectedFilter(getDefaultFilter(selectedLevel.level));
+    setCurrentPage(0);
   };
 
   // Column configurations
@@ -531,11 +581,16 @@ export default function ImportEntity() {
       ),
     },
     {
+      title: "Format",
+      dataIndex: "game_format",
+      key: "game_format",
+      width: "10%",
+    },
+    {
       title: "Status",
       dataIndex: "status",
       key: "status",
       width: "10%",
-      // render: (status) => getCompetitionStatus(status),
     },
     {
       title: "Season",
@@ -636,11 +691,9 @@ export default function ImportEntity() {
       dataIndex: "status_str",
       key: "status_str",
       width: "10%",
-      render: (text, record) => {
-        return text?.toUpperCase()
-      },
       // render: (text) => text?.toUpperCase(),
       // render: (status) => getCompetitionStatus(status),
+      render: (text) => text?.toUpperCase(),
     },
     {
       title: "Venue",
@@ -723,6 +776,10 @@ export default function ImportEntity() {
   };
 
 
+  const handleReload = () => {
+    fetchData();
+  };
+  
   const getCurrentStatusOptions = () => {
     if (selectedLevel.level === "competitionMatches") {
       return statusOptionsforMatch;
@@ -742,7 +799,6 @@ export default function ImportEntity() {
     }
   };
 
-  // Get current title based on level
   const getCurrentTitle = () => {
     switch (selectedLevel.level) {
       case "competitions":
@@ -763,9 +819,9 @@ export default function ImportEntity() {
     subTable: selectedLevel.level !== "competitions",
     isServerPagination: true,
     resetButton: true,
-    // isNonCrud: true,
+    reloadButton: true,
   };
-
+  // console.log("Length: ", data?.length||0)
   return (
     <React.Fragment>
       <div className="page-content">
@@ -788,6 +844,7 @@ export default function ImportEntity() {
             onBreadCrumbsClick={handleBreadcrumbClick}
             breadCrumbs={navigationHistory}
             handleCustomReset={handleReset}
+            handleReload={handleReload}
             renderCustomFilter={() => (
               <div className="d-flex align-items-center gap-2">
                 {/* Status Filter */}
@@ -811,7 +868,6 @@ export default function ImportEntity() {
 
           {/* Match Details Modal */}
           <Modal
-            // title="Match Details"
             open={matchModalVisible}
             onCancel={() => setMatchModalVisible(false)}
             footer={null}
