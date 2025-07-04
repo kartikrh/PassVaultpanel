@@ -22,20 +22,21 @@ import { loadInit } from "../../config";
 import MatchCard from "./MatchCard";
 
 // Status options for Competition Status filter
-// const statusOptions = [
-//   { value: null, label: "Status" },
-//   { value: "live", label: "Live" },
-//   { value: "result", label: "Completed" }, //Completed
-//   { value: "fixture", label: "Upcoming" }, //Upcoming
-// ];
+const statusOptions = [
+  { value: null, label: "Status" },
+  { value: "live", label: "Live" },
+  { value: "result", label: "Completed" }, //Completed
+  { value: "fixture", label: "Scheduled" }, //Upcoming
+];
 
-// // Status options for Match Status filter
-// let statusOptionsforMatch = [
-//   { value: null, label: "Status" },
-//   { value: 1, label: "Live" },
-//   { value: 2, label: "Completed" }, //Completed
-//   { value: 3, label: "Upcoming" }, //Upcoming
-// ];
+// Status options for Match Status filter
+const statusOptionsforMatch = [
+  { value: null, label: "Status" },
+  { value: 1, label: "Scheduled" },
+  { value: 2, label: "Completed" },
+  { value: 3, label: "Live" },
+  { value: 4, label: "Cancelled" },
+];
 
 export default function ImportEntity() {
   const pageName = TAB_IMPORT_ENTITYIMPORT;
@@ -47,7 +48,6 @@ export default function ImportEntity() {
 
   // State variables
   const [data, setData] = useState([]);
-  const [allCompetitionMatches, setAllCompetitionMatches] = useState([]);
   const [rawData, setRawData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [checekedList, setCheckedList] = useState([]);
@@ -56,9 +56,10 @@ export default function ImportEntity() {
   const globalPageSize = parseInt(localStorage.getItem("pageSize")) || 10;
   const [pageSize, setPageSize] = useState(globalPageSize);
   const [total, setTotal] = useState(0);
+  const [permissionChecked, setPermissionChecked] = useState(false);
+
   const [statusOptionsforMatch, setStatusOptionsforMatch] = useState([]);
   const [statusOptions, setStatusOptions] = useState([]);
-  const [permissionChecked, setPermissionChecked] = useState(false);
 
   // Initialize filter based on level
   const getDefaultFilter = (level) => {
@@ -160,10 +161,6 @@ export default function ImportEntity() {
   const fetchData = useCallback(async () => {
     if (!permissionChecked) return;
 
-    if (selectedLevel.level === "competitionMatches" && selectedFilter.status !== null) {
-      return;
-    }
-
     setIsLoading(true);
     let endpoint = "";
     let payload = {};
@@ -200,13 +197,6 @@ export default function ImportEntity() {
             page: currentPage == 0 ? 1 : currentPage,
             limit: pageSize,
           };
-          //status filter if selected
-          // if (
-          //   selectedFilter.status !== null &&
-          //   selectedFilter.status !== undefined
-          // ) {
-          //   payload.status = selectedFilter.status;
-          // }
           //client-side filtering in Matches
           break;
         default:
@@ -221,41 +211,6 @@ export default function ImportEntity() {
 
       let apiData = Array.isArray(items) ? items : [];
       let totalCount = +totalItems || apiData.length;
-      
-      // Handle different response structures
-      // if (response?.data?.result?.appdata) {
-      //   apiData = response.data.result.appdata;
-      //   totalCount =
-      //     response.data.result.totalRecordsl ||
-      //     response.data.result.appdata.length;
-      // } else if (response?.result?.response?.items) {
-      //   apiData = response.result.response.items;
-      //   totalCount =
-      //     response.result.response.totalRecords ||
-      //     response.result.response.total ||
-      //     0;
-      // } else if (
-      //   response?.result?.response &&
-      //   Array.isArray(response.result.response)
-      // ) {
-      //   apiData = response.result.response;
-      //   totalCount =
-      //     response?.result?.totalRecords || response.result.response.length;
-      // } else if (
-      //   response?.result?.data &&
-      //   Array.isArray(response.result.data)
-      // ) {
-      //   apiData = response.result.data;
-      //   totalCount =
-      //     response?.result?.totalRecords || response.result.data.length;
-      // } else if (response?.result && Array.isArray(response.result)) {
-      //   apiData = response.result;
-      //   totalCount = response?.totalRecords || response.result.length;
-      // } else {
-      //   console.error("Unexpected API response structure:", response);
-      //   apiData = [];
-      //   totalCount = 0;
-      // }
 
       // Sort data in ascending order by date
       if (selectedLevel.level === "competitions") {
@@ -264,48 +219,23 @@ export default function ImportEntity() {
             return { ...item, status: getCompetitionStatus(item.status) };
           })
           .sort((a, b) => new Date(a.datestart) - new Date(b.datestart));
-          
-      } 
-      // else if (selectedLevel.level === "competitionMatches") {
-      //   apiData = apiData
-      //     .map((item) => {
-      //       return { ...item, status: getCompetitionStatus(item.status) };
-      //     })
-      //     .sort(
-      //       (a, b) => new Date(a.date_start_ist) - new Date(b.date_start_ist)
-      //     );
-      // }
-      else if (selectedLevel.level === "competitionMatches") {
-        const rawItems = response?.result?.response?.items || [];
-        const formattedItems = rawItems
-          .map((item) => ({
-            ...item,
-            // status: getCompetitionStatus(item.status),
-          }))
-          .sort((a, b) => new Date(a.date_start_ist) - new Date(b.date_start_ist));
 
-        setAllCompetitionMatches(formattedItems); // Save full unfiltered data
-        setData(formattedItems); // Default view
-        setTotal(+totalItems || formattedItems.length);
-        return;
-      }
         setData(apiData);
         setTotal(totalCount);
-      } 
-      // else if (selectedLevel.level === "competitionMatches") {
-      //   apiData = apiData.sort(
-      //     (a, b) => new Date(a.date_start_ist) - new Date(b.date_start_ist)
-      //   );
+      } else if (selectedLevel.level === "competitionMatches") {
+        apiData = apiData.sort(
+          (a, b) => new Date(a.date_start_ist) - new Date(b.date_start_ist)
+        );
 
-      //   // Store raw data for client-side filtering
-      //   setRawData(apiData);
+        // Store raw data for client-side filtering
+        setRawData(apiData);
 
-      //   // Apply client-side filtering
-      //   const filteredData = filterMatchData(apiData, selectedFilter.status);
-      //   setData(filteredData);
-      //   setTotal(filteredData.length);
-      // }
-     catch (error) {
+        // Apply client-side filtering
+        const filteredData = filterMatchData(apiData, selectedFilter.status);
+        setData(filteredData);
+        setTotal(filteredData.length);
+      }
+    } catch (error) {
       console.error(`Error fetching ${selectedLevel.level}:`, error);
       dispatch(
         updateToastData({
@@ -331,19 +261,60 @@ export default function ImportEntity() {
   ]);
 
   useEffect(() => {
-    if (
-      selectedLevel.level === "competitionMatches" &&
-      selectedFilter.status !== null
-    ) {
-      const filtered = allCompetitionMatches.filter(
-        (item) => item.status === selectedFilter.status
-      );
-      setData(filtered);
-    } else if (selectedLevel.level === "competitionMatches") {
-      setData(allCompetitionMatches); // reset to all if filter is cleared
-    }
-  }, [selectedFilter.status, selectedLevel.level, allCompetitionMatches]);
-
+    fetchMatchStatusData();
+    fetchCompStatusData()
+  }, []);
+  
+    const fetchMatchStatusData = async () => {
+      try {
+        const response = await axiosInstance.post('/admin/list/matchStatus');
+        const result = response?.result;
+  
+        if (result && typeof result === 'object') {
+          const options = [
+            { value: null, label: "Status" },
+            ...Object.entries(result).map(([label, value]) => ({
+              label,
+              value
+            }))
+          ];
+  
+          setStatusOptionsforMatch(options);
+        } else {
+          console.error("Invalid response format", result);
+          setStatusOptionsforMatch([]);
+        }
+      } catch (error) {
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+        setStatusOptionsforMatch([]);
+      }
+    };
+    const fetchCompStatusData = async () => {
+      try {
+        const response = await axiosInstance.post('/admin/list/compStatus');
+        const result = response?.result;
+  
+        if (result && typeof result === 'object') {
+          const uniqueValues = [...new Set(Object.values(result))];
+  
+          const options = [
+            { value: null, label: "Status" },
+            ...uniqueValues.map((value) => ({
+              value,
+              label: value
+            }))
+          ];
+  
+          setStatusOptions(options);
+        } else {
+          console.error("Invalid response format", result);
+          return [];
+        }
+      } catch (error) {
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+        return [];
+      }
+    };
 
   // Fetch data when dependencies change
   useEffect(() => {
@@ -390,7 +361,7 @@ export default function ImportEntity() {
     setIsLoading(true);
     finalizeRef.current.getTableAction();
     await axiosInstance
-      .post(`${entitySportUrl}/admin/autoImportData/save`, {
+      .post(`/admin/autoImportData/save`, {
         // matchId: matchData.match_id,
         refId: matchData.match_id,
         refType: 3,
@@ -691,8 +662,6 @@ export default function ImportEntity() {
       dataIndex: "status_str",
       key: "status_str",
       width: "10%",
-      // render: (text) => text?.toUpperCase(),
-      // render: (status) => getCompetitionStatus(status),
       render: (text) => text?.toUpperCase(),
     },
     {
@@ -718,63 +687,6 @@ export default function ImportEntity() {
       render: (text) => formatDateTime(text),
     },
   ];
-
-  useEffect(() => {
-    fetchMatchStatusData();
-    fetchCompStatusData()
-  }, []);
-
-  const fetchMatchStatusData = async () => {
-    try {
-      const response = await axiosInstance.post('/admin/list/matchStatus');
-      const result = response?.result;
-
-      if (result && typeof result === 'object') {
-        const options = [
-          { value: null, label: "Status" },
-          ...Object.entries(result).map(([label, value]) => ({
-            label,
-            value
-          }))
-        ];
-
-        setStatusOptionsforMatch(options);
-      } else {
-        console.error("Invalid response format", result);
-        setStatusOptionsforMatch([]);
-      }
-    } catch (error) {
-      dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-      setStatusOptionsforMatch([]);
-    }
-  };
-  const fetchCompStatusData = async () => {
-    try {
-      const response = await axiosInstance.post('/admin/list/compStatus');
-      const result = response?.result;
-
-      if (result && typeof result === 'object') {
-        const uniqueValues = [...new Set(Object.values(result))];
-
-        const options = [
-          { value: null, label: "Status" },
-          ...uniqueValues.map((value) => ({
-            value,
-            label: value
-          }))
-        ];
-
-        setStatusOptions(options);
-      } else {
-        console.error("Invalid response format", result);
-        return [];
-      }
-    } catch (error) {
-      dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-      return [];
-    }
-  };
-
 
   const handleReload = () => {
     fetchData();

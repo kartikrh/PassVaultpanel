@@ -80,7 +80,7 @@ export const MatchTypeFields = [
   {
     name: "entityEnum",
     label: "Entity Enum",
-    options: [{ label: "Select a Entity ", value: "0" }],
+    options: [],
     // options: [
     //   { label: "Select Module Type", value: "0" },
     //   { label: "ODI (One Day International)", value: 1 },
