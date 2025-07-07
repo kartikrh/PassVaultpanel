@@ -257,18 +257,16 @@ const Index = () => {
       title: "Active",
       key: "IsActive",
       render: (text, record) => (
-        <Tooltip title={"Active/Inactive"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
-          <Button
-            color={`${record.isActive ? "primary" : "danger"}`}
-            size="sm"
-            className="btn"
-            onClick={() => {
-              handlePermissions("isActive", record, record.isActive);
-            }}
-          >
-            <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
-          </Button>
-        </Tooltip>
+        <Button
+          color={`${record.isActive ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handlePermissions("isActive", record, record.isActive);
+          }}
+        >
+          <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
+        </Button>
       ),
       style: { width: "2%", textAlign: "center" },
     },

@@ -33,6 +33,7 @@ import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
+import { convertObjtoFormData } from "../../components/Common/utilities";
 
 function AddNotification() {
   const pageName = TAB_NOTIFICATION;
@@ -134,8 +135,8 @@ function AddNotification() {
         notificationId: notificationId,
         "isSend": dataToSave?.isSend ? dataToSave.isSend : false,
       };
-      dispatch(addNotificationToDb({ ...dataToSave, ...extraData }));
       setCurrentSaveAction(saveAction);
+      dispatch(addNotificationToDb(convertObjtoFormData({ ...dataToSave, ...extraData })));
     }
   };
 
