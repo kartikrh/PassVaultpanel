@@ -274,7 +274,7 @@ const Index = () => {
       title: "Default",
       key: "isDefault",
       render: (text, record) => (
-        <Tooltip title={"isDefault"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip title={"Set as Default"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
           <Button
             color={`${record.isDefault ? "primary" : "danger"}`}
             size="sm"
@@ -299,7 +299,7 @@ const Index = () => {
             size="sm"
             className="btn"
             onClick={() => {
-              handlePermissions("isDisplay", record, record.isDisplay);
+              handlePermissions("Display", record, record.isDisplay);
             }}
           >
             <i className={`bx ${record.isDisplay ? "bx-check" : "bx-block"}`}></i>

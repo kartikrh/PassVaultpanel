@@ -704,7 +704,7 @@ const Index = () => {
       key: "isAllow",
       render: (text, record) => (
         <Tooltip
-          title={"Allow/Disable Event Market"}
+          title={"Allow Event Market"}
           color={"#e8e8ea"}
           overlayInnerStyle={{ color: "#000" }}
         >
@@ -727,7 +727,7 @@ const Index = () => {
       key: "isActive",
       render: (text, record) => (
         <Tooltip
-          title={"Active/Inactive Event Market"}
+          title={"Event Market"}
           color={"#e8e8ea"}
           overlayInnerStyle={{ color: "#000" }}
         >
@@ -885,7 +885,7 @@ const Index = () => {
       key: "isInningRun",
       render: (text, record) => (
         <Tooltip
-          title={"Inactive Inning Run"}
+          title={"Inning Run"}
           color={"#e8e8ea"}
           overlayInnerStyle={{ color: "#000" }}
         >

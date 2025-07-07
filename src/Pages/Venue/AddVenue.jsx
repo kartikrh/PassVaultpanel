@@ -24,6 +24,7 @@ import {
   SAVE_AND_CLOSE,
   SAVE_AND_NEW,
   VENUE,
+  SELECT, SWITCH,
 } from "../../components/Common/Const";
 import { addVenueToDb, updateSavedState } from "../../Features/Tabs/VenueSlice";
 import axiosInstance from "../../Features/axios";
@@ -116,7 +117,23 @@ const AddVenue = () => {
       const extraData = {
         id: venueId,
       };
-      dispatch(addVenueToDb({ ...dataToSave, ...extraData }));
+    const completeData = {};
+    VenueField.forEach((field) => {
+      const { name, type } = field;
+      if (!name) return; // Skip fields like DIVIDER that have no name
+
+      const value = dataToSave.hasOwnProperty(name) ? dataToSave[name] : null;
+
+      if (type === SELECT) {
+        completeData[name] = value ?? 0;
+      } else if (type === SWITCH) {
+        completeData[name] = value ?? false;
+      } else {
+        completeData[name] = value ?? null;
+      }
+    });
+
+      dispatch(addVenueToDb({ ...completeData, ...extraData }));
       setCurrentSaveAction(saveAction);
     }
   };

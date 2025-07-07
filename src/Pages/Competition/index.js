@@ -517,7 +517,7 @@ const Index = () => {
       key: "isActive",
       render: (text, record) => (
         <Tooltip
-          title={"Active/Inactive Competition"}
+          title={"Competition"}
           color={"#e8e8ea"}
           overlayInnerStyle={{ color: "#000" }}
         >
@@ -542,7 +542,7 @@ const Index = () => {
       key: "isVirtual",
       render: (text, record) => (
         <Tooltip
-          title={"Active/Inactive Virtual"}
+          title={"Virtual"}
           color={"#e8e8ea"}
           overlayInnerStyle={{ color: "#000" }}
         >

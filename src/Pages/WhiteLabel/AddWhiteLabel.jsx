@@ -24,6 +24,7 @@ import {
   SAVE_AND_CLOSE,
   SAVE_AND_NEW,
   WHITE_LABEL,
+  SWITCH, SELECT,
 } from "../../components/Common/Const";
 import {
   addWhiteLabelToDb,
@@ -99,16 +100,32 @@ const AddWhiteLabel = () => {
     if (dataToSave) {
       const extraData = {
         id: whiteLabelId,
-        isRecatchEnable: dataToSave?.isRecatchEnable || false,
-        isGoogleLogin: dataToSave?.isGoogleLogin || false,
-        isFacebookLogin: dataToSave?.isFacebookLogin || false,
-        isSendMobileOTP: dataToSave?.isSendMobileOTP || false,
-        isSendMailOTP: dataToSave?.isSendMailOTP || false,
-        isDemoClientLogin: dataToSave?.isDemoClientLogin || false,
-        isDemoClientEnableInIOS: dataToSave?.isDemoClientEnableInIOS || false,
-        isDefault: dataToSave?.isDefault || false,
+        // isRecatchEnable: dataToSave?.isRecatchEnable || false,
+        // isGoogleLogin: dataToSave?.isGoogleLogin || false,
+        // isFacebookLogin: dataToSave?.isFacebookLogin || false,
+        // isSendMobileOTP: dataToSave?.isSendMobileOTP || false,
+        // isSendMailOTP: dataToSave?.isSendMailOTP || false,
+        // isDemoClientLogin: dataToSave?.isDemoClientLogin || false,
+        // isDemoClientEnableInIOS: dataToSave?.isDemoClientEnableInIOS || false,
+        // isDefault: dataToSave?.isDefault || false,
       };
-      dispatch(addWhiteLabelToDb({ ...dataToSave, ...extraData }));
+
+      const completeData = {};
+      WhiteLabelField.forEach((field) => {
+        const { name, type } = field;
+        if (!name) return; // Skip fields like DIVIDER that have no name
+  
+        const value = dataToSave.hasOwnProperty(name) ? dataToSave[name] : null;
+  
+        if (type === SELECT) {
+          completeData[name] = value ?? 0;
+        } else if (type === SWITCH) {
+          completeData[name] = value ?? false;
+        } else {
+          completeData[name] = value ?? null;
+        }
+      });
+      dispatch(addWhiteLabelToDb({ ...completeData, ...extraData }));
       setCurrentSaveAction(saveAction);
     }
   };

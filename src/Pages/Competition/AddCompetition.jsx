@@ -145,6 +145,7 @@ function AddCompetitions() {
         drsCount: dataToSave?.drsCount || null,
         endDate: convertDateLocalToUTC(dataToSave.endDate),
         startDate: convertDateLocalToUTC(dataToSave.startDate),
+        tpId: dataToSave?.tpId || null,
       }
       setCurrentSaveAction(saveAction);
       dispatch(addCompetitionToDb(convertObjtoFormData({ ...dataToSave, ...extraData })))

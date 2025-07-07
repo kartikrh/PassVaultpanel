@@ -405,7 +405,7 @@ const Index = () => {
       title: "Active",
       key: "isActive",
       render: (text, record) => (
-        <Tooltip title={"Active/Inactive Commentary"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip title={"Commentary"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
           <Button
             color={`${record.isActive ? "primary" : "danger"}`}
             size="sm"
@@ -428,7 +428,7 @@ const Index = () => {
       key: "isPredictMarket",
       render: (text, record) => (
         <div className="d-flex align-items-center gap-2">
-          <Tooltip title={"Active/Inactive Predict Market"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Tooltip title={"Predict Market"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
             <Button
               color={`${record.isPredictMarket ? "primary" : "danger"}`}
               size="sm"
@@ -533,7 +533,7 @@ const Index = () => {
       title: "CP",
       key: "isCountInPoint",
       render: (text, record) => (
-        <Tooltip title={"Active/Inactive Count In Point"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip title={"Count In Point"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
           <Button
             color={`${record.isCountInPoint ? "primary" : "danger"}`}
             disabled
@@ -552,7 +552,7 @@ const Index = () => {
       title: "Win %",
       key: "isTeamPredictionOn",
       render: (text, record) => (
-        <Tooltip title={"Active/Inactive Team Prediction"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip title={"Team Prediction"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
           <Button
             color={`${record.isTeamPredictionOn ? "primary" : "danger"}`}
             disabled
