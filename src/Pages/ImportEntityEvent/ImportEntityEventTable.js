@@ -486,7 +486,7 @@ export default function ImportEntityEvent() {
 
   const handleReset = () => {
     setSelectedFilter(getDefaultFilter(selectedLevel.level));
-    setSelectedFormateOption()
+    setSelectedFormateOption(0)
     setDateType({ label: "Local Timezone", value: 'IST: +5:30' })
     setIsSquadSelectedOption('true')
     setCurrentPage(0);
@@ -851,7 +851,7 @@ export default function ImportEntityEvent() {
                   styles={{
                     control: (provided) => ({ ...provided, width: 180 }),
                   }}
-                  value={selectedFormateOption?.value}
+                  value={selectedFormateOption && selectedFormateOption.value}
                   placeholder={"Format"}
                   onChange={(e) => {
                       setSelectedFormateOption(e.value)
