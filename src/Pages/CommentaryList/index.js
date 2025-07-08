@@ -1342,31 +1342,31 @@ const Index = () => {
       ),
       style: { width: "2%", textAlign: "center" },
     },
-    {
-      title: "Algo",
-      dataIndex: "pythonId",
-      render: (text, record) => (
-        <span
-          onClick={() => {
-            setChangePythonModel(true);
-            setSelectedPythonCommentary(record);
-          }}
-          style={{ cursor: "pointer" }}
-        >
-          {record?.developerName}{" "}
-          <Tooltip
-            title="Edit Python Type"
-            color={"#e8e8ea"}
-            overlayInnerStyle={{ color: "#000" }}
-          >
-            {<a className="bx bx-edit-alt"></a>}
-          </Tooltip>
-        </span>
-      ),
-      key: "pythonId",
-      sort: true,
-      style: { width: "10%" },
-    },
+    // {
+    //   title: "Algo",
+    //   dataIndex: "pythonId",
+    //   render: (text, record) => (
+    //     <span
+    //       onClick={() => {
+    //         setChangePythonModel(true);
+    //         setSelectedPythonCommentary(record);
+    //       }}
+    //       style={{ cursor: "pointer" }}
+    //     >
+    //       {record?.developerName}{" "}
+    //       <Tooltip
+    //         title="Edit Python Type"
+    //         color={"#e8e8ea"}
+    //         overlayInnerStyle={{ color: "#000" }}
+    //       >
+    //         {<a className="bx bx-edit-alt"></a>}
+    //       </Tooltip>
+    //     </span>
+    //   ),
+    //   key: "pythonId",
+    //   sort: true,
+    //   style: { width: "10%" },
+    // },
     {
       title: "Day",
       dataIndex: "pitchAge",
@@ -1391,31 +1391,31 @@ const Index = () => {
       key: "pitchAge",
       style: { width: "10%" },
     },
-    {
-      title: "Algo",
-      dataIndex: "pythonId",
-      render: (text, record) => (
-        <span
-          onClick={() => {
-            setChangePythonModel(true);
-            setSelectedPythonCommentary(record);
-          }}
-          style={{ cursor: "pointer" }}
-        >
-          {record?.pythonURI}{" "}
-          <Tooltip
-            title="Edit Python Type"
-            color={"#e8e8ea"}
-            overlayInnerStyle={{ color: "#000" }}
-          >
-            {<a className="bx bx-edit-alt"></a>}
-          </Tooltip>
-        </span>
-      ),
-      key: "pythonId",
-      sort: true,
-      style: { width: "10%" },
-    },
+    // {
+    //   title: "Algo",
+    //   dataIndex: "pythonId",
+    //   render: (text, record) => (
+    //     <span
+    //       onClick={() => {
+    //         setChangePythonModel(true);
+    //         setSelectedPythonCommentary(record);
+    //       }}
+    //       style={{ cursor: "pointer" }}
+    //     >
+    //       {record?.pythonURI}{" "}
+    //       <Tooltip
+    //         title="Edit Python Type"
+    //         color={"#e8e8ea"}
+    //         overlayInnerStyle={{ color: "#000" }}
+    //       >
+    //         {<a className="bx bx-edit-alt"></a>}
+    //       </Tooltip>
+    //     </span>
+    //   ),
+    //   key: "pythonId",
+    //   sort: true,
+    //   style: { width: "10%" },
+    // },
   ];
 
   const getColumns = (data) => {
