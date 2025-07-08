@@ -48,7 +48,7 @@ export default function ImportEntity() {
   // Initialize filter based on level
   const getDefaultFilter = (level) => {
     if (level === "competitionMatches") {
-      return { status: 3 }; // Live for matches (enum value)
+      return { status: 1 }; // Live for matches (enum value)
     }
     return { status: "live" }; // Live for competitions (string value)
   };
@@ -698,9 +698,9 @@ export default function ImportEntity() {
   const getCurrentTitle = () => {
     switch (selectedLevel.level) {
       case "competitions":
-        return "Competitions";
+        return "Entity Import";
       case "competitionMatches":
-        return "Competition Matches";
+        return "Entity Competition Matches";
       default:
         return "Entity Import";
     }
