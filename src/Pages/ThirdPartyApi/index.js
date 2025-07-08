@@ -197,7 +197,7 @@ const Index = () => {
       title: "Connect",
       key: "isConnect",
       render: (text, record) => (
-      <Tooltip title={"Connect/Disconnect Socket"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+      <Tooltip title={"Socket"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${record.isConnect ? "primary" : "danger"}`}
           size="sm"
@@ -216,7 +216,7 @@ const Index = () => {
       title: "Active",
       key: "isActive",
       render: (text, record) => (
-      <Tooltip title={"Active/Inactive Client Socket"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+      <Tooltip title={"Client Socket"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${record.isActive ? "primary" : "danger"}`}
           size="sm"

@@ -29,7 +29,6 @@ import {
 import { addPhotoLibraryToDb, updateSavedState } from "../../Features/Tabs/photoLibrarySlice";
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
-import { convertObjtoFormData } from "../../components/Common/utilities";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 
@@ -113,6 +112,7 @@ const AddPhotoLibrary = () => {
         if (dataToSave) {
             const extraData = {
                 photoLibraryId: photoLibraryId,
+                isPermanent: false,
             };
             dispatch(
                 addPhotoLibraryToDb({ ...dataToSave, ...extraData })

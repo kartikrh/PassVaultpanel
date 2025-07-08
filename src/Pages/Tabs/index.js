@@ -258,7 +258,7 @@ const Index = () => {
       key: "isActive",
       dataIndex: "IsActive",
       render: (text, record) => (
-      <Tooltip title={"Active/Inactive Tab"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+      <Tooltip title={"Tab"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${record.IsActive ? "primary" : "danger"}`}
           size="sm"
@@ -277,7 +277,7 @@ const Index = () => {
       title: "Add",
       key: "IsAdd",
       render: (text, record) => (
-      <Tooltip title={"Active/Inactive Add"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+      <Tooltip title={"Add"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${record.IsAdd ? "primary" : "danger"}`}
           size="sm"
@@ -296,7 +296,7 @@ const Index = () => {
       title: "Edit",
       key: "IsEdit",
       render: (text, record) => (
-      <Tooltip title={"Active/Inactive Edit"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+      <Tooltip title={"Edit"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${record.IsEdit ? "primary" : "danger"}`}
           size="sm"
@@ -316,7 +316,7 @@ const Index = () => {
       title: "Delete",
       key: "IsDelete",
       render: (text, record) => (
-      <Tooltip title={"Active/Inactive Delete"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+      <Tooltip title={"Delete"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${record.IsDelete ? "primary" : "danger"}`}
           size="sm"

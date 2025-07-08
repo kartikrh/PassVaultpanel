@@ -362,7 +362,7 @@ const Index = () => {
       key: "isHistory",
       render: (text, record) => (
         <Tooltip
-          title={"Active/Inactive History"}
+          title={"History"}
           color={"#e8e8ea"}
           overlayInnerStyle={{ color: "#000" }}
         >
@@ -388,7 +388,7 @@ const Index = () => {
       printType: "ignore",
       render: (text, record) => (
         <Tooltip
-          title={"View Test Event Predictor"}
+          title={"Test Event Predictor"}
           color={"#e8e8ea"}
           overlayInnerStyle={{ color: "#000" }}
         >
@@ -412,7 +412,7 @@ const Index = () => {
       printType: "ignore",
       render: (text, record) => (
         <Tooltip
-          title={"View Test bowling Predictor"}
+          title={"Test bowling Predictor"}
           color={"#e8e8ea"}
           overlayInnerStyle={{ color: "#000" }}
         >

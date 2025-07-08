@@ -1,10 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
-import { Avatar, Tooltip } from "antd";
-import { Button } from "reactstrap";
+import { Button, Container } from "reactstrap";
 import _, { isEqual } from "lodash";
-import { Container } from "reactstrap";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
@@ -26,7 +24,6 @@ import {
 } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import LoadDataModal from "../../components/Model/LoadDataModal";
-import { Switch } from "antd";
 
 const Index = () => {
   const pageName = TAB_PHOTOLIBRARY;

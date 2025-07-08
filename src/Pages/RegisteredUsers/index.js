@@ -24,7 +24,6 @@ import {
   checkPermission,
   convertDateUtcFormat,
   convertDateUTCToLocal2,
-  convertDateUTCToLocalWithoutSec,
 } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { Tooltip } from "antd";
@@ -451,7 +450,7 @@ const Index = () => {
       dataIndex: "isActive",
       render: (text, record) => (
         <Tooltip
-          title={"Active/Inactive User"}
+          title={"User"}
           color={"#e8e8ea"}
           overlayInnerStyle={{ color: "#000" }}
         >

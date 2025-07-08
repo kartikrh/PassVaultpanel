@@ -431,7 +431,7 @@ const Index = () => {
       key: "isResult",
       render: (text, record) => (
         <Tooltip
-          title={"Active/Inactive Result"}
+          title={"Result"}
           color={"#e8e8ea"}
           overlayInnerStyle={{ color: "#000" }}
         >

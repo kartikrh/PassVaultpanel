@@ -102,6 +102,7 @@ const AddSocialMedia = () => {
     if (dataToSave) {
       const extraData = {
         id: socialMediaId,
+        isActive: dataToSave?.isActive || false,
       };
       dispatch(
         addSocialMediaToDb(convertObjtoFormData({ ...dataToSave, ...extraData }))
