@@ -1488,16 +1488,16 @@ export const OpenMarket = () => {
         {
             title: "Market",
             dataIndex: "marketId",
-            width: 120,
+            maxWidth: 120,
             render: (text, record) => (
                 <span
                     style={{ cursor: "pointer" }}
                     onClick={() => { handleDS({ ...record, eventTypeName: commentaryInfo?.ety, competitionName: commentaryInfo?.com, eventName: commentaryInfo?.en, eventRefId: commentaryInfo?.eid, eventMarketId: record?.marketId, eventDay: commentaryInfo?.ed, eventTime: commentaryInfo?.et }) }}>
                     <div>{`${text}[${record.runnerId}]`}</div>
-                    <Tooltip title={record?.marketName}>
+                    <Tooltip title={record?.marketName} color={"#e8e8ea"} overlayInnerStyle={{ color: "#000" }}>
                         <div className={record.isNewSocketData ? "bg-yellow" : ""}
                             style={{
-                                width: 120,
+                                maxWidth: 120,
                                 whiteSpace: "nowrap",
                                 overflow: "hidden",
                                 textOverflow: "ellipsis",
