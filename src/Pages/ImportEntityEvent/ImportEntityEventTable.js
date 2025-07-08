@@ -13,6 +13,7 @@ import {
   ERROR,
   PERMISSION_VIEW,
   SUCCESS,
+  TAB_IMPORT_ENTITYEVENTIMPORT,
   TAB_IMPORT_ENTITYIMPORT,
 } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
@@ -21,36 +22,52 @@ import { updateToastData } from "../../Features/toasterSlice";
 import { loadInit } from "../../config";
 import MatchCard from "./MatchCard";
 
+const isSquadOptions = [
+  { value: "Squad", label: "Squad" },
+  { value: "True", label: "true" }, //Completed
+  { value: "False", label: "alse" }, //Upcoming
+];
 
-export default function ImportEntity() {
-  const pageName = TAB_IMPORT_ENTITYIMPORT;
-  document.title = "Import EntityImport";
+export default function ImportEntityEvent() {
+  const pageName = TAB_IMPORT_ENTITYEVENTIMPORT;
+  document.title = "Import Entity Event";
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const today = new Date();
+  const oneMonthLater = new Date();
+  oneMonthLater.setMonth(today.getMonth() + 1);
 
   // State variables
   const [data, setData] = useState([]);
   const [rawData, setRawData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [checekedList, setCheckedList] = useState([]);
+  const [formateOptions, setFormateOptions] = useState([]);
+  const [selectedFormateOption, setSelectedFormateOption] = useState();
   const loadInitData = useSelector((state) => state.loadInit.loadInitData);
   const [currentPage, setCurrentPage] = useState(1);
   const globalPageSize = parseInt(localStorage.getItem("pageSize")) || 10;
   const [pageSize, setPageSize] = useState(globalPageSize);
   const [total, setTotal] = useState(0);
   const [permissionChecked, setPermissionChecked] = useState(false);
-
+  const [dateType, setDateType] = useState({ label: "Local Timezone", value: 'IST: +5:30' });
+  const [dateRange, setDateRange] = useState({
+    startDate: `${today.toISOString().split("T")[0]}T00:00:00`,
+    endDate: `${oneMonthLater.toISOString().split("T")[0]}T23:59:00`,
+  });
   const [statusOptionsforMatch, setStatusOptionsforMatch] = useState([]);
   const [statusOptions, setStatusOptions] = useState([]);
+  const [isSquadSelectedOption, setIsSquadSelectedOption] = useState('true');
 
   // Initialize filter based on level
   const getDefaultFilter = (level) => {
     if (level === "competitionMatches") {
-      return { status: 1 }; // Live for matches (enum value)
+      return { status: 3 }; // Live for matches (enum value)
     }
-    return { status: "live" }; // Live for competitions (string value)
+    return { status: 2 }; // Live for competitions (string value)
   };
 
   const [selectedFilter, setSelectedFilter] = useState(getDefaultFilter("competitions"));
@@ -64,7 +81,7 @@ export default function ImportEntity() {
   });
   const [navigationHistory, setNavigationHistory] = useState([
     {
-      label: "Competitions",
+      label: "Competition",
       value: {
         seasonId: 2025,
         competitionId: null,
@@ -142,6 +159,14 @@ export default function ImportEntity() {
     }
   }, [selectedFilter.status, rawData, selectedLevel.level, filterMatchData]);
 
+  function formatToYYYYMMDD(date) {
+    const d = new Date(date); // handles string or Date input
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0'); // months are 0-based
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
   const fetchData = useCallback(async () => {
     if (!permissionChecked) return;
 
@@ -156,11 +181,15 @@ export default function ImportEntity() {
             setIsLoading(false);
             return;
           }
-          endpoint = `${entitySportUrl}/admin/v3/competitions`;
+          endpoint = `${entitySportUrl}/admin/v3/matches`;
           payload = {
-            sid: +selectedLevel.seasonId,
+            start_date: formatToYYYYMMDD(dateRange.startDate), 
+            end_date: formatToYYYYMMDD(dateRange.endDate), 
+            // sid: +selectedLevel.seasonId,
             page: currentPage == 0 ? 1 : currentPage,
             limit: pageSize,
+            timezone: dateType.value,
+            pre_squad: isSquadSelectedOption
           };
           //status filter if selected - server-side filtering for competitions
           if (
@@ -169,13 +198,16 @@ export default function ImportEntity() {
           ) {
             payload.status = selectedFilter.status;
           }
+          if (selectedFormateOption) {
+            payload.format = selectedFormateOption;
+          }
           break;
         case "competitionMatches":
           if (!selectedLevel.competitionId) {
             setIsLoading(false);
             return;
           }
-          endpoint = `${entitySportUrl}/admin/v3/competitions/matches`;
+          endpoint = `${entitySportUrl}/admin/v3/matches`;
           payload = {
             cid: selectedLevel.competitionId,
             page: currentPage == 0 ? 1 : currentPage,
@@ -231,6 +263,9 @@ export default function ImportEntity() {
       setIsLoading(false);
     }
   }, [
+    dateRange,
+    dateType,
+    selectedFormateOption,
     permissionChecked,
     selectedLevel.level,
     selectedLevel.seasonId,
@@ -246,59 +281,34 @@ export default function ImportEntity() {
 
   useEffect(() => {
     fetchMatchStatusData();
-    fetchCompStatusData()
+    // fetchCompStatusData();
+    fetchMasterData()
   }, []);
   
-    const fetchMatchStatusData = async () => {
-      try {
-        const response = await axiosInstance.post('/admin/list/matchStatus');
-        const result = response?.result;
-  
-        if (result && typeof result === 'object') {
-          const options = [
-            { value: null, label: "Status" },
-            ...Object.entries(result).map(([label, value]) => ({
-              label,
-              value
-            }))
-          ];
-  
-          setStatusOptionsforMatch(options);
-        } else {
-          console.error("Invalid response format", result);
-          setStatusOptionsforMatch([]);
-        }
-      } catch (error) {
-        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+  const fetchMatchStatusData = async () => {
+    try {
+      const response = await axiosInstance.post('/admin/list/matchStatus');
+      const result = response?.result;
+
+      if (result && typeof result === 'object') {
+        const options = [
+          { value: null, label: "Status" },
+          ...Object.entries(result).map(([label, value]) => ({
+            label,
+            value
+          }))
+        ];
+
+        setStatusOptionsforMatch(options);
+      } else {
+        console.error("Invalid response format", result);
         setStatusOptionsforMatch([]);
       }
-    };
-    const fetchCompStatusData = async () => {
-      try {
-        const response = await axiosInstance.post('/admin/list/compStatus');
-        const result = response?.result;
-  
-        if (result && typeof result === 'object') {
-          const uniqueValues = [...new Set(Object.values(result))];
-  
-          const options = [
-            { value: null, label: "Status" },
-            ...uniqueValues.map((value) => ({
-              value,
-              label: value
-            }))
-          ];
-  
-          setStatusOptions(options);
-        } else {
-          console.error("Invalid response format", result);
-          return [];
-        }
-      } catch (error) {
-        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-        return [];
-      }
-    };
+    } catch (error) {
+      dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+      setStatusOptionsforMatch([]);
+    }
+  };
 
   // Fetch data when dependencies change
   useEffect(() => {
@@ -474,6 +484,9 @@ export default function ImportEntity() {
 
   const handleReset = () => {
     setSelectedFilter(getDefaultFilter(selectedLevel.level));
+    setSelectedFormateOption()
+    setDateType({ label: "Local Timezone", value: 'IST: +5:30' })
+    setIsSquadSelectedOption('true')
     setCurrentPage(0);
   };
 
@@ -494,7 +507,7 @@ export default function ImportEntity() {
               ...dataToDB,
               ...record,
             });
-            addCompetitionData({
+            addMatchData({
               ...dataToDB,
               ...record,
             });
@@ -510,35 +523,79 @@ export default function ImportEntity() {
       key: "datestart",
       width: "20%",
       sort: true,
-      render: (text) => formatDate(text),
+      render: (_, record) => formatDate(record?.competition?.datestart),
+      // render: (text) => formatDate(text),
     },
+
     {
       title: "ID",
       dataIndex: "cid",
       key: "cid",
       width: "10%",
+      render: (_, record) => record?.competition?.cid,
+    },
+    {
+      title: "Match Number",
+      dataIndex: "match_number",
+      key: "match_number",
+      width: "10%",
+      style: { textAlign: "center" },
     },
     {
       title: "Competition",
       dataIndex: "title",
       key: "title",
-      width: "40%",
+      width: "20%",
       render: (text, record) => (
         <span
           className="cursor-pointer"
-          onClick={() => handleCompetitionClick(record)}
+          // onClick={() => handleCompetitionClick(record)}
           style={{
             cursor: "pointer",
           }}
+          
         >
-          {text}
+          {record?.competition?.title}
         </span>
       ),
     },
     {
+      title: "Match Start Date",
+      dataIndex: "date_start_ist",
+      key: "date_start_ist",
+      width: "20%",
+      sort: true,
+      render: (text) => text,
+    },
+    {
+      title: "Match",
+      dataIndex: "title",
+      key: "title",
+      width: "40%",
+      // render: (text, record) => (
+      //   <span
+      //     className="cursor-pointer"
+      //     // onClick={() => handleCompetitionClick(record)}
+      //     style={{
+      //       cursor: "pointer",
+      //     }}
+          
+      //   >
+      //     {record?.competition?.title}
+      //   </span>
+      // ),
+    },
+    {
       title: "Format",
-      dataIndex: "game_format",
-      key: "game_format",
+      dataIndex: "match_format",
+      key: "match_format",
+      width: "10%",
+      render: (_, record) => record?.competition?.match_format,
+    },
+    {
+      title: "Match Status",
+      dataIndex: "status_str",
+      key: "status_str",
       width: "10%",
     },
     {
@@ -546,6 +603,7 @@ export default function ImportEntity() {
       dataIndex: "status",
       key: "status",
       width: "10%",
+      render: (_, record) => record?.competition?.status,
     },
     {
       title: "Season",
@@ -553,6 +611,7 @@ export default function ImportEntity() {
       key: "season",
       width: "10%",
       style: { textAlign: "center" },
+      render: (_, record) => record?.competition?.season,
     },
     {
       title: "Total Matches",
@@ -560,6 +619,7 @@ export default function ImportEntity() {
       key: "total_matches",
       width: "10%",
       style: { textAlign: "center" },
+      render: (_, record) => record?.competition?.total_matches,
     },
     {
       title: "Total rounds",
@@ -567,15 +627,9 @@ export default function ImportEntity() {
       key: "total_rounds",
       width: "10%",
       style: { textAlign: "center" },
+      render: (_, record) => record?.competition?.total_rounds,
     },
-    {
-      title: "End Date",
-      dataIndex: "dateend",
-      key: "dateend",
-      width: "20%",
-      sort: true,
-      render: (text) => formatDate(text),
-    },
+    
   ];
 
   const getCompetitionMatchesColumns = () => [
@@ -640,6 +694,7 @@ export default function ImportEntity() {
       dataIndex: "format_str",
       key: "format_str",
       width: "10%",
+      render: (text) => text?.toUpperCase(),
     },
     {
       title: "Status",
@@ -668,7 +723,7 @@ export default function ImportEntity() {
       key: "date_end_ist",
       width: "15%",
       sort: true,
-      render: (text) => formatDateTime(text),
+      render: (text) => formatDate(text),
     },
   ];
 
@@ -680,7 +735,8 @@ export default function ImportEntity() {
     if (selectedLevel.level === "competitionMatches") {
       return statusOptionsforMatch;
     }
-    return statusOptions; // default: for competitions or others
+    return statusOptionsforMatch; // default: for competitions or others
+    // return statusOptions; // default: for competitions or others
   };
 
   // Get current columns based on level
@@ -688,8 +744,8 @@ export default function ImportEntity() {
     switch (selectedLevel.level) {
       case "competitions":
         return getCompetitionsColumns();
-      case "competitionMatches":
-        return getCompetitionMatchesColumns();
+      // case "competitionMatches":
+      //   return getCompetitionMatchesColumns();
       default:
         return getCompetitionsColumns();
     }
@@ -698,13 +754,41 @@ export default function ImportEntity() {
   const getCurrentTitle = () => {
     switch (selectedLevel.level) {
       case "competitions":
-        return "Entity Import";
+        return "Competitions";
       case "competitionMatches":
-        return "Entity Competition Matches";
+        return "Competition Matches";
       default:
         return "Entity Import";
     }
   };
+
+  const fetchMasterData = async () => {
+        try {
+            const response = await axiosInstance.post('/admin/list/matchType');
+            const result = response?.result;
+
+            if (result && typeof result === 'object') {
+            const formattedData = Object.entries(result).map(([key, value]) => ({
+                label: key,
+                value: value
+            }));
+
+            setFormateOptions((preData) => ({
+                ...preData,
+                format: [
+                { label: "Select Module Type", value: "0" },
+                ...formattedData
+                ]
+            }));
+            } else {
+            console.error("Invalid response format", result);
+            }
+        } catch (error) {
+            dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+        } finally {
+            
+        }
+    };
 
   // Table element configuration
   const tableElement = {
@@ -716,6 +800,7 @@ export default function ImportEntity() {
     isServerPagination: true,
     resetButton: true,
     reloadButton: true,
+    // isDateRange: true,
   };
   // console.log("Length: ", data?.length||0)
   return (
@@ -740,22 +825,101 @@ export default function ImportEntity() {
             onBreadCrumbsClick={handleBreadcrumbClick}
             breadCrumbs={navigationHistory}
             handleCustomReset={handleReset}
+            setDateRange={setDateRange}
+            dateRange={dateRange}
             handleReload={handleReload}
             renderCustomFilter={() => (
-              <div className="d-flex align-items-center gap-2">
+              <div className="d-flex align-items-center flex-wrap gap-2">
                 {/* Status Filter */}
                 <Select
                   styles={{
                     control: (provided) => ({ ...provided, width: 180 }),
                   }}
-                  value={getCurrentStatusOptions().find(
-                    (option) => option.value === selectedFilter?.status
-                  )}
+                  value={getCurrentStatusOptions().find((option) => {
+                    return String(option.value) === String(selectedFilter?.status);
+                  })}
                   placeholder={"Filter by Status"}
                   onChange={(e) => {
                     handleFilterChange("status", e?.value ?? null);
                   }}
                   options={getCurrentStatusOptions()}
+                  classNamePrefix="filter-dropdown"
+                />
+                <Select
+                  styles={{
+                    control: (provided) => ({ ...provided, width: 180 }),
+                  }}
+                  value={selectedFormateOption?.value}
+                  placeholder={"Format"}
+                  onChange={(e) => {
+                      setSelectedFormateOption(e.value)
+                  }}
+                  options={formateOptions?.format}
+                  classNamePrefix="filter-dropdown"
+                />
+                <div className="d-flex flex-column">
+                  <input
+                    className="form-control"
+                    type="datetime-local"
+                    value={dateRange?.startDate}
+                    onChange={(e) => {
+                      setDateRange({
+                        ...dateRange,
+                        startDate: e.target.value,
+                      });
+                    }}
+                    id="start-datetime"
+                  />
+                </div>
+                <div className="d-flex flex-column">
+                  <input
+                    className="form-control"
+                    type="datetime-local"
+                    value={dateRange?.endDate}
+                    onChange={(e) => {
+                      setDateRange({
+                        ...dateRange,
+                        endDate: e.target.value,
+                      });
+                    }}
+                    id="end-datetime"
+                  />
+                </div>
+
+                <Select
+                  value={dateType}
+                  placeholder="Date Type"
+                  styles={{
+                    control: (provided) => ({
+                      ...provided,
+                      width: 200,
+                    }),
+                  }}
+                  onChange={(e) => setDateType(e)}
+                  options={[
+                    { label: "Local Timezone", value: 'IST: +5:30' },
+                    { label: "UTC Timezone", value: 'UTC: 00:00' },
+                  ]}
+                  classNamePrefix="filter-dropdown"
+                />
+                <Select
+                  styles={{
+                    control: (provided) => ({ ...provided, width: 180 }),
+                  }}
+                  value={[
+                    { value: "squad", label: "squad" },
+                    { value: "true", label: "true" },
+                    { value: "false", label: "false" },
+                  ].find((option) => option.value === isSquadSelectedOption)}
+                  placeholder="Is Squad"
+                  onChange={(e) => {
+                    setIsSquadSelectedOption(e?.value ?? null);
+                  }}
+                  options={[
+                    { value: "squad", label: "squad" },
+                    { value: "true", label: "true" },
+                    { value: "false", label: "false" },
+                  ]}
                   classNamePrefix="filter-dropdown"
                 />
               </div>
