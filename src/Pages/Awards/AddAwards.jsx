@@ -101,6 +101,8 @@ const AddAward = () => {
     if (dataToSave) {
       const extraData = {
         id: awardId,
+        isActive: dataToSave?.isActive || false,
+        isShowOnSummary: dataToSave?.isShowOnSummary || false,
       };
       dispatch(
         addAwardToDb({ ...dataToSave, ...extraData })
