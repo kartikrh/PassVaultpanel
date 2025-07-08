@@ -280,7 +280,6 @@ export default function ImportEntity() {
   
         if (result && typeof result === 'object') {
           const uniqueValues = [...new Set(Object.values(result))];
-  
           const options = [
             { value: null, label: "Status" },
             ...uniqueValues.map((value) => ({

@@ -208,8 +208,10 @@ function AddMarketTemaplate() {
     }
   };
   const handleSaveClick = async (saveAction) => {
+    const dataToSave = finalizeRef.current.finalizeData();
     const impKeys = {
-      marketTemplateId: 0,
+      // marketTemplateId: 0,
+      marketTemplateId,
       defaultBackSize: 100,
       defaultLaySize: 100,
       rateDiff: 1,
@@ -233,13 +235,12 @@ function AddMarketTemaplate() {
       // beforeSuspendMin: null,
       // beforeCloseMin: null,
     };
-    const dataToSave = finalizeRef.current.finalizeData();
     const completeData = {};
     MarketTemplateFileds.forEach((field) => {
       const { name, type } = field;
-      if (!name) return; // Skip fields like DIVIDER that have no name
+      if (!name) return;
 
-      const value = dataToSave.hasOwnProperty(name) ? dataToSave[name] : null;
+      const value = dataToSave[name];
 
       if (type === SELECT) {
         completeData[name] = value ?? 0;
