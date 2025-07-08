@@ -90,7 +90,7 @@ const AddPage = () => {
         const { name, type } = field;
         if (!name) return;
   
-        const value = dataToSave.hasOwnProperty(name) ? dataToSave[name] : null;
+        const value = dataToSave[name];
   
         if (type === SELECT) {
           completeData[name] = value ?? 0;
