@@ -67,7 +67,7 @@ export default function ImportEntityEvent() {
     if (level === "competitionMatches") {
       return { status: 3 }; // Live for matches (enum value)
     }
-    return { status: 2 }; // Live for competitions (string value)
+    return { status: 1 }; // Live for competitions (string value)
   };
 
   const [selectedFilter, setSelectedFilter] = useState(getDefaultFilter("competitions"));
@@ -265,7 +265,9 @@ export default function ImportEntityEvent() {
   }, [
     dateRange,
     dateType,
+    navigationHistory,
     selectedFormateOption,
+    isSquadSelectedOption,
     permissionChecked,
     selectedLevel.level,
     selectedLevel.seasonId,
