@@ -2525,7 +2525,7 @@ export const NewUpdateManualOdds = () => {
 
         // Always update runner calculations with new margin
         setRunners(prev => prev.map(runner => {
-            const newRates = calculateRunnerRates(runner, settings);
+            const newRates = calculateRunnerRates(runner, settings, { forceCalculateLay: false });
             return {
                 ...runner,
                 b2: newRates.b2,
