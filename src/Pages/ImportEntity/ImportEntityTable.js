@@ -377,7 +377,7 @@ export default function ImportEntity() {
     setIsLoading(true);
     finalizeRef.current.getTableAction();
     await axiosInstance
-      .post(`${entitySportUrl}/admin/autoImportData/save`, {
+      .post(`/admin/autoImportData/save`, {
         // cId: data.cid,
         refId: data.cid,
         refType: 2,
