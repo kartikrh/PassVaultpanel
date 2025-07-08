@@ -289,7 +289,7 @@ export const ShowHide = () => {
       key: "showHide",
       render: (text, record) => (
         <Tooltip
-          title={"Hide/Show Event Type"}
+          title={"Show/Hide Event Type"}
           color={"#e8e8ea"}
           overlayInnerStyle={{ color: "#000" }}
         >
@@ -355,7 +355,7 @@ export const ShowHide = () => {
       key: "isHide",
       render: (text, record) => (
         <Tooltip
-          title={"Hide/Show Competition"}
+          title={"Show/Hide Competition"}
           color={"#e8e8ea"}
           overlayInnerStyle={{ color: "#000" }}
         >
@@ -428,7 +428,7 @@ export const ShowHide = () => {
       key: "isHide",
       render: (text, record) => (
         <Tooltip
-          title={"Hide/Show Commentary"}
+          title={"Show/Hide Commentary"}
           color={"#e8e8ea"}
           overlayInnerStyle={{ color: "#000" }}
         >

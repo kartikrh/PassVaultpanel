@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
 import { mapCommentaryStatus } from "./functions";
-import { Button, Container, Modal, ModalHeader, ModalBody } from "reactstrap";
+import { Button, Container } from "reactstrap";
 import { useNavigate } from "react-router-dom";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import LoadCommentaryModel from "../../components/Model/LoadCommentaryModel";
@@ -1485,7 +1485,7 @@ const Index = () => {
       key: "isActive",
       render: (text, record) => (
         <Tooltip
-          title={"Active/Inactive Commentary"}
+          title={"Commentary"}
           color={"#e8e8ea"}
           overlayInnerStyle={{ color: "#000" }}
         >
@@ -1549,7 +1549,7 @@ const Index = () => {
       render: (text, record) => (
         <div className="d-flex align-items-center gap-2">
           <Tooltip
-            title={"Active/Inactive Predict Market"}
+            title={"Predict Market"}
             color={"#e8e8ea"}
             overlayInnerStyle={{ color: "#000" }}
           >
@@ -1873,7 +1873,7 @@ const Index = () => {
       key: "isCountInPoint",
       render: (text, record) => (
         <Tooltip
-          title={"Active/Inactive Count In Point"}
+          title={"Count In Point"}
           color={"#e8e8ea"}
           overlayInnerStyle={{ color: "#000" }}
         >
@@ -1904,7 +1904,7 @@ const Index = () => {
       key: "isTeamPredictionOn",
       render: (text, record) => (
         <Tooltip
-          title={"Active/Inactive Team Prediction"}
+          title={"Team Prediction"}
           color={"#e8e8ea"}
           overlayInnerStyle={{ color: "#000" }}
         >
@@ -2137,7 +2137,7 @@ const Index = () => {
       key: "isTest",
       render: (text, record) => (
         <Tooltip
-          title={"Active/Inactive Test"}
+          title={"Test"}
           color={"#e8e8ea"}
           overlayInnerStyle={{ color: "#000" }}
         >

@@ -318,7 +318,7 @@ const Index = () => {
       title: "Active",
       key: "isActive",
       render: (text, record) => (
-        <Tooltip title={"Active/Inactive Player"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip title={"Player"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
           <Button
             color={`${record.isActive ? "primary" : "danger"}`}
             size="sm"
@@ -337,7 +337,7 @@ const Index = () => {
       title: "System Player",
       key: "isSystemPlayer",
       render: (text, record) => (
-        <Tooltip title={"Active/Inactive System Player"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip title={"System Player"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
           <Button
             color={`${record.isSystemPlayer ? "primary" : "danger"}`}
             size="sm"

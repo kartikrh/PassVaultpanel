@@ -233,7 +233,7 @@ const Index = () => {
       title: "Active",
       key: "IsActive",
       render: (text, record) => (
-        <Tooltip title={"Active/Inactive Award"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip title={"Award"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
           <Button
             color={`${record.isActive ? "primary" : "danger"}`}
             size="sm"
@@ -252,7 +252,7 @@ const Index = () => {
       title: "Show",
       key: "isShowOnSummary",
       render: (text, record) => (
-        <Tooltip title={"IsShow Award"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip title={"Show Award"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
           <Button
             color={`${record.isShowOnSummary ? "primary" : "danger"}`}
             size="sm"

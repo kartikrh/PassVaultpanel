@@ -15,7 +15,7 @@ import {
   Row,
 } from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_EVENT } from '../../components/Common/Const';
+import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_EVENT, SELECT, SWITCH } from '../../components/Common/Const';
 import { addEventToDb, updateSavedState } from "../../Features/Tabs/eventsSlice";
 import axiosInstance from "../../Features/axios";
 import { convertDateLocalToUTC } from '../../components/Common/Reusables/reusableMethods';
@@ -124,13 +124,27 @@ function AddEvents() {
         eventId,
         eventDate: convertDateLocalToUTC(dataToSave.eventDate)
       }
-      const defaultData = {
-        countryCode: "",
-        timeZone: "",
-        venue: ""
-      }
+      // const defaultData = {
+      //   countryCode: "",
+      //   timeZone: "",
+      //   venue: ""
+      // }
+      const completeData = {};
+      EventFields.forEach((field) => {
+        const { name, type } = field;
+        if (!name) return; 
+        const value = dataToSave.hasOwnProperty(name) ? dataToSave[name] : null;
+  
+        if (type === SELECT) {
+          completeData[name] = value ?? 0;
+        } else if (type === SWITCH) {
+          completeData[name] = value ?? false;
+        } else {
+          completeData[name] = value ?? null;
+        }
+      });
       setCurrentSaveAction(saveAction);
-      dispatch(addEventToDb({ ...defaultData, ...dataToSave, ...extraData }))
+      dispatch(addEventToDb({ ...completeData, ...extraData }))
     }
   };
 

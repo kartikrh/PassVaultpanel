@@ -4,7 +4,7 @@ import FormBuilder from '../../components/Common/Reusables/FormBuilder';
 import { MatchTypeFields } from '../../constants/FieldConst/MatchTypeConst';
 import { Button, ButtonDropdown, Card, CardBody, Col, Container, DropdownItem, DropdownMenu, DropdownToggle, Row } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_MATCH_TYPE } from '../../components/Common/Const';
+import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, SWITCH, SELECT, TAB_MATCH_TYPE } from '../../components/Common/Const';
 import { addMatchTypeToDb, updateSavedState } from '../../Features/Tabs/matchTypeSlice';
 import axiosInstance from '../../Features/axios';
 import { updateToastData } from '../../Features/toasterSlice';
@@ -73,13 +73,31 @@ function AddTabs() {
             else
                 totalOvers = -1
             const extraData = {
-                matchTypeId: id,
-                totalOversInMatch: totalOvers,
-                isAutoChangeStriker: dataToSave?.isAutoChangeStriker || false,
-                isHistory: dataToSave?.isHistory || false,
-            }
+              matchTypeId: id,
+              totalOversInMatch: totalOvers,
+            //   isAutoChangeStriker: dataToSave?.isAutoChangeStriker || false,
+            //   isHistory: dataToSave?.isHistory || false,
+            };
+            const completeData = {}
+            MatchTypeFields.forEach((field) => {
+              const { name, type } = field;
+              if (!name) return; // Skip fields like DIVIDER that have no name
+
+              const value = dataToSave.hasOwnProperty(name)
+                ? dataToSave[name]
+                : null;
+
+              if ( type === SELECT) {
+                completeData[name] = value ?? 0;
+              } else if ( type === SWITCH) {
+                completeData[name] = value ?? false;
+              } else {
+                completeData[name] = value ?? null
+              }
+            });
+
             setCurrentSaveAction(saveAction);
-            dispatch(addMatchTypeToDb({ ...dataToSave, ...extraData }))
+            dispatch(addMatchTypeToDb({ ...completeData, ...extraData }))
         }
     };
 
