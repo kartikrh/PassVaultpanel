@@ -106,7 +106,6 @@ export const MatchTypeFields = [
     // ],
     // isRequired: true,
     type: SELECT,
-    defaultValue: false,
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
