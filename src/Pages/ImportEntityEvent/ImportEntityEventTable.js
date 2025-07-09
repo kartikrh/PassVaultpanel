@@ -67,26 +67,26 @@ export default function ImportEntityEvent() {
     if (level === "competitionMatches") {
       return { status: 3 }; // Live for matches (enum value)
     }
-    return { status: 1 }; // Live for competitions (string value)
+    return { status: 1 }; // Live for Entity Event Import (string value)
   };
 
-  const [selectedFilter, setSelectedFilter] = useState(getDefaultFilter("competitions"));
+  const [selectedFilter, setSelectedFilter] = useState(getDefaultFilter("Entity Event Import"));
 
   const [selectedLevel, setSelectedLevel] = useState({
     seasonId: 2025, // Default to current year or set a specific season ID
     competitionId: null,
     matchId: null,
-    level: "competitions", // Start with season competitions
+    level: "Entity Event Import", // Start with season Entity Event Import
     year: 2025,
   });
   const [navigationHistory, setNavigationHistory] = useState([
     {
-      label: "Competition",
+      label: "Entity Event Import",
       value: {
         seasonId: 2025,
         competitionId: null,
         matchId: null,
-        level: "competitions",
+        level: "Entity Event Import",
         year: 2025,
       },
     },
@@ -99,7 +99,7 @@ export default function ImportEntityEvent() {
     loadInitData.find((item) => item.key === loadInit.ENTITYSPORT_URL)?.value ||
     "https://es.deployed.live";
 
-  const getCompetitionStatus = (status) => {
+  const getEntityEventStatus = (status) => {
     const statusLower = String(status).toLowerCase();
     switch (statusLower) {
       case "live":
@@ -176,7 +176,7 @@ export default function ImportEntityEvent() {
 
     try {
       switch (selectedLevel.level) {
-        case "competitions":
+        case "Entity Event Import":
           if (!selectedLevel.seasonId) {
             setIsLoading(false);
             return;
@@ -191,7 +191,7 @@ export default function ImportEntityEvent() {
             timezone: dateType.value,
             pre_squad: isSquadSelectedOption
           };
-          //status filter if selected - server-side filtering for competitions
+          //status filter if selected - server-side filtering for Entity Event Import
           if (
             selectedFilter.status !== null &&
             selectedFilter.status !== undefined
@@ -229,10 +229,10 @@ export default function ImportEntityEvent() {
       let totalCount = +totalItems || apiData.length;
 
       // Sort data in ascending order by date
-      if (selectedLevel.level === "competitions") {
+      if (selectedLevel.level === "Entity Event Import") {
         apiData = apiData
           .map((item) => {
-            return { ...item, status: getCompetitionStatus(item.status) };
+            return { ...item, status: getEntityEventStatus(item.status) };
           })
           .sort((a, b) => new Date(a.datestart) - new Date(b.datestart));
 
@@ -274,8 +274,8 @@ export default function ImportEntityEvent() {
     selectedLevel.competitionId,
     currentPage,
     pageSize,
-    // Only include selectedFilter.status for competitions (server-side filtering)
-    ...(selectedLevel.level === "competitions" ? [selectedFilter.status] : []),
+    // Only include selectedFilter.status for Entity Event Import (server-side filtering)
+    ...(selectedLevel.level === "Entity Event Import" ? [selectedFilter.status] : []),
     entitySportUrl,
     dispatch,
     filterMatchData,
@@ -461,8 +461,8 @@ export default function ImportEntityEvent() {
     const filterDataToUpdate = { ...selectedFilter, [key]: value };
     setSelectedFilter(filterDataToUpdate);
 
-    // Reset to first page only for competitions (server-side filtering)
-    if (selectedLevel.level === "competitions") {
+    // Reset to first page only for Entity Event Import (server-side filtering)
+    if (selectedLevel.level === "Entity Event Import") {
       setCurrentPage(0);
     }
   };
@@ -493,7 +493,7 @@ export default function ImportEntityEvent() {
   };
 
   // Column configurations
-  const getCompetitionsColumns = () => [
+  const getEntityEventColumns = () => [
     {
       title: "Import",
       dataIndex: "import",
@@ -737,26 +737,26 @@ export default function ImportEntityEvent() {
     if (selectedLevel.level === "competitionMatches") {
       return statusOptionsforMatch;
     }
-    return statusOptionsforMatch; // default: for competitions or others
-    // return statusOptions; // default: for competitions or others
+    return statusOptionsforMatch; // default: for Entity Event Import or others
+    // return statusOptions; // default: for Entity Event Import or others
   };
 
   // Get current columns based on level
   const getCurrentColumns = () => {
     switch (selectedLevel.level) {
-      case "competitions":
-        return getCompetitionsColumns();
+      case "Entity Event Import":
+        return getEntityEventColumns();
       // case "competitionMatches":
       //   return getCompetitionMatchesColumns();
       default:
-        return getCompetitionsColumns();
+        return getEntityEventColumns();
     }
   };
 
   const getCurrentTitle = () => {
     switch (selectedLevel.level) {
-      case "competitions":
-        return "Competitions";
+      case "Entity Event Import":
+        return "Entity Event Import";
       case "competitionMatches":
         return "Competition Matches";
       default:
@@ -798,7 +798,7 @@ export default function ImportEntityEvent() {
     headerSelect: false,
     isActive: false,
     dragDrop: false,
-    subTable: selectedLevel.level !== "competitions",
+    subTable: selectedLevel.level !== "Entity Event Import",
     isServerPagination: true,
     resetButton: true,
     reloadButton: true,
@@ -909,7 +909,7 @@ export default function ImportEntityEvent() {
                     control: (provided) => ({ ...provided, width: 180 }),
                   }}
                   value={[
-                    { value: "squad", label: "squad" },
+                    // { value: "squad", label: "squad" },
                     { value: "true", label: "true" },
                     { value: "false", label: "false" },
                   ].find((option) => option.value === isSquadSelectedOption)}
@@ -918,7 +918,7 @@ export default function ImportEntityEvent() {
                     setIsSquadSelectedOption(e?.value ?? null);
                   }}
                   options={[
-                    { value: "squad", label: "squad" },
+                    // { value: "squad", label: "squad" },
                     { value: "true", label: "true" },
                     { value: "false", label: "false" },
                   ]}
