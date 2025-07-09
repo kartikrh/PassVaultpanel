@@ -520,7 +520,15 @@ export default function ImportEntityEvent() {
       ),
     },
     {
-      title: "Start Date",
+      title: "E-Start Date",
+      dataIndex: "date_start_ist",
+      key: "date_start_ist",
+      width: "20%",
+      sort: true,
+      render: (text) => text,
+    },
+    {
+      title: "C-Start Date",
       dataIndex: "datestart",
       key: "datestart",
       width: "20%",
@@ -528,20 +536,11 @@ export default function ImportEntityEvent() {
       render: (_, record) => formatDate(record?.competition?.datestart),
       // render: (text) => formatDate(text),
     },
-
     {
-      title: "ID",
-      dataIndex: "cid",
-      key: "cid",
+      title: "E-Id",
+      dataIndex: "match_id",
+      key: "match_id",
       width: "10%",
-      render: (_, record) => record?.competition?.cid,
-    },
-    {
-      title: "Match Number",
-      dataIndex: "match_number",
-      key: "match_number",
-      width: "10%",
-      style: { textAlign: "center" },
     },
     {
       title: "Competition",
@@ -562,15 +561,14 @@ export default function ImportEntityEvent() {
       ),
     },
     {
-      title: "Match Start Date",
-      dataIndex: "date_start_ist",
-      key: "date_start_ist",
-      width: "20%",
-      sort: true,
-      render: (text) => text,
+      title: "E-Number",
+      dataIndex: "match_number",
+      key: "match_number",
+      width: "10%",
+      style: { textAlign: "center" },
     },
     {
-      title: "Match",
+      title: "Event",
       dataIndex: "title",
       key: "title",
       width: "40%",
@@ -588,24 +586,19 @@ export default function ImportEntityEvent() {
       // ),
     },
     {
+      title: "E-Status",
+      dataIndex: "status_str",
+      key: "status_str",
+      style: { textAlign: "center" },
+      width: "10%",
+    },
+    {
       title: "Format",
       dataIndex: "match_format",
       key: "match_format",
       width: "10%",
+      style: { textAlign: "center" },
       render: (_, record) => record?.competition?.match_format,
-    },
-    {
-      title: "Match Status",
-      dataIndex: "status_str",
-      key: "status_str",
-      width: "10%",
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      width: "10%",
-      render: (_, record) => record?.competition?.status,
     },
     {
       title: "Season",
@@ -614,6 +607,21 @@ export default function ImportEntityEvent() {
       width: "10%",
       style: { textAlign: "center" },
       render: (_, record) => record?.competition?.season,
+    },
+    {
+      title: "C-Status",
+      dataIndex: "status",
+      key: "status",
+      width: "10%",
+      style: { textAlign: "center" },
+      render: (_, record) => record?.competition?.status,
+    },
+    {
+      title: "C-Id",
+      dataIndex: "cid",
+      key: "cid",
+      width: "10%",
+      render: (_, record) => record?.competition?.cid,
     },
     {
       title: "Total Matches",
@@ -632,101 +640,6 @@ export default function ImportEntityEvent() {
       render: (_, record) => record?.competition?.total_rounds,
     },
     
-  ];
-
-  const getCompetitionMatchesColumns = () => [
-    {
-      title: "Import",
-      dataIndex: "import",
-      key: "import",
-      width: "7.5%",
-      render: (text, record) => (
-        <button
-          color={"primary"}
-          size="sm"
-          className="btn-primary"
-          onClick={() => {
-            setDataToDB({
-              ...dataToDB,
-              ...record,
-            });
-            addMatchData({
-              ...dataToDB,
-              ...record,
-            });
-          }}
-        >
-          <i className="bx bx-plus"></i>
-        </button>
-      ),
-    },
-    {
-      title: "Start Date",
-      dataIndex: "date_start_ist",
-      key: "date_start_ist",
-      width: "15%",
-      sort: true,
-      render: (text) => formatDateTime(text),
-    },
-    {
-      title: "Match ID",
-      dataIndex: "match_id",
-      key: "match_id",
-      width: "10%",
-    },
-    {
-      title: "Match",
-      dataIndex: "title",
-      key: "title",
-      width: "25%",
-      render: (text, record) => (
-        <span
-          className="cursor-pointer"
-          onClick={() => handleMatchClick(record)}
-          style={{
-            cursor: "pointer",
-          }}
-        >
-          {text}
-        </span>
-      ),
-    },
-    {
-      title: "Format",
-      dataIndex: "format_str",
-      key: "format_str",
-      width: "10%",
-      render: (text) => text?.toUpperCase(),
-    },
-    {
-      title: "Status",
-      dataIndex: "status_str",
-      key: "status_str",
-      width: "10%",
-      render: (text) => text?.toUpperCase(),
-    },
-    {
-      title: "Venue",
-      dataIndex: "venue",
-      key: "venue",
-      width: "12.5%",
-      render: (venue) => {
-        const name = venue?.name;
-        const location = venue?.location;
-        const country = venue?.country;
-
-        const parts = [name, location, country].filter(Boolean);
-        return parts.length > 0 ? parts.join(", ") : "N/A";
-      },
-    },
-    {
-      title: "End Date",
-      dataIndex: "date_end_ist",
-      key: "date_end_ist",
-      width: "15%",
-      sort: true,
-      render: (text) => formatDate(text),
-    },
   ];
 
   const handleReload = () => {
