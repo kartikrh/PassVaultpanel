@@ -33,11 +33,12 @@ export const PlayerFields = [
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
-        type: TEXT,
-        name: "country",
+        type: SELECT,
+        name: "countryId",
         label: "Country",
-        regex: /^[^']{1,100}$/,
-        regexErrorMessage: "Max allowed Characters 100, No Spacial(') Character",
+        options: [],
+        // regex: /^[^']{1,100}$/,
+        // regexErrorMessage: "Max allowed Characters 100, No Spacial(') Character",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
