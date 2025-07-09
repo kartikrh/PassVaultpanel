@@ -67,20 +67,20 @@ function AddCommentary() {
         if (id !== "0") {
             fetchData(id);
             setDisabledFields({
-                "eventTypeId": true,
-                "competitionId": true,
+                // "eventTypeId": true,
+                // "competitionId": true,
                 // "eventId": true,
-                "team1Id": true,
-                "team2Id": true,
+                // "team1Id": true,
+                // "team2Id": true,
                 // "team1Captain": true,
                 // "team2Captain": true,
                 // "team1Kipper": true,
                 // "team2Kipper": true,
                 // "team1Players": true,
                 // "team2Players": true,
-                "matchTypeId": true,
+                // "matchTypeId": true,
                 "addSystemPlayer": true,
-                "drsCount": true,
+                // "drsCount": true,
                 "isVirtual": true,
             })
         }
@@ -552,7 +552,6 @@ function AddCommentary() {
         let navLink = state === 'isPredict' ? '/CommentaryList' : "/commentary"
         navigate(navLink);
     };
-    useEffect(() => {console.log("active", activeTab)}, [activeTab])
 
     return (
         <React.Fragment>
