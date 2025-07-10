@@ -297,7 +297,6 @@ export default function ImportEntityEvent() {
       );
 
       if (response?.result) {
-        console.log("response?.result", response?.result)
         setMatchData(response.result);
         setMatchModalVisible(true);
       } else {
