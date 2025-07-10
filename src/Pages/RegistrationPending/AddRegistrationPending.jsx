@@ -23,6 +23,7 @@ import {
   SAVE_AND_CLOSE,
   SAVE_AND_NEW,
   TAB_CLIENT,
+  SWITCH, SELECT,
 } from "../../components/Common/Const";
 import {
   addClientToDb,
@@ -96,14 +97,29 @@ function AddRegistrationPending() {
     if (dataToSave) {
       const extraData = {
         clientId: clientId,
-        isAllowMultiLogin: dataToSave?.isAllowMultiLogin || false,
-        isDelete: dataToSave?.isDelete || false,
-        isEmailVerified: dataToSave?.isEmailVerified || false,
-        isMobileVerified: dataToSave?.isMobileVerified || false,
         isUserActive: parseInt(dataToSave?.isUserActive),
-        isActive: dataToSave?.isActive || false,
+        // isAllowMultiLogin: dataToSave?.isAllowMultiLogin || false,
+        // isDelete: dataToSave?.isDelete || false,
+        // isEmailVerified: dataToSave?.isEmailVerified || false,
+        // isMobileVerified: dataToSave?.isMobileVerified || false,
+        // isActive: dataToSave?.isActive || false,
       };
-      dispatch(addClientToDb({ ...dataToSave, ...extraData }));
+      const completeData = {};
+      ClientConst.forEach((field) => {
+        const { name, type } = field;
+        if (!name) return;
+
+        const value = dataToSave[name];
+
+        if (type === SELECT) {
+          completeData[name] = value ?? 0;
+        } else if (type === SWITCH) {
+          completeData[name] = value ?? false;
+        } else {
+          completeData[name] = value ?? null;
+        }
+      });
+      dispatch(addClientToDb({ ...completeData, ...extraData }));
       setCurrentSaveAction(saveAction);
     }
   };

@@ -16,7 +16,7 @@ import {
   Row,
 } from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_USERS } from '../../components/Common/Const';
+import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_USERS, SELECT, SWITCH } from '../../components/Common/Const';
 import axiosInstance from "../../Features/axios";
 import { addUserToDb, updateSavedState } from "../../Features/Tabs/usersSlice";
 import { checkPermission } from '../../components/Common/Reusables/reusableMethods';
@@ -140,7 +140,9 @@ function AddUsers() {
     const dataToSave = finalizeRef.current.finalizeData()
     if (dataToSave) {
       const extraData = {
-        userId: userId
+        userId: userId,
+        allowMultipleLogin: dataToSave?.allowMultipleLogin || false,
+        mobile: dataToSave?.mobile || null,
       }
       setCurrentSaveAction(saveAction);
       dispatch(addUserToDb({ ...dataToSave, ...extraData }))

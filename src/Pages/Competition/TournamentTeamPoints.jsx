@@ -105,6 +105,24 @@ const TournamentTeamPoints = () => {
     });
   };
 
+  const handleIsActive = async (pType, record, cState) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/tournamentTeamPoints/activeInactive`, {
+        id: record.id,
+        [pType]: cState ? false : true,
+      })
+      .then((response) => {
+        // fetchTeamList();
+        fetchTournament(record.competitionId);
+        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+      });
+  };
+
   const handleSave = async () => {
     try {
       const response = await axiosInstance.post(
@@ -429,7 +447,7 @@ const TournamentTeamPoints = () => {
       style: { width: "10%" },
     },
     {
-      title: "isActive",
+      title: "Active",
       dataIndex: "isActive",
       render: (text, record) => (
         <Button
@@ -437,7 +455,7 @@ const TournamentTeamPoints = () => {
           size="sm"
           className="btn"
           onClick={() => {
-            handleValueChange(record.id, "isActive", !record.isActive);
+            handleIsActive("isActive", record, record.isActive);
           }}
         >
           <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>

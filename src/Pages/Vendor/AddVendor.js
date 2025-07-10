@@ -92,8 +92,6 @@ function AddVendor() {
  const handleSaveClick = async (saveAction) => {
     const impKeys = {
       vendorId: 0,
-      name: "",
-      expiryDate:"",
       isActive: false,
     };
     const dataToSave = finalizeRef.current.finalizeData();

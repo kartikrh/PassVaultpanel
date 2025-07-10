@@ -16,6 +16,7 @@ import Select from "react-select";
 import OpenMarketCategories from "./OpenMarketCategoryRendering";
 import Switch from "react-switch";
 import { loadInit } from "../../config";
+import { Tooltip } from "antd";
 
 export const OpenMarket = () => {
     const loadInitData = useSelector((state) => state.loadInit.loadInitData);
@@ -1482,22 +1483,34 @@ export const OpenMarket = () => {
             ),
             key: "teamName",
             className: "py-0",
-            columnClassName: "cell-padding"
+            columnClassName: "cell-padding border-right",
         },
         {
             title: "Market",
             dataIndex: "marketId",
+            maxWidth: 120,
             render: (text, record) => (
                 <span
                     style={{ cursor: "pointer" }}
                     onClick={() => { handleDS({ ...record, eventTypeName: commentaryInfo?.ety, competitionName: commentaryInfo?.com, eventName: commentaryInfo?.en, eventRefId: commentaryInfo?.eid, eventMarketId: record?.marketId, eventDay: commentaryInfo?.ed, eventTime: commentaryInfo?.et }) }}>
                     <div>{`${text}[${record.runnerId}]`}</div>
-                    <div className={record.isNewSocketData ? "bg-yellow" : ""}>{record?.marketName}</div>
+                    <Tooltip title={record?.marketName} color={"#e8e8ea"} overlayInnerStyle={{ color: "#000" }}>
+                        <div className={record.isNewSocketData ? "bg-yellow" : ""}
+                            style={{
+                                maxWidth: 120,
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                            }}
+                        >
+                            {record?.marketName}
+                        </div>
+                    </Tooltip>
                 </span>
             ),
             key: "marketId",
             className: "py-0",
-            columnClassName: "cell-padding"
+            columnClassName: "cell-padding border-right",
         },
         {
             title: "Status",

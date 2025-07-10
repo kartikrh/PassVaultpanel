@@ -23,6 +23,7 @@ import {
   SAVE_AND_CLOSE,
   SAVE_AND_NEW,
   TAB_MAIL_SETTINGS,
+  SELECT, SWITCH,
 } from "../../components/Common/Const";
 import {
   addMailSettingsToDb,
@@ -101,11 +102,26 @@ function AddMailSettings() {
     if (dataToSave) {
       const extraData = {
         id: id,
-        isEnableSSL: dataToSave?.isEnableSSL || false,
-        isDefault: dataToSave?.isDefault || false,
-        isActive: dataToSave?.isActive || false,
+        // isEnableSSL: dataToSave?.isEnableSSL || false,
+        // isDefault: dataToSave?.isDefault || false,
+        // isActive: dataToSave?.isActive || false,
       };
-      dispatch(addMailSettingsToDb({ ...dataToSave, ...extraData }));
+      const completeData = {};
+      MailSettingsConst.forEach((field) => {
+        const { name, type } = field;
+        if (!name) return;
+
+        const value = dataToSave[name];
+
+        if (type === SELECT) {
+          completeData[name] = value ?? 0;
+        } else if (type === SWITCH) {
+          completeData[name] = value ?? false;
+        } else {
+          completeData[name] = value ?? null;
+        }
+      });
+      dispatch(addMailSettingsToDb({ ...completeData, ...extraData }));
       setCurrentSaveAction(saveAction);
     }
   };

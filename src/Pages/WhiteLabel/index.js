@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
-import { Avatar, Tooltip } from "antd";
+import { Tooltip } from "antd";
 import { Button, Container } from "reactstrap";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import SpinnerModel from "../../components/Model/SpinnerModel";
@@ -366,7 +366,7 @@ const Index = () => {
       key: "isDemoClientLogin",
       render: (text, record) => (
         <Tooltip
-          title={"Active/Inactive Demo Android"}
+          title={"Demo Android"}
           color={"#e8e8ea"}
           overlayInnerStyle={{ color: "#000" }}
         >
@@ -397,7 +397,7 @@ const Index = () => {
       key: "isDemoClientEnableInIOS",
       render: (text, record) => (
         <Tooltip
-          title={"Active/Inactive Demo IOS"}
+          title={"Demo IOS"}
           color={"#e8e8ea"}
           overlayInnerStyle={{ color: "#000" }}
         >
@@ -428,7 +428,7 @@ const Index = () => {
       key: "IsActive",
       render: (text, record) => (
         <Tooltip
-          title={"Active/Inactive White Label"}
+          title={"White Label"}
           color={"#e8e8ea"}
           overlayInnerStyle={{ color: "#000" }}
         >

@@ -4,7 +4,7 @@ import FormBuilder from "../../components/Common/Reusables/FormBuilder";
 import { PageFields } from "../../constants/FieldConst/PageConst";
 import { Button, ButtonDropdown, Card, CardBody, Col, Container, DropdownItem, DropdownMenu, DropdownToggle, Row } from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_PAGE } from '../../components/Common/Const';
+import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_PAGE, SWITCH, SELECT } from '../../components/Common/Const';
 import { addPageToDB, updateSavedState } from '../../Features/Tabs/pageSlice';
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
@@ -81,11 +81,27 @@ const AddPage = () => {
     if (dataToSave) {
       const extraData = {
         pageId: pageId,
-        isStatic: dataToSave?.isStatic || false,
-        isDefault: dataToSave?.isDefault || false,
+        // isStatic: dataToSave?.isStatic || false,
+        // isDefault: dataToSave?.isDefault || false,
         pageFormatId: dataToSave?.isLink ? null : dataToSave?.pageFormatId,
       }
-      dispatch(addPageToDB({ ...dataToSave, ...extraData }))
+      const completeData = {};
+      PageFields.forEach((field) => {
+        const { name, type } = field;
+        if (!name) return;
+  
+        const value = dataToSave[name];
+  
+        if (type === SELECT) {
+          completeData[name] = value ?? 0;
+        } else if (type === SWITCH) {
+          completeData[name] = value ?? false;
+        } else {
+          completeData[name] = value ?? null;
+        }
+      });
+      
+      dispatch(addPageToDB({ ...completeData, ...extraData }))
       setCurrentSaveAction(saveAction);
     }
   };

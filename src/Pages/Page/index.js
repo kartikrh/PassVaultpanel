@@ -207,7 +207,7 @@ const Index = () => {
       key: "isDefault",
       dataIndex: "isDefault",
       render: (text, record) => (
-      <Tooltip title={"Active/Inactive Page Default"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+      <Tooltip title={"Set as Default"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${text ? "primary" : "danger"}`}
           size="sm"

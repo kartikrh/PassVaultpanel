@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import FormBuilder from "../../components/Common/Reusables/FormBuilder";
 import { ConfigFields } from "../../constants/FieldConst/ConfigConst";
 import { useDispatch, useSelector } from "react-redux";
-import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_CONFIG } from '../../components/Common/Const';
+import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_CONFIG, SELECT, SWITCH } from '../../components/Common/Const';
 import { addConfigToDB, updateSavedState } from "../../Features/Tabs/ConfigSlice";
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
@@ -90,7 +90,22 @@ const AddConfig = () => {
       const extraData = {
         configId: configId
       }
-      dispatch(addConfigToDB({ ...dataToSave, ...extraData }))
+      const completeData = {};
+      ConfigFields.forEach((field) => {
+        const { name, type } = field;
+        if (!name) return; 
+
+        const value = dataToSave[name];
+
+        if (type === SELECT) {
+          completeData[name] = value ?? 0;
+        } else if (type === SWITCH) {
+          completeData[name] = value ?? false;
+        } else {
+          completeData[name] = value ?? null;
+        }
+      });
+      dispatch(addConfigToDB({ ...completeData, ...extraData }));
       setCurrentSaveAction(saveAction);
     }
   };

@@ -450,7 +450,7 @@ const Index = () => {
       dataIndex: "isActive",
       render: (text, record) => (
         <Tooltip
-          title={"Active/Inactive User"}
+          title={"User"}
           color={"#e8e8ea"}
           overlayInnerStyle={{ color: "#000" }}
         >

@@ -1903,7 +1903,7 @@ const Index = forwardRef(
                               />
                             </div>
                           ) : null}
-                          {tableElement?.pythonApiSelect ? (
+                          {/* {tableElement?.pythonApiSelect ? (
                             <div className="">
                               <Select
                                 styles={{
@@ -1936,7 +1936,7 @@ const Index = forwardRef(
                                 classNamePrefix="filter-dropdown"
                               />
                             </div>
-                          ) : null}
+                          ) : null} */}
                           {tableElement?.typeSelect ? (
                             <div className="">
                               <Select
@@ -2226,6 +2226,40 @@ const Index = forwardRef(
                               )}
                               classNamePrefix="filter-dropdown"
                             />
+                          ) : null}
+                          {tableElement?.pythonApiSelect ? (
+                            <div className="">
+                              <Select
+                                styles={{
+                                  control: (provided) => ({
+                                    ...provided,
+                                    width: 180,
+                                  }), // Adjust width as needed
+                                }}
+                                value={selectedTableElements?.pythonApi}
+                                placeholder="API"
+                                onChange={(e) => {
+                                  if (
+                                    e?.value !==
+                                    selectedTableElements?.pythonApi?.value
+                                  ) {
+                                    handleTableActions("pythonId", e);
+                                    setSelectedTableElements({
+                                      ...selectedTableElements,
+                                      pythonApi: e,
+                                    });
+                                  }
+                                }}
+                                options={[
+                                  { label: "Select API", value: null },
+                                  ...(pythonApis?.map((item) => ({
+                                    label: item?.developerName,
+                                    value: item?.id,
+                                  })) || []),
+                                ]}
+                                classNamePrefix="filter-dropdown"
+                              />
+                            </div>
                           ) : null}
                           {tableElement?.actionType ? (
                             <div className="d-flex flex-wrap align-items-center gap-2 p-2 m-2">

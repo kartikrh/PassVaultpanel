@@ -221,7 +221,7 @@ const Index = () => {
       key: "isHighlight",
       dataIndex: "isHighlight",
       render: (text, record) => (
-      <Tooltip title={"Active/Inactive Highlights"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+      <Tooltip title={"Highlights"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${text ? "primary" : "danger"}`}
           size="sm"
@@ -243,7 +243,7 @@ const Index = () => {
       key: "isActive",
       dataIndex: "isActive",
       render: (text, record) => (
-      <Tooltip title={"Active/Inactive Event Type"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+      <Tooltip title={"Event Type"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${text ? "primary" : "danger"}`}
           size="sm"

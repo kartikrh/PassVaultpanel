@@ -4,7 +4,7 @@ import FormBuilder from '../../components/Common/Reusables/FormBuilder';
 import { TabFields } from '../../constants/FieldConst/TabConst';
 import { Button, ButtonDropdown, Card, CardBody, Col, Container, DropdownItem, DropdownMenu, DropdownToggle, Row } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_TABS } from '../../components/Common/Const';
+import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_TABS, SWITCH, SELECT } from '../../components/Common/Const';
 import { addTabToDb, updateSavedState } from '../../Features/Tabs/tabsSlice';
 import axiosInstance from '../../Features/axios';
 import SpinnerModel from "../../components/Model/SpinnerModel";
@@ -122,12 +122,28 @@ function AddTabs() {
     const handleSaveClick = async (saveAction) => {
         const dataToSave = finalizeRef.current.finalizeData()
         if (dataToSave) {
+            console.log("type", dataToSave.displayType);
             const extraData = {
-                id: id,
-                iconName: dataToSave?.iconName && `mdi mdi-${dataToSave.iconName}`
-            }
+              id: id,
+              iconName: dataToSave?.iconName && `mdi mdi-${dataToSave.iconName}`,
+              displayType: dataToSave?.displayType ?? 1,
+            };
+            const completeData = {};
+            TabFields.forEach((field) => {
+              const { name, type } = field;
+              if (!name) return; 
+              const value = dataToSave[name];
+
+              if (type === SELECT) {
+                completeData[name] = value ?? (name === 'displayType' ? 1 : 0);
+              } else if (type === SWITCH) {
+                completeData[name] = value ?? false;
+              } else {
+                completeData[name] = value ?? null;
+              }
+            });
             setCurrentSaveAction(saveAction);
-            dispatch(addTabToDb({ ...dataToSave, ...extraData }))
+            dispatch(addTabToDb({ ...completeData, ...extraData }))
         }
     };
     const handleBackClick = () => {

@@ -24,6 +24,7 @@ import {
   SAVE_AND_CLOSE,
   SAVE_AND_NEW,
   TAB_MARKET_TEMPLATE,
+  SELECT, SWITCH,
 } from "../../components/Common/Const";
 import {
   addMarketTemplateToDb,
@@ -207,41 +208,59 @@ function AddMarketTemaplate() {
     }
   };
   const handleSaveClick = async (saveAction) => {
+    const dataToSave = finalizeRef.current.finalizeData();
     const impKeys = {
-      playerName: "",
-      marketTemplateId: 0,
-      templateName: "",
-      isActive: false,
-      isAutoCancel: false,
-      isAutoResultSet: false,
-      isBallStart: false,
-      isOver: false,
-      isPlayer: false,
-      isPredefineMarket: false,
-      isPreMatchMarket: false,
-      isPreMatchOnly: false,
-      isDefaultBetAllowed: false,
-      isDefaultMarketActive: false,
-      isPerEvent: false,
-      isShowInAdvanceMarket: false,
-      defaultIsSendData: false,
+      // marketTemplateId: 0,
+      marketTemplateId,
       defaultBackSize: 100,
       defaultLaySize: 100,
       rateDiff: 1,
       howManyOpenMarkets: 1,
+      // playerName: "",
+      // templateName: "",
+      // isActive: false,
+      // isAutoCancel: false,
+      // isAutoResultSet: false,
+      // isBallStart: false,
+      // isOver: false,
+      // isPlayer: false,
+      // isPredefineMarket: false,
+      // isPreMatchMarket: false,
+      // isPreMatchOnly: false,
+      // isDefaultBetAllowed: false,
+      // isDefaultMarketActive: false,
+      // isPerEvent: false,
+      // isShowInAdvanceMarket: false,
+      // defaultIsSendData: false,
       // beforeSuspendMin: null,
       // beforeCloseMin: null,
     };
-    const dataToSave = finalizeRef.current.finalizeData();
+    const completeData = {};
+    MarketTemplateFileds.forEach((field) => {
+      const { name, type } = field;
+      if (!name) return;
+
+      const value = dataToSave[name];
+
+      if (type === SELECT) {
+        completeData[name] = value ?? 0;
+      } else if (type === SWITCH) {
+        completeData[name] = value ?? false;
+      } else {
+        completeData[name] = value ?? null;
+      }
+    });
+
     if (dataToSave) {
       const finalData = {
         ...impKeys,
-        ...dataToSave,
+        ...completeData,
       };
       setCurrentSaveAction(saveAction);
       dispatch(addMarketTemplateToDb(finalData));
     }
   };
+
 
   const handleBackClick = () => {
     navigate("/marketTemplate");

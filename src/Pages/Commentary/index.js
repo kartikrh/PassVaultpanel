@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
 import { mapCommentaryStatus } from "./functions";
-import { Button, Container, Modal, ModalHeader, ModalBody } from "reactstrap";
+import { Button, Container } from "reactstrap";
 import { useNavigate } from "react-router-dom";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import LoadCommentaryModel from "../../components/Model/LoadCommentaryModel";
@@ -1456,6 +1456,30 @@ const Index = () => {
       style: { width: "40%" },
     },
     {
+      title: "Day",
+      dataIndex: "pitchAge",
+      render: (text, record) => (
+        <span
+          onClick={() => {
+            setUpdateDayModelVisible(true);
+            setSelectedCommentaryDay(record);
+          }}
+          style={{ cursor: "pointer" }}
+        >
+          {text}{" "}
+          <Tooltip
+            title="Edit Day"
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+          <a className="bx bx-edit-alt"></a>
+          </Tooltip>
+        </span>
+      ),
+      key: "pitchAge",
+      style: { width: "10%" },
+    },
+    {
       title: "Show",
       key: "isClientShow",
       render: (text, record) => (
@@ -1485,7 +1509,7 @@ const Index = () => {
       key: "isActive",
       render: (text, record) => (
         <Tooltip
-          title={"Active/Inactive Commentary"}
+          title={"Commentary"}
           color={"#e8e8ea"}
           overlayInnerStyle={{ color: "#000" }}
         >
@@ -1549,7 +1573,7 @@ const Index = () => {
       render: (text, record) => (
         <div className="d-flex align-items-center gap-2">
           <Tooltip
-            title={"Active/Inactive Predict Market"}
+            title={"Predict Market"}
             color={"#e8e8ea"}
             overlayInnerStyle={{ color: "#000" }}
           >
@@ -1869,68 +1893,6 @@ const Index = () => {
       style: { width: "10%" },
     },
     {
-      title: "CP",
-      key: "isCountInPoint",
-      render: (text, record) => (
-        <Tooltip
-          title={"Active/Inactive Count In Point"}
-          color={"#e8e8ea"}
-          overlayInnerStyle={{ color: "#000" }}
-        >
-          <Button
-            color={`${record.isCountInPoint ? "primary" : "danger"}`}
-            size="sm"
-            className="btn"
-            onClick={() => {
-              handleIsCountInPoint(
-                "isCountInPoint",
-                record,
-                record?.isCountInPoint
-              );
-            }}
-          >
-            <i
-              className={`bx ${
-                record?.isCountInPoint ? "bx-check" : "bx-block"
-              }`}
-            ></i>
-          </Button>
-        </Tooltip>
-      ),
-      style: { width: "2%", textAlign: "center" },
-    },
-    {
-      title: "Win %",
-      key: "isTeamPredictionOn",
-      render: (text, record) => (
-        <Tooltip
-          title={"Active/Inactive Team Prediction"}
-          color={"#e8e8ea"}
-          overlayInnerStyle={{ color: "#000" }}
-        >
-          <Button
-            color={`${record.isTeamPredictionOn ? "primary" : "danger"}`}
-            size="sm"
-            className="btn"
-            onClick={() => {
-              handleTeamPredictionPermissions(
-                "isTeamPredictionOn",
-                record,
-                record.isTeamPredictionOn
-              );
-            }}
-          >
-            <i
-              className={`bx ${
-                record.isTeamPredictionOn ? "bx-check" : "bx-block"
-              }`}
-            ></i>
-          </Button>
-        </Tooltip>
-      ),
-      style: { width: "2%", textAlign: "center" },
-    },
-    {
       title: "Rates",
       key: "marketRunner",
       render: (text, record) => (
@@ -2133,52 +2095,29 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Test",
-      key: "isTest",
-      render: (text, record) => (
-        <Tooltip
-          title={"Active/Inactive Test"}
-          color={"#e8e8ea"}
-          overlayInnerStyle={{ color: "#000" }}
-        >
-          <Button
-            color={`${record.isTest ? "primary" : "danger"}`}
-            size="sm"
-            className="btn"
-            onClick={() => {
-              handleActiveInactiveTest("isTest", record, record?.isTest);
-            }}
-          >
-            <i className={`bx ${record?.isTest ? "bx-check" : "bx-block"}`}></i>
-          </Button>
-        </Tooltip>
-      ),
-      style: { width: "2%", textAlign: "center" },
-    },
-    {
       title: "CID",
       dataIndex: "commentaryId",
       key: "commentaryId",
       sort: true,
       style: { width: "10%" },
     },
-    {
-      title: "Virtual",
-      key: "isVirtual",
-      render: (text, record) => (
-        <Button
-          color={`${record.isVirtual ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          disabled
-        >
-          <i
-            className={`bx ${record?.isVirtual ? "bx-check" : "bx-block"}`}
-          ></i>
-        </Button>
-      ),
-      style: { width: "2%", textAlign: "center" },
-    },
+    // {
+    //   title: "Virtual",
+    //   key: "isVirtual",
+    //   render: (text, record) => (
+    //     <Button
+    //       color={`${record.isVirtual ? "primary" : "danger"}`}
+    //       size="sm"
+    //       className="btn"
+    //       disabled
+    //     >
+    //       <i
+    //         className={`bx ${record?.isVirtual ? "bx-check" : "bx-block"}`}
+    //       ></i>
+    //     </Button>
+    //   ),
+    //   style: { width: "2%", textAlign: "center" },
+    // },
     {
       title: "Load Data",
       key: "loadSingleData",
@@ -2205,30 +2144,6 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Day",
-      dataIndex: "pitchAge",
-      render: (text, record) => (
-        <span
-          onClick={() => {
-            setUpdateDayModelVisible(true);
-            setSelectedCommentaryDay(record);
-          }}
-          style={{ cursor: "pointer" }}
-        >
-          {text}{" "}
-          <Tooltip
-            title="Edit Day"
-            color={"#e8e8ea"}
-            overlayInnerStyle={{ color: "#000" }}
-          >
-          <a className="bx bx-edit-alt"></a>
-          </Tooltip>
-        </span>
-      ),
-      key: "pitchAge",
-      style: { width: "10%" },
-    },
-    {
       title: "Algo",
       dataIndex: "pythonId",
       render: (text, record) => (
@@ -2252,6 +2167,116 @@ const Index = () => {
       key: "pythonId",
       sort: true,
       style: { width: "10%" },
+    },
+    {
+      title: "Algo",
+      dataIndex: "pythonId",
+      render: (text, record) => (
+        <span
+          onClick={() => {
+            setChangePythonModel(true);
+            setSelectedPythonCommentary(record);
+          }}
+          style={{ cursor: "pointer" }}
+        >
+          {record?.pythonURI}{" "}
+          <Tooltip
+            title="Edit Python Type"
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            {<a className="bx bx-edit-alt"></a>}
+          </Tooltip>
+        </span>
+      ),
+      key: "pythonId",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
+      title: "CP",
+      key: "isCountInPoint",
+      render: (text, record) => (
+        <Tooltip
+          title={"Count In Point"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
+          <Button
+            color={`${record.isCountInPoint ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleIsCountInPoint(
+                "isCountInPoint",
+                record,
+                record?.isCountInPoint
+              );
+            }}
+          >
+            <i
+              className={`bx ${
+                record?.isCountInPoint ? "bx-check" : "bx-block"
+              }`}
+            ></i>
+          </Button>
+        </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Win %",
+      key: "isTeamPredictionOn",
+      render: (text, record) => (
+        <Tooltip
+          title={"Team Prediction"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
+          <Button
+            color={`${record.isTeamPredictionOn ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleTeamPredictionPermissions(
+                "isTeamPredictionOn",
+                record,
+                record.isTeamPredictionOn
+              );
+            }}
+          >
+            <i
+              className={`bx ${
+                record.isTeamPredictionOn ? "bx-check" : "bx-block"
+              }`}
+            ></i>
+          </Button>
+        </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Test",
+      key: "isTest",
+      render: (text, record) => (
+        <Tooltip
+          title={"Test"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
+          <Button
+            color={`${record.isTest ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleActiveInactiveTest("isTest", record, record?.isTest);
+            }}
+          >
+            <i className={`bx ${record?.isTest ? "bx-check" : "bx-block"}`}></i>
+          </Button>
+        </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
     },
   ];
 

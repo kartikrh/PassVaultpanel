@@ -4,7 +4,7 @@ import FormBuilder from '../../components/Common/Reusables/FormBuilder';
 import { MatchDetailFields, PitchDetailsFields, TeamDetailsFields, WeatherDetailsFields } from '../../constants/FieldConst/CommentaryConst';
 import { Button, ButtonDropdown, Card, CardBody, Col, Container, DropdownItem, DropdownMenu, DropdownToggle, NavItem, NavLink, Row, TabContent, TabPane } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_COMMENTARY } from '../../components/Common/Const';
+import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_COMMENTARY, SWITCH, SELECT } from '../../components/Common/Const';
 import { addCommentaryToDb, updateSavedState } from '../../Features/Tabs/commentarySlice';
 import axiosInstance from '../../Features/axios';
 import classnames from "classnames";
@@ -67,20 +67,20 @@ function AddCommentary() {
         if (id !== "0") {
             fetchData(id);
             setDisabledFields({
-                "eventTypeId": true,
-                "competitionId": true,
+                // "eventTypeId": true,
+                // "competitionId": true,
                 // "eventId": true,
-                "team1Id": true,
-                "team2Id": true,
+                // "team1Id": true,
+                // "team2Id": true,
                 // "team1Captain": true,
                 // "team2Captain": true,
                 // "team1Kipper": true,
                 // "team2Kipper": true,
                 // "team1Players": true,
                 // "team2Players": true,
-                "matchTypeId": true,
+                // "matchTypeId": true,
                 "addSystemPlayer": true,
-                "drsCount": true,
+                // "drsCount": true,
                 "isVirtual": true,
             })
         }
@@ -473,38 +473,67 @@ function AddCommentary() {
         const dataToSave4 = finalizeRef4.current.finalizeData()
         const pythonURI = pythonList && pythonList.length > 0 && pythonList.find((item) => item?.id == dataToSave1?.pythonId)?.URI;
         if (dataToSave1 && dataToSave2 && dataToSave3 && dataToSave4) {
-            const dataToSave = {
-                ...dataToSave1,
-                ...dataToSave3,
-                ...dataToSave4,
-                "isActive": dataToSave1?.isActive ? dataToSave1.isActive : false,
-                "isTest": dataToSave1?.isTest ? dataToSave1.isTest : false,
-                "isVirtual": dataToSave1?.isVirtual ? dataToSave1.isVirtual : false,
-                "isClientShow": dataToSave1?.isClientShow ? dataToSave1.isClientShow : false,
-                "isCountInPoint": dataToSave1?.isCountInPoint ? dataToSave1.isCountInPoint : false,
-                "team1Id": dataToSave2.team1Id,
-                "team2Id": dataToSave2.team2Id,
-                "team1Captain": dataToSave2.team1Captain,
-                "team2Captain": dataToSave2.team2Captain,
-                "team1Kipper": dataToSave2.team1Kipper,
-                "team2Kipper": dataToSave2.team2Kipper,
-                "isPredictMarket" : dataToSave1?.isPredictMarket || false,
-                "team1Players": dataToSave2.team1Players,
-                "team2Players": dataToSave2.team2Players,
-                "addSystemPlayer" : dataToSave2?.addSystemPlayer ? dataToSave2.addSystemPlayer : false,
-                "systemPlayerCount" :dataToSave2.addSystemPlayer ? dataToSave2.systemPlayerCount : "0",
-                "drsCount": dataToSave2?.drsCount || 0,
-                "pythonId": dataToSave1?.pythonId,
-                "pythonURI": pythonURI,
+            // const dataToSave = {
+            //     ...dataToSave1,
+            //     ...dataToSave3,
+            //     ...dataToSave4,
+            //     "isActive": dataToSave1?.isActive ? dataToSave1.isActive : false,
+            //     "isTest": dataToSave1?.isTest ? dataToSave1.isTest : false,
+            //     "isVirtual": dataToSave1?.isVirtual ? dataToSave1.isVirtual : false,
+            //     "isClientShow": dataToSave1?.isClientShow ? dataToSave1.isClientShow : false,
+            //     "isCountInPoint": dataToSave1?.isCountInPoint ? dataToSave1.isCountInPoint : false,
+            //     "team1Id": dataToSave2.team1Id,
+            //     "team2Id": dataToSave2.team2Id,
+            //     "team1Captain": dataToSave2.team1Captain,
+            //     "team2Captain": dataToSave2.team2Captain,
+            //     "team1Kipper": dataToSave2.team1Kipper,
+            //     "team2Kipper": dataToSave2.team2Kipper,
+            //     "isPredictMarket" : dataToSave1?.isPredictMarket || false,
+            //     "team1Players": dataToSave2.team1Players,
+            //     "team2Players": dataToSave2.team2Players,
+            //     "addSystemPlayer" : dataToSave2?.addSystemPlayer ? dataToSave2.addSystemPlayer : false,
+            //     "systemPlayerCount" :dataToSave2.addSystemPlayer ? dataToSave2.systemPlayerCount : "0",
+            //     "drsCount": dataToSave2?.drsCount || 0,
+            //     "pythonId": dataToSave1?.pythonId,
+            //     "pythonURI": pythonURI,
+            // }
+            const allFields = [
+            ...MatchDetailFields,
+            ...PitchDetailsFields,
+            ...TeamDetailsFields,
+            ...WeatherDetailsFields,
+            ];
+
+            const mergedData = {
+            ...dataToSave1,
+            ...dataToSave2,
+            ...dataToSave3,
+            ...dataToSave4,
+            };
+
+            const completeData = {};
+            allFields.forEach(({ name, type }) => {
+            if (!name) return;
+            const value = mergedData[name];
+            if (type === SELECT) {
+                completeData[name] = value ?? 0;
+            } else if (type === SWITCH) {
+                completeData[name] = value ?? false;
+            } else {
+                completeData[name] = value ?? null;
             }
+            });
+
             const extraData = {
                 commentaryId: id,
-                eventDate: convertDateLocalToUTC(dataToSave1.eventDate)
+                eventDate: convertDateLocalToUTC(dataToSave1.eventDate),
+                pythonURI,
+                isSignalROn: mergedData?.isSignalROn,
                 // marketId: "0", tpId: "0", matchTypeId: "0"
                 // , currentInnings: 0
             }
             setCurrentSaveAction(saveAction);
-            dispatch(addCommentaryToDb({ ...dataToSave, ...extraData }))
+            dispatch(addCommentaryToDb({ ...completeData, ...extraData }))
         }
     };
 
@@ -523,7 +552,6 @@ function AddCommentary() {
         let navLink = state === 'isPredict' ? '/CommentaryList' : "/commentary"
         navigate(navLink);
     };
-    useEffect(() => {console.log("active", activeTab)}, [activeTab])
 
     return (
         <React.Fragment>

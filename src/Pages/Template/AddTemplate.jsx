@@ -23,6 +23,7 @@ import {
   SAVE_AND_CLOSE,
   SAVE_AND_NEW,
   TAB_TEMPLATE,
+  SELECT, SWITCH,
 } from "../../components/Common/Const";
 import {
   addTemplateToDb,
@@ -122,10 +123,27 @@ function AddTemplate() {
     if (dataToSave) {
       const extraData = {
         templateId: templateId,
-        isDefault: dataToSave?.isDefault || false,
-        isActive: dataToSave?.isActive || false,
+        // isDefault: dataToSave?.isDefault || false,
+        // isActive: dataToSave?.isActive || false,
       };
-      dispatch(addTemplateToDb({ ...dataToSave, ...extraData }));
+
+      //to send all the keys in payload to db
+      const completeData = {};
+      TemplateConst.forEach((field) => {
+        const { name, type } = field;
+        if (!name) return;
+        const value = dataToSave[name];
+
+        if (type === SELECT) {
+          completeData[name] = value ?? 0;
+        } else if (type === SWITCH) {
+          completeData[name] = value ?? false;
+        } else {
+          completeData[name] = value ?? null;
+        }
+      });
+      
+      dispatch(addTemplateToDb({...completeData,...extraData }));
       setCurrentSaveAction(saveAction);
     }
   };

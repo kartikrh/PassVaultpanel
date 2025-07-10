@@ -19,7 +19,7 @@ import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND
 import { addCompetitionToDb, updateSavedState } from "../../Features/Tabs/competitionSlice";
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
-import { convertObjtoFormData2 } from "../../components/Common/utilities";
+import { convertObjtoFormData } from "../../components/Common/utilities";
 import { checkPermission, convertDateLocalToUTC } from '../../components/Common/Reusables/reusableMethods';
 import { updateToastData } from "../../Features/toasterSlice";
 
@@ -131,24 +131,24 @@ function AddCompetitions() {
     if (dataToSave) {
       const extraData = {
         competitionId,
-        isTrending: dataToSave?.isTrending || false,
-        tpId: dataToSave?.tpId || null,
-        isVirtual: dataToSave?.isVirtual || false,
-        matchTypeId: dataToSave?.matchTypeId || null,
-        pythonId: dataToSave?.pythonId || null,
-        isMen: dataToSave?.isMen || false,
-        isEventSnap: dataToSave?.isEventSnap || false,
-        isPointTable: dataToSave?.isPointTable || false,
-        winPoint: dataToSave?.winPoint || null,
-        tiePoint: dataToSave?.tiePoint || null,
-        lossPoint: dataToSave?.lossPoint || null,
-        cancelPoint: dataToSave?.cancelPoint || null,
-        drsCount: dataToSave?.drsCount || null,
+        // isTrending: dataToSave?.isTrending || false,
+        // tpId: dataToSave?.tpId || null,
+        // isVirtual: dataToSave?.isVirtual || false,
+        // matchTypeId: dataToSave?.matchTypeId || null,
+        // pythonId: dataToSave?.pythonId || null,
+        // isMen: dataToSave?.isMen || false,
+        // isEventSnap: dataToSave?.isEventSnap || false,
+        // isPointTable: dataToSave?.isPointTable || false,
+        // winPoint: dataToSave?.winPoint || null,
+        // tiePoint: dataToSave?.tiePoint || null,
+        // lossPoint: dataToSave?.lossPoint || null,
+        // cancelPoint: dataToSave?.cancelPoint || null,
+        // drsCount: dataToSave?.drsCount || null,
         endDate: convertDateLocalToUTC(dataToSave.endDate),
         startDate: convertDateLocalToUTC(dataToSave.startDate),
       }
       setCurrentSaveAction(saveAction);
-      dispatch(addCompetitionToDb(convertObjtoFormData2({ ...dataToSave, ...extraData })))
+      dispatch(addCompetitionToDb(convertObjtoFormData({ ...dataToSave, ...extraData })))
     }
   };
   const handleBackClick = () => {

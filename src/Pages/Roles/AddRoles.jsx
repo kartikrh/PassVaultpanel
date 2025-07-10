@@ -153,7 +153,7 @@ function AddRoles() {
                 permissions: newPermissionValue
             }
             const defaultData = {
-                description: ""
+                description: dataToSave?.description ?? null,
             }
             if (newPermissionValue.length) {
                 dispatch(addRoleToDb({ ...defaultData, ...dataToSave, ...extraData }))

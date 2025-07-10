@@ -27,7 +27,7 @@ import Select from "react-select";
 import LoadDataModal from "../../components/Model/LoadDataModal";
 
 const ENTITY_OPTIONS = [
-  { label: "Select Entity", value: 0 },
+  { label: " ", value: 0 },
   { label: "ODI (One Day International)", value: 1 },
   { label: "TEST", value: 2 },
   { label: "T20I(Twenty20 International)", value: 3 },
@@ -362,7 +362,7 @@ const Index = () => {
       key: "isHistory",
       render: (text, record) => (
         <Tooltip
-          title={"Active/Inactive History"}
+          title={"History"}
           color={"#e8e8ea"}
           overlayInnerStyle={{ color: "#000" }}
         >
@@ -388,7 +388,7 @@ const Index = () => {
       printType: "ignore",
       render: (text, record) => (
         <Tooltip
-          title={"View Test Event Predictor"}
+          title={"Test Event Predictor"}
           color={"#e8e8ea"}
           overlayInnerStyle={{ color: "#000" }}
         >
@@ -412,7 +412,7 @@ const Index = () => {
       printType: "ignore",
       render: (text, record) => (
         <Tooltip
-          title={"View Test bowling Predictor"}
+          title={"Test bowling Predictor"}
           color={"#e8e8ea"}
           overlayInnerStyle={{ color: "#000" }}
         >

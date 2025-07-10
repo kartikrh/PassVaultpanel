@@ -24,6 +24,7 @@ import {
   SAVE_AND_CLOSE,
   SAVE_AND_NEW,
   PYTHON_API,
+  SWITCH, SELECT,
 } from "../../components/Common/Const";
 import {
   addpythonAPIToDb,
@@ -99,9 +100,24 @@ const AddPythonAPI = () => {
     if (dataToSave) {
       const extraData = {
         id: pythonApiId,
-        isDefault: dataToSave?.isDefault || false,
+        // isDefault: dataToSave?.isDefault || false,
       };
-      dispatch(addpythonAPIToDb({ ...dataToSave, ...extraData }));
+      const completeData = {};
+      PythonApiField.forEach((field) => {
+        const { name, type } = field;
+        if (!name) return;
+
+        const value = dataToSave[name];
+
+        if (type === SELECT) {
+          completeData[name] = value ?? 0;
+        } else if (type === SWITCH) {
+          completeData[name] = value ?? false;
+        } else {
+          completeData[name] = value ?? null;
+        }
+      });
+      dispatch(addpythonAPIToDb({ ...completeData, ...extraData }));
       setCurrentSaveAction(saveAction);
     }
   };

@@ -747,6 +747,7 @@ export const NewUpdateManualOdds = () => {
     };
 
     const handleInningsDataUpdate = useCallback((updatedMarketData) => {
+        console.log("$$$$$$$$$$$$$$$", { updatedMarketData })
         const sortedMarkets = [...updatedMarketData].sort((a, b) => b.inningsId - a.inningsId);
         const newIdSetting = [...updatedMarketData].sort((a, b) => b.teamId - a.teamId);
         const currentInningsMarket = sortedMarkets[0];
@@ -1167,10 +1168,10 @@ export const NewUpdateManualOdds = () => {
 
         if (isShortcut) {
             // Handle shortcut value changes - only allow in manual mode
-            
+
             // const isManualMode = !isLive && !directLineEnabled;
             // if (!isManualMode) return;
-            
+
             if (isLive) return;
 
             setSettings(prev => {
@@ -1216,8 +1217,13 @@ export const NewUpdateManualOdds = () => {
             // Handle settings that affect price calculations
             if (['rateDifferent', 'bRateDifferent', 'lRateDifferent'].includes(key)) {
                 // Don't auto-recalculate for margin and favRatio here as they have their own useEffect
-                if (((originalMarketRunnerData.length > 0 && isLive) ||
-                    (originalInningsData.length > 0 && !isLive && directLineEnabled))) {
+
+                // Special handling for rateDifferent in direct line mode - skip runner updates
+                const skipRunnerUpdatesForRateDiff = (key === 'rateDifferent' && !isLive && directLineEnabled);
+
+                if (!skipRunnerUpdatesForRateDiff &&
+                    ((originalMarketRunnerData.length > 0 && isLive) ||
+                        (originalInningsData.length > 0 && !isLive && directLineEnabled))) {
 
                     // Re-process the appropriate data source based on current mode
                     if (isLive && originalMarketRunnerData.length > 0) {
@@ -1262,20 +1268,22 @@ export const NewUpdateManualOdds = () => {
                     }
                 }
 
-                // Always update the runner calculations regardless of mode
-                setRunners(prev => prev.map(runner => {
-                    const newSettings = { ...settings, [key]: numericValue };
-                    const newRates = calculateRunnerRates(runner, newSettings);
-                    return {
-                        ...runner,
-                        b2: newRates.b2,
-                        b1: newRates.b1,
-                        back: { ...runner.back, price: newRates.back },
-                        lay: { ...runner.lay, price: newRates.lay },
-                        l1: newRates.l1,
-                        l2: newRates.l2,
-                    };
-                }));
+                // Always update the runner calculations regardless of mode - but skip for rateDifferent in direct line mode
+                if (!skipRunnerUpdatesForRateDiff) {
+                    setRunners(prev => prev.map(runner => {
+                        const newSettings = { ...settings, [key]: numericValue };
+                        const newRates = calculateRunnerRates(runner, newSettings);
+                        return {
+                            ...runner,
+                            b2: newRates.b2,
+                            b1: newRates.b1,
+                            back: { ...runner.back, price: newRates.back },
+                            lay: { ...runner.lay, price: newRates.lay },
+                            l1: newRates.l1,
+                            l2: newRates.l2,
+                        };
+                    }));
+                }
             }
 
             // Handle volume-related settings
@@ -1992,9 +2000,9 @@ export const NewUpdateManualOdds = () => {
         setIsLoading(true);
         try {
             const response = await axiosInstance.post('/admin/eventMarket/marketInfo', {
-                    eventMarketId,
-                });
-                console.log("response", response.result)
+                eventMarketId,
+            });
+            console.log("response", response.result)
             if (response?.result) {
                 if (Number(response?.result?.market?.rateSourceRefID) == 0) {
                     setIsLive(false)
@@ -2004,10 +2012,10 @@ export const NewUpdateManualOdds = () => {
                     return;
                 }
                 let commentaryDetailsFromAPi = {
-                    commentaryId : response?.result.commentaryId,
+                    commentaryId: response?.result.commentaryId,
                     eventDate: response?.result.eventDate,
-                    eventName : response?.result.eventName,
-                    eventRefId : response?.result.eventRefId
+                    eventName: response?.result.eventName,
+                    eventRefId: response?.result.eventRefId
                 }
                 setEventData({
                     comDetails: commentaryDetailsFromAPi || null,
@@ -2031,7 +2039,7 @@ export const NewUpdateManualOdds = () => {
                     setAbOpen(false);
                     setAbSuspend(false);
                 } else {
-                     setSettings(prevSettings => ({
+                    setSettings(prevSettings => ({
                         ...prevSettings,
                         betAllow: marketData?.isAllow || prevSettings.betAllow,
                         active: marketData?.isActive || prevSettings.active,
@@ -2510,10 +2518,10 @@ export const NewUpdateManualOdds = () => {
                             ...prev,
                             [selectedRunnerData.runnerId]: {
                                 back: selectedBackPrice,
-                                lay: selectedLayPrice
+                                lay: nonSelectedBackPrice
                             },
                             [nonSelectedRunner.runnerId]: {
-                                back: nonSelectedBackPrice,
+                                back: selectedLayPrice,
                                 lay: nonSelectedLayPrice
                             }
                         }));
@@ -2524,7 +2532,7 @@ export const NewUpdateManualOdds = () => {
 
         // Always update runner calculations with new margin
         setRunners(prev => prev.map(runner => {
-            const newRates = calculateRunnerRates(runner, settings);
+            const newRates = calculateRunnerRates(runner, settings, { forceCalculateLay: false });
             return {
                 ...runner,
                 b2: newRates.b2,
@@ -2770,7 +2778,7 @@ export const NewUpdateManualOdds = () => {
         if (directLineEnabled && !isLive) {
             // console.log("Connecting to INNINGS_CONNECT for DirectLine data");
             socket.emit(INNINGS_CONNECT, commentaryId);
-        } else if(rateSourceRefID.length){
+        } else if (rateSourceRefID.length) {
             // console.log("Connecting to MARKET_RUNNER_CONNECT");
             socket.emit(MARKET_RUNNER_CONNECT, rateSourceRefID);
         }
@@ -2811,6 +2819,69 @@ export const NewUpdateManualOdds = () => {
         }
     }, [runners]);
 
+    useEffect(() => {
+        // Handle favRatio changes for different modes
+        if (isLive && originalMarketRunnerData.length > 0) {
+            // In live mode, recalculate with socket data
+            console.log('FavRatio changed in live mode, recalculating...');
+            processMarketRunnerData(originalMarketRunnerData);
+        } else if (!isLive && directLineEnabled && originalInningsData.length > 0) {
+            // In direct line mode, recalculate with innings data
+            console.log('FavRatio changed in direct line mode, recalculating...');
+            processInningsData(originalInningsData);
+        } else if (!isLive && !directLineEnabled) {
+            // In manual mode, recalculate saved prices based on favRatio
+            console.log('FavRatio changed in manual mode, recalculating saved prices...');
+
+            // Find selected runner and recalculate
+            const selectedRunnerData = runners.find(r => r.isSelected);
+            if (selectedRunnerData) {
+                const selectedBackPrice = savedPrices[selectedRunnerData.runnerId]?.back || 0;
+                if (selectedBackPrice > 0) {
+                    // Recalculate lay price with new favRatio
+                    const newSettings = { ...settings }; // This will have the updated favRatio
+                    const newRates = calculateRunnerRates({
+                        back: { price: selectedBackPrice }
+                    }, newSettings, { forceCalculateLay: true });
+
+                    // Update saved prices for both runners
+                    const nonSelectedRunner = runners.find(r => !r.isSelected);
+                    if (nonSelectedRunner) {
+                        const selectedLayPrice = newRates.lay;
+                        const nonSelectedBackPrice = parseFloat((1 / (1 - (1 / selectedLayPrice))).toFixed(2));
+                        const nonSelectedLayPrice = parseFloat((1 / (1 - (1 / selectedBackPrice))).toFixed(2));
+
+                        setSavedPrices(prev => ({
+                            ...prev,
+                            [selectedRunnerData.runnerId]: {
+                                back: selectedBackPrice,
+                                lay: selectedLayPrice
+                            },
+                            [nonSelectedRunner.runnerId]: {
+                                back: nonSelectedBackPrice,
+                                lay: nonSelectedLayPrice
+                            }
+                        }));
+                    }
+                }
+            }
+        }
+
+        // Always update runner calculations with new favRatio
+        setRunners(prev => prev.map(runner => {
+            const newRates = calculateRunnerRates(runner, settings, { forceCalculateLay: false });
+            return {
+                ...runner,
+                b2: newRates.b2,
+                b1: newRates.b1,
+                back: { ...runner.back, price: newRates.back },
+                lay: { ...runner.lay, price: newRates.lay },
+                l1: newRates.l1,
+                l2: newRates.l2,
+            };
+        }));
+    }, [settings.favRatio, isLive, directLineEnabled, originalMarketRunnerData, originalInningsData, runners, savedPrices, processMarketRunnerData, processInningsData, calculateRunnerRates, settings]);
+
     // TODO: test method Remove after development 
     useEffect(() => {
         console.log("Setting up keydown event listener"); // Debug log
@@ -2834,7 +2905,7 @@ export const NewUpdateManualOdds = () => {
     useEffect(() => {
         // Load mode from localStorage on component mount
         const savedMode = loadModeFromLocalStorage();
-    
+
         if (savedMode === "live" && rateSourceRefID.length) {
             setIsLive(true);
             setDirectLineEnabled(false);
@@ -2963,8 +3034,8 @@ export const NewUpdateManualOdds = () => {
                                             row
                                             value={isLive ? "live" : directLineEnabled ? "directLine" : "manual"}
                                             onChange={(e) => {
-                                                const value = e.target.value;  
-                                                
+                                                const value = e.target.value;
+
                                                 // Save to localStorage
                                                 saveModeToLocalStorage(value);
 
@@ -3309,7 +3380,7 @@ export const NewUpdateManualOdds = () => {
 
                             {/* Shortcuts Section */}
                             {/* (!isLive && !directLineEnabled) */}
-                            {(!isLive ) && (
+                            {(!isLive) && (
                                 <Box display="flex" alignItems="center" flexWrap="wrap" gap={1} sx={{ mb: 3 }}>
                                     <Box display="flex" flexWrap="wrap" gap={1} sx={{ flex: 1 }}>
                                         {Object.entries(settings.shortcutValues).map(([key, value]) => (
@@ -3484,25 +3555,25 @@ export const NewUpdateManualOdds = () => {
                                                 label="Point"
                                                 value={selectedRunnerDetails.point}
                                                 onChange={(e) => {
-                                                        const inputValue = e.target.value;
-                                                        console.log("Input value:", inputValue);
+                                                    const inputValue = e.target.value;
+                                                    console.log("Input value:", inputValue);
 
-                                                        // If input is just "-" or empty, skip logic (wait for valid number)
-                                                        if (inputValue === '-' || inputValue.trim() === '') {
-                                                            console.log("⛔ Ignored input:", inputValue);
-                                                            return;
-                                                        }
-                                                        const pointValue = Math.max(0, Math.min(99, parseInt(e.target.value) || 0));
-                                                        const mainValue = parseInt(selectedRunnerDetails.main) || 0;
-                                                        const combinedValue = mainValue + (pointValue / 100);
-    
-                                                        setSelectedRunnerDetails(prev => ({
-                                                            ...prev,
-                                                            point: pointValue.toString().padStart(2, '0')
-                                                        }));
-    
-                                                        // Immediately update saved prices
-                                                        handleSavedRunnerChange(selectedRunner, 'back', combinedValue.toFixed(2));
+                                                    // If input is just "-" or empty, skip logic (wait for valid number)
+                                                    if (inputValue === '-' || inputValue.trim() === '') {
+                                                        console.log("⛔ Ignored input:", inputValue);
+                                                        return;
+                                                    }
+                                                    const pointValue = Math.max(0, Math.min(99, parseInt(e.target.value) || 0));
+                                                    const mainValue = parseInt(selectedRunnerDetails.main) || 0;
+                                                    const combinedValue = mainValue + (pointValue / 100);
+
+                                                    setSelectedRunnerDetails(prev => ({
+                                                        ...prev,
+                                                        point: pointValue.toString().padStart(2, '0')
+                                                    }));
+
+                                                    // Immediately update saved prices
+                                                    handleSavedRunnerChange(selectedRunner, 'back', combinedValue.toFixed(2));
                                                 }}
                                                 disabled={marketStatus === CLOSE_VALUE.toString()}
                                                 inputProps={{
