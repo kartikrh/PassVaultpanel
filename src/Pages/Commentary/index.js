@@ -1349,6 +1349,13 @@ const Index = () => {
       style: { width: "10%" },
     },
     {
+      title: "Competition",
+      dataIndex: "competition",
+      key: "competition",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
       title: "Event",
       dataIndex: "eventName",
       render: (text, record) => (
@@ -1369,13 +1376,6 @@ const Index = () => {
       key: "eventName",
       sort: true,
       sticky: true,
-      style: { width: "10%" },
-    },
-    {
-      title: "Competition",
-      dataIndex: "competition",
-      key: "competition",
-      sort: true,
       style: { width: "10%" },
     },
     {
@@ -1724,250 +1724,6 @@ const Index = () => {
     //   style: { width: "2%", textAlign: "center" },
     // },
     {
-      title: "S-Score",
-      key: "shortCommentary",
-      printType: "ignore",
-      render: (text, record) => (
-        <Tooltip
-          title={"Short Score"}
-          color={"#e8e8ea"}
-          overlayInnerStyle={{ color: "#000" }}
-        >
-          <Button
-            color={"secondary"}
-            size="sm"
-            className="btn"
-            onClick={() => {
-              handleShortCommentaryClick(record.commentaryId);
-            }}
-          >
-            <i class="bx bxs-chevrons-right"></i>
-          </Button>
-        </Tooltip>
-      ),
-      style: { width: "2%", textAlign: "center" },
-    },
-    {
-      title: "S-Update",
-      key: "updateCommentary",
-      printType: "ignore",
-      render: (text, record) => (
-        <Tooltip
-          title={"Update Commentary"}
-          color={"#e8e8ea"}
-          overlayInnerStyle={{ color: "#000" }}
-        >
-          <Button
-            color={"success"}
-            size="sm"
-            className="btn"
-            onClick={() => {
-              handleUpdateCommentaryClick(record.commentaryId);
-            }}
-          >
-            <i class="bx bx-arrow-to-right"></i>
-          </Button>
-        </Tooltip>
-      ),
-      style: { width: "2%", textAlign: "center" },
-    },
-    {
-      title: "Logs",
-      key: "commentaryLogs",
-      render: (text, record) => (
-        <div className="d-flex align-items-center gap-2">
-          <Tooltip
-            title={"Commentary Logs"}
-            color={"#e8e8ea"}
-            overlayInnerStyle={{ color: "#000" }}
-          >
-            <Button
-              color={"primary"}
-              size="sm"
-              className="btn"
-              onClick={() => {
-                handleCommentaryLogsClick(record);
-              }}
-            >
-              <i class="bx bxs-up-arrow-square"></i>
-            </Button>
-          </Tooltip>
-          <Tooltip
-            title={"Scoring Logs"}
-            color={"#e8e8ea"}
-            overlayInnerStyle={{ color: "#000" }}
-          >
-            <Button
-              color={"info"}
-              size="sm"
-              className="btn"
-              onClick={() => {
-                handleScoringLogsClick(record);
-              }}
-            >
-              <i class="bx bxs-up-arrow-square"></i>
-            </Button>
-          </Tooltip>
-          <Tooltip
-            title={"Undo Logs"}
-            color={"#e8e8ea"}
-            overlayInnerStyle={{ color: "#000" }}
-          >
-            <Button
-              color={"warning"}
-              size="sm"
-              className="btn"
-              onClick={() => {
-                handleUndoLogsClick(record);
-              }}
-            >
-              <i class="bx bxs-up-arrow-square"></i>
-            </Button>
-          </Tooltip>
-          <Tooltip
-            title={"EventMarket Logs"}
-            color={"#e8e8ea"}
-            overlayInnerStyle={{ color: "#000" }}
-          >
-            <Button
-              color={"info"}
-              size="sm"
-              className="btn"
-              onClick={() => {
-                handleEventMarketLogsClick(record);
-              }}
-            >
-              <i class="bx bxs-up-arrow-square"></i>
-            </Button>
-          </Tooltip>
-        </div>
-      ),
-      style: { width: "2%", textAlign: "center" },
-    },
-    {
-      title: "SR",
-      dataIndex: "setRunner",
-      render: (text, record) => (
-        <Tooltip
-          title={"Set Runner"}
-          color={"#e8e8ea"}
-          overlayInnerStyle={{ color: "#000" }}
-        >
-          <Button
-            size="sm"
-            className="btn runner-button-commentary"
-            onClick={() => {
-              setRunnerModelVisible(true);
-              setSelectedCommentaryRunner(record);
-            }}
-            style={{ cursor: "pointer" }}
-          >
-            <i class="bx bxs-up-arrow-square"></i>
-          </Button>
-        </Tooltip>
-      ),
-      key: "setRunner",
-      sort: true,
-      style: { width: "10%", textAlign: "center" },
-    },
-    {
-      title: "DLS",
-      dataIndex: "dls",
-      render: (text, record) => (
-        <Tooltip
-          title={"Duckworth-Lewis-Stern"}
-          color={"#e8e8ea"}
-          overlayInnerStyle={{ color: "#000" }}
-        >
-          <Button
-            size="sm"
-            className="dls-button btn"
-            onClick={() => {
-              setDlsModalCommentary(record);
-            }}
-          >
-            <i class="bx bx-cloud-light-rain"></i>
-          </Button>
-        </Tooltip>
-      ),
-      style: { width: "10%" },
-    },
-    {
-      title: "Rates",
-      key: "marketRunner",
-      render: (text, record) => (
-        <Tooltip
-          title={"Market Runner"}
-          color={"#e8e8ea"}
-          overlayInnerStyle={{ color: "#000" }}
-        >
-          <Button
-            color={"warning"}
-            size="sm"
-            className="btn"
-            onClick={() => {
-              handleCommentaryMarketRunnerClick(record);
-            }}
-          >
-            <i class="bx bxs-store"></i>
-          </Button>
-        </Tooltip>
-      ),
-      style: { width: "2%", textAlign: "center" },
-    },
-    // {
-    //   title: "M-Odds",
-    //   key: "commentaryMOdds",
-    //   printType: "ignore",
-    //   render: (text, record) => (
-    //     <Tooltip title={"Manual Odds"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
-    //       <Button
-    //         color={"success"}
-    //         size="sm"
-    //         className="btn"
-    //         onClick={() => {
-    //           handleUpdateManualOddsClick(record);
-    //         }}
-    //       >
-    //         <i class='bx bx-arrow-to-right' ></i>
-    //       </Button>
-    //     </Tooltip>
-    //   ),
-    //   style: { width: "2%", textAlign: "center" },
-    // },
-    {
-      title: "Delay",
-      dataIndex: "delay",
-      render: (text, record) => (
-        <span
-          onClick={() => {
-            setDelayModelVisible(true);
-            setSelectedDelay(record);
-          }}
-          style={{ cursor: "pointer" }}
-        >
-          {text}{" "}
-          <Tooltip
-            title="Edit Delay"
-            color={"#e8e8ea"}
-            overlayInnerStyle={{ color: "#000" }}
-          >
-            {<a className="bx bx-edit-alt"></a>}
-          </Tooltip>
-        </span>
-      ),
-      key: "delay",
-      sort: true,
-      style: { width: "10%" },
-    },
-    {
-      title: "Created By",
-      dataIndex: "createdBy",
-      key: "createdBy",
-      sort: true,
-      style: { width: "5%", textAlign: "center" },
-    },
-    {
       title: "Markets",
       key: "marketResult",
       render: (text, record) => (
@@ -2069,7 +1825,145 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Generate Image",
+      title: "S-Update",
+      key: "updateCommentary",
+      printType: "ignore",
+      render: (text, record) => (
+        <Tooltip
+          title={"Update Commentary"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
+          <Button
+            color={"success"}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleUpdateCommentaryClick(record.commentaryId);
+            }}
+          >
+            <i class="bx bx-arrow-to-right"></i>
+          </Button>
+        </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "SR",
+      dataIndex: "setRunner",
+      render: (text, record) => (
+        <Tooltip
+          title={"Set Runner"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
+          <Button
+            size="sm"
+            className="btn runner-button-commentary"
+            onClick={() => {
+              setRunnerModelVisible(true);
+              setSelectedCommentaryRunner(record);
+            }}
+            style={{ cursor: "pointer" }}
+          >
+            <i class="bx bxs-up-arrow-square"></i>
+          </Button>
+        </Tooltip>
+      ),
+      key: "setRunner",
+      sort: true,
+      style: { width: "10%", textAlign: "center" },
+    },
+    {
+      title: "DLS",
+      dataIndex: "dls",
+      render: (text, record) => (
+        <Tooltip
+          title={"Duckworth-Lewis-Stern"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
+          <Button
+            size="sm"
+            className="dls-button btn"
+            onClick={() => {
+              setDlsModalCommentary(record);
+            }}
+          >
+            <i class="bx bx-cloud-light-rain"></i>
+          </Button>
+        </Tooltip>
+      ),
+      style: { width: "10%" },
+    },
+    {
+      title: "Delay",
+      dataIndex: "delay",
+      render: (text, record) => (
+        <span
+          onClick={() => {
+            setDelayModelVisible(true);
+            setSelectedDelay(record);
+          }}
+          style={{ cursor: "pointer" }}
+        >
+          {text}{" "}
+          <Tooltip
+            title="Edit Delay"
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            {<a className="bx bx-edit-alt"></a>}
+          </Tooltip>
+        </span>
+      ),
+      key: "delay",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
+      title: "Algo",
+      dataIndex: "pythonId",
+      render: (text, record) => (
+        <span
+          onClick={() => {
+            setChangePythonModel(true);
+            setSelectedPythonCommentary(record);
+          }}
+          style={{ cursor: "pointer" }}
+        >
+          {record?.developerName}{" "}
+          <Tooltip
+            title="Edit Python Type"
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            {<a className="bx bx-edit-alt"></a>}
+          </Tooltip>
+          <br />
+          {record?.pythonURI}
+        </span>
+      ),
+      key: "pythonId",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
+      title: "CID",
+      dataIndex: "commentaryId",
+      key: "commentaryId",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
+      title: "Created",
+      dataIndex: "createdBy",
+      key: "createdBy",
+      sort: true,
+      style: { width: "5%", textAlign: "center" },
+    },
+    {
+      title: "G-Image",
       key: "generateImage",
       render: (text, record) => (
         <>
@@ -2095,104 +1989,170 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "CID",
-      dataIndex: "commentaryId",
-      key: "commentaryId",
-      sort: true,
-      style: { width: "10%" },
+      title: "Logs",
+      key: "commentaryLogs",
+      render: (text, record) => (
+        <div className="d-flex align-items-center gap-2">
+          <Tooltip
+            title={"Commentary Logs"}
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            <Button
+              color={"primary"}
+              size="sm"
+              className="btn"
+              onClick={() => {
+                handleCommentaryLogsClick(record);
+              }}
+            >
+              <i class="bx bxs-up-arrow-square"></i>
+            </Button>
+          </Tooltip>
+          <Tooltip
+            title={"Scoring Logs"}
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            <Button
+              color={"info"}
+              size="sm"
+              className="btn"
+              onClick={() => {
+                handleScoringLogsClick(record);
+              }}
+            >
+              <i class="bx bxs-up-arrow-square"></i>
+            </Button>
+          </Tooltip>
+          <Tooltip
+            title={"Undo Logs"}
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            <Button
+              color={"warning"}
+              size="sm"
+              className="btn"
+              onClick={() => {
+                handleUndoLogsClick(record);
+              }}
+            >
+              <i class="bx bxs-up-arrow-square"></i>
+            </Button>
+          </Tooltip>
+          <Tooltip
+            title={"EventMarket Logs"}
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            <Button
+              color={"info"}
+              size="sm"
+              className="btn"
+              onClick={() => {
+                handleEventMarketLogsClick(record);
+              }}
+            >
+              <i class="bx bxs-up-arrow-square"></i>
+            </Button>
+          </Tooltip>
+        </div>
+      ),
+      style: { width: "2%", textAlign: "center" },
     },
-    // {
-    //   title: "Virtual",
-    //   key: "isVirtual",
-    //   render: (text, record) => (
-    //     <Button
-    //       color={`${record.isVirtual ? "primary" : "danger"}`}
-    //       size="sm"
-    //       className="btn"
-    //       disabled
-    //     >
-    //       <i
-    //         className={`bx ${record?.isVirtual ? "bx-check" : "bx-block"}`}
-    //       ></i>
-    //     </Button>
-    //   ),
-    //   style: { width: "2%", textAlign: "center" },
-    // },
     {
-      title: "Load Data",
-      key: "loadSingleData",
-      printType: "ignore",
+      title: "Rates",
+      key: "marketRunner",
       render: (text, record) => (
         <Tooltip
-          title="Load Data"
-          color="#e8e8ea"
+          title={"Market Runner"}
+          color={"#e8e8ea"}
           overlayInnerStyle={{ color: "#000" }}
         >
           <Button
-            color="warning"
+            color={"warning"}
             size="sm"
             className="btn"
             onClick={() => {
-              setSelectedCommentaryId(record.commentaryId); // Store the commentaryId
-              setLoadSingleDataModelVisible(true); // Open the modal
+              handleCommentaryMarketRunnerClick(record);
             }}
           >
-            <i className="bx bx-cloud-download"></i>
+            <i class="bx bxs-store"></i>
           </Button>
         </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Algo",
-      dataIndex: "pythonId",
+      title: "S-Score",
+      key: "shortCommentary",
+      printType: "ignore",
       render: (text, record) => (
-        <span
-          onClick={() => {
-            setChangePythonModel(true);
-            setSelectedPythonCommentary(record);
-          }}
-          style={{ cursor: "pointer" }}
+        <Tooltip
+          title={"Short Score"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
         >
-          {record?.developerName}{" "}
-          <Tooltip
-            title="Edit Python Type"
-            color={"#e8e8ea"}
-            overlayInnerStyle={{ color: "#000" }}
+          <Button
+            color={"secondary"}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleShortCommentaryClick(record.commentaryId);
+            }}
           >
-            {<a className="bx bx-edit-alt"></a>}
-          </Tooltip>
-        </span>
+            <i class="bx bxs-chevrons-right"></i>
+          </Button>
+        </Tooltip>
       ),
-      key: "pythonId",
-      sort: true,
-      style: { width: "10%" },
+      style: { width: "2%", textAlign: "center" },
     },
-    {
-      title: "Algo",
-      dataIndex: "pythonId",
-      render: (text, record) => (
-        <span
-          onClick={() => {
-            setChangePythonModel(true);
-            setSelectedPythonCommentary(record);
-          }}
-          style={{ cursor: "pointer" }}
-        >
-          {record?.pythonURI}{" "}
-          <Tooltip
-            title="Edit Python Type"
-            color={"#e8e8ea"}
-            overlayInnerStyle={{ color: "#000" }}
-          >
-            {<a className="bx bx-edit-alt"></a>}
-          </Tooltip>
-        </span>
-      ),
-      key: "pythonId",
-      sort: true,
-      style: { width: "10%" },
-    },
+    // {
+    //   title: "M-Odds",
+    //   key: "commentaryMOdds",
+    //   printType: "ignore",
+    //   render: (text, record) => (
+    //     <Tooltip title={"Manual Odds"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+    //       <Button
+    //         color={"success"}
+    //         size="sm"
+    //         className="btn"
+    //         onClick={() => {
+    //           handleUpdateManualOddsClick(record);
+    //         }}
+    //       >
+    //         <i class='bx bx-arrow-to-right' ></i>
+    //       </Button>
+    //     </Tooltip>
+    //   ),
+    //   style: { width: "2%", textAlign: "center" },
+    // },
+    // {
+    //   title: "Algo",
+    //   dataIndex: "pythonId",
+    //   render: (text, record) => (
+    //     <span
+    //       onClick={() => {
+    //         setChangePythonModel(true);
+    //         setSelectedPythonCommentary(record);
+    //       }}
+    //       style={{ cursor: "pointer" }}
+    //     >
+    //       {record?.pythonURI}{" "}
+    //       <Tooltip
+    //         title="Edit Python Type"
+    //         color={"#e8e8ea"}
+    //         overlayInnerStyle={{ color: "#000" }}
+    //       >
+    //         {<a className="bx bx-edit-alt"></a>}
+    //       </Tooltip>
+    //     </span>
+    //   ),
+    //   key: "pythonId",
+    //   sort: true,
+    //   style: { width: "10%" },
+    // },
     {
       title: "CP",
       key: "isCountInPoint",
@@ -2273,6 +2233,48 @@ const Index = () => {
             }}
           >
             <i className={`bx ${record?.isTest ? "bx-check" : "bx-block"}`}></i>
+          </Button>
+        </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Virtual",
+      key: "isVirtual",
+      render: (text, record) => (
+        <Button
+          color={`${record.isVirtual ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          disabled
+        >
+          <i
+            className={`bx ${record?.isVirtual ? "bx-check" : "bx-block"}`}
+          ></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Load Data",
+      key: "loadSingleData",
+      printType: "ignore",
+      render: (text, record) => (
+        <Tooltip
+          title="Load Data"
+          color="#e8e8ea"
+          overlayInnerStyle={{ color: "#000" }}
+        >
+          <Button
+            color="warning"
+            size="sm"
+            className="btn"
+            onClick={() => {
+              setSelectedCommentaryId(record.commentaryId); // Store the commentaryId
+              setLoadSingleDataModelVisible(true); // Open the modal
+            }}
+          >
+            <i className="bx bx-cloud-download"></i>
           </Button>
         </Tooltip>
       ),
