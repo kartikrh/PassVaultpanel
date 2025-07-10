@@ -27,7 +27,7 @@ import Select from "react-select";
 import LoadDataModal from "../../components/Model/LoadDataModal";
 
 const ENTITY_OPTIONS = [
-  { label: "Select Entity", value: 0 },
+  { label: " ", value: 0 },
   { label: "ODI (One Day International)", value: 1 },
   { label: "TEST", value: 2 },
   { label: "T20I(Twenty20 International)", value: 3 },
