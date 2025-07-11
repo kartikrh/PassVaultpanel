@@ -6,12 +6,13 @@ import CommentaryAction from "./CommentaryModels/CommentaryAction"
 import CommentaryRightPanel from "./Helpers/CommentaryRightPanel"
 import Switch from "react-switch";
 import PlayerImage from "../../components/Common/Reusables/PlayerImage"
+import _ from "lodash"
 
 export const CommentaryScreen = ({
     refId, teamDetails, onPitchPlayers, updateRuns, changePlayer, changeOver, updateExtras, onWicketClick,
     onUndoClick, changeStrike, endInnings, isLoading, changeBowler, updateDisplayStatus, showPaneltyRuns,
     overBalls, anyPopup, handleRetiredHurt = {}, target, partnerships, commentaryId, handleWheelShowToggle, handleRemainingBallsShowToggle, isRemainingBallsShow, isWheelShow, overHistory,
-    players, currentOver, currentInnings, isPredict, isPredictToggle, setIsPredictToggle,allteams, fetchData }) => {
+    players, currentOver, currentInnings, isPredict, isPredictToggle, setIsPredictToggle,allteams, fetchData, isSaving }) => {
     const [actionPopup, setActionPopup] = useState(undefined);
     
     const OffSymbolStatus = () => {
@@ -126,6 +127,7 @@ export const CommentaryScreen = ({
     };
 
     const handleKeyPress = (event) => {
+        if (isLoading || isSaving) return;
         const key = event.key.toLowerCase(); // Convert to lowercase to simplify the switch cases
         switch (key) {
             case '0':
@@ -197,6 +199,20 @@ export const CommentaryScreen = ({
             }
         )
     }
+
+    // const handleRuns = useMemo(
+    //     () => _.debounce((run, ball, isBoundary) => {
+    //         updateRuns({ run, ball, batter: onPitchPlayers[ON_STRIKE], bowler: onPitchPlayers[CURRENT_BOWLER], isBoundary });
+    //     }, 300),
+    //     [updateRuns, onPitchPlayers]
+    // );
+
+    // const debouncedUndoClick = useMemo(
+    //     () => _.debounce(() => {
+    //         onUndoClick();
+    //     }, 300),
+    //     [onUndoClick]
+    // );
 
     let filteredPartnerships = partnerships
         .filter(obj => obj.batter1Id !== null && obj.batter2Id !== null) // Filter out entries with null batter IDs
@@ -333,7 +349,7 @@ export const CommentaryScreen = ({
                         <button onClick={changeBowler} className=" text-right change-button">C</button>
                     </Col>
                 </Row>
-                <Row className={isLoading ? "disable-button" : ""} >
+                <Row className={isLoading || isSaving ? "disable-button" : ""} >
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
 
                         onClick={() => handleRuns(0, 1)}>
