@@ -10,11 +10,14 @@ import axiosInstance from "../../Features/axios";
 import { isEmpty, isEqual } from "lodash";
 import {
   ERROR,
+  MODULE_COMMENTARY,
+  MODULE_SINGLE_COMMENTARY,
   PERMISSION_DELETE,
   PERMISSION_EDIT,
   PERMISSION_VIEW,
   SUCCESS,
   TAB_COMMENTARY_HISTORY,
+  WARNING,
 } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -22,10 +25,30 @@ import {
   convertDateUTCToLocal,
   convertDateLocalToUTC,
   getDateRange,
+  convertDateUtcFormatWithoutSec,
+  convertDateUTCToLocalWithoutSec,
 } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import "../Commentary/CommentaryCss.css"
 import { Tooltip } from "antd";
+import { loadInit } from "../../config";
+import SuspendTabModel from "../../components/Model/SuspendModel";
+import { ChnageMatchTypeModel } from "../../components/Model/ChangeMatchType";
+import { UpdateDayModel } from "../../components/Model/UpdateDayModel";
+import { ChangeDelayModel } from "../../components/Model/ChangeDelay";
+import { ChangeResultModel } from "../../components/Model/ChangeResult";
+import CloseTabModel from "../../components/Model/CloseModel";
+import LoadCommentaryModel from "../../components/Model/LoadCommentaryModel";
+import CancelTabModel from "../../components/Model/CancelModel";
+import { CommentaryClone } from "../../components/Model/Clone";
+import GenerateModal from "../Commentary/GenerateModal";
+import { ChangePythonType } from "../../components/Model/ChangePythonType";
+import LoadDataModal from "../../components/Model/LoadDataModal";
+import CommentaryMarketTemplateModel from "../../components/Model/CommentaryMarketTemplateModel";
+import { DlsModal } from "../Commentary/CommentaryModels/DlsModal";
+import { ChangeRunnerModel } from "../../components/Model/ChangeRunnerModel";
+import { ChangeEventRefIdModel } from "../../components/Model/ChangeEventRefId";
+
 
 const Index = () => {
   const pageName = TAB_COMMENTARY_HISTORY;
@@ -42,14 +65,332 @@ const Index = () => {
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [eventTypeId, setEventTypeId] = useState(null);
   const [competitionId, setCompetitionId] = useState(null);
+  const [runnerModelVisible, setRunnerModelVisible] = useState(false);
+  const [dlsModalCommentary, setDlsModalCommentary] = useState(false);
+  const [selectedCommentaryRunner, setSelectedCommentaryRunner] = useState({});
+  const [selectedCommentaryId, setSelectedCommentaryId] = useState(null);
+  const [loadSingleDataModelVisible, setLoadSingleDataModelVisible] = useState(false);
+  const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
+  const [generateModalData, setGenerateModalData] = useState(null);
+  const loadInitData = useSelector((state) => state.loadInit.loadInitData);
+  const [eventRefModelVisible, setEventRefModelVisible] = useState(false);
+  const [selectedEventRef, setSelectedEventRef] = useState({});
+  const [selectedPythonCommentary, setSelectedPythonCommentary] = useState({});
+  const [dateType, setDateType] = useState({
+    label: "Local Timezone",
+    value: 1,
+  });
+  const [matchType, setMatchType] = useState("");
+  const [showAwardModel, setShowAwardModel] = useState(undefined);
+  const [closeModelVisible, setCloseModelVisible] = useState(false);
+  const [suspendModelVisable, setSuspendModelVisable] = useState(false);
+  const [marketTemplateModelVisible, setMarketTemplateModelVisible] = useState(false);
+  const [changePythonModel, setChangePythonModel] = useState(false);
+  const [selectedDelay, setSelectedDelay] = useState({});
+  const [marketTemplateRecord, setMarketTemplateTimeRecord] = useState({});
+  const [changeModelVisible, setChangeModelVisible] = useState(false);
+  const [selectedCommentary, setSelectedCommentary] = useState({});
+  const [updateDayModelVisible, setUpdateDayModelVisible] = useState(false);
+  const [delayModelVisible, setDelayModelVisible] = useState(false);
+  const [selectedCommentaryDay, setSelectedCommentaryDay] = useState({});
+  const [cancelModelVisible, setCancelModelVisible] = useState(false);
+  const [loadModelVisable, setLoadModelVisable] = useState(false);
+  const [cloneModelVisible, setCloneModelVisible] = useState(false);
+  const [cloneValues, setCloneValues] = useState({
+    eventName: "",
+    eventRefId: "",
+  });
+  const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
+  const [resultModelVisible, setResultModelVisible] = useState(false);
+  const [selectedResult, setSelectedResult] = useState({});
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  let scorecardFrameUrl = null;
 
   const tabelNoteDisplay = <>
     <b><i>Note :</i></b>
     {/* <div>Click on Event Id to open <b>Odds View</b> page  </div> */}
     <div>Click on Event Name to open <b>Open Market</b> page </div>
   </>
+
+  const handleIsCountInPoint = async (pType, record, cState) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/commentary/isCountInPoint`, {
+        commentaryId: record?.commentaryId,
+        [pType]: cState ? false : true,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+
+  const updatePredictMarket = async (pType, record, cState) => {
+    await axiosInstance
+      .post(`/admin/commentary/changePredictMarket`, {
+        commentaryId: record?.commentaryId,
+        [pType]: cState ? false : true,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+
+  const handlePythonChange = async () => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/commentary/updatePythonAPI`, {
+        ...selectedPythonCommentary,
+      })
+      .then((response) => {
+        fetchData();
+        if (response?.result?.callPrediction?.predictioncallSuccess === false) {
+          const predictionMessage =
+            response?.result?.callPrediction?.predictionMessage;
+          const endPoint = response?.result?.callPrediction?.endPoint;
+          dispatch(
+            updateToastData({
+              data: `${endPoint}\n${predictionMessage}`,
+              title: "Call Prediction",
+              type: WARNING,
+            })
+          );
+        } else {
+          dispatch(
+            updateToastData({
+              data: response?.message,
+              title: response?.title,
+              type: SUCCESS,
+            })
+          );
+        }
+        setChangePythonModel(false);
+      })
+      .catch((error) => {
+        setChangePythonModel(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+
+  const handleLoadSingleCommentaryData = async (commentaryId, password) => {
+    setIsLoading(true);
+    try {
+      const response = await axiosInstance.post(`/loadPanelData`, {
+        module: [MODULE_SINGLE_COMMENTARY],
+        password,
+        commentaryId,
+      });
+
+      // setLoadDataModelVisable(false); // This will be handled by the wrapper function
+      dispatch(
+        updateToastData({
+          data: response?.message,
+          title: response?.title,
+          type: SUCCESS,
+        })
+      );
+    } catch (error) {
+      dispatch(
+        updateToastData({
+          data: error?.message,
+          title: error?.title,
+          type: ERROR,
+        })
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleChangeResult = async (dataToSend) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/commentary/changeResult`, dataToSend)
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+        setResultModelVisible(false);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        setResultModelVisible(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+        setIsLoading(false);
+      });
+  };
+
+  const handleLoadCommentary = async (e) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/commentary/loadMultiCommentary`, {
+        commentaryId: checekedList,
+      })
+      .then((response) => {
+        fetchData();
+        setLoadModelVisable(false);
+        if (response?.result?.callPredictions?.length > 0) {
+          response.result.callPredictions.forEach((prediction) => {
+            if (prediction?.predictioncallSuccess === false) {
+              const predictionMessage = prediction?.predictionMessage;
+              const endPoint = prediction?.endPoint;
+              dispatch(
+                updateToastData({
+                  data: `${endPoint}\n${predictionMessage}`,
+                  title: "Call Prediction",
+                  type: WARNING,
+                })
+              );
+            }
+          });
+        } else {
+          dispatch(
+            updateToastData({
+              data: response?.message,
+              title: response?.title,
+              type: SUCCESS,
+            })
+          );
+        }
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+
+  const handleChangeEventRef = async () => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/commentary/changeEventRefId`, {
+        ...selectedEventRef,
+      })
+      .then((response) => {
+        fetchData();
+        if (response?.result?.callPrediction?.predictioncallSuccess === false) {
+          const predictionMessage =
+            response?.result?.callPrediction?.predictionMessage;
+          const endPoint = response?.result?.callPrediction?.endPoint;
+          dispatch(
+            updateToastData({
+              data: `${endPoint}\n${predictionMessage}`,
+              title: "Call Prediction",
+              type: WARNING,
+            })
+          );
+        } else {
+          dispatch(
+            updateToastData({
+              data: response?.message,
+              title: response?.title,
+              type: SUCCESS,
+            })
+          );
+        }
+        setEventRefModelVisible(false);
+      })
+      .catch((error) => {
+        setEventRefModelVisible(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+
+  const handleChangeRunner = async () => {
+    setIsLoading(true);
+    const payload = [
+      selectedCommentaryRunner?.team1,
+      selectedCommentaryRunner?.team2,
+    ];
+    await axiosInstance
+      .post(`/admin/ImportMarket/updateTeamId`, payload)
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+        setRunnerModelVisible(false);
+      })
+      .catch((error) => {
+        setRunnerModelVisible(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+        setIsLoading(false);
+      });
+  };
 
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
@@ -112,9 +453,321 @@ const Index = () => {
     }
     setCheckedList(updateSingleCheck);
   };
+  const handleSuspend = async (e) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/eventMarket/suspendMarketByCId`, {
+        commentaryId: checekedList,
+      })
+      .then((response) => {
+        fetchData();
+        setSuspendModelVisable(false);
+        if (response?.result?.callPrediction?.predictioncallSuccess === false) {
+          const predictionMessage =
+            response?.result?.callPrediction?.predictionMessage;
+          const endPoint = response?.result?.callPrediction?.endPoint;
+          dispatch(
+            updateToastData({
+              data: `${endPoint}\n${predictionMessage}`,
+              title: "Call Prediction",
+              type: WARNING,
+            })
+          );
+        } else {
+          dispatch(
+            updateToastData({
+              data: response?.message,
+              title: response?.title,
+              type: SUCCESS,
+            })
+          );
+        }
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+  const handleChange = async () => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/commentary/changeMatchType`, {
+        ...selectedCommentary,
+      })
+      .then((response) => {
+        fetchData();
+        if (response?.result?.callPrediction?.predictioncallSuccess === false) {
+          const predictionMessage =
+            response?.result?.callPrediction?.predictionMessage;
+          const endPoint = response?.result?.callPrediction?.endPoint;
+          dispatch(
+            updateToastData({
+              data: `${endPoint}\n${predictionMessage}`,
+              title: "Call Prediction",
+              type: WARNING,
+            })
+          );
+        } else {
+          dispatch(
+            updateToastData({
+              data: response?.message,
+              title: response?.title,
+              type: SUCCESS,
+            })
+          );
+        }
+        setChangeModelVisible(false);
+      })
+      .catch((error) => {
+        setChangeModelVisible(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+  const handleClose = async (e) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/commentary/closeCommentary`, {
+        commentaryId: checekedList,
+      })
+      .then((response) => {
+        fetchData();
+        setCloseModelVisible(false);
+        if (response?.result?.callPredictions?.length > 0) {
+          response.result.callPredictions.forEach((prediction) => {
+            if (prediction?.predictioncallSuccess === false) {
+              const predictionMessage = prediction?.predictionMessage;
+              const endPoint = prediction?.endPoint;
+              dispatch(
+                updateToastData({
+                  data: `${endPoint}\n${predictionMessage}`,
+                  title: "Call Prediction",
+                  type: WARNING,
+                })
+              );
+            }
+          });
+        } else {
+          dispatch(
+            updateToastData({
+              data: response?.message,
+              title: response?.title,
+              type: SUCCESS,
+            })
+          );
+        }
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+  const handleCancel = async (e) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/commentary/cancelCommentary`, {
+        commentaryId: checekedList,
+      })
+      .then((response) => {
+        fetchData();
+        setCancelModelVisible(false);
+        if (response?.result?.callPredictions?.length > 0) {
+          response.result.callPredictions.forEach((prediction) => {
+            if (prediction?.predictioncallSuccess === false) {
+              const predictionMessage = prediction?.predictionMessage;
+              const endPoint = prediction?.endPoint;
+              dispatch(
+                updateToastData({
+                  data: `${endPoint}\n${predictionMessage}`,
+                  title: "Call Prediction",
+                  type: WARNING,
+                })
+              );
+            }
+          });
+        } else {
+          dispatch(
+            updateToastData({
+              data: response?.message,
+              title: response?.title,
+              type: SUCCESS,
+            })
+          );
+        }
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
   const handleEdit = (id) => {
     navigate("/addCommentary", { state: { userId: id } });
   };
+  const handleUpdateDay = async (updatedData) => {
+    try {
+      setIsLoading(true);
+      const { data: response } = await axiosInstance.post(`/admin/commentary/updatePitchAndSession`, {
+        commentaryId: updatedData.commentaryId,
+        pitchAge: +updatedData.pitchAge,
+        session: updatedData.session,
+      });
+
+      fetchData();
+      dispatch(updateToastData({
+        data: response?.message,
+        title: response?.title,
+        type: SUCCESS,
+      }));
+    } catch (error) {
+      dispatch(updateToastData({
+        data: error?.message,
+        title: error?.title,
+        type: ERROR,
+      }));
+    } finally {
+      setIsLoading(false);
+      setUpdateDayModelVisible(false);
+    }
+  };
+
+  const handleLoadSingleCommentaryDataWithModal = async (password) => {
+    if (selectedCommentaryId) {
+      await handleLoadSingleCommentaryData(selectedCommentaryId, password);
+      setLoadSingleDataModelVisible(false);
+      setSelectedCommentaryId(null);
+    }
+  };
+  const handleLoadData = async (password) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/loadPanelData`, { module: [MODULE_COMMENTARY], password })
+      .then((response) => {
+        fetchData();
+        setLoadDataModelVisable(false);
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+  const handleChangeDelay = async () => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/commentary/changeDelay`, {
+        ...selectedDelay,
+      })
+      .then((response) => {
+        fetchData();
+        if (response?.result?.callPrediction?.predictioncallSuccess === false) {
+          const predictionMessage =
+            response?.result?.callPrediction?.predictionMessage;
+          const endPoint = response?.result?.callPrediction?.endPoint;
+          dispatch(
+            updateToastData({
+              data: `${endPoint}\n${predictionMessage}`,
+              title: "Call Prediction",
+              type: WARNING,
+            })
+          );
+        } else {
+          dispatch(
+            updateToastData({
+              data: response?.message,
+              title: response?.title,
+              type: SUCCESS,
+            })
+          );
+        }
+        setDelayModelVisible(false);
+      })
+      .catch((error) => {
+        setDelayModelVisible(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+
+  const handleClone = async () => {
+    if (cloneValues.name !== "" && cloneValues.refrenceId !== "") {
+      setIsLoading(true);
+      await axiosInstance
+        .post(`/admin/commentary/clone`, {
+          commentaryId: checekedList?.[0],
+          ...cloneValues,
+        })
+        .then((response) => {
+          fetchData();
+          dispatch(
+            updateToastData({
+              data: response?.message,
+              title: response?.title,
+              type: SUCCESS,
+            })
+          );
+          setCloneModelVisible(false);
+        })
+        .catch((error) => {
+          setIsLoading(false);
+          dispatch(
+            updateToastData({
+              data: error?.message,
+              title: error?.title,
+              type: ERROR,
+            })
+          );
+        });
+    } else {
+      dispatch(
+        updateToastData({
+          data: "Name and Reference Id are required",
+          title: "Required",
+          type: ERROR,
+        })
+      );
+    }
+  };
+
   const handleScoringLogsClick = (details) => {
     const url = new URL(window.location.origin + "/scoringLogs");
     sessionStorage.setItem('scoringLogsId', "" + details?.commentaryId);
@@ -269,6 +922,191 @@ const Index = () => {
     fetchData(value);
     fetchEventTypeData();
   };
+
+  const handleManualOddsMarketClick = (details) => {
+    const url = new URL(window.location.origin + "/manualOddsMarkets");
+    sessionStorage.setItem(
+      "commentaryManualOddsMarketId",
+      "" + details?.commentaryId
+    );
+    sessionStorage.setItem(
+      "commentaryManualOddsMarketDetails",
+      "" + JSON.stringify(details)
+    );
+    window.open(url.href, "_blank");
+    sessionStorage.removeItem("commentaryManualOddsMarketId");
+    sessionStorage.removeItem("commentaryManualOddsMarketDetails");
+  };
+
+  const handleCloseMarketClick = (details) => {
+    const url = new URL(window.location.origin + "/unsettledMarket");
+    sessionStorage.setItem("closeMarketId", "" + details?.commentaryId);
+    sessionStorage.setItem("closeMarketDetails", "" + JSON.stringify(details));
+    window.open(url.href, "_blank");
+    sessionStorage.removeItem("closeMarketId");
+    sessionStorage.removeItem("closeMarketDetails");
+  };
+
+  const handleUpdateCommentaryClick = (id) => {
+    // navigate("/updateCommentaryFeature", { state: { commentaryId: id } });
+    localStorage.setItem("updateCommentaryId", "" + id);
+    const url = new URL(window.location.origin + "/updateCommentaryFeature");
+    window.open(url.href, "_blank");
+  };
+
+  const handleActiveInactiveTest = async (pType, record, cState) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/commentary/changeIsTest`, {
+        commentaryId: record?.commentaryId,
+        [pType]: cState ? false : true,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+  const handleShortCommentaryClick = (id) => {
+    // navigate("/shortCommentary", { state: { commentaryId: id } });
+    localStorage.setItem("shortCommentaryId", "" + id);
+    const url = new URL(window.location.origin + "/shortCommentary");
+    window.open(url.href, "_blank");
+  };
+  const handleCommentaryMarketRunnerClick = (details) => {
+    const url = new URL(window.location.origin + "/commentaryMarketRunner");
+    sessionStorage.setItem(
+      "marketRunnerCommentaryId",
+      "" + details?.commentaryId
+    );
+    sessionStorage.setItem(
+      "marketRunnerCommentaryDetails",
+      "" + JSON.stringify(details)
+    );
+    window.open(url.href, "_blank");
+  };
+  const handleEventMarketLogsClick = (details) => {
+    const url = new URL(window.location.origin + "/EventMarketLogs");
+    sessionStorage.setItem("eventMarketLogsId", "" + details?.commentaryId);
+    sessionStorage.setItem(
+      "eventMarketLogsDetails",
+      "" + JSON.stringify(details)
+    );
+    window.open(url.href, "_blank");
+    sessionStorage.removeItem("eventMarketLogsId");
+    sessionStorage.removeItem("eventMarketLogsDetails");
+  };
+
+  const openScorecardIframe = (record) => {
+    if (record && loadInitData) {
+    const baseUrl = loadInitData.find(
+      (item) => item.key === loadInit.SCORECARD_FRAME_URL
+    )?.value;
+      if (baseUrl) {
+        scorecardFrameUrl = baseUrl.replace(
+          "{eventId}",
+          record.eventRefId
+        );
+        window.open(scorecardFrameUrl, "_blank", "width=600,height=400");
+        // console.log("url: ",scorecardFrameUrl);
+      }
+    }
+  };
+
+  const handleMarketEventActionClick = (id) => {
+    localStorage.setItem("openMarketCommentaryId", "" + id);
+    const url = new URL(window.location.origin + "/openMarket");
+    // url.searchParams.append("commentaryId", id);
+    window.open(url.href, "_blank");
+  };
+
+  const handleDetailsClick = (id) => {
+    // navigate("/commentaryMaster", { state: { commentaryId: id } });
+    localStorage.setItem("commentaryMasterId", "" + id);
+    localStorage.setItem("commentary", "commentary");
+    const url = new URL(window.location.origin + "/commentaryMaster");
+    window.open(url.href, "_blank");
+  };
+
+  const handleUpdatePlayersClick = (details) => {
+    // navigate("/updateCommentaryPlayer", {
+    //   state: {
+    //     commentaryId: details?.commentaryId,
+    //     commentaryDetails: details,
+    //   },
+    // });
+    localStorage.setItem(
+      "updatePlayerCommentaryId",
+      "" + details?.commentaryId
+    );
+    localStorage.setItem(
+      "updatePlayerCommentaryDetails",
+      "" + JSON.stringify(details)
+    );
+    const url = new URL(window.location.origin + "/updateCommentaryPlayer");
+    window.open(url.href, "_blank");
+  };
+
+  const handleCommentaryMarketTemplateClickV1 = (details) => {
+    // navigate("/commentaryMarketTemplate", { state: { commentaryId: id } });
+    const url = new URL(window.location.origin + "/commentaryMarkets");
+    sessionStorage.setItem(
+      "marketTemplateCommentaryId",
+      "" + details?.commentaryId
+    );
+    sessionStorage.setItem(
+      "marketTemplateCommentaryDetails",
+      "" + JSON.stringify(details)
+    );
+    window.open(url.href, "_blank");
+  };
+
+  const handleTeamPredictionPermissions = async (pType, record, cState) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/commentary/updateTeamPrediction`, {
+        commentaryId: record?.commentaryId,
+        [pType]: cState ? false : true,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+
+
+  
   //table columns
   const columns = [
     {
@@ -303,6 +1141,12 @@ const Index = () => {
             checked={checekedList.includes(record.commentaryId)}
             onChange={() => {
               handleSingleCheck(record);
+              if (!checekedList.includes(record.commentaryId)) {
+                // setCloneValues({
+                //   eventName: record?.eventName,
+                //   eventRefId: record?.eventRefId,
+                // });
+              }
             }}
           />
           {/* <i className="bx bx-move ms-1 mt-1"></i> */}
@@ -321,20 +1165,35 @@ const Index = () => {
             handleEdit(record.commentaryId);
           }}
         >
-          <i
-            className="bx bx-edit"
-
-          ></i>
+          <i className="bx bx-edit"></i>
         </span>
       ),
       style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "",
+      key: "viewScoreCard",
+      printType: "ignore",
+      render: (text, record) => (
+        <Button
+          color="primary"
+          size="sm"
+          className="btn"
+          onClick={() => openScorecardIframe(record)}
+        >
+          S
+        </Button>
+      ),
+      style: { width: "4%", textAlign: "center" },
     },
     {
       title: "Date",
       dataIndex: "eventDate",
       render: (text, record) => (
         <span>
-          {convertDateUTCToLocal(text, "index")}
+          {dateType?.value == 1
+            ? convertDateUTCToLocalWithoutSec(text, "index")
+            : convertDateUtcFormatWithoutSec(text, "index")}
         </span>
       ),
       key: "eventDate",
@@ -344,14 +1203,59 @@ const Index = () => {
     {
       title: "Event Id",
       dataIndex: "eventRefId",
+      // render: (text, record) => (
+      //   <div className="d-flex align-items-center gap-1">
+      //   <span
+      //     style={{ cursor: record.isPredictMarket && "pointer" }}
+      //     onClick={() => {
+      //       if (record.isPredictMarket) {
+      //         handleOddsViewClick(record.commentaryId);
+      //       }
+      //     }}
+      //   >
+      //     {text}
+      //   </span>
+      //   <a
+      //   className="bx bx-edit-alt"
+      //   style={{ cursor: "pointer" }}
+      //   onClick={() => {
+      //     setEventRefModelVisible(true);
+      //     setSelectedEventRef(record);
+      //   }}
+      //   ></a>
+      //   </div>
+      // ),
+      render: (text, record) => (
+        <div className="d-flex align-items-center gap-1">
+          <span
+            style={{ cursor: record.isPredictMarket && "pointer" }}
+            // onClick={() => {
+            //   if (record.isPredictMarket) {
+            //     handleOddsViewClick(record.commentaryId);
+            //   }
+            // }}
+          >
+            {text}
+          </span>
+          <span
+            style={{ cursor: "pointer" }}
+            onClick={() => {
+              setEventRefModelVisible(true);
+              setSelectedEventRef(record);
+            }}
+          >
+            {" "}
+            <Tooltip
+              title="Edit Event Id"
+              color={"#e8e8ea"}
+              overlayInnerStyle={{ color: "#000" }}
+            >
+              {<a className="bx bx-edit-alt"></a>}
+            </Tooltip>
+          </span>
+        </div>
+      ),
       key: "eventRefId",
-      sort: true,
-      style: { width: "10%" },
-    },
-    {
-      title: "Event",
-      dataIndex: "eventName",
-      key: "eventName",
       sort: true,
       style: { width: "10%" },
     },
@@ -363,31 +1267,141 @@ const Index = () => {
       style: { width: "10%" },
     },
     {
+      title: "Event",
+      dataIndex: "eventName",
+      render: (text, record) => (
+        <div className="d-flex flex-column">
+          <span
+            style={{ cursor: record.isPredictMarket && "pointer" }}
+            onClick={() => {
+              if (record.isPredictMarket) {
+                handleMarketEventActionClick(record.commentaryId);
+              }
+            }}
+          >
+            {text}
+          </span>
+          <span className="point-font">{record?.eventNo}</span>
+        </div>
+      ),
+      key: "eventName",
+      sort: true,
+      sticky: true,
+      style: { width: "10%" },
+    },
+    {
       title: "Match Type",
       dataIndex: "matchType",
+      render: (text, record) => (
+        <span
+          onClick={() => {
+            setChangeModelVisible(true);
+            setSelectedCommentary(record);
+          }}
+          style={{ cursor: "pointer" }}
+        >
+          {text}{" "}
+          <Tooltip
+            title="Edit Match Type"
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            {<a className="bx bx-edit-alt"></a>}
+          </Tooltip>
+        </span>
+      ),
       key: "matchType",
       sort: true,
       style: { width: "10%" },
     },
     {
+      title: "Scoring",
+      key: "commentaryScoring",
+      printType: "ignore",
+      render: (text, record) => (
+        <Tooltip
+          title={"Go to scoring"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
+          <Button
+            color={"warning"}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleDetailsClick(record.commentaryId);
+            }}
+          >
+            <i class="bx bxs-right-arrow"></i>
+          </Button>
+        </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    // {
+    //   title: "Scorer",
+    //   key: "commentaryScorer",
+    //   printType: "ignore",
+    //   render: (text, record) => (
+    //     <Tooltip title={"Go to Scorer"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+    //       <Button
+    //         color={"info"}
+    //         size="sm"
+    //         className="btn"
+    //         onClick={() => {
+    //           handleScorerDetailsClick(record.commentaryId);
+    //         }}
+    //       >
+    //         <i class='bx bxs-right-arrow' ></i>
+    //       </Button>
+    //     </Tooltip>
+    //   ),
+    //   style: { width: "2%", textAlign: "center" },
+    // },
+    {
       title: "Status",
       dataIndex: "commentaryStatus",
-      render: (text, record) => (
-        <span>{mapCommentaryStatus(text)}</span>
-      ),
+      render: (text, record) => <span>{mapCommentaryStatus(text)}</span>,
       key: "commentaryStatus",
       sort: true,
       style: { width: "40%" },
     },
     {
+      title: "Day",
+      dataIndex: "pitchAge",
+      render: (text, record) => (
+        <span
+          onClick={() => {
+            setUpdateDayModelVisible(true);
+            setSelectedCommentaryDay(record);
+          }}
+          style={{ cursor: "pointer" }}
+        >
+          {text}{" "}
+          <Tooltip
+            title="Edit Day"
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+          <a className="bx bx-edit-alt"></a>
+          </Tooltip>
+        </span>
+      ),
+      key: "pitchAge",
+      style: { width: "10%" },
+    },
+    {
       title: "Show",
       key: "isClientShow",
       render: (text, record) => (
-        <Tooltip title={"Show/Hide Client"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip
+          title={"Show/Hide Client"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
           <Button
             color={`${record.isClientShow ? "primary" : "danger"}`}
             size="sm"
-            disabled
             className="btn"
             onClick={() => {
               handlePermissions("isClientShow", record, record?.isClientShow);
@@ -405,11 +1419,14 @@ const Index = () => {
       title: "Active",
       key: "isActive",
       render: (text, record) => (
-        <Tooltip title={"Commentary"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip
+          title={"Commentary"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
           <Button
             color={`${record.isActive ? "primary" : "danger"}`}
             size="sm"
-            disabled
             className="btn"
             onClick={() => {
               handleActiveInactive("isActive", record, record?.isActive);
@@ -424,61 +1441,467 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
+      title: "Player",
+      key: "updatePlayers",
+      printType: "ignore",
+      render: (text, record) => (
+        <Tooltip
+          title={"Update Players"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
+          <Button
+            color={"info"}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleUpdatePlayersClick(record);
+            }}
+          >
+            <i class="bx bxs-up-arrow-square"></i>
+          </Button>
+        </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    // {
+    //   title: "Team",
+    //   dataIndex: "team1Name",
+    //   key: "team1Name",
+    //   sort: true,
+    //   style: { width: "10%" },
+    // },
+    // {
+    //   title: "Competitor",
+    //   dataIndex: "team2Name",
+    //   key: "team2Name",
+    //   sort: true,
+    //   style: { width: "10%" },
+    // },
+    {
       title: "Predict",
       key: "isPredictMarket",
       render: (text, record) => (
         <div className="d-flex align-items-center gap-2">
-          <Tooltip title={"Predict Market"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Tooltip
+            title={"Predict Market"}
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
             <Button
               color={`${record.isPredictMarket ? "primary" : "danger"}`}
               size="sm"
               className="btn"
-              disabled
+              onClick={() => {
+                updatePredictMarket(
+                  "isPredictMarket",
+                  record,
+                  record?.isPredictMarket
+                );
+              }}
             >
               <i
-                className={`bx ${record?.isPredictMarket ? "bx-check" : "bx-block"
-                  }`}
+                className={`bx ${
+                  record?.isPredictMarket ? "bx-check" : "bx-block"
+                }`}
               ></i>
             </Button>
           </Tooltip>
           <>
-            <Tooltip title={"Predictor Api Logs"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+            {record.isPredictMarket && (
+              <Tooltip
+                title={"Add Market Template"}
+                color={"#e8e8ea"}
+                overlayInnerStyle={{ color: "#000" }}
+              >
+                <Button
+                  color={"primary"}
+                  size="sm"
+                  className="btn"
+                  onClick={() => {
+                    setMarketTemplateModelVisible(true);
+                    setMarketTemplateTimeRecord(record);
+                  }}
+                >
+                  <i className="bx bx-plus"></i>
+                </Button>
+              </Tooltip>
+            )}
+            {/* {record.isPredictMarket &&
+              <Tooltip title={"Market Template"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+                <Button
+                  color={"primary"}
+                  size="sm"
+                  className="btn"
+                  onClick={() => {
+                    handleCommentaryMarketTemplateClick(record.commentaryId);
+                  }}
+                >
+                  <i class='bx bxs-store' ></i>
+                </Button>
+              </Tooltip>} */}
+            {record.isPredictMarket && (
+              <Tooltip
+                title={"Create Market Template"}
+                color={"#e8e8ea"}
+                overlayInnerStyle={{ color: "#000" }}
+              >
+                <Button
+                  color={"primary"}
+                  size="sm"
+                  className="btn"
+                  onClick={() => {
+                    handleCommentaryMarketTemplateClickV1(record);
+                  }}
+                >
+                  <i class="bx bxs-store"></i>
+                  {/* <i class='bx bxs-bookmarks'></i> */}
+                </Button>
+              </Tooltip>
+            )}
+            {/* <Tooltip title={"Predictor Api Logs"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
               <Button
                 color={"primary"}
                 size="sm"
                 className="btn"
                 onClick={() => {
-                  handlePredictorDetailsClick(record);
+                  handlePredictorDetailsClick(record.commentaryId);
                 }}
               >
                 <i class='bx bxs-up-arrow-square' ></i>
               </Button>
-            </Tooltip>
-            {record.isPredictMarket && <Tooltip
-              title={"Event Market"}
-              color={"#e8e8ea"}
-              overlayInnerStyle={{ color: "#000" }}
-            >
-              <Button
-                color={"danger"}
-                size="sm"
-                className="bstn"
-                onClick={() => {
-                  handleEventMarketClick(record)
-                }}
+            </Tooltip> */}
+            {record.isPredictMarket && (
+              <Tooltip
+                title={"Predictor Api Logs"}
+                color={"#e8e8ea"}
+                overlayInnerStyle={{ color: "#000" }}
               >
-                <i class="bx bxs-up-arrow-square"></i>
-              </Button>
-            </Tooltip>}
+                <Button
+                  color={"primary"}
+                  size="sm"
+                  className="btn"
+                  onClick={() => {
+                    handlePredictorDetailsClick(record);
+                  }}
+                >
+                  <i class="bx bxs-up-arrow-square"></i>
+                </Button>
+              </Tooltip>
+            )}
 
+            {/* {record.isPredictMarket && (
+              <Tooltip
+                title={"Manual Odds"}
+                color={"#e8e8ea"}
+                overlayInnerStyle={{ color: "#000" }}
+              >
+                <Button
+                  color={"success"}
+                  size="sm"
+                  className="btn"
+                  onClick={() => {
+                    handleUpdateManualOddsClick(record);
+                  }}
+                >
+                  <i class="bx bx-arrow-to-right"></i>
+                </Button>
+              </Tooltip>
+            )} */}
           </>
         </div>
       ),
       style: { width: "2%", textAlign: "center" },
     },
+    // {
+    //   title: "P-Market",
+    //   key: "marketTemplate",
+    //   printType: "ignore",
+    //   render: (text, record) => (
+    //     <Button
+    //       color={"primary"}
+    //       size="sm"
+    //       disabled={
+    //         !record.isPredictMarket || parseInt(record.commentaryStatus) !== 1
+    //       }
+    //       className="btn"
+    //       onClick={() => {
+    //         handleCommentaryMarketTemplateClick(record.commentaryId);
+    //       }}
+    //     >
+    //       <i class='bx bxs-store' ></i>
+    //     </Button>
+    //   ),
+    //   style: { width: "2%", textAlign: "center" },
+    // },
+    {
+      title: "Markets",
+      key: "marketResult",
+      render: (text, record) => (
+        <div className="d-flex align-items-center gap-2">
+          {record.isPredictMarket && (
+            <>
+              {record.isPredictMarket && (
+                <Tooltip
+                  title={"Event Market"}
+                  color={"#e8e8ea"}
+                  overlayInnerStyle={{ color: "#000" }}
+                >
+                  <Button
+                    color={"danger"}
+                    size="sm"
+                    className="bstn"
+                    onClick={() => {
+                      handleEventMarketClick(record);
+                    }}
+                  >
+                    <i class="bx bxs-up-arrow-square"></i>
+                  </Button>
+                </Tooltip>
+              )}
+              {record.isPredictMarket && (
+                <Tooltip
+                  title={"Manual Odds Market"}
+                  color={"#e8e8ea"}
+                  overlayInnerStyle={{ color: "#000" }}
+                >
+                  <Button
+                    color={"danger"}
+                    size="sm"
+                    // className="bstn"
+                    className="dls-button btn"
+                    onClick={() => {
+                      handleManualOddsMarketClick(record);
+                    }}
+                  >
+                    {/* <i class="bx bxs-up-arrow-square"></i> */}
+                    B
+                  </Button>
+                </Tooltip>
+              )}
+              <Tooltip
+                title={"Session Result"}
+                color={"#e8e8ea"}
+                overlayInnerStyle={{ color: "#000" }}
+              >
+                <Button
+                  color={"primary"}
+                  size="sm"
+                  className="btn"
+                  onClick={() => {
+                    handleSessionResultClick(record);
+                  }}
+                >
+                  S
+                </Button>
+              </Tooltip>
+
+              <Tooltip
+                title={"Market Result"}
+                color={"#e8e8ea"}
+                overlayInnerStyle={{ color: "#000" }}
+              >
+                <Button
+                  color={"info"}
+                  size="sm"
+                  className="btn"
+                  onClick={() => {
+                    handleMarketResultClick(record);
+                  }}
+                >
+                  M
+                </Button>
+              </Tooltip>
+
+              <Tooltip
+                title={"Close Market"}
+                color={"#e8e8ea"}
+                overlayInnerStyle={{ color: "#000" }}
+              >
+                <Button
+                  color={"warning"}
+                  size="sm"
+                  className="btn"
+                  onClick={() => {
+                    handleCloseMarketClick(record);
+                  }}
+                >
+                  C
+                </Button>
+              </Tooltip>
+            </>
+          )}
+        </div>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "S-Update",
+      key: "updateCommentary",
+      printType: "ignore",
+      render: (text, record) => (
+        <Tooltip
+          title={"Update Commentary"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
+          <Button
+            color={"success"}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleUpdateCommentaryClick(record.commentaryId);
+            }}
+          >
+            <i class="bx bx-arrow-to-right"></i>
+          </Button>
+        </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "SR",
+      dataIndex: "setRunner",
+      render: (text, record) => (
+        <Tooltip
+          title={"Set Runner"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
+          <Button
+            size="sm"
+            className="btn runner-button-commentary"
+            onClick={() => {
+              setRunnerModelVisible(true);
+              setSelectedCommentaryRunner(record);
+            }}
+            style={{ cursor: "pointer" }}
+          >
+            <i class="bx bxs-up-arrow-square"></i>
+          </Button>
+        </Tooltip>
+      ),
+      key: "setRunner",
+      sort: true,
+      style: { width: "10%", textAlign: "center" },
+    },
+    {
+      title: "DLS",
+      dataIndex: "dls",
+      render: (text, record) => (
+        <Tooltip
+          title={"Duckworth-Lewis-Stern"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
+          <Button
+            size="sm"
+            className="dls-button btn"
+            onClick={() => {
+              setDlsModalCommentary(record);
+            }}
+          >
+            <i class="bx bx-cloud-light-rain"></i>
+          </Button>
+        </Tooltip>
+      ),
+      style: { width: "10%" },
+    },
+    {
+      title: "Delay",
+      dataIndex: "delay",
+      render: (text, record) => (
+        <span
+          onClick={() => {
+            setDelayModelVisible(true);
+            setSelectedDelay(record);
+          }}
+          style={{ cursor: "pointer" }}
+        >
+          {text}{" "}
+          <Tooltip
+            title="Edit Delay"
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            {<a className="bx bx-edit-alt"></a>}
+          </Tooltip>
+        </span>
+      ),
+      key: "delay",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
+      title: "Algo",
+      dataIndex: "pythonId",
+      render: (text, record) => (
+        <span
+          onClick={() => {
+            setChangePythonModel(true);
+            setSelectedPythonCommentary(record);
+          }}
+          style={{ cursor: "pointer" }}
+        >
+          {record?.developerName}{" "}
+          <Tooltip
+            title="Edit Python Type"
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            {<a className="bx bx-edit-alt"></a>}
+          </Tooltip>
+          <br />
+          {record?.pythonURI}
+        </span>
+      ),
+      key: "pythonId",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
+      title: "CID",
+      dataIndex: "commentaryId",
+      key: "commentaryId",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
+      title: "Created",
+      dataIndex: "createdBy",
+      key: "createdBy",
+      sort: true,
+      style: { width: "5%", textAlign: "center" },
+    },
+    {
+      title: "G-Image",
+      key: "generateImage",
+      render: (text, record) => (
+        <>
+          <Tooltip
+            title={"Generate Image"}
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            <Button
+              color={"info"}
+              size="sm"
+              className="btn"
+              onClick={() => {
+                setGenerateModalData(record);
+                setIsGenerateModalOpen(true);
+              }}
+            >
+              GI
+            </Button>
+          </Tooltip>
+        </>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
     {
       title: "Logs",
-      key: "commentaryId",
+      key: "commentaryLogs",
       render: (text, record) => (
         <div className="d-flex align-items-center gap-2">
           <Tooltip
@@ -497,7 +1920,11 @@ const Index = () => {
               <i class="bx bxs-up-arrow-square"></i>
             </Button>
           </Tooltip>
-          <Tooltip title={"Scoring Logs"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Tooltip
+            title={"Scoring Logs"}
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
             <Button
               color={"info"}
               size="sm"
@@ -506,7 +1933,7 @@ const Index = () => {
                 handleScoringLogsClick(record);
               }}
             >
-              <i class='bx bxs-up-arrow-square' ></i>
+              <i class="bx bxs-up-arrow-square"></i>
             </Button>
           </Tooltip>
           <Tooltip
@@ -525,23 +1952,143 @@ const Index = () => {
               <i class="bx bxs-up-arrow-square"></i>
             </Button>
           </Tooltip>
+          <Tooltip
+            title={"EventMarket Logs"}
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            <Button
+              color={"info"}
+              size="sm"
+              className="btn"
+              onClick={() => {
+                handleEventMarketLogsClick(record);
+              }}
+            >
+              <i class="bx bxs-up-arrow-square"></i>
+            </Button>
+          </Tooltip>
         </div>
       ),
       style: { width: "2%", textAlign: "center" },
     },
     {
+      title: "Rates",
+      key: "marketRunner",
+      render: (text, record) => (
+        <Tooltip
+          title={"Market Runner"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
+          <Button
+            color={"warning"}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleCommentaryMarketRunnerClick(record);
+            }}
+          >
+            <i class="bx bxs-store"></i>
+          </Button>
+        </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "S-Score",
+      key: "shortCommentary",
+      printType: "ignore",
+      render: (text, record) => (
+        <Tooltip
+          title={"Short Score"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
+          <Button
+            color={"secondary"}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleShortCommentaryClick(record.commentaryId);
+            }}
+          >
+            <i class="bx bxs-chevrons-right"></i>
+          </Button>
+        </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    // {
+    //   title: "M-Odds",
+    //   key: "commentaryMOdds",
+    //   printType: "ignore",
+    //   render: (text, record) => (
+    //     <Tooltip title={"Manual Odds"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+    //       <Button
+    //         color={"success"}
+    //         size="sm"
+    //         className="btn"
+    //         onClick={() => {
+    //           handleUpdateManualOddsClick(record);
+    //         }}
+    //       >
+    //         <i class='bx bx-arrow-to-right' ></i>
+    //       </Button>
+    //     </Tooltip>
+    //   ),
+    //   style: { width: "2%", textAlign: "center" },
+    // },
+    // {
+    //   title: "Algo",
+    //   dataIndex: "pythonId",
+    //   render: (text, record) => (
+    //     <span
+    //       onClick={() => {
+    //         setChangePythonModel(true);
+    //         setSelectedPythonCommentary(record);
+    //       }}
+    //       style={{ cursor: "pointer" }}
+    //     >
+    //       {record?.pythonURI}{" "}
+    //       <Tooltip
+    //         title="Edit Python Type"
+    //         color={"#e8e8ea"}
+    //         overlayInnerStyle={{ color: "#000" }}
+    //       >
+    //         {<a className="bx bx-edit-alt"></a>}
+    //       </Tooltip>
+    //     </span>
+    //   ),
+    //   key: "pythonId",
+    //   sort: true,
+    //   style: { width: "10%" },
+    // },
+    {
       title: "CP",
       key: "isCountInPoint",
       render: (text, record) => (
-        <Tooltip title={"Count In Point"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip
+          title={"Count In Point"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
           <Button
             color={`${record.isCountInPoint ? "primary" : "danger"}`}
-            disabled
             size="sm"
             className="btn"
+            onClick={() => {
+              handleIsCountInPoint(
+                "isCountInPoint",
+                record,
+                record?.isCountInPoint
+              );
+            }}
           >
             <i
-              className={`bx ${record?.isCountInPoint ? "bx-check" : "bx-block"}`}
+              className={`bx ${
+                record?.isCountInPoint ? "bx-check" : "bx-block"
+              }`}
             ></i>
           </Button>
         </Tooltip>
@@ -552,70 +2099,95 @@ const Index = () => {
       title: "Win %",
       key: "isTeamPredictionOn",
       render: (text, record) => (
-        <Tooltip title={"Team Prediction"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip
+          title={"Team Prediction"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
           <Button
             color={`${record.isTeamPredictionOn ? "primary" : "danger"}`}
-            disabled
             size="sm"
             className="btn"
+            onClick={() => {
+              handleTeamPredictionPermissions(
+                "isTeamPredictionOn",
+                record,
+                record.isTeamPredictionOn
+              );
+            }}
           >
-            <i className={`bx ${record.isTeamPredictionOn ? "bx-check" : "bx-block"}`}></i>
+            <i
+              className={`bx ${
+                record.isTeamPredictionOn ? "bx-check" : "bx-block"
+              }`}
+            ></i>
           </Button>
         </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Delay",
-      dataIndex: "delay",
-      key: "delay",
-      sort: true,
-      style: { width: "10%" },
-    },
-    {
-      title: "Created By",
-      dataIndex: "createdBy",
-      key: "createdBy",
-      sort: true,
-      style: { width: "5%", textAlign: "center" },
-    },
-    {
-      title: "Markets",
-      key: "marketResult",
+      title: "Test",
+      key: "isTest",
       render: (text, record) => (
-        <div className="d-flex align-items-center gap-2">
-        {record.isPredictMarket &&
-        <>
-          <Tooltip
-            title={"Session Result"}
-            color={"#e8e8ea"}
-            overlayInnerStyle={{ color: "#000" }}
+        <Tooltip
+          title={"Test"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
+          <Button
+            color={`${record.isTest ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleActiveInactiveTest("isTest", record, record?.isTest);
+            }}
           >
-            <Button
-              color={"primary"}
-              size="sm"
-              className="btn"
-              onClick={() => {
-                handleSessionResultClick(record);
-              }}
-            >
-              S
-            </Button>
-          </Tooltip>
-          <Tooltip title={"Market Result"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
-            <Button
-              color={"info"}
-              size="sm"
-              className="btn"
-              onClick={() => {
-                handleMarketResultClick(record);
-              }}
-            >
-              M
-            </Button>
-          </Tooltip>
-        </>}
-        </div>
+            <i className={`bx ${record?.isTest ? "bx-check" : "bx-block"}`}></i>
+          </Button>
+        </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Virtual",
+      key: "isVirtual",
+      render: (text, record) => (
+        <Button
+          color={`${record.isVirtual ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          disabled
+        >
+          <i
+            className={`bx ${record?.isVirtual ? "bx-check" : "bx-block"}`}
+          ></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Load Data",
+      key: "loadSingleData",
+      printType: "ignore",
+      render: (text, record) => (
+        <Tooltip
+          title="Load Data"
+          color="#e8e8ea"
+          overlayInnerStyle={{ color: "#000" }}
+        >
+          <Button
+            color="warning"
+            size="sm"
+            className="btn"
+            onClick={() => {
+              setSelectedCommentaryId(record.commentaryId); // Store the commentaryId
+              setLoadSingleDataModelVisible(true); // Open the modal
+            }}
+          >
+            <i className="bx bx-cloud-download"></i>
+          </Button>
+        </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -755,6 +2327,153 @@ const Index = () => {
             handleDelete={handleDelete}
             singleCheck={checekedList}
           />
+          <SuspendTabModel
+            suspendModelVisible={suspendModelVisable}
+            setSuspendModelVisable={setSuspendModelVisable}
+            handleSuspend={handleSuspend}
+            singleCheck={checekedList}
+          />
+          <CloseTabModel
+            closeModelVisible={closeModelVisible}
+            setCloseModelVisable={setCloseModelVisible}
+            handleClose={handleClose}
+            singleCheck={checekedList}
+          />
+          <CancelTabModel
+            cancelModelVisible={cancelModelVisible}
+            setCancelModelVisible={setCancelModelVisible}
+            handleCancel={handleCancel}
+            singleCheck={checekedList}
+          />
+          <LoadCommentaryModel
+            loadModelVisable={loadModelVisable}
+            setLoadModelVisable={setLoadModelVisable}
+            handleLoad={handleLoadCommentary}
+          />
+          <CommentaryClone
+            cloneModelVisible={cloneModelVisible}
+            setCloneModelVisible={setCloneModelVisible}
+            handleClone={handleClone}
+            setCloneValues={setCloneValues}
+            cloneValues={cloneValues}
+            singleCheck={checekedList}
+          />
+          {changeModelVisible && (
+            <ChnageMatchTypeModel
+              changeModelVisible={changeModelVisible}
+              setChangeModelVisible={setChangeModelVisible}
+              handleChange={handleChange}
+              setMatchType={setMatchType}
+              singleCheck={checekedList}
+              selectedCommentary={selectedCommentary}
+              setSelectedCommentary={setSelectedCommentary}
+            />
+          )}
+          {changePythonModel && (
+            <ChangePythonType
+              changeModelVisible={changePythonModel}
+              setChangeModelVisible={setChangePythonModel}
+              handleChange={handlePythonChange}
+              singleCheck={checekedList}
+              selectedCommentary={selectedPythonCommentary}
+              setSelectedCommentary={setSelectedPythonCommentary}
+            />
+          )}
+          {resultModelVisible && (
+            <ChangeResultModel
+              resultModelVisible={resultModelVisible}
+              setResultModelVisible={setResultModelVisible}
+              handleChange={handleChangeResult}
+              selectedResult={selectedResult}
+            />
+          )}
+          {delayModelVisible && (
+            <ChangeDelayModel
+              delayModelVisible={delayModelVisible}
+              setDelayModelVisible={setDelayModelVisible}
+              handleChange={handleChangeDelay}
+              singleCheck={checekedList}
+              selectedDelay={selectedDelay}
+              setSelectedDelay={setSelectedDelay}
+            />
+          )}
+          {eventRefModelVisible && (
+            <ChangeEventRefIdModel
+              eventRefModelVisible={eventRefModelVisible}
+              setEventRefModelVisible={setEventRefModelVisible}
+              handleChange={handleChangeEventRef}
+              singleCheck={checekedList}
+              selectedEventRef={selectedEventRef}
+              setSelectedEventRef={setSelectedEventRef}
+            />
+          )}
+          {runnerModelVisible && (
+            <ChangeRunnerModel
+              runnerModelVisible={runnerModelVisible}
+              setRunnerModelVisible={setRunnerModelVisible}
+              handleChange={handleChangeRunner}
+              singleCheck={checekedList}
+              selectedCommentaryRunner={selectedCommentaryRunner}
+              setSelectedCommentaryRunner={setSelectedCommentaryRunner}
+            />
+          )}
+          {dlsModalCommentary && (
+            <DlsModal
+              commentaryDetails={dlsModalCommentary}
+              toggle={() => {
+                setDlsModalCommentary(false);
+              }}
+            />
+          )}
+          {/* {showAwardModel && (
+            <AwardSelectionComponent
+              commentaryId={showAwardModel}
+              onClose={() => {
+                setShowAwardModel(undefined);
+              }}
+            />
+          )} */}
+          {marketTemplateModelVisible && (
+            <CommentaryMarketTemplateModel
+              marketTemplateModelVisible={marketTemplateModelVisible}
+              setMarketTemplateModelVisible={setMarketTemplateModelVisible}
+              marketTemplateRecord={marketTemplateRecord}
+              fetchData={fetchData}
+            />
+          )}
+          {loadDataModelVisable && (
+            <LoadDataModal
+              loadDataModelVisable={loadDataModelVisable}
+              setLoadDataModelVisable={setLoadDataModelVisable}
+              handleLoadData={handleLoadData}
+              moduleName={"Commentary"}
+            />
+          )}
+          {loadSingleDataModelVisible && (
+            <LoadDataModal
+              loadDataModelVisable={loadSingleDataModelVisible}
+              setLoadDataModelVisable={setLoadSingleDataModelVisible}
+              handleLoadData={handleLoadSingleCommentaryDataWithModal}
+              moduleName={"Single Commentary"}
+            />
+          )}
+          {isGenerateModalOpen && (
+            <GenerateModal
+              isOpen={isGenerateModalOpen}
+              toggle={() => setIsGenerateModalOpen(!isGenerateModalOpen)}
+              data={generateModalData}
+              fetchData={fetchData}
+            />
+          )}
+          {updateDayModelVisible && (
+            <UpdateDayModel
+            updateDayModelVisible={updateDayModelVisible}
+            setUpdateDayModelVisible={setUpdateDayModelVisible}
+            handleUpdateDay={handleUpdateDay}
+            selectedCommentaryDay={selectedCommentaryDay}
+            setSelectedCommentaryDay={setSelectedCommentaryDay}
+            />
+          )}
         </Container>
       </div>
     </React.Fragment>
