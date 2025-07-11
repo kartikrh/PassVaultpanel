@@ -1339,7 +1339,6 @@ const Commentary = (props) => {
     const handleUndoClick = () => {
         if (isCommentaryBallLoading || currentBall?.commentaryBallByBallId === lastUndoId) return;
         if (currentBall?.commentaryBallByBallId && (+currentBall?.overCount === +teams[BATTING_TEAM].teamOver)) {
-            setIsSaving(true);
             setLastUndoId(currentBall?.commentaryBallByBallId);
             if (((currentOver.over || 0) === 0) && ((currentOver.ballCount || 0) === 0) && (currentBall.ballType === BALL_TYPE_OVER_COMPLETE)
                 && ((currentBall.ballRun || 0) === 0) && ((currentBall.ballExtraRun || 0) === 0)) {
@@ -1595,6 +1594,7 @@ const Commentary = (props) => {
             }
         } else {
             // setUndoErrorModal(`OverCount in ball: ${+currentBall?.overCount} is not equal to teamOver : ${+teams[BATTING_TEAM].teamOver}. please correct it from update feature screen`)
+            setIsSaving(true);
             setUndoErrorModal(`There is some data mismatched, Please click Retry.`)
         }
     }
@@ -2816,7 +2816,7 @@ const Commentary = (props) => {
             />
         }
         {undoErrorModal && <UndoErrorModal
-            toggle={() => { setUndoErrorModal(null) }}
+            toggle={() => { setUndoErrorModal(null); setIsSaving(false);}}
             undoError={undoErrorModal}
         />}
         {(!props?.isNewUi && isPaneltyPopup) && <PenaltyModal
