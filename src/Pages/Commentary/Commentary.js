@@ -451,6 +451,7 @@ const Commentary = (props) => {
     }
     const updateRuns = ({ run, ball, batter, bowler, isBoundary, freezePlayers = false }) => {
         if (isCommentaryBallLoading) return;
+        setIsSaving(true);
         setBallStatus(SCORING_STATUS);
         setIsUndoingLastOver(false);
         if (!freezePlayers) setCurrentBall({})
@@ -1338,6 +1339,7 @@ const Commentary = (props) => {
     const handleUndoClick = () => {
         if (isCommentaryBallLoading || currentBall?.commentaryBallByBallId === lastUndoId) return;
         if (currentBall?.commentaryBallByBallId && (+currentBall?.overCount === +teams[BATTING_TEAM].teamOver)) {
+            setIsSaving(true);
             setLastUndoId(currentBall?.commentaryBallByBallId);
             if (((currentOver.over || 0) === 0) && ((currentOver.ballCount || 0) === 0) && (currentBall.ballType === BALL_TYPE_OVER_COMPLETE)
                 && ((currentBall.ballRun || 0) === 0) && ((currentBall.ballExtraRun || 0) === 0)) {
