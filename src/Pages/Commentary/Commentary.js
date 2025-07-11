@@ -165,6 +165,7 @@ const Commentary = (props) => {
         const isOverNotComplete = !currentOver.isComplete;
 
         if (isNotUndoing && isBallCountExceeded && shouldShowWheel && isOverNotComplete) {
+            setIsSaving(true);
             setShowChangeOverModal(true);
         }
     };
@@ -2413,7 +2414,7 @@ const Commentary = (props) => {
                     setIsSwapPlayer(true)
                     changePlayer(type)
                 }}
-                changeOver={() => { setShowChangeOverModal(true) }}
+                changeOver={() => { setShowChangeOverModal(true);  setIsSaving(true);}}
                 updateExtras={(extraType) => {
                     setExtrasType(extraType)
                 }}
@@ -2517,11 +2518,12 @@ const Commentary = (props) => {
 
                 {...((showChangeOverModal && !changePlayerList) && {
                     isOpen: { showChangeOverModal },
-                    toggle: () => { setShowChangeOverModal(undefined) },
-                    onNoClick: () => { setShowChangeOverModal(undefined) },
+                    toggle: () => { setShowChangeOverModal(undefined); setIsSaving(false);},
+                    onNoClick: () => { setShowChangeOverModal(undefined); setIsSaving(false);},
                     onYesClick: () => {
                         setIsBowlerrChange(true)
                         setShowChangeOverModal(undefined);
+                        setIsSaving(false);
                         setChangeOverOnPopupClick(true)
                     },
                     overBalls: overBallByBallDisplay,
@@ -2655,7 +2657,7 @@ const Commentary = (props) => {
                     setIsSwapPlayer(true)
                     changePlayer(type)
                 }}
-                changeOver={() => { setShowChangeOverModal(true) }}
+                changeOver={() => { setShowChangeOverModal(true); setIsSaving(true); }}
                 updateExtras={(extraType) => {
                     setExtrasType(extraType)
                 }}
@@ -2730,11 +2732,12 @@ const Commentary = (props) => {
             updateExtras={onExtrasChange} />}
         {(!props?.isNewUi && showChangeOverModal && !changePlayerList && !selectMissingPlayer) && <ChangeOverModal
             isOpen={showChangeOverModal}
-            toggle={() => { setShowChangeOverModal(undefined) }}
-            onNoClick={() => { setShowChangeOverModal(undefined) }}
+            toggle={() => { setShowChangeOverModal(undefined); setIsSaving(false); }}
+            onNoClick={() => { setShowChangeOverModal(undefined); setIsSaving(false); }}
             onYesClick={() => {
                 setIsBowlerrChange(true)
                 setShowChangeOverModal(undefined);
+                setIsSaving(false);
                 setChangeOverOnPopupClick(true)
             }}
             overBalls={overBallByBallDisplay}
