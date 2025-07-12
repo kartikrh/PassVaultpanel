@@ -12,7 +12,7 @@ export const CommentaryScreen = ({
     refId, teamDetails, onPitchPlayers, updateRuns, changePlayer, changeOver, updateExtras, onWicketClick,
     onUndoClick, changeStrike, endInnings, isLoading, changeBowler, updateDisplayStatus, showPaneltyRuns,
     overBalls, anyPopup, handleRetiredHurt = {}, target, partnerships, commentaryId, handleWheelShowToggle, handleRemainingBallsShowToggle, isRemainingBallsShow, isWheelShow, overHistory,
-    players, currentOver, currentInnings, isPredict, isPredictToggle, setIsPredictToggle,allteams, fetchData, isSaving }) => {
+    players, currentOver, currentInnings, isPredict, isPredictToggle, setIsPredictToggle,allteams, fetchData, isSaving, showChangeOverModal }) => {
     const [actionPopup, setActionPopup] = useState(undefined);
     
     const OffSymbolStatus = () => {
@@ -127,7 +127,7 @@ export const CommentaryScreen = ({
     };
 
     const handleKeyPress = (event) => {
-        if (isLoading || isSaving) return;
+        if (isLoading || isSaving || showChangeOverModal) return;
         const key = event.key.toLowerCase(); // Convert to lowercase to simplify the switch cases
         switch (key) {
             case '0':
@@ -349,7 +349,7 @@ export const CommentaryScreen = ({
                         <button onClick={changeBowler} className=" text-right change-button">C</button>
                     </Col>
                 </Row>
-                <Row className={isLoading || isSaving ? "disable-button" : ""} >
+                <Row className={(isLoading || isSaving || showChangeOverModal) ? "disable-button" : ""} >
                     <Col role="button" className=" score-button" xs={3} md={3} lg={3}
 
                         onClick={() => handleRuns(0, 1)}>
