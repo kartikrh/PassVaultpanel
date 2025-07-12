@@ -468,11 +468,12 @@ export const NewUpdateManualOdds = () => {
             return;
         }
 
+        const isManualMode = !isLive && !directLineEnabled;
+
         setSavedPrices(prevSavedPrices => {
             console.log('Previous saved prices:', prevSavedPrices);
             const updatedPrices = { ...prevSavedPrices };
 
-            // Find selected runner
             const currentRunners = runnersRef.current;
             console.log('Runners from runnersRef:', currentRunners);
 
@@ -493,10 +494,7 @@ export const NewUpdateManualOdds = () => {
                 return prevSavedPrices;
             }
             const nonSelectedRunner = nonSelectedRunners[0];
-            console.log('Selected runner:', selectedRunner.runnerId);
-            console.log('Non-selected runner:', nonSelectedRunner.runnerId);
 
-            // Get current selected back price
             const selectedBackPrice = prevSavedPrices[selectedRunner.runnerId]?.back || 0;
             console.log('Selected back price:', selectedBackPrice);
 
@@ -505,32 +503,51 @@ export const NewUpdateManualOdds = () => {
                 return prevSavedPrices;
             }
 
-            // Calculate new lay price with new rate diff
             const selectedLayPrice = Math.max(1.01, parseFloat((selectedBackPrice + rateDiff).toFixed(2)));
             console.log('New selected lay price:', selectedLayPrice);
 
-            // Calculate non-selected prices using two-outcome formula
-            const nonSelectedBackPrice = parseFloat((1 / (1 - (1 / selectedLayPrice))).toFixed(2));
-            const nonSelectedLayPrice = parseFloat((1 / (1 - (1 / selectedBackPrice))).toFixed(2));
+            if (isManualMode) {
+                // MANUAL MODE: Calculate non-selected prices using proper two-outcome formula
+                const selectedProbability = 1 / selectedBackPrice;
+                const nonSelectedProbability = 1 - selectedProbability;
+                const nonSelectedBackPrice = Number((1 / nonSelectedProbability).toFixed(2));
+                const nonSelectedLayPrice = Number((nonSelectedBackPrice + rateDiff).toFixed(2));
 
-            console.log('Non-selected back price:', nonSelectedBackPrice);
-            console.log('Non-selected lay price:', nonSelectedLayPrice);
+                console.log('Manual mode - Non-selected back price:', nonSelectedBackPrice);
+                console.log('Manual mode - Non-selected lay price:', nonSelectedLayPrice);
 
-            // Update prices for both runners
-            updatedPrices[selectedRunner.runnerId] = {
-                back: selectedBackPrice,
-                lay: selectedLayPrice
-            };
+                updatedPrices[selectedRunner.runnerId] = {
+                    back: selectedBackPrice,
+                    lay: selectedLayPrice
+                };
 
-            updatedPrices[nonSelectedRunner.runnerId] = {
-                back: nonSelectedBackPrice,
-                lay: nonSelectedLayPrice
-            };
+                updatedPrices[nonSelectedRunner.runnerId] = {
+                    back: nonSelectedBackPrice,
+                    lay: nonSelectedLayPrice
+                };
+            } else {
+                // OTHER MODES: Keep original calculation
+                const nonSelectedBackPrice = parseFloat((1 / (1 - (1 / selectedLayPrice))).toFixed(2));
+                const nonSelectedLayPrice = parseFloat((1 / (1 - (1 / selectedBackPrice))).toFixed(2));
+
+                console.log('Other mode - Non-selected back price:', nonSelectedBackPrice);
+                console.log('Other mode - Non-selected lay price:', nonSelectedLayPrice);
+
+                updatedPrices[selectedRunner.runnerId] = {
+                    back: selectedBackPrice,
+                    lay: selectedLayPrice
+                };
+
+                updatedPrices[nonSelectedRunner.runnerId] = {
+                    back: nonSelectedBackPrice,
+                    lay: nonSelectedLayPrice
+                };
+            }
 
             console.log('Updated saved prices:', updatedPrices);
             return updatedPrices;
         });
-    }, []);
+    }, [isLive, directLineEnabled]);
 
     const setTempRateDiffWithRef = useCallback((value) => {
         setTempRateDiff(value);
@@ -1235,6 +1252,7 @@ export const NewUpdateManualOdds = () => {
                     // MANUAL MODE: Update savedPrices to reflect rate difference changes
                     if (key === 'rateDifferent') {
                         const newRateDiff = parseFloat(numericValue);
+                        const isManualMode = !isLive && !directLineEnabled;
 
                         setSavedPrices(prevSavedPrices => {
                             const updatedPrices = { ...prevSavedPrices };
@@ -1249,18 +1267,38 @@ export const NewUpdateManualOdds = () => {
 
                             if (selectedBackPrice > 0) {
                                 const selectedLayPrice = Math.max(1.01, parseFloat((selectedBackPrice + newRateDiff).toFixed(2)));
-                                const nonSelectedBackPrice = parseFloat((1 / (1 - (1 / selectedLayPrice))).toFixed(2));
-                                const nonSelectedLayPrice = parseFloat((1 / (1 - (1 / selectedBackPrice))).toFixed(2));
 
-                                updatedPrices[selectedRunnerData.runnerId] = {
-                                    back: selectedBackPrice,
-                                    lay: selectedLayPrice
-                                };
+                                if (isManualMode) {
+                                    // MANUAL MODE: Use proper two-outcome calculation
+                                    const selectedProbability = 1 / selectedBackPrice;
+                                    const nonSelectedProbability = 1 - selectedProbability;
+                                    const nonSelectedBackPrice = Number((1 / nonSelectedProbability).toFixed(2));
+                                    const nonSelectedLayPrice = Number((nonSelectedBackPrice + newRateDiff).toFixed(2));
 
-                                updatedPrices[nonSelectedRunner.runnerId] = {
-                                    back: nonSelectedBackPrice,
-                                    lay: nonSelectedLayPrice
-                                };
+                                    updatedPrices[selectedRunnerData.runnerId] = {
+                                        back: selectedBackPrice,
+                                        lay: selectedLayPrice
+                                    };
+
+                                    updatedPrices[nonSelectedRunner.runnerId] = {
+                                        back: nonSelectedBackPrice,
+                                        lay: nonSelectedLayPrice
+                                    };
+                                } else {
+                                    // OTHER MODES: Keep original calculation
+                                    const nonSelectedBackPrice = parseFloat((1 / (1 - (1 / selectedLayPrice))).toFixed(2));
+                                    const nonSelectedLayPrice = parseFloat((1 / (1 - (1 / selectedBackPrice))).toFixed(2));
+
+                                    updatedPrices[selectedRunnerData.runnerId] = {
+                                        back: selectedBackPrice,
+                                        lay: selectedLayPrice
+                                    };
+
+                                    updatedPrices[nonSelectedRunner.runnerId] = {
+                                        back: nonSelectedBackPrice,
+                                        lay: nonSelectedLayPrice
+                                    };
+                                }
                             }
 
                             return updatedPrices;
@@ -2374,7 +2412,6 @@ export const NewUpdateManualOdds = () => {
 
     const handleSavedRunnerChange = (runnerId, field, value) => {
         console.log("handleSavedRunnerChange", runnerId, field, value)
-        // Don't allow manual changes when in temporary state
         if (tempRateDiffRef.current !== null) {
             console.log('Ignoring manual change - in temporary state');
             return;
@@ -2384,13 +2421,12 @@ export const NewUpdateManualOdds = () => {
         const isSelectedRunner = runner?.isSelected;
         const otherRunner = runners.find(r => r.runnerId !== runnerId);
         const numericValue = Number(parseFloat(value).toFixed(2));
-        console.log("otherRunner", otherRunner)
-        console.log("isSelectedRunner", isSelectedRunner)
 
-        // For directLineEnabled and !isLive mode, if value < 1.01, set it to 0
+        // Check if we're in manual mode
+        const isManualMode = !isLive && !directLineEnabled;
+
         const adjustedValue = !isLive && directLineEnabled && numericValue < 1.01 ? 0 : numericValue;
-        console.log("adjustedValue", adjustedValue)
-        console.log("Hello 3")
+
         setSavedPrices(prevValue => {
             const newSavedPrices = {
                 ...prevValue,
@@ -2400,12 +2436,48 @@ export const NewUpdateManualOdds = () => {
                 }
             };
 
-            if (isSelectedRunner && otherRunner) {
+            // ONLY apply new calculation logic in manual mode
+            if (isManualMode && otherRunner) {
+                if (field === 'back') {
+                    const changedBackPrice = adjustedValue;
+                    const changedLayPrice = Number((changedBackPrice + parseFloat(settings.rateDifferent)).toFixed(2));
+
+                    if (changedBackPrice === 0) {
+                        const otherBackPrice = 1.01;
+                        const otherLayPrice = Number((otherBackPrice + parseFloat(settings.rateDifferent)).toFixed(2));
+
+                        newSavedPrices[runnerId] = { back: 0, lay: changedLayPrice };
+                        newSavedPrices[otherRunner.runnerId] = { back: otherBackPrice, lay: otherLayPrice };
+                    } else {
+                        // Calculate using two-outcome probability (MANUAL MODE ONLY)
+                        const changedProbability = 1 / changedBackPrice;
+                        const otherProbability = 1 - changedProbability;
+                        const otherBackPrice = Number((1 / otherProbability).toFixed(2));
+                        const otherLayPrice = Number((otherBackPrice + parseFloat(settings.rateDifferent)).toFixed(2));
+
+                        newSavedPrices[runnerId] = { back: changedBackPrice, lay: changedLayPrice };
+                        newSavedPrices[otherRunner.runnerId] = { back: otherBackPrice, lay: otherLayPrice };
+                    }
+                } else if (field === 'lay') {
+                    const changedLayPrice = adjustedValue;
+                    const changedBackPrice = Math.max(0, Number((changedLayPrice - parseFloat(settings.rateDifferent)).toFixed(2)));
+
+                    if (changedBackPrice > 0) {
+                        const changedProbability = 1 / changedBackPrice;
+                        const otherProbability = 1 - changedProbability;
+                        const otherBackPrice = Number((1 / otherProbability).toFixed(2));
+                        const otherLayPrice = Number((otherBackPrice + parseFloat(settings.rateDifferent)).toFixed(2));
+
+                        newSavedPrices[runnerId] = { back: changedBackPrice, lay: changedLayPrice };
+                        newSavedPrices[otherRunner.runnerId] = { back: otherBackPrice, lay: otherLayPrice };
+                    }
+                }
+            } else if (!isManualMode && otherRunner) {
+                // Keep the original logic for other modes
                 if (field === 'back') {
                     const newLayPrice = Number((adjustedValue + parseFloat(settings.rateDifferent)).toFixed(2));
                     const newNonSelectedBack = Number((1 / (1 - (1 / newLayPrice))).toFixed(2));
                     const newNonSelectedLay = Number((1 / (1 - (1 / adjustedValue))).toFixed(2));
-                    console.log("isSelectedRunner && otherRunner", newLayPrice, newNonSelectedBack, newNonSelectedLay)
 
                     newSavedPrices[runnerId] = {
                         ...newSavedPrices[runnerId],
@@ -2422,14 +2494,6 @@ export const NewUpdateManualOdds = () => {
 
                     newSavedPrices[otherRunner.runnerId] = {
                         back: newNonSelectedBack,
-                        lay: newNonSelectedLay
-                    };
-                }
-            } else if (otherRunner) {
-                if (field === 'back') {
-                    const newNonSelectedLay = Number((1 / (1 - (1 / adjustedValue))).toFixed(2));
-                    newSavedPrices[runnerId] = {
-                        ...newSavedPrices[runnerId],
                         lay: newNonSelectedLay
                     };
                 }
@@ -2474,6 +2538,7 @@ export const NewUpdateManualOdds = () => {
             }));
         }
     }, [savedPrices, selectedRunner, isLive, marketStatus]);
+
     useEffect(() => {
         // Only recalculate in live mode when bfRateDiff changes
         if (isLive && originalMarketRunnerData.length > 0) {
@@ -2822,49 +2887,11 @@ export const NewUpdateManualOdds = () => {
     useEffect(() => {
         // Handle favRatio changes for different modes
         if (isLive && originalMarketRunnerData.length > 0) {
-            // In live mode, recalculate with socket data
             console.log('FavRatio changed in live mode, recalculating...');
             processMarketRunnerData(originalMarketRunnerData);
         } else if (!isLive && directLineEnabled && originalInningsData.length > 0) {
-            // In direct line mode, recalculate with innings data
             console.log('FavRatio changed in direct line mode, recalculating...');
             processInningsData(originalInningsData);
-        } else if (!isLive && !directLineEnabled) {
-            // In manual mode, recalculate saved prices based on favRatio
-            console.log('FavRatio changed in manual mode, recalculating saved prices...');
-
-            // Find selected runner and recalculate
-            const selectedRunnerData = runners.find(r => r.isSelected);
-            if (selectedRunnerData) {
-                const selectedBackPrice = savedPrices[selectedRunnerData.runnerId]?.back || 0;
-                if (selectedBackPrice > 0) {
-                    // Recalculate lay price with new favRatio
-                    const newSettings = { ...settings }; // This will have the updated favRatio
-                    const newRates = calculateRunnerRates({
-                        back: { price: selectedBackPrice }
-                    }, newSettings, { forceCalculateLay: true });
-
-                    // Update saved prices for both runners
-                    const nonSelectedRunner = runners.find(r => !r.isSelected);
-                    if (nonSelectedRunner) {
-                        const selectedLayPrice = newRates.lay;
-                        const nonSelectedBackPrice = parseFloat((1 / (1 - (1 / selectedLayPrice))).toFixed(2));
-                        const nonSelectedLayPrice = parseFloat((1 / (1 - (1 / selectedBackPrice))).toFixed(2));
-
-                        setSavedPrices(prev => ({
-                            ...prev,
-                            [selectedRunnerData.runnerId]: {
-                                back: selectedBackPrice,
-                                lay: selectedLayPrice
-                            },
-                            [nonSelectedRunner.runnerId]: {
-                                back: nonSelectedBackPrice,
-                                lay: nonSelectedLayPrice
-                            }
-                        }));
-                    }
-                }
-            }
         }
 
         // Always update runner calculations with new favRatio
@@ -2880,7 +2907,7 @@ export const NewUpdateManualOdds = () => {
                 l2: newRates.l2,
             };
         }));
-    }, [settings.favRatio, isLive, directLineEnabled, originalMarketRunnerData, originalInningsData, runners, savedPrices, processMarketRunnerData, processInningsData, calculateRunnerRates, settings]);
+    }, [settings.favRatio]); // ONLY depend on favRatio
 
     // TODO: test method Remove after development 
     useEffect(() => {

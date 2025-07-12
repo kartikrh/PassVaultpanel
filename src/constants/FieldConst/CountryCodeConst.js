@@ -1,9 +1,4 @@
-import {
-  DATE_TIME_PICKER,
-  IMAGE,
-  SWITCH,
-  TEXT,
-} from "../../components/Common/Const";
+import { IMAGE, SWITCH, TEXT, } from "../../components/Common/Const";
 
 export const countryCodeField = [
   {
@@ -39,10 +34,9 @@ export const countryCodeField = [
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
   {
-     name: "timezone",
+    name: "timezone",
     label: "Timezone",
-    isRequired: true,
-    type: DATE_TIME_PICKER,
+    type: TEXT,
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
