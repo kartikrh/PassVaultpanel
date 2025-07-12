@@ -855,9 +855,7 @@ const Index = forwardRef(
 
       setData(sortedData);
     };
-    useEffect(() => {
-      console.log(tableElement);
-    });
+
     const sortByPropertyB = (order, propName) => {
       if (order !== "ascending" && order !== "descending") {
         throw new Error(
@@ -2494,7 +2492,6 @@ const Index = forwardRef(
                           ) : null}
                         </div>
                       </Col>
-                      {console.log(tableElement)}
                       {/* <Col className="col-sm-auto ms-auto">
                        
                       </Col> */}

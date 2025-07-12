@@ -8,8 +8,17 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
-import { isEqual } from "lodash";
-import { ERROR, MODULE_COMPETITION, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, TAB_COMPETITION } from "../../components/Common/Const";
+import { isEmpty, isEqual } from "lodash";
+import {
+  ERROR,
+  MODULE_COMPETITION,
+  PERMISSION_ADD,
+  PERMISSION_DELETE,
+  PERMISSION_EDIT,
+  PERMISSION_VIEW,
+  SUCCESS,
+  TAB_COMPETITION,
+} from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
@@ -17,53 +26,84 @@ import CompetitionMarketTemplateModel from "../../components/Model/CompetitionMa
 import LoadDataModal from "../../components/Model/LoadDataModal";
 import { mapType } from "../Commentary/functions";
 import { ChangeStatusModel } from "../../components/Model/ChangeStatusModel";
+import Item from "antd/es/list/Item";
 
 const Index = () => {
-  const pageName = TAB_COMPETITION
+  const pageName = TAB_COMPETITION;
   const finalizeRef = useRef(null);
-  const permissionObj = useSelector(state => state.auth?.tabPermissionList);
+  const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   document.title = "Competitions";
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
-  const [checekedList, setCheckedList] = useState([]); const [isLoading, setIsLoading] = useState(false);
+  const [checekedList, setCheckedList] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [isDrag, setIsDrag] = useState(false);
   const [eventTypes, setEventTypes] = useState([]);
   const [matchTypes, setMatchTypes] = useState([]);
+  const [countryList, setCountryList] = useState([]);
   const [pythonApis, setpythonApis] = useState([]);
   const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
-  const [marketTemplateModelVisible, setMarketTemplateModelVisible] = useState(false);
+  const [marketTemplateModelVisible, setMarketTemplateModelVisible] =
+    useState(false);
   const [marketTemplateRecord, setMarketTemplateTimeRecord] = useState({});
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const [changeStatusModelVisible, setChangeStatusModelVisible] = useState(false);
-  const [selectedCompetitionRecord, setSelectedCompetitionRecord] = useState({});
+  const [changeStatusModelVisible, setChangeStatusModelVisible] =
+    useState(false);
+  const [selectedCompetitionRecord, setSelectedCompetitionRecord] = useState(
+    {}
+  );
 
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
-    const tableActions = finalizeRef.current.getTableAction()
-    const data = latestValueFromTable || tableActions
-    const isDragValue = data?.isTrending !== undefined ? data?.isTrending : isDrag;
+    const tableActions = finalizeRef.current.getTableAction();
+    const data = latestValueFromTable || tableActions;
+    const isDragValue =
+      data?.isTrending !== undefined ? data?.isTrending : isDrag;
     setIsDrag(isDragValue);
+    const countryData = isEmpty(countryList)
+      ? await fetchCountryData()
+      : countryList;
     await axiosInstance
       .post(`/admin/competition/all`, {
         ...data,
-        isTrending: data?.isTrending !== undefined ? data?.isTrending : tableActions?.isTrending !== undefined ? tableActions?.isTrending : false
+        isTrending:
+          data?.isTrending !== undefined
+            ? data?.isTrending
+            : tableActions?.isTrending !== undefined
+            ? tableActions?.isTrending
+            : false,
       })
       .then((response) => {
-        const apiData = [...response?.result]?.sort((a, b) => a.displayOrder - b.displayOrder);
+        let apiData = [...response?.result]?.sort(
+          (a, b) => a.displayOrder - b.displayOrder
+        );
         let apiDataIdList = [];
-        apiData.forEach(ele => {
-          apiDataIdList.push(ele?.competitionId)
-        })
+        apiData = apiData.map((ele) => {
+          apiDataIdList.push(ele?.competitionId);
+          return {
+            ...ele,
+            countryName: countryData.find(
+              (item) => item.countryId === ele.countryId
+            )?.countryName,
+          };
+        });
         setData(apiData);
-        setDataIndexList(apiDataIdList)
-        setCheckedList([])
+        setDataIndexList(apiDataIdList);
+        setCheckedList([]);
         setIsLoading(false);
       })
       .catch((error) => {
         setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
       });
   };
 
@@ -74,7 +114,16 @@ const Index = () => {
         setEventTypes(response.result);
         setIsLoading(false);
       })
-      .catch((error) => { });
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
   };
 
   const fetchMatchTypeData = async () => {
@@ -84,7 +133,16 @@ const Index = () => {
         setMatchTypes(response.result);
         setIsLoading(false);
       })
-      .catch((error) => { });
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
   };
 
   const fetchPythonAPIData = async () => {
@@ -94,24 +152,52 @@ const Index = () => {
         setpythonApis(response.result);
         setIsLoading(false);
       })
-      .catch((error) => { });
+      .catch((error) => {});
+  };
+
+  const fetchCountryData = async () => {
+    let dataToReturn = [];
+    await axiosInstance
+      .post(`/admin/list/countryList`, {})
+      .then((response) => {
+        // setCountries(response.result);
+        setIsLoading(false);
+        dataToReturn = response.result;
+        setCountryList(dataToReturn);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+    return dataToReturn;
   };
 
   const handleSingleCheck = (e) => {
-    let updateSingleCheck = []
+    let updateSingleCheck = [];
     if (checekedList.includes(e.competitionId)) {
-      updateSingleCheck = checekedList.filter((item) => item !== e.competitionId);
+      updateSingleCheck = checekedList.filter(
+        (item) => item !== e.competitionId
+      );
     } else {
       updateSingleCheck = [...checekedList, e.competitionId];
     }
-    setCheckedList(updateSingleCheck)
+    setCheckedList(updateSingleCheck);
   };
 
   const handleCompetitionClick = (details) => {
     const url = new URL(window.location.origin + "/eventResult");
-    sessionStorage.setItem('eventResultCompetitionId', "" + details?.competitionId);
-    sessionStorage.setItem('eventResultDetails', "" + JSON.stringify(details));
-    window.open(url.href, '_blank');
+    sessionStorage.setItem(
+      "eventResultCompetitionId",
+      "" + details?.competitionId
+    );
+    sessionStorage.setItem("eventResultDetails", "" + JSON.stringify(details));
+    window.open(url.href, "_blank");
     sessionStorage.removeItem("eventResultCompetitionId");
     sessionStorage.removeItem("eventResultDetails");
   };
@@ -126,11 +212,23 @@ const Index = () => {
       })
       .then((response) => {
         fetchData();
-        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
       })
       .catch((error) => {
         setIsLoading(false);
-        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
       });
   };
   const handleVirtualPermissions = async (pType, record, cState) => {
@@ -142,11 +240,23 @@ const Index = () => {
       })
       .then((response) => {
         fetchData();
-        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
       })
       .catch((error) => {
         setIsLoading(false);
-        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
       });
   };
   const handleIsTrending = async (pType, record, cState) => {
@@ -158,11 +268,23 @@ const Index = () => {
       })
       .then((response) => {
         fetchData();
-        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
       })
       .catch((error) => {
         setIsLoading(false);
-        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
       });
   };
   const handleIsMen = async (pType, record, cState) => {
@@ -174,11 +296,23 @@ const Index = () => {
       })
       .then((response) => {
         fetchData();
-        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
       })
       .catch((error) => {
         setIsLoading(false);
-        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
       });
   };
   const handleIsEventSnap = async (pType, record, cState) => {
@@ -190,11 +324,23 @@ const Index = () => {
       })
       .then((response) => {
         fetchData();
-        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
       })
       .catch((error) => {
         setIsLoading(false);
-        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
       });
   };
   const handleIsPointTable = async (pType, record, cState) => {
@@ -206,18 +352,30 @@ const Index = () => {
       })
       .then((response) => {
         fetchData();
-        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
       })
       .catch((error) => {
         setIsLoading(false);
-        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
       });
   };
 
   const handleLoadData = async (password) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/loadPanelData`, {module: [MODULE_COMPETITION], password})
+      .post(`/loadPanelData`, { module: [MODULE_COMPETITION], password })
       .then((response) => {
         fetchData();
         setLoadDataModelVisable(false);
@@ -251,19 +409,31 @@ const Index = () => {
       .then((response) => {
         fetchData();
         setDeleteModelVisable(false);
-        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
       })
       .catch((error) => {
         setIsLoading(false);
-        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
       });
   };
 
   const handleTournament = (details) => {
     const url = new URL(window.location.origin + "/tournamentTeamPoints");
-    sessionStorage.setItem('competitionId', "" + details?.competitionId);
-    sessionStorage.setItem('competitionDetails', "" + JSON.stringify(details));
-    window.open(url.href, '_blank');
+    sessionStorage.setItem("competitionId", "" + details?.competitionId);
+    sessionStorage.setItem("competitionDetails", "" + JSON.stringify(details));
+    window.open(url.href, "_blank");
   };
 
   //edit
@@ -274,23 +444,30 @@ const Index = () => {
   const handleChangeStatus = async (updatedData) => {
     try {
       setIsLoading(true);
-      const { data: response } = await axiosInstance.post(`/admin/competition/upStatus`, {
-        competitionId: updatedData.competitionId,
-        commStatus: +updatedData.commStatus,
-      });
+      const { data: response } = await axiosInstance.post(
+        `/admin/competition/upStatus`,
+        {
+          competitionId: updatedData.competitionId,
+          commStatus: +updatedData.commStatus,
+        }
+      );
 
       fetchData();
-      dispatch(updateToastData({
-        data: response?.message,
-        title: response?.title,
-        type: SUCCESS,
-      }));
+      dispatch(
+        updateToastData({
+          data: response?.message,
+          title: response?.title,
+          type: SUCCESS,
+        })
+      );
     } catch (error) {
-      dispatch(updateToastData({
-        data: error?.message,
-        title: error?.title,
-        type: ERROR,
-      }));
+      dispatch(
+        updateToastData({
+          data: error?.message,
+          title: error?.title,
+          type: ERROR,
+        })
+      );
     } finally {
       setIsLoading(false);
       setChangeStatusModelVisible(false);
@@ -501,14 +678,21 @@ const Index = () => {
     },
     {
       title: "API",
-      dataIndex: "pythonId",
-      render: (text, record) => {
-        const pythonApiNames =
-          pythonApis.length > 0 &&
-          pythonApis.find((item) => item.id == record?.pythonId)?.developerName;
-        return <span>{pythonApiNames}</span>;
-      },
-      key: "pythonId",
+      dataIndex: "developerName",
+      // render: (text, record) => {
+      //   const pythonApiNames =
+      //     pythonApis.length > 0 &&
+      //     pythonApis.find((item) => item.id == record?.pythonId)?.developerName;
+      //   return <span>{pythonApiNames}</span>;
+      // },
+      key: "developerName",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
+      title: "Country",
+      dataIndex: "countryName",
+      key: "countryName",
       sort: true,
       style: { width: "10%" },
     },
@@ -678,9 +862,9 @@ const Index = () => {
   ];
 
   const handleReset = (value) => {
-    fetchData(value)
-  }
-  
+    fetchData(value);
+  };
+
   //elements required
   const tableElement = {
     title: "Competition",
@@ -713,10 +897,9 @@ const Index = () => {
     ],
   };
 
-
   useEffect(() => {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
-      navigate("/dashboard")
+      navigate("/dashboard");
     }
     fetchData();
     fetchEventTypeData();

@@ -18,14 +18,6 @@ const Index = ({
       : setCurrentPage(0);
     setPrev(pageSize);
   };
-  console.log({
-    total,
-    pageSize,
-    currentPage,
-    fetchData,
-    setCurrentPage,
-    setPageSize,
-  });
   useEffect(() => {
     fetchData();
   }, [currentPage, pageSize]);

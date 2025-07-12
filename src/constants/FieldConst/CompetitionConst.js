@@ -123,6 +123,15 @@ export const CompetitionFields = [
         fieldColspan: { xs: 12, md: 4, lg: 4 },
     },
     {
+        type: SELECT,
+        name: "countryId",
+        label: "Country",
+        parentclassName: "",
+        options: [],
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
+    },
+    {
         name: "isVirtual",
         label: "Virtual",
         defaultValue: false,
