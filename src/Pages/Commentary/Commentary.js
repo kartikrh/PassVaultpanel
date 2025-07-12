@@ -2699,6 +2699,7 @@ const Commentary = (props) => {
                 allteams={allInningaTeams}
                 fetchData={props.fetchData}
                 isSaving={isSaving}
+                showChangeOverModal={showChangeOverModal}
             />}
         {!props?.isNewUi && !(isCommentaryBallLoading || inningsChangePopup || superOverModal || showRretiredHurt || isPaneltyPopup || props.isDataLoading ||
             winnerAnnouncement || showUpdateInnings || completeMatchModal || superOverModal || showCricketFieldModal) &&
