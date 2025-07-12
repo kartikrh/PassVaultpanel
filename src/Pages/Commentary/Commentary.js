@@ -165,6 +165,7 @@ const Commentary = (props) => {
         const isOverNotComplete = !currentOver.isComplete;
 
         if (isNotUndoing && isBallCountExceeded && shouldShowWheel && isOverNotComplete) {
+            setIsSaving(true);
             setShowChangeOverModal(true);
         }
     };
@@ -451,6 +452,7 @@ const Commentary = (props) => {
     }
     const updateRuns = ({ run, ball, batter, bowler, isBoundary, freezePlayers = false }) => {
         if (isCommentaryBallLoading) return;
+        setIsSaving(true);
         setBallStatus(SCORING_STATUS);
         setIsUndoingLastOver(false);
         if (!freezePlayers) setCurrentBall({})
@@ -1593,6 +1595,7 @@ const Commentary = (props) => {
             }
         } else {
             // setUndoErrorModal(`OverCount in ball: ${+currentBall?.overCount} is not equal to teamOver : ${+teams[BATTING_TEAM].teamOver}. please correct it from update feature screen`)
+            setIsSaving(true);
             setUndoErrorModal(`There is some data mismatched, Please click Retry.`)
         }
     }
@@ -2411,7 +2414,7 @@ const Commentary = (props) => {
                     setIsSwapPlayer(true)
                     changePlayer(type)
                 }}
-                changeOver={() => { setShowChangeOverModal(true) }}
+                changeOver={() => { setShowChangeOverModal(true);  setIsSaving(true);}}
                 updateExtras={(extraType) => {
                     setExtrasType(extraType)
                 }}
@@ -2515,11 +2518,12 @@ const Commentary = (props) => {
 
                 {...((showChangeOverModal && !changePlayerList) && {
                     isOpen: { showChangeOverModal },
-                    toggle: () => { setShowChangeOverModal(undefined) },
-                    onNoClick: () => { setShowChangeOverModal(undefined) },
+                    toggle: () => { setShowChangeOverModal(undefined); setIsSaving(false);},
+                    onNoClick: () => { setShowChangeOverModal(undefined); setIsSaving(false);},
                     onYesClick: () => {
                         setIsBowlerrChange(true)
                         setShowChangeOverModal(undefined);
+                        setIsSaving(false);
                         setChangeOverOnPopupClick(true)
                     },
                     overBalls: overBallByBallDisplay,
@@ -2653,7 +2657,7 @@ const Commentary = (props) => {
                     setIsSwapPlayer(true)
                     changePlayer(type)
                 }}
-                changeOver={() => { setShowChangeOverModal(true) }}
+                changeOver={() => { setShowChangeOverModal(true); setIsSaving(true); }}
                 updateExtras={(extraType) => {
                     setExtrasType(extraType)
                 }}
@@ -2728,11 +2732,12 @@ const Commentary = (props) => {
             updateExtras={onExtrasChange} />}
         {(!props?.isNewUi && showChangeOverModal && !changePlayerList && !selectMissingPlayer) && <ChangeOverModal
             isOpen={showChangeOverModal}
-            toggle={() => { setShowChangeOverModal(undefined) }}
-            onNoClick={() => { setShowChangeOverModal(undefined) }}
+            toggle={() => { setShowChangeOverModal(undefined); setIsSaving(false); }}
+            onNoClick={() => { setShowChangeOverModal(undefined); setIsSaving(false); }}
             onYesClick={() => {
                 setIsBowlerrChange(true)
                 setShowChangeOverModal(undefined);
+                setIsSaving(false);
                 setChangeOverOnPopupClick(true)
             }}
             overBalls={overBallByBallDisplay}
@@ -2814,7 +2819,7 @@ const Commentary = (props) => {
             />
         }
         {undoErrorModal && <UndoErrorModal
-            toggle={() => { setUndoErrorModal(null) }}
+            toggle={() => { setUndoErrorModal(null); setIsSaving(false);}}
             undoError={undoErrorModal}
         />}
         {(!props?.isNewUi && isPaneltyPopup) && <PenaltyModal
