@@ -104,7 +104,7 @@ const Index = () => {
   const handleLoadData = async (password) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/loadPanelData`, {module: [MODULE_COUNTRY_CODE], password})
+      .post(`/loadPanelData`, { module: [MODULE_COUNTRY_CODE], password })
       .then((response) => {
         fetchData();
         setLoadDataModelVisable(false);
@@ -127,7 +127,32 @@ const Index = () => {
         );
       });
   };
-
+  const importCountry = async () => {
+    setIsLoading(true);
+    finalizeRef.current.getTableAction();
+    await axiosInstance
+      .post(`/admin/countryCode/import`, {})
+      .then((response) => {
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
   const handleDelete = async (e) => {
     setIsLoading(true);
     await axiosInstance
@@ -219,6 +244,22 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
+      title: "Import",
+      dataIndex: "import",
+      key: "import",
+      width: "7.5%",
+      render: (text, record) => (
+        <button
+          color={"primary"}
+          size="sm"
+          className="btn-primary"
+          onClick={importCountry}
+        >
+          <i className="bx bx-plus"></i>
+        </button>
+      ),
+    },
+    {
       title: "Flag",
       dataIndex: "flag",
       printType: "ignore",
@@ -266,11 +307,11 @@ const Index = () => {
     {
       title: "Timezone",
       dataIndex: "timezone",
-      render: (text, record) => (
-        <span>
-          {convertDateUTCToLocal2(text, "index")}
-        </span>
-      ),
+      // render: (text, record) => (
+      //   <span>
+      //     {convertDateUTCToLocal2(text, "index")}
+      //   </span>
+      // ),
       key: "timezone",
       style: { width: "10%", textAlign: "center" },
       sort: true,
@@ -282,7 +323,7 @@ const Index = () => {
       style: { width: "10%", textAlign: "center" },
       sort: true,
     },
-    
+
     {
       title: "Active",
       key: "IsActive",
@@ -355,12 +396,12 @@ const Index = () => {
             handleDelete={handleDelete}
             singleCheck={checekedList}
           />
-          {loadDataModelVisable && 
+          {loadDataModelVisable &&
             <LoadDataModal
               loadDataModelVisable={loadDataModelVisable}
               setLoadDataModelVisable={setLoadDataModelVisable}
               handleLoadData={handleLoadData}
-              moduleName={"Country Code"} 
+              moduleName={"Country Code"}
             />}
         </Container>
       </div>
