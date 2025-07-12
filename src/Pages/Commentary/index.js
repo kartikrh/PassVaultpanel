@@ -48,12 +48,17 @@ import LoadDataModal from "../../components/Model/LoadDataModal";
 import GenerateModal from "./GenerateModal";
 import { loadInit } from "../../config";
 import { ChangePythonType } from "../../components/Model/ChangePythonType";
+import { ChangeCompititionModel } from "../../components/Model/ChangeCompititionModel";
 
 const Index = () => {
   const pageName = TAB_COMMENTARY;
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   document.title = "Commentary";
+  const [selectedTableElements, setSelectedTableElements] = useState({
+      eventType: null,
+      competition: null,
+  });
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
   const [cloneModelVisible, setCloneModelVisible] = useState(false);
@@ -61,6 +66,7 @@ const Index = () => {
   const [resultModelVisible, setResultModelVisible] = useState(false);
   const [delayModelVisible, setDelayModelVisible] = useState(false);
   const [eventRefModelVisible, setEventRefModelVisible] = useState(false);
+  const [compititionModelVisible, setCompititionModelVisible] = useState(false);
   const [changePythonModel, setChangePythonModel] = useState(false);
   const [matchType, setMatchType] = useState("");
   const [selectedCommentary, setSelectedCommentary] = useState({});
@@ -68,6 +74,7 @@ const Index = () => {
   const [selectedResult, setSelectedResult] = useState({});
   const [selectedDelay, setSelectedDelay] = useState({});
   const [selectedEventRef, setSelectedEventRef] = useState({});
+  const [selectedCompititon, setSelectedCompititon] = useState({});
   const [dlsModalCommentary, setDlsModalCommentary] = useState(false);
   const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
   const [userRefData, setUserRefData] = useState(false);
@@ -912,6 +919,49 @@ const Index = () => {
         );
       });
   };
+  const handleChangeCompitition = async () => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/commentary/changeIds`, {
+        "eventTypeId": selectedTableElements?.eventType?.value,
+        "competitionId": selectedTableElements?.competition?.value,
+        "commentaryId": selectedCompititon?.commentaryId
+      })
+      .then((response) => {
+        fetchData();
+        if (response?.result?.callPrediction?.predictioncallSuccess === false) {
+          const predictionMessage =
+            response?.result?.callPrediction?.predictionMessage;
+          const endPoint = response?.result?.callPrediction?.endPoint;
+          dispatch(
+            updateToastData({
+              data: `${endPoint}\n${predictionMessage}`,
+              title: "Call Prediction",
+              type: WARNING,
+            })
+          );
+        } else {
+          dispatch(
+            updateToastData({
+              data: response?.message,
+              title: response?.title,
+              type: SUCCESS,
+            })
+          );
+        }
+        setCompititionModelVisible(false);
+      })
+      .catch((error) => {
+        setCompititionModelVisible(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
   const handleActiveInactive = async (pType, record, cState) => {
     setIsLoading(true);
     await axiosInstance
@@ -1353,6 +1403,36 @@ const Index = () => {
       dataIndex: "competition",
       key: "competition",
       sort: true,
+      render: (text, record) => (
+        <div className="d-flex align-items-center gap-1">
+          <span
+            style={{ cursor: record.isPredictMarket && "pointer" }}
+            // onClick={() => {
+            //   if (record.isPredictMarket) {
+            //     handleOddsViewClick(record.commentaryId);
+            //   }
+            // }}
+          >
+            {text}
+          </span>
+          <span
+            style={{ cursor: "pointer" }}
+            onClick={() => {
+              setCompititionModelVisible(true);
+              setSelectedCompititon(record);
+            }}
+          >
+            {" "}
+            <Tooltip
+              title="Edit Event Id"
+              color={"#e8e8ea"}
+              overlayInnerStyle={{ color: "#000" }}
+            >
+              {<a className="bx bx-edit-alt"></a>}
+            </Tooltip>
+          </span>
+        </div>
+      ),
       style: { width: "10%" },
     },
     {
@@ -2641,6 +2721,18 @@ const Index = () => {
               singleCheck={checekedList}
               selectedEventRef={selectedEventRef}
               setSelectedEventRef={setSelectedEventRef}
+            />
+          )}
+          {compititionModelVisible && (
+            <ChangeCompititionModel
+              compititonModelVisible={compititionModelVisible}
+              setCompititonModelVisible={setCompititionModelVisible}
+              handleChange={handleChangeCompitition}
+              singleCheck={checekedList}
+              selectedCompititon={selectedCompititon}
+              setSelectedCompititon={setSelectedCompititon}
+              setSelectedTableElements={setSelectedTableElements}
+              selectedTableElements={selectedTableElements}
             />
           )}
           {runnerModelVisible && (
