@@ -19,7 +19,7 @@ import {
   MODULE_COUNTRY_CODE,
 } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
-import { checkPermission, convertDateUTCToLocal2 } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import LoadDataModal from "../../components/Model/LoadDataModal";
 
@@ -244,22 +244,6 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Import",
-      dataIndex: "import",
-      key: "import",
-      width: "7.5%",
-      render: (text, record) => (
-        <button
-          color={"primary"}
-          size="sm"
-          className="btn-primary"
-          onClick={importCountry}
-        >
-          <i className="bx bx-plus"></i>
-        </button>
-      ),
-    },
-    {
       title: "Flag",
       dataIndex: "flag",
       printType: "ignore",
@@ -267,11 +251,7 @@ const Index = () => {
         <div className="flex-shrink-0">
           {text ? (
             <div>
-              <img
-                className="avatar-sm"
-                alt=""
-                src={text}
-              />
+              <img className="avatar-sm" alt="" src={text} />
             </div>
           ) : (
             <Avatar src="#" alt="ET">
@@ -328,7 +308,11 @@ const Index = () => {
       title: "Active",
       key: "IsActive",
       render: (text, record) => (
-        <Tooltip title={"Country Code"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip
+          title={"Country Code"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
           <Button
             color={`${record.isActive ? "primary" : "danger"}`}
             size="sm"
@@ -337,7 +321,9 @@ const Index = () => {
               handlePermissions("isActive", record, record.isActive);
             }}
           >
-            <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
+            <i
+              className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}
+            ></i>
           </Button>
         </Tooltip>
       ),
@@ -349,11 +335,12 @@ const Index = () => {
     reloadButton: true,
     isActive: true,
     loadData: true,
+    importData: true,
   };
 
   useEffect(() => {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
-      navigate("/dashboard")
+      navigate("/dashboard");
     }
     fetchData();
   }, []);
@@ -378,6 +365,8 @@ const Index = () => {
             handleReset={handleReset}
             handleReload={handleReload}
             loadDataModelFunction={setLoadDataModelVisable}
+            importDataMethod={importCountry}
+            importDataName="Import Country"
             reFetchData={fetchData}
             isAddPermission={checkPermission(
               permissionObj,
@@ -396,13 +385,14 @@ const Index = () => {
             handleDelete={handleDelete}
             singleCheck={checekedList}
           />
-          {loadDataModelVisable &&
+          {loadDataModelVisable && (
             <LoadDataModal
               loadDataModelVisable={loadDataModelVisable}
               setLoadDataModelVisable={setLoadDataModelVisable}
               handleLoadData={handleLoadData}
               moduleName={"Country Code"}
-            />}
+            />
+          )}
         </Container>
       </div>
     </React.Fragment>
