@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
+import Select from "react-select";
 import { Button } from "reactstrap";
 import { Container } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
@@ -16,6 +17,12 @@ import { updateToastData } from "../../Features/toasterSlice";
 import { Tooltip } from "antd";
 import LoadDataModal from "../../components/Model/LoadDataModal";
 
+const isSquadOptions = [
+  { value: "Select", label: "Select" },
+  { value: "true", label: "true" },
+  { value: "false", label: "false" },
+];
+
 const Index = () => {
   const pageName = TAB_BLOCKS
   const finalizeRef = useRef(null);
@@ -28,6 +35,7 @@ const Index = () => {
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [run, setRun] = useState(null);
   const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
+  const [isSquadSelectedOption, setIsSquadSelectedOption] = useState('Select');
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -38,7 +46,7 @@ const Index = () => {
     await axiosInstance
       .post(`/admin/block/all`, {
         ...(latestValueFromTable || { ...tableActions }),
-        isShowContent: latestValueFromTable?.isShowContent !== undefined ? latestValueFromTable?.isShowContent : tableActions?.isShowContent !== undefined ? tableActions?.isShowContent : true,
+        isShowContent: isSquadSelectedOption == "Select" ? null : isSquadSelectedOption,
       })
       .then((response) => {
         const apiData = response?.result?.sort((a,b)=>a?.blockId - b?.blockId);
@@ -249,7 +257,7 @@ const Index = () => {
   const tableElement = {
     title: "Block",
     // headerSelect: false,
-    isShowContent: true,
+    // isShowContent: true,
     reloadButton: true,
     loadData: true,
     // clone: false,
@@ -260,7 +268,7 @@ const Index = () => {
       navigate("/dashboard")
     }
     fetchData();
-  }, []);
+  }, [isSquadSelectedOption]);
 
   const handleReload = (value) => {
     fetchData();
@@ -284,6 +292,20 @@ const Index = () => {
             onAddNavigate={"/addblocks"}
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
             isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
+            renderCustomFilter={() => (
+              <>
+                <Select
+                  styles={{
+                    control: (provided) => ({ ...provided, width: 140 }),
+                  }}
+                  value={isSquadOptions.find((option) => option.value === isSquadSelectedOption) || isSquadOptions[0]}
+                  onChange={(e) => setIsSquadSelectedOption(e?.value === "Select" ? null : e?.value)}
+                  options={isSquadOptions}
+                  placeholder="Is Squad"
+                  classNamePrefix="filter-dropdown"
+                />
+              </>
+            )}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

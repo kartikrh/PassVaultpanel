@@ -161,6 +161,7 @@ import AddPythonAPI from "../Pages/PythonApi/AddPythonApi.jsx";
 import { AddManualOdds } from "../Pages/Commentary/AddManualOdds.jsx";
 import { NewUpdateManualOdds } from "../Pages/Commentary/NewUpdateManualOdds.jsx";
 import ImportEntityEvent from "../Pages/ImportEntityEvent/ImportEntityEventTable.js";
+import ImportEntityTeam from "../Pages/ImportEntityTeam/ImportEntityTeamTable.js";
 
 const authProtectedRoutes = [
   //dashboard
@@ -221,6 +222,7 @@ const authProtectedRoutes = [
   { path: "/addVenue", component: <AddVenue /> },
   { path: "/importEntity", component: <ImportEntity /> },
   { path: "/ImportEntityEvent", component: <ImportEntityEvent /> },
+  { path: "/ImportEntityTeam", component: <ImportEntityTeam /> },
   { path: "/pythonAPI", component: <PythonApi /> },
   { path: "/addpythonAPI", component: <AddPythonAPI /> },
   {

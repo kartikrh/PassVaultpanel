@@ -99,6 +99,8 @@ const Commentary = (props) => {
     const [isUndoingLastOver, setIsUndoingLastOver] = useState(false);
     const [ballStatus, setBallStatus] = useState(null);
     const [isShotType, setIsShotType] = useState(undefined);
+    const [lastUndoId, setLastUndoId] = useState(null);
+    const [isSaving, setIsSaving] = useState(false);
     const {
         commentaryDataToUpdate,
         isCommentaryDataUpdated,
@@ -108,6 +110,13 @@ const Commentary = (props) => {
     } = useSelector(state => state.tabsData.commentary);
     let navigate = useNavigate();
     const socket = createSocket();
+
+    // const throttledDispatchAdd = useMemo(
+    //     () => _.throttle((data) => {
+    //         dispatch(addCommentaryScreenData(data));
+    //     }, 400, { leading: true, trailing: true }),
+    //     [dispatch]
+    // );
     // console.log({ "Current Over Ball count": currentOver.ballCount, "OverHistory": overHistory });
 
     // const handleCommentaryConsole = async (temp, main, objToSave, currentPartnership) => {
@@ -156,6 +165,7 @@ const Commentary = (props) => {
         const isOverNotComplete = !currentOver.isComplete;
 
         if (isNotUndoing && isBallCountExceeded && shouldShowWheel && isOverNotComplete) {
+            setIsSaving(true);
             setShowChangeOverModal(true);
         }
     };
@@ -441,6 +451,8 @@ const Commentary = (props) => {
         setSaveToDb(false)
     }
     const updateRuns = ({ run, ball, batter, bowler, isBoundary, freezePlayers = false }) => {
+        if (isCommentaryBallLoading) return;
+        setIsSaving(true);
         setBallStatus(SCORING_STATUS);
         setIsUndoingLastOver(false);
         if (!freezePlayers) setCurrentBall({})
@@ -1326,7 +1338,9 @@ const Commentary = (props) => {
         setCurrentWicket(undefined)
     }
     const handleUndoClick = () => {
+        if (isCommentaryBallLoading || currentBall?.commentaryBallByBallId === lastUndoId) return;
         if (currentBall?.commentaryBallByBallId && (+currentBall?.overCount === +teams[BATTING_TEAM].teamOver)) {
+            setLastUndoId(currentBall?.commentaryBallByBallId);
             if (((currentOver.over || 0) === 0) && ((currentOver.ballCount || 0) === 0) && (currentBall.ballType === BALL_TYPE_OVER_COMPLETE)
                 && ((currentBall.ballRun || 0) === 0) && ((currentBall.ballExtraRun || 0) === 0)) {
                 setUndoInningsPopup(true)
@@ -1352,7 +1366,12 @@ const Commentary = (props) => {
                     "deleteCommentaryBallByBallId": currentBall.commentaryBallByBallId
                 }
                 // console.log("Called from : 16");
-                dispatch(addCommentaryScreenData(objToSave))
+                setIsSaving(true);
+                Promise.resolve(dispatch(addCommentaryScreenData(objToSave)))
+                .finally(() => {
+                    setIsSaving(false);
+                });
+                // dispatch(addCommentaryScreenData(objToSave))
             }
             else {
                 const isBallCount = currentBall.ballIsCount
@@ -1576,6 +1595,7 @@ const Commentary = (props) => {
             }
         } else {
             // setUndoErrorModal(`OverCount in ball: ${+currentBall?.overCount} is not equal to teamOver : ${+teams[BATTING_TEAM].teamOver}. please correct it from update feature screen`)
+            setIsSaving(true);
             setUndoErrorModal(`There is some data mismatched, Please click Retry.`)
         }
     }
@@ -2129,11 +2149,26 @@ const Commentary = (props) => {
                         })
                     );
                 }
-                dispatch(addCommentaryScreenData(objToSave))
-                setSaveToDb(false)
+                // dispatch(addCommentaryScreenData(objToSave))
+                // setSaveToDb(false)
+            
+                // const timeoutId = setTimeout(() => {
+                //     dispatch(addCommentaryScreenData(objToSave));
+                //     setSaveToDb(false);
+                // }, 300); // 300ms delay before calling dispatch
+                // return () => clearTimeout(timeoutId);
+
+                // throttledDispatchAdd(objToSave);
+                //     setSaveToDb(false);
+                setIsSaving(true);
+                Promise.resolve(dispatch(addCommentaryScreenData(objToSave)))
+                .finally(() => {
+                    setIsSaving(false);
+                    setSaveToDb(false);
+                });
             }
         }
-    }, [saveToDb])
+    }, [saveToDb]);
     useEffect(() => {
         if (isOverChange) {
             const objToSave = {
@@ -2145,7 +2180,12 @@ const Commentary = (props) => {
                 "commentaryTeams": [teams[BATTING_TEAM]],
             }
             // console.log("Called from : 23");
-            dispatch(addCommentaryScreenData(objToSave))
+            // dispatch(addCommentaryScreenData(objToSave))
+            setIsSaving(true);
+            Promise.resolve(dispatch(addCommentaryScreenData(objToSave)))
+            .finally(() => {
+                setIsSaving(false);
+            });
             setIsOverChange(undefined)
             setPlayerUpdateList([])
         }
@@ -2184,12 +2224,22 @@ const Commentary = (props) => {
                 setOverHistory([].concat(updatedOverHistory || [], [currentOver, commentaryDataToUpdate.overdetails]))
                 const generatedBall = generateBall({ currentBall: { commentaryBallByBallId: "0", }, commentaryDetails, currentOver: { overId: commentaryDataToUpdate.overdetails.overId }, onPitchPlayers, teams, currentPartnership })
                 // console.log("Called from : 24");
-                dispatch(addCommentaryScreenData({
+                // dispatch(addCommentaryScreenData({
+                //     "commentaryId": commentaryDetails.commentaryId,
+                //     "isCallPredict": props?.isPredictToggle,
+                //     "commentaryDetails": { ...commentaryDetails, "displayStatus": generateDisplayStatus({ currentBall: generatedBall }), "rmk": isRemainingBallsShow ? generateRemainingRuns(teams[BATTING_TEAM], matchTypeDetails.ballsPerOver, matchTypeDetails): "" },
+                //     "commentaryBallByBall": generatedBall,
+                // }))
+                setIsSaving(true);
+                Promise.resolve(dispatch(addCommentaryScreenData({
                     "commentaryId": commentaryDetails.commentaryId,
                     "isCallPredict": props?.isPredictToggle,
                     "commentaryDetails": { ...commentaryDetails, "displayStatus": generateDisplayStatus({ currentBall: generatedBall }), "rmk": isRemainingBallsShow ? generateRemainingRuns(teams[BATTING_TEAM], matchTypeDetails.ballsPerOver, matchTypeDetails): "" },
                     "commentaryBallByBall": generatedBall,
-                }))
+                })))
+                .finally(() => {
+                    setIsSaving(false);
+                });
                 setCurrentOver(commentaryDataToUpdate.overdetails)
             }
             const commentartBallByBallIdToUpdate = commentaryDataToUpdate?.commentaryBallByBallDetails?.commentaryBallByBallId
@@ -2364,7 +2414,7 @@ const Commentary = (props) => {
                     setIsSwapPlayer(true)
                     changePlayer(type)
                 }}
-                changeOver={() => { setShowChangeOverModal(true) }}
+                changeOver={() => { setShowChangeOverModal(true);  setIsSaving(true);}}
                 updateExtras={(extraType) => {
                     setExtrasType(extraType)
                 }}
@@ -2468,11 +2518,12 @@ const Commentary = (props) => {
 
                 {...((showChangeOverModal && !changePlayerList) && {
                     isOpen: { showChangeOverModal },
-                    toggle: () => { setShowChangeOverModal(undefined) },
-                    onNoClick: () => { setShowChangeOverModal(undefined) },
+                    toggle: () => { setShowChangeOverModal(undefined); setIsSaving(false);},
+                    onNoClick: () => { setShowChangeOverModal(undefined); setIsSaving(false);},
                     onYesClick: () => {
                         setIsBowlerrChange(true)
                         setShowChangeOverModal(undefined);
+                        setIsSaving(false);
                         setChangeOverOnPopupClick(true)
                     },
                     overBalls: overBallByBallDisplay,
@@ -2606,7 +2657,7 @@ const Commentary = (props) => {
                     setIsSwapPlayer(true)
                     changePlayer(type)
                 }}
-                changeOver={() => { setShowChangeOverModal(true) }}
+                changeOver={() => { setShowChangeOverModal(true); setIsSaving(true); }}
                 updateExtras={(extraType) => {
                     setExtrasType(extraType)
                 }}
@@ -2647,6 +2698,7 @@ const Commentary = (props) => {
                 setIsPredictToggle={props?.setIsPredictToggle}
                 allteams={allInningaTeams}
                 fetchData={props.fetchData}
+                isSaving={isSaving}
             />}
         {!props?.isNewUi && !(isCommentaryBallLoading || inningsChangePopup || superOverModal || showRretiredHurt || isPaneltyPopup || props.isDataLoading ||
             winnerAnnouncement || showUpdateInnings || completeMatchModal || superOverModal || showCricketFieldModal) &&
@@ -2680,11 +2732,12 @@ const Commentary = (props) => {
             updateExtras={onExtrasChange} />}
         {(!props?.isNewUi && showChangeOverModal && !changePlayerList && !selectMissingPlayer) && <ChangeOverModal
             isOpen={showChangeOverModal}
-            toggle={() => { setShowChangeOverModal(undefined) }}
-            onNoClick={() => { setShowChangeOverModal(undefined) }}
+            toggle={() => { setShowChangeOverModal(undefined); setIsSaving(false); }}
+            onNoClick={() => { setShowChangeOverModal(undefined); setIsSaving(false); }}
             onYesClick={() => {
                 setIsBowlerrChange(true)
                 setShowChangeOverModal(undefined);
+                setIsSaving(false);
                 setChangeOverOnPopupClick(true)
             }}
             overBalls={overBallByBallDisplay}
@@ -2766,7 +2819,7 @@ const Commentary = (props) => {
             />
         }
         {undoErrorModal && <UndoErrorModal
-            toggle={() => { setUndoErrorModal(null) }}
+            toggle={() => { setUndoErrorModal(null); setIsSaving(false);}}
             undoError={undoErrorModal}
         />}
         {(!props?.isNewUi && isPaneltyPopup) && <PenaltyModal

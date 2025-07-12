@@ -2434,6 +2434,7 @@ const Index = forwardRef(
                           tableElement?.isDateTypeSelect &&
                           (tableElement?.title == "Market Data Logs" ||
                             tableElement?.title == "Registration Pending" ||
+                            tableElement?.title == "Commentary History" ||
                             tableElement?.title == "Registered Users") ? (
                             <Select
                               value={dateType}

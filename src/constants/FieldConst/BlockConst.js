@@ -25,21 +25,26 @@ export const BlockFields=[
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
+        name: "isShowContent",
+        label: "Is Show Contain",
+        defaultValue: false,
+        parentclassName: "",
+        type: SWITCH,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 10, lg: 10 }
+    },
+    {
         name: "content",
         label: "Content",
         parentclassName: "",
+        dependsOnField: "isShowContent",
+        dependsOnValue: true,
         type: TEXT_EDITOR,
         isRequired: true,
         imageType: CONTENT_IMAGE_TYPE.BLOCKS,
         requiredErrorMessage: "Please enter Content.",
         labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 4, lg: 10 }
+        fieldColspan: { xs: 12, md: 10, lg: 10 }
     },
-    {
-        name: "isShowContent",
-        label: "Is Show Contain",
-        defaultValue: true,
-        parentclassName: "",
-        type: SWITCH,
-    },
+    
 ]
