@@ -103,6 +103,7 @@ const Index = () => {
   const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
   const [resultModelVisible, setResultModelVisible] = useState(false);
   const [selectedResult, setSelectedResult] = useState({});
+  const [pythonApis, setpythonApis] = useState([]);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -390,6 +391,15 @@ const Index = () => {
         );
         setIsLoading(false);
       });
+  };
+
+  const fetchPythonAPIData = async () => {
+    await axiosInstance
+      .post(`/admin/commentary/pythonAPIs`, {})
+      .then((response) => {
+        setpythonApis(response.result);
+      })
+      .catch((error) => { });
   };
 
   const fetchData = async (latestValueFromTable) => {
@@ -921,6 +931,7 @@ const Index = () => {
   const handleReset = (value) => {
     fetchData(value);
     fetchEventTypeData();
+    fetchPythonAPIData();
   };
 
   const handleManualOddsMarketClick = (details) => {
@@ -2242,6 +2253,10 @@ const Index = () => {
     competitionsSelect: true,
     resetButton: true,
     reloadButton: true,
+    isDateTypeSelect: true,
+    loadData: true,
+    isVirtual: true,
+    pythonApiSelect: true,
     statusOptions: [
       {
         label: "All",
@@ -2268,6 +2283,20 @@ const Index = () => {
         value: 5,
       },
     ],
+    virtualOptions: [
+      {
+        label: "All",
+        value: 0,
+      },
+      {
+        label: "true",
+        value: true,
+      },
+      {
+        label: "false",
+        value: false,
+      },
+    ],
     dateRange: true,
     compToRender: tabelNoteDisplay
   };
@@ -2281,6 +2310,7 @@ const Index = () => {
 
   useEffect(() => {
     fetchEventTypeData();
+    fetchPythonAPIData();
   }, [])
 
   useEffect(() => {
@@ -2292,6 +2322,7 @@ const Index = () => {
   const handleReload = (value) => {
     fetchData();
     // fetchEventTypeData();
+    fetchPythonAPIData();
   };
   return (
     <React.Fragment>
@@ -2305,16 +2336,24 @@ const Index = () => {
             dataSource={data}
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
+            loadModelFunction={setLoadModelVisable}
+            suspendModelFunction={setSuspendModelVisable}
+            closeModelFunction={setCloseModelVisible}
+            cancelModelFunction={setCancelModelVisible}
+            cloneModelFunction={setCloneModelVisible}
             eventTypes={eventTypes}
             singleCheck={checekedList}
             reFetchData={fetchData}
             handleReset={handleReset}
             handleReload={handleReload}
+            pythonApis={pythonApis}
             competitions={competitions}
             setEventTypeId={setEventTypeId}
             setCompetitionId={setCompetitionId}
             setDateRange={setDateRange}
+            loadDataModelFunction={setLoadDataModelVisable}
             dateRange={dateRange}
+            setDateType={setDateType}
             isDeletePermission={checkPermission(
               permissionObj,
               pageName,
