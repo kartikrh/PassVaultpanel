@@ -57,7 +57,7 @@ const PlayerCommentary = () => {
     if (commentaryId !== "0") {
       fetchData(commentaryId);
     }
-  }, [permissionObj]);
+  }, []);
 
   const fetchData = async (commentaryId) => {
     setIsDataLoading(true);
