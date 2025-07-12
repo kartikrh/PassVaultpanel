@@ -8,7 +8,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
-import { isEmpty, isEqual } from "lodash";
+import { isEmpty, isEqual, pickBy } from "lodash";
 import {
   ERROR,
   MODULE_COMPETITION,
@@ -67,15 +67,21 @@ const Index = () => {
       ? await fetchCountryData()
       : countryList;
     await axiosInstance
-      .post(`/admin/competition/all`, {
-        ...data,
-        isTrending:
-          data?.isTrending !== undefined
-            ? data?.isTrending
-            : tableActions?.isTrending !== undefined
-            ? tableActions?.isTrending
-            : false,
-      })
+      .post(
+        `/admin/competition/all`,
+        pickBy(
+          {
+            ...data,
+            isTrending:
+              data?.isTrending !== undefined
+                ? data?.isTrending
+                : tableActions?.isTrending !== undefined
+                ? tableActions?.isTrending
+                : false,
+          },
+          (value) => value !== null
+        )
+      )
       .then((response) => {
         let apiData = [...response?.result]?.sort(
           (a, b) => a.displayOrder - b.displayOrder
