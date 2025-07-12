@@ -124,6 +124,26 @@ function AddCompetitions() {
       dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
     });
 
+    await axiosInstance
+      .post("/admin/list/countryList", {})
+      .then((response) => {
+        setMasterData((preData) => ({
+          ...preData,
+          countryId: response.result?.map((item) => {
+            return { label: item.countryName, value: item.countryId };
+          }),
+        }));
+      })
+      .catch((error) => {
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+
   };
   
   const handleSaveClick = async (saveAction) => {
