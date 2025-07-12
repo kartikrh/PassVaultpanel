@@ -1424,7 +1424,7 @@ const Index = () => {
           >
             {" "}
             <Tooltip
-              title="Edit Event Id"
+              title="Edit Competition"
               color={"#e8e8ea"}
               overlayInnerStyle={{ color: "#000" }}
             >

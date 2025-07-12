@@ -190,7 +190,7 @@ export const ChangeCompititionModel = ({
                 handleChange();
               }}
             >
-              Change Compitition
+              Change Competition
             </button>
           </div>
         </ModalBody>
