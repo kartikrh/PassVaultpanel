@@ -44,7 +44,7 @@ const AddCountryCode = () => {
   let navigate = useNavigate();
   const location = useLocation();
   const [countryCodeId, setCountryCodeId] = useState(location.state?.countryCodeId || "0");
-  
+
   useEffect(() => {
     if (countryCodeId !== 0) {
       fetchData(countryCodeId);
@@ -94,7 +94,7 @@ const AddCountryCode = () => {
       const extraData = {
         id: countryCodeId,
         isActive: dataToSave?.isActive || false,
-        timezone: convertDateLocalToUTC(dataToSave?.timezone),
+        // timezone: convertDateLocalToUTC(dataToSave?.timezone),
       };
       dispatch(
         addCountryCodeToDb(convertObjtoFormData({ ...dataToSave, ...extraData }))

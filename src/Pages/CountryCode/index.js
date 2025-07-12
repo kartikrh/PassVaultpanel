@@ -19,7 +19,7 @@ import {
   MODULE_COUNTRY_CODE,
 } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
-import { checkPermission, convertDateUTCToLocal2 } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import LoadDataModal from "../../components/Model/LoadDataModal";
 
@@ -104,7 +104,7 @@ const Index = () => {
   const handleLoadData = async (password) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/loadPanelData`, {module: [MODULE_COUNTRY_CODE], password})
+      .post(`/loadPanelData`, { module: [MODULE_COUNTRY_CODE], password })
       .then((response) => {
         fetchData();
         setLoadDataModelVisable(false);
@@ -127,7 +127,32 @@ const Index = () => {
         );
       });
   };
-
+  const importCountry = async () => {
+    setIsLoading(true);
+    finalizeRef.current.getTableAction();
+    await axiosInstance
+      .post(`/admin/countryCode/import`, {})
+      .then((response) => {
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
   const handleDelete = async (e) => {
     setIsLoading(true);
     await axiosInstance
@@ -226,11 +251,7 @@ const Index = () => {
         <div className="flex-shrink-0">
           {text ? (
             <div>
-              <img
-                className="avatar-sm"
-                alt=""
-                src={text}
-              />
+              <img className="avatar-sm" alt="" src={text} />
             </div>
           ) : (
             <Avatar src="#" alt="ET">
@@ -266,11 +287,11 @@ const Index = () => {
     {
       title: "Timezone",
       dataIndex: "timezone",
-      render: (text, record) => (
-        <span>
-          {convertDateUTCToLocal2(text, "index")}
-        </span>
-      ),
+      // render: (text, record) => (
+      //   <span>
+      //     {convertDateUTCToLocal2(text, "index")}
+      //   </span>
+      // ),
       key: "timezone",
       style: { width: "10%", textAlign: "center" },
       sort: true,
@@ -282,12 +303,16 @@ const Index = () => {
       style: { width: "10%", textAlign: "center" },
       sort: true,
     },
-    
+
     {
       title: "Active",
       key: "IsActive",
       render: (text, record) => (
-        <Tooltip title={"Country Code"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+        <Tooltip
+          title={"Country Code"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
           <Button
             color={`${record.isActive ? "primary" : "danger"}`}
             size="sm"
@@ -296,7 +321,9 @@ const Index = () => {
               handlePermissions("isActive", record, record.isActive);
             }}
           >
-            <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
+            <i
+              className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}
+            ></i>
           </Button>
         </Tooltip>
       ),
@@ -308,11 +335,12 @@ const Index = () => {
     reloadButton: true,
     isActive: true,
     loadData: true,
+    importData: true,
   };
 
   useEffect(() => {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
-      navigate("/dashboard")
+      navigate("/dashboard");
     }
     fetchData();
   }, []);
@@ -337,6 +365,8 @@ const Index = () => {
             handleReset={handleReset}
             handleReload={handleReload}
             loadDataModelFunction={setLoadDataModelVisable}
+            importDataMethod={importCountry}
+            importDataName="Import Country"
             reFetchData={fetchData}
             isAddPermission={checkPermission(
               permissionObj,
@@ -355,13 +385,14 @@ const Index = () => {
             handleDelete={handleDelete}
             singleCheck={checekedList}
           />
-          {loadDataModelVisable && 
+          {loadDataModelVisable && (
             <LoadDataModal
               loadDataModelVisable={loadDataModelVisable}
               setLoadDataModelVisable={setLoadDataModelVisable}
               handleLoadData={handleLoadData}
-              moduleName={"Country Code"} 
-            />}
+              moduleName={"Country Code"}
+            />
+          )}
         </Container>
       </div>
     </React.Fragment>
