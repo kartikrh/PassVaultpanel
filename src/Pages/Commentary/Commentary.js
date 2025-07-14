@@ -435,7 +435,11 @@ const Commentary = (props) => {
         }
         // console.log("Called from : 4")
         // console.log("callWicketToDB", objToSave)
-        dispatch(addCommentaryScreenData(objToSave))
+        setIsSaving(true);
+        Promise.resolve(dispatch(addCommentaryScreenData(objToSave)))
+        .finally(() => {
+            setIsSaving(false);
+        });
         _setOnPitchPlayers((prevValue) => {
             return {
                 ...prevValue,
@@ -450,7 +454,7 @@ const Commentary = (props) => {
         setSaveToDb(false)
     }
     const updateRuns = ({ run, ball, batter, bowler, isBoundary, freezePlayers = false }) => {
-        if (isCommentaryBallLoading || showChangeOverModal) return;
+        if (isCommentaryBallLoading || showChangeOverModal || isSaving) return;
         setIsSaving(true);
         setBallStatus(SCORING_STATUS);
         setIsUndoingLastOver(false);
