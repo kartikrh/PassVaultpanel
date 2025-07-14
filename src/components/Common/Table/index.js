@@ -44,6 +44,17 @@ const changeDisplayOrder = async (tabdisplayOrder, apiName) => {
     throw Error(error);
   }
 };
+
+const isTrendingOptions = [
+  { value: null, label: "Select isTrending" },
+  { value: true, label: "true" },
+  { value: false, label: "false" },
+];
+const isMenOptions = [
+  { value: null, label: "Select isMen" },
+  { value: true, label: "true" },
+  { value: false, label: "false" },
+];
 const Index = forwardRef(
   (
     {
@@ -164,8 +175,8 @@ const Index = forwardRef(
         : true
       : true;
     const [statusSwitch, setStatusSwitch] = useState(defaultStatusSwitch);
-    const [trendingStatusSwitch, setTrendingStatusSwitch] = useState(false);
-    const [menSwitch, setMenSwitch] = useState(false);
+    const [trendingStatusSwitch, setTrendingStatusSwitch] = useState(null);
+    const [menSwitch, setMenSwitch] = useState(null);
     const [selectedTableElements, setSelectedTableElements] = useState({});
     const [delayValidationMessage, setDelayValidationMessage] = useState("");
     const [expandedRows, setExpandedRows] = useState({});
@@ -2362,7 +2373,7 @@ const Index = forwardRef(
                           ) : null}
                           {tableElement?.isTrending ? (
                             <div className="d-flex align-items-center">
-                              <Switch
+                              {/* <Switch
                                 width={70}
                                 uncheckedIcon={<OffsymbolTrendingStatus />}
                                 checkedIcon={<OnSymbolTrendingStatus />}
@@ -2375,12 +2386,28 @@ const Index = forwardRef(
                                   );
                                 }}
                                 checked={trendingStatusSwitch}
+                              /> */}
+                              <Select
+                                styles={{
+                                  control: (provided) => ({ ...provided, width: 140 }),
+                                }}
+                                value={isTrendingOptions.find((option) => option.value === trendingStatusSwitch) || isTrendingOptions[0]}
+                                // onChange={(e) => setIsSquadSelectedOption(e?.value === "Select" ? null : e?.value)}
+                                onChange={(e) => {
+                                  handleTableActions(
+                                    "isTrending",
+                                    e?.value === "Select" ? null : e?.value
+                                  );
+                                }}
+                                options={isTrendingOptions}
+                                placeholder="Is Trending"
+                                classNamePrefix="filter-dropdown"
                               />
                             </div>
                           ) : null}
                           {tableElement?.isMen ? (
                             <div className="d-flex align-items-center">
-                              <Switch
+                              {/* <Switch
                                 width={70}
                                 uncheckedIcon={<OffsymbolMenStatus />}
                                 checkedIcon={<OnSymbolMenStatus />}
@@ -2390,6 +2417,22 @@ const Index = forwardRef(
                                   handleTableActions("isMen", !menSwitch);
                                 }}
                                 checked={menSwitch}
+                              /> */}
+                              <Select
+                                styles={{
+                                  control: (provided) => ({ ...provided, width: 140 }),
+                                }}
+                                value={isMenOptions.find((option) => option.value === menSwitch) || isMenOptions[0]}
+                                // onChange={(e) => setIsSquadSelectedOption(e?.value === "Select" ? null : e?.value)}
+                                onChange={(e) => {
+                                  handleTableActions(
+                                    "isMen",
+                                    e?.value === "Select" ? null : e?.value
+                                  );
+                                }}
+                                options={isMenOptions}
+                                placeholder="Is Men"
+                                classNamePrefix="filter-dropdown"
                               />
                             </div>
                           ) : null}
