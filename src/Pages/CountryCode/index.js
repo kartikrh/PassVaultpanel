@@ -281,7 +281,7 @@ const Index = () => {
       title: "Short Name",
       dataIndex: "shortName",
       key: "shortName",
-      style: { width: "10%", textAlign: "center" },
+      style: { width: "5%", textAlign: "center" },
       sort: true,
     },
     {
@@ -293,14 +293,14 @@ const Index = () => {
       //   </span>
       // ),
       key: "timezone",
-      style: { width: "10%", textAlign: "center" },
+      style: { width: "5%", textAlign: "center" },
       sort: true,
     },
     {
       title: "Max Number",
       dataIndex: "maxNumber",
       key: "maxNumber",
-      style: { width: "10%", textAlign: "center" },
+      style: { width: "5%", textAlign: "center" },
       sort: true,
     },
 

@@ -165,7 +165,6 @@ const Commentary = (props) => {
         const isOverNotComplete = !currentOver.isComplete;
 
         if (isNotUndoing && isBallCountExceeded && shouldShowWheel && isOverNotComplete) {
-            setIsSaving(true);
             setShowChangeOverModal(true);
         }
     };
@@ -436,7 +435,11 @@ const Commentary = (props) => {
         }
         // console.log("Called from : 4")
         // console.log("callWicketToDB", objToSave)
-        dispatch(addCommentaryScreenData(objToSave))
+        setIsSaving(true);
+        Promise.resolve(dispatch(addCommentaryScreenData(objToSave)))
+        .finally(() => {
+            setIsSaving(false);
+        });
         _setOnPitchPlayers((prevValue) => {
             return {
                 ...prevValue,
@@ -451,7 +454,7 @@ const Commentary = (props) => {
         setSaveToDb(false)
     }
     const updateRuns = ({ run, ball, batter, bowler, isBoundary, freezePlayers = false }) => {
-        if (isCommentaryBallLoading) return;
+        if (isCommentaryBallLoading || showChangeOverModal || isSaving) return;
         setIsSaving(true);
         setBallStatus(SCORING_STATUS);
         setIsUndoingLastOver(false);
@@ -2401,6 +2404,8 @@ const Commentary = (props) => {
             });
     };
 
+    const isAnyPopupOpen = showChangeOverModal || showWicketModal || isOverChange || isPaneltyPopup || undoOverPopup || isWicketChange || inningsChangePopup || showUpdateInnings || winnerAnnouncement || isUndoBall || undoErrorModal || undoInningsPopup || completeMatchModal || selectMissingPlayer || showRretiredHurt || superOverModal || retryModel || showCricketFieldModal;
+
     return <>
         {props?.isNewUi ?
             <NewCommentaryScreen
@@ -2414,7 +2419,7 @@ const Commentary = (props) => {
                     setIsSwapPlayer(true)
                     changePlayer(type)
                 }}
-                changeOver={() => { setShowChangeOverModal(true);  setIsSaving(true);}}
+                changeOver={() => { setShowChangeOverModal(true); }}
                 updateExtras={(extraType) => {
                     setExtrasType(extraType)
                 }}
@@ -2518,12 +2523,11 @@ const Commentary = (props) => {
 
                 {...((showChangeOverModal && !changePlayerList) && {
                     isOpen: { showChangeOverModal },
-                    toggle: () => { setShowChangeOverModal(undefined); setIsSaving(false);},
-                    onNoClick: () => { setShowChangeOverModal(undefined); setIsSaving(false);},
+                    toggle: () => { setShowChangeOverModal(undefined); },
+                    onNoClick: () => { setShowChangeOverModal(undefined); },
                     onYesClick: () => {
                         setIsBowlerrChange(true)
                         setShowChangeOverModal(undefined);
-                        setIsSaving(false);
                         setChangeOverOnPopupClick(true)
                     },
                     overBalls: overBallByBallDisplay,
@@ -2657,7 +2661,7 @@ const Commentary = (props) => {
                     setIsSwapPlayer(true)
                     changePlayer(type)
                 }}
-                changeOver={() => { setShowChangeOverModal(true); setIsSaving(true); }}
+                changeOver={() => { setShowChangeOverModal(true); }}
                 updateExtras={(extraType) => {
                     setExtrasType(extraType)
                 }}
@@ -2699,7 +2703,7 @@ const Commentary = (props) => {
                 allteams={allInningaTeams}
                 fetchData={props.fetchData}
                 isSaving={isSaving}
-                showChangeOverModal={showChangeOverModal}
+                isAnyPopupOpen={isAnyPopupOpen}
             />}
         {!props?.isNewUi && !(isCommentaryBallLoading || inningsChangePopup || superOverModal || showRretiredHurt || isPaneltyPopup || props.isDataLoading ||
             winnerAnnouncement || showUpdateInnings || completeMatchModal || superOverModal || showCricketFieldModal) &&
@@ -2733,12 +2737,11 @@ const Commentary = (props) => {
             updateExtras={onExtrasChange} />}
         {(!props?.isNewUi && showChangeOverModal && !changePlayerList && !selectMissingPlayer) && <ChangeOverModal
             isOpen={showChangeOverModal}
-            toggle={() => { setShowChangeOverModal(undefined); setIsSaving(false); }}
-            onNoClick={() => { setShowChangeOverModal(undefined); setIsSaving(false); }}
+            toggle={() => { setShowChangeOverModal(undefined); }}
+            onNoClick={() => { setShowChangeOverModal(undefined); }}
             onYesClick={() => {
                 setIsBowlerrChange(true)
                 setShowChangeOverModal(undefined);
-                setIsSaving(false);
                 setChangeOverOnPopupClick(true)
             }}
             overBalls={overBallByBallDisplay}

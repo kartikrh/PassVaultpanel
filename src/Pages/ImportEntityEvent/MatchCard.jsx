@@ -170,7 +170,7 @@ const MatchCard = ({ matchData }) => {
                 <strong>Venue:</strong> {venue?.name}, {venue?.location}
               </span>
             </div>
-            {toss && (
+            {toss && (status === 2 || status === 3) && (
               <div className="mt-3">
                 <strong>Toss:</strong> {toss.text}
               </div>
