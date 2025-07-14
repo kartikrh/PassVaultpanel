@@ -384,8 +384,8 @@ export const generateRemainingRuns = (team, ballsPerOver, matchTypeDetails) => {
       } else if(team.teamTrialRuns > 0){
         if(team.teamTrialRuns > team.teamScore){
           const trailBy = team.teamTrialRuns - team.teamScore
-          return `${team.shortName} trail by ${trailBy} runs`;
-        }else if(team.teamTrialRuns < team.teamScore){      
+          return team.teamBattingOrder == 4 ? `${team.shortName} needs ${trailBy} runs to win` : `${team.shortName} trail by ${trailBy} runs`;
+        }else if(team.teamTrialRuns < team.teamScore){
           const trailBy = team.teamScore - team.teamTrialRuns
           return `${team.shortName} lead by ${trailBy} runs`;
         }
