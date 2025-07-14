@@ -345,13 +345,13 @@ function CommentaryMaster() {
             <Card className="p-0 commentary-body m-0">
               <CardBody className="card-css">
                 {((isCommentaryBallLoading && currentScreen !== 3) ||
-                  isDataLoading) && <SpinnerModel />}
+                  isDataLoading || !commentaryData) && <SpinnerModel />}
               {isNewUi ? (
                 <Row className="mb-3">
                   <Col className="p-0" xs={12}>
                     {/* {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN && ( */}
                       <div className="d-flex flex-wrap justify-content-between">
-                        <div className="d-flex flex-wrap align-items-center gap-2">
+                        {commentaryData ? <div className="d-flex flex-wrap align-items-center gap-2">
                           <span
                             className="logo-lg"
                             style={{ alignItems: "center" }}
@@ -382,7 +382,7 @@ function CommentaryMaster() {
                               ).time
                             }
                           </div>
-                        </div>
+                        </div> : null}
                         <div className="d-flex flex-wrap align-items-center gap-2">
                           {/* {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN && ( */}
                             <>
@@ -459,8 +459,8 @@ function CommentaryMaster() {
                       {/* </Col> */}
                       <Col className="p-0 d-flex flex-wrap">
                         <div className="col-12 col-md-6">
-                          <div className='match-details-breadcrumbs'>{`${commentaryData?.commentaryDetails.ety}/ ${commentaryData?.commentaryDetails.com}/ ${commentaryData?.commentaryDetails.en}`}</div>
-                          <div>{`Ref: ${commentaryData?.commentaryDetails.eid} [ ${commentaryData?.commentaryDetails.ed + " " + commentaryData?.commentaryDetails.et} ]`}</div>
+                          {commentaryData ? <><div className='match-details-breadcrumbs'>{`${commentaryData?.commentaryDetails.ety}/ ${commentaryData?.commentaryDetails.com}/ ${commentaryData?.commentaryDetails.en}`}</div>
+                          <div>{`Ref: ${commentaryData?.commentaryDetails.eid} [ ${commentaryData?.commentaryDetails.ed + " " + commentaryData?.commentaryDetails.et} ]`}</div></> : null}
                         </div>
                         <div className='col-12 col-md-6 d-flex align-items-center justify-content-md-end mt-2 mt-md-0'>
                           {(ALL_SCREENS[currentScreen] === COMMENTARY_PLAYER_SELECTION_SCREEN || ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN) && commentaryList === 'commentary' &&
