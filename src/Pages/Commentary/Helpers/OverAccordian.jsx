@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { styled } from '@mui/material/styles';
-import _ from 'lodash';
+import _, { isEmpty } from 'lodash';
 import { generateBallLabelFromBall } from '../functions';
 import PlayerImage from '../../../components/Common/Reusables/PlayerImage';
 import { BATTING_TEAM } from '../CommentartConst';
@@ -85,8 +85,8 @@ const RunsInfo = styled(Box)(({ theme }) => ({
 }));
 
 
-const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, currentOver }) => {
-    // console.log({ overBalls, teamDetails, overHistory, playersList, currentOver })
+const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, currentOver, allteams }) => {
+    // console.log({ overBalls, teamDetails, overHistory, playersList, currentOver, allteams })
     // const viewportWidth = window.innerWidth;
     const [viewportWidth, setViewportWidth] = useState();
     const [expanded, setExpanded] = useState(false);
@@ -128,22 +128,24 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
     }, [currentOver]);
 
     // Sort keys to put current batting team first
-    const sortedKeys = Object.keys(groupedOvers).sort((a, b) => {
-        const [inningsA, teamIdA] = a.split('_');
-        const [inningsB, teamIdB] = b.split('_');
+    const sortedKeys = allteams.sort((a,b)=> b.teamBattingOrder - a.teamBattingOrder)?.map((item)=>`${item.currentInnings}_${item.teamId}`)
+    
+    // const sortedKeys = Object.keys(groupedOvers).sort((a, b) => {
+    //     const [inningsA, teamIdA] = a.split('_');
+    //     const [inningsB, teamIdB] = b.split('_');
 
-        if (currentOver) {
-            const isCurrentA = inningsA === currentOver.currentInnings.toString() &&
-                teamIdA === currentOver.teamId.toString();
-            const isCurrentB = inningsB === currentOver.currentInnings.toString() &&
-                teamIdB === currentOver.teamId.toString();
+    //     if (currentOver) {
+    //         const isCurrentA = inningsA === currentOver.currentInnings.toString() &&
+    //             teamIdA === currentOver.teamId.toString();
+    //         const isCurrentB = inningsB === currentOver.currentInnings.toString() &&
+    //             teamIdB === currentOver.teamId.toString();
 
-            if (isCurrentA) return 1;
-            if (isCurrentB) return -1;
-        }
+    //         if (isCurrentA) return 1;
+    //         if (isCurrentB) return -1;
+    //     }
 
-        return b.localeCompare(a);
-    });
+    //     return b.localeCompare(a);
+    // });
 
     
     useEffect(() => {
@@ -414,7 +416,7 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                 const jersy = teamId === teamDetails.BATTING_TEAM.teamId.toString()
                 ? teamDetails.BOWLING_TEAM
                 : teamDetails.BATTING_TEAM
-                return (
+                return !isEmpty(groupedOvers[key]) && (
                     <Accordion
                         // defaultExpanded
                         className='right-panel-over-accordian'
