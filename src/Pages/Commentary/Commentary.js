@@ -933,6 +933,9 @@ const Commentary = (props) => {
         updateWicket["bowlerName"] = onPitchPlayers[CURRENT_BOWLER].playerName
         updateWicket["wicketType"] = wicketData.wicketType
         updateWicket["fieldPlayerId"] = wicketData.fielder1
+        updateWicket["fieldPlayerName"] = wicketData.fielder1Name
+        updateWicket["fieldPlayer2Id"] = wicketData.fielder2
+        updateWicket["fieldPlayer2Name"] = wicketData.fielder2Name
         const isOnStrikeWicket = isEqual(wicketData.batterId, onPitchPlayers[ON_STRIKE].commentaryPlayerId)
         const wicketPlayerDetails = onPitchPlayers[isOnStrikeWicket ? ON_STRIKE : NON_STRIKE]
         updateOver["totalWicket"] = (currentOver.totalWicket || 0) + 1
@@ -944,7 +947,8 @@ const Commentary = (props) => {
         updateWicket["batterName"] = wicketPlayerDetails.playerName
         updateWicket["wicketCount"] = updateBattingTeam.teamWicket
         updateWicket["batterRuns"] = wicketPlayerDetails.batRun + (isOnStrikeWicket ? +wicketData.runs : 0)
-        updateWicket["batterBalls"] = wicketPlayerDetails.batBall + isOnStrikeWicket ? ballToUpdateOnWicket : 0
+        // updateWicket["batterBalls"] = wicketPlayerDetails.batBall + isOnStrikeWicket ? ballToUpdateOnWicket : 0
+        updateWicket["batterBalls"] = wicketData.balls
         const updatedBattingPlayers = players[BATTING_TEAM]?.map((player) => {
             if (isEqual(player.commentaryPlayerId, wicketData.batterId)) {
                 const playerDataToList = {
