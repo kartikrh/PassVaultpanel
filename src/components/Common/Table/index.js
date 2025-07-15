@@ -46,14 +46,14 @@ const changeDisplayOrder = async (tabdisplayOrder, apiName) => {
 };
 
 const isTrendingOptions = [
-  { value: null, label: "Select isTrending" },
-  { value: true, label: "true" },
-  { value: false, label: "false" },
+  { value: null, label: "Select Trending" },
+  { value: true, label: "Trending" },
+  { value: false, label: "Non Trending" },
 ];
 const isMenOptions = [
-  { value: null, label: "Select isMen" },
-  { value: true, label: "true" },
-  { value: false, label: "false" },
+  { value: null, label: "Select Men" },
+  { value: true, label: "Men" },
+  { value: false, label: "Women" },
 ];
 const Index = forwardRef(
   (
@@ -2320,57 +2320,7 @@ const Index = forwardRef(
                               </button>
                             </div>
                           ) : null}
-                          {tableElement?.isShowContent ? (
-                            <div className="d-flex align-items-center">
-                              <Switch
-                                width={70}
-                                uncheckedIcon={<OffsymbolShowStatus />}
-                                checkedIcon={<OnSymbolShowStatus />}
-                                className="pe-0"
-                                onColor="#02a499"
-                                onChange={() => {
-                                  handleTableActions(
-                                    "isShowContent",
-                                    !statusSwitch
-                                  );
-                                }}
-                                checked={statusSwitch}
-                              />
-                            </div>
-                          ) : null}
-                          {tableElement?.isActive ? (
-                            <div className="d-flex align-items-center">
-                              <Switch
-                                width={70}
-                                uncheckedIcon={<OffsymbolStatus />}
-                                checkedIcon={<OnSymbolStatus />}
-                                className="pe-0"
-                                onColor="#02a499"
-                                onChange={() => {
-                                  handleTableActions("isActive", !statusSwitch);
-                                }}
-                                checked={statusSwitch}
-                              />
-                            </div>
-                          ) : null}
-                          {tableElement?.isApproved ? (
-                            <div className="d-flex align-items-center">
-                              <Switch
-                                width={70}
-                                uncheckedIcon={<OffsymbolApprovedStatus />}
-                                checkedIcon={<OnSymbolApprovedStatus />}
-                                className="pe-0"
-                                onColor="#02a499"
-                                onChange={() => {
-                                  handleTableActions(
-                                    "isApproved",
-                                    !statusSwitch
-                                  );
-                                }}
-                                checked={statusSwitch}
-                              />
-                            </div>
-                          ) : null}
+                          
                           {tableElement?.isTrending ? (
                             <div className="d-flex align-items-center">
                               {/* <Switch
@@ -2433,6 +2383,57 @@ const Index = forwardRef(
                                 options={isMenOptions}
                                 placeholder="Is Men"
                                 classNamePrefix="filter-dropdown"
+                              />
+                            </div>
+                          ) : null}
+                          {tableElement?.isShowContent ? (
+                            <div className="d-flex align-items-center">
+                              <Switch
+                                width={70}
+                                uncheckedIcon={<OffsymbolShowStatus />}
+                                checkedIcon={<OnSymbolShowStatus />}
+                                className="pe-0"
+                                onColor="#02a499"
+                                onChange={() => {
+                                  handleTableActions(
+                                    "isShowContent",
+                                    !statusSwitch
+                                  );
+                                }}
+                                checked={statusSwitch}
+                              />
+                            </div>
+                          ) : null}
+                          {tableElement?.isActive ? (
+                            <div className="d-flex align-items-center">
+                              <Switch
+                                width={70}
+                                uncheckedIcon={<OffsymbolStatus />}
+                                checkedIcon={<OnSymbolStatus />}
+                                className="pe-0"
+                                onColor="#02a499"
+                                onChange={() => {
+                                  handleTableActions("isActive", !statusSwitch);
+                                }}
+                                checked={statusSwitch}
+                              />
+                            </div>
+                          ) : null}
+                          {tableElement?.isApproved ? (
+                            <div className="d-flex align-items-center">
+                              <Switch
+                                width={70}
+                                uncheckedIcon={<OffsymbolApprovedStatus />}
+                                checkedIcon={<OnSymbolApprovedStatus />}
+                                className="pe-0"
+                                onColor="#02a499"
+                                onChange={() => {
+                                  handleTableActions(
+                                    "isApproved",
+                                    !statusSwitch
+                                  );
+                                }}
+                                checked={statusSwitch}
                               />
                             </div>
                           ) : null}
