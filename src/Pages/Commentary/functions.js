@@ -102,9 +102,11 @@ export const generateWicket = ({ commentaryDetails, currentWicket, currentOver, 
     "batterId": currentWicket.batterId,
     "batterName": currentWicket.batterName,
     "fieldPlayerId": currentWicket.fieldPlayerId,
-    "fieldPlayerName": currentWicket.fieldPlayerId,
+    "fieldPlayerName": currentWicket.fieldPlayerName,
+    "fieldPlayer2Id": currentWicket.fieldPlayer2Id,
+    "fieldPlayer2Name": currentWicket.fieldPlayer2Name,
     "overId": currentOver.overId,
-    "overCount": currentOver.over,
+    "overCount": teams?.[BATTING_TEAM].teamOver || "0",
     "commentaryBallByBallId": currentBall.commentaryBallByBallId || 0,
     "teamId": teams[BATTING_TEAM].teamId,
     "teamScore": teams[BATTING_TEAM].teamScore,
@@ -384,8 +386,8 @@ export const generateRemainingRuns = (team, ballsPerOver, matchTypeDetails) => {
       } else if(team.teamTrialRuns > 0){
         if(team.teamTrialRuns > team.teamScore){
           const trailBy = team.teamTrialRuns - team.teamScore
-          return `${team.shortName} trail by ${trailBy} runs`;
-        }else if(team.teamTrialRuns < team.teamScore){      
+          return team.teamBattingOrder == 4 ? `${team.shortName} needs ${trailBy} runs to win` : `${team.shortName} trail by ${trailBy} runs`;
+        }else if(team.teamTrialRuns < team.teamScore){
           const trailBy = team.teamScore - team.teamTrialRuns
           return `${team.shortName} lead by ${trailBy} runs`;
         }

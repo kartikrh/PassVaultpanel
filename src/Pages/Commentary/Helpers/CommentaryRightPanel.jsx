@@ -100,6 +100,7 @@ const CommentaryRightPanel = ({ overBalls, partnerships, teamDetails, overHistor
                         overHistory={overHistory}
                         playersList={players}
                         currentOver={currentOver}
+                        allteams={allteams}
                     />
                 ) : activeTab === 'partnerships' ? (
                     <div className="partnerships-container">

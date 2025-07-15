@@ -143,6 +143,10 @@ const WicketModal = ({ onPitchPlayers, bowlingTeam, bowlingTeamDetails, toggle, 
 
         setCurrentStep(2);
     };
+    const getFielderName = (fielderId) => {
+        const fielder = bowlingTeam?.find(p => p.commentaryPlayerId === fielderId);
+        return fielder?.playerName || '';
+    };
 
     const handleBack = () => {
         setCurrentStep(1);
@@ -151,13 +155,21 @@ const WicketModal = ({ onPitchPlayers, bowlingTeam, bowlingTeamDetails, toggle, 
     const handleSubmit = () => {
         const outPlayer = getOutBatsman();
 
+        const isStrikerOut = wicketData.batterId === onPitchPlayers[ON_STRIKE]?.commentaryPlayerId;
+        const updatedBalls = (outPlayer.batBall || 0) +
+                (!wicketData.isExtraWicket && isStrikerOut ? 1 : 0);
+        const fielder1Id = showFields.fielder1 ? wicketData.fielder1 : onPitchPlayers?.[CURRENT_BOWLER]?.commentaryPlayerId;
+        const fielder2Id = showFields.fielder2 ? wicketData.fielder2 : onPitchPlayers?.[CURRENT_BOWLER]?.commentaryPlayerId;
         const finalData = {
             wicketType: wicketData.wicketType,
             batterId: outPlayer?.commentaryPlayerId,
             runs: showFields.runs ? parseInt(wicketData.runs) : 0,
-            fielder1: showFields.fielder1 ? wicketData.fielder1 : onPitchPlayers?.[CURRENT_BOWLER]?.commentaryPlayerId,
-            fielder2: showFields.fielder2 ? wicketData.fielder2 : onPitchPlayers?.[CURRENT_BOWLER]?.commentaryPlayerId,
-            isExtraWicket: !!extraType
+            fielder1: fielder1Id,
+            fielder1Name: getFielderName(fielder1Id),
+            fielder2: fielder2Id,
+            fielder2Name: getFielderName(fielder2Id),
+            isExtraWicket: !!extraType,
+            balls: updatedBalls,
         };
 
         onSubmit(finalData);
@@ -228,10 +240,6 @@ const WicketModal = ({ onPitchPlayers, bowlingTeam, bowlingTeamDetails, toggle, 
                 "0.00";
 
             // Get fielder names from bowlingTeam list
-            const getFielderName = (fielderId) => {
-                const fielder = bowlingTeam?.find(p => p.commentaryPlayerId === fielderId);
-                return fielder?.playerName || '';
-            };
 
             // Get wicket type label
             const getWicketTypeLabel = () => {
