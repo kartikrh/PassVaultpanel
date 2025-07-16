@@ -13,27 +13,28 @@ import _, { isEmpty } from 'lodash';
 import { generateBallLabelFromBall } from '../functions';
 import PlayerImage from '../../../components/Common/Reusables/PlayerImage';
 import { BATTING_TEAM } from '../CommentartConst';
+import EditBallModal from '../CommentaryModels/EditBallModal';
 
 // Styled components remain the same
-const BallBox = styled(Box)(({ theme, balltype }) => ({
-    width: '24px',
-    height: '24px',
-    borderRadius: '4px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    margin: '0 2px',
-    color: '#000',
-    fontWeight: 'bold',
-    fontSize: '12px',
-    backgroundColor:
-        balltype === 'wicket' ? '#dc3545' :
-            balltype === 'boundary' ? '#28a745' :
-                balltype === 'extra' ? '#ffc107' :
-                    '#f8f9fa',
-    '&.boundary': { color: '#fff' },
-    '&.wicket': { color: '#fff' }
-}));
+// const BallBox = styled(Box)(({ theme, balltype }) => ({
+//     width: '24px',
+//     height: '24px',
+//     borderRadius: '4px',
+//     display: 'flex',
+//     alignItems: 'center',
+//     justifyContent: 'center',
+//     margin: '0 2px',
+//     color: '#000',
+//     fontWeight: 'bold',
+//     fontSize: '12px',
+//     backgroundColor:
+//         balltype === 'wicket' ? '#dc3545' :
+//             balltype === 'boundary' ? '#28a745' :
+//                 balltype === 'extra' ? '#ffc107' :
+//                     '#f8f9fa',
+//     '&.boundary': { color: '#fff' },
+//     '&.wicket': { color: '#fff' }
+// }));
 
 const OverContainer = styled(Box)(({ theme }) => ({
     display: 'flex',
@@ -90,6 +91,7 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
     // const viewportWidth = window.innerWidth;
     const [viewportWidth, setViewportWidth] = useState();
     const [expanded, setExpanded] = useState(false);
+    const [editBallId, setEditBallId] = useState(undefined);
     const [hasInitialized, setHasInitialized] = useState(false); // ✅ to track one-time init
 
     const processedHistory = React.useMemo(() => {
@@ -122,14 +124,14 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
     }, [overBalls]);
 
     // Get default expanded key from currentOver
-    const defaultExpandedKey = React.useMemo(() => {
-        if (!currentOver) return '1_1';
-        return `${currentOver.currentInnings}_1`;
-    }, [currentOver]);
+    // const defaultExpandedKey = React.useMemo(() => {
+    //     if (!currentOver) return '1_1';
+    //     return `${currentOver.currentInnings}_1`;
+    // }, [currentOver]);
 
     // Sort keys to put current batting team first
-    const sortedKeys = allteams.sort((a,b)=> b.teamBattingOrder - a.teamBattingOrder)?.map((item)=>`${item.currentInnings}_${item.teamId}`)
-    
+    const sortedKeys = allteams.sort((a, b) => b.teamBattingOrder - a.teamBattingOrder)?.map((item) => `${item.currentInnings}_${item.teamId}`)
+
     // const sortedKeys = Object.keys(groupedOvers).sort((a, b) => {
     //     const [inningsA, teamIdA] = a.split('_');
     //     const [inningsB, teamIdB] = b.split('_');
@@ -147,13 +149,13 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
     //     return b.localeCompare(a);
     // });
 
-    
+
     useEffect(() => {
         if (!hasInitialized && sortedKeys.length > 0) {
             setExpanded(sortedKeys[0]);
             setHasInitialized(true); // ✅ prevent future runs
         }
-    }, [sortedKeys, hasInitialized]); 
+    }, [sortedKeys, hasInitialized]);
 
     useEffect(() => {
         if (sortedKeys.length > 0 && (!expanded || expanded == undefined)) {
@@ -165,7 +167,7 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
         setExpanded(isExpanded ? panel : false);
     };
 
-    const getBowlerDetails = (bowlerId) => {
+    const getPlayerDetails = (bowlerId) => {
         if (!bowlerId) return null;
 
         // Look in both teams for the bowler
@@ -184,53 +186,53 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
         return over || null;
     };
 
-    const renderBall = (ball) => {
-        const isWicket = ball.isWicket;
-        const isBoundary = ball.isBoundary;
-        const isExtra = ball.type !== 1;
+    // const renderBall = (ball) => {
+    //     const isWicket = ball.isWicket;
+    //     const isBoundary = ball.isBoundary;
+    //     const isExtra = ball.type !== 1;
 
-        let ballType = 'normal';
-        if (isWicket) ballType = 'wicket';
-        else if (isBoundary) ballType = 'boundary';
-        else if (isExtra) ballType = 'extra';
-        // let displayValue = generateBallLabelFromBall(ball.type, isWicket)
-        //         export const BALL_TYPE_OVER_COMPLETE = 0;
-        // export const BALL_TYPE_REGULAR = 1;
-        // export const BALL_TYPE_WIDE = 2;
-        // export const BALL_TYPE_BYE = 3;
-        // export const BALL_TYPE_LEG_BYE = 4;
-        // export const BALL_TYPE_NO_BALL = 5;
-        // export const BALL_TYPE_NO_BALL_BYE = 6;
-        // export const BALL_TYPE_NO_BALL_LEG_BYE = 7;
-        // export const BALL_TYPE_PANELTY_RUN = 8;
-        // export const BALL_TYPE_RETIRED_HURT = 9;
-        // export const BALL_TYPE_BOWLER_RETIRED_HURT = 10;
+    //     let ballType = 'normal';
+    //     if (isWicket) ballType = 'wicket';
+    //     else if (isBoundary) ballType = 'boundary';
+    //     else if (isExtra) ballType = 'extra';
+    //     // let displayValue = generateBallLabelFromBall(ball.type, isWicket)
+    //     //         export const BALL_TYPE_OVER_COMPLETE = 0;
+    //     // export const BALL_TYPE_REGULAR = 1;
+    //     // export const BALL_TYPE_WIDE = 2;
+    //     // export const BALL_TYPE_BYE = 3;
+    //     // export const BALL_TYPE_LEG_BYE = 4;
+    //     // export const BALL_TYPE_NO_BALL = 5;
+    //     // export const BALL_TYPE_NO_BALL_BYE = 6;
+    //     // export const BALL_TYPE_NO_BALL_LEG_BYE = 7;
+    //     // export const BALL_TYPE_PANELTY_RUN = 8;
+    //     // export const BALL_TYPE_RETIRED_HURT = 9;
+    //     // export const BALL_TYPE_BOWLER_RETIRED_HURT = 10;
 
-        let displayValue = ball.value;
-        if (isWicket) displayValue = 'W';
-        if (isExtra && ball.type === 2) displayValue = 'WB';
-        if (isExtra && ball.type === 3) displayValue = 'NB';
-        if (isExtra && ball.type === 4) displayValue = 'B';
-        if (isExtra && ball.type === 5) displayValue = 'B';
-        if (isExtra && ball.type === 6) displayValue = 'B';
-        if (isExtra && ball.type === 7) displayValue = 'NLB';
-        if (isExtra && ball.type === 8) displayValue = 'B';
-        if (isExtra && ball.type === 9) displayValue = 'B';
-        if (isExtra && ball.type === 10) displayValue = 'B';
+    //     let displayValue = ball.value;
+    //     if (isWicket) displayValue = 'W';
+    //     if (isExtra && ball.type === 2) displayValue = 'WB';
+    //     if (isExtra && ball.type === 3) displayValue = 'NB';
+    //     if (isExtra && ball.type === 4) displayValue = 'B';
+    //     if (isExtra && ball.type === 5) displayValue = 'B';
+    //     if (isExtra && ball.type === 6) displayValue = 'B';
+    //     if (isExtra && ball.type === 7) displayValue = 'NLB';
+    //     if (isExtra && ball.type === 8) displayValue = 'B';
+    //     if (isExtra && ball.type === 9) displayValue = 'B';
+    //     if (isExtra && ball.type === 10) displayValue = 'B';
 
-        return (
-            <BallBox
-                sx={{
-                    fontFamily: "'Work Sans', sans-serif", color: '#505d69'
-                }}
-                balltype={ballType}
-                className={isBoundary ? 'boundary' : isWicket ? 'wicket' : ''}
-            >
-                {/* {ball.type != 1 ? displayValue} */}
-                {displayValue}
-            </BallBox>
-        );
-    };
+    //     return (
+    //         <BallBox
+    //             sx={{
+    //                 fontFamily: "'Work Sans', sans-serif", color: '#505d69'
+    //             }}
+    //             balltype={ballType}
+    //             className={isBoundary ? 'boundary' : isWicket ? 'wicket' : ''}
+    //         >
+    //             {/* {ball.type != 1 ? displayValue} */}
+    //             {displayValue}
+    //         </BallBox>
+    //     );
+    // };
 
     const generateBallfromArray = (ballArray = []) => {
         return ballArray?.map((element, index) => {
@@ -261,10 +263,17 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
             } else {
                 displayValue = `${ballValue} ${(ballTypeAdd && ballValue) ? "| " : ""} ${ballTypeAdd || ""}`;
             }
-            return <div key={`ball ${index}`} className={`d-flex justify-content-center align-items-center ${ballColor}`}>
-            {/* return <div key={`ball ${index}`} className={`px-0.5 py-0.5 shadow-sm rounded mx-1 over-ball-display ${ballColor} ${ballFontColor}`}> */}
-                {displayValue}
-            </div>
+            const batter = getPlayerDetails(element.batterId)?.playerName
+            return (
+                <div className='d-flex w-100 cursor-pointer'>
+                    <div key={`ball ${index}`} className={` d-flex justify-content-center align-items-center ${ballColor}`}
+                        onClick={() => setEditBallId(element.ballId)}>
+                        {/* return <div key={`ball ${index}`} className={`px-0.5 py-0.5 shadow-sm rounded mx-1 over-ball-display ${ballColor} ${ballFontColor}`}> */}
+                        {displayValue}
+                    </div>
+                    <div className='mx-4 d-flex justify-content-center align-items-center'>{`To ${batter}`}</div>
+                </div>
+            )
         })
     }
 
@@ -289,7 +298,7 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
         const [innings, teamId, overNum] = overKey.split('_##_');
         const overDetails = getOverDetails(overNum, innings, teamId);
 
-        const bowler = getBowlerDetails(overDetails?.bowlerId);
+        const bowler = getPlayerDetails(overDetails?.bowlerId);
 
         const sortedBalls = [...balls].sort((a, b) => b.overCount - a.overCount);
         // const viewportWidth = window.innerWidth;
@@ -303,11 +312,11 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                                     // width="30px"
                                     playerImage={bowler?.playerimage}
                                     jerseyImage={team.jersey}
-                            />:<Avatar
-                                src="/api/placeholder/48/48"
-                                alt={bowler?.playerName || 'Bowler'}
-                                sx={{ width: 32, height: 32 }}
-                            />
+                                /> : <Avatar
+                                    src="/api/placeholder/48/48"
+                                    alt={bowler?.playerName || 'Bowler'}
+                                    sx={{ width: 32, height: 32 }}
+                                />
                                 // <Avatar
                                 //     src={bowler?.playerimage}
                                 //     alt={bowler?.playerName || 'Bowler'}
@@ -322,7 +331,7 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                             <Box>
                                 <Typography variant="subtitle2" fontWeight="bold" noWrap sx={{
                                     fontFamily: "'Work Sans', sans-serif", color: '#505d69'
-                                }}className='accordian-text'>
+                                }} className='accordian-text'>
                                     {bowler?.playerName || 'Unknown Bowler'}
                                 </Typography>
                                 <Typography variant="caption" color="text.secondary" sx={{
@@ -336,18 +345,19 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                             <Typography variant="subtitle2" sx={{
                                 fontFamily: "'Work Sans', sans-serif"
                             }} className='accordian-text'>
-                            {`${overDetails?.totalRun || 0}/${overDetails?.totalWicket || 0} ${
-                                overDetails?.isComplete
-                                ? `[${overDetails?.teamScore}]`
-                                : `[${teamDetails?.[BATTING_TEAM]?.teamScore || 0}/${teamDetails?.[BATTING_TEAM]?.teamWicket || 0}]`
-                            }`}
+                                {`${overDetails?.totalRun || 0}/${overDetails?.totalWicket || 0} ${overDetails?.isComplete
+                                    ? `[${overDetails?.teamScore}]`
+                                    : `[${teamDetails?.[BATTING_TEAM]?.teamScore || 0}/${teamDetails?.[BATTING_TEAM]?.teamWicket || 0}]`
+                                    }`}
                             </Typography>
                         </RunsInfo>
                     </div>
                     <BallsContainer>
                         <Box display="flex" flexWrap="wrap" gap={1} >
                             <React.Fragment >
-                                {generateBallfromArray(balls)}
+                                <div className='d-inline-block'>
+                                    {generateBallfromArray(balls)}
+                                </div>
                             </React.Fragment>
                         </Box>
                     </BallsContainer>
@@ -356,21 +366,21 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                     <PlayerInfo>
                         {bowler?.playerimage ?
                             <PlayerImage
-                            // width="30px"
-                            playerImage={bowler?.playerimage}
-                            jerseyImage={team.jersey}
-                        />:<Avatar
-                            src="/api/placeholder/48/48"
-                            alt={bowler?.playerName || 'Bowler'}
-                            sx={{ width: 32, height: 32 }}
-                        />}
+                                // width="30px"
+                                playerImage={bowler?.playerimage}
+                                jerseyImage={team.jersey}
+                            /> : <Avatar
+                                src="/api/placeholder/48/48"
+                                alt={bowler?.playerName || 'Bowler'}
+                                sx={{ width: 32, height: 32 }}
+                            />}
                         <Box>
-                            <Typography variant="subtitle2" fontWeight="bold" 
-                            sx={{
-                                "&[data-theme='dark']": {
-                                    color: "white",
-                                },
-                            }} 
+                            <Typography variant="subtitle2" fontWeight="bold"
+                                sx={{
+                                    "&[data-theme='dark']": {
+                                        color: "white",
+                                    },
+                                }}
                                 data-theme={document.body.getAttribute("data-theme")}
                                 noWrap className='accordian-text'
                             >
@@ -393,12 +403,11 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                     </BallsContainer>
                     <RunsInfo>
                         <Typography variant="subtitle2" className='accordian-text'>
-                        {/* {`${overDetails?.totalRun || 0}/${overDetails?.totalWicket || 0} ${overDetails.isComplete ? '['+overDetails.teamScore+']':'['+teamDetails[BATTING_TEAM].teamScore +'/'+teamDetails[BATTING_TEAM].teamWicket+']'}`} */}
-                        {`${overDetails?.totalRun || 0}/${overDetails?.totalWicket || 0} ${
-                            overDetails?.isComplete
-                            ? `[${overDetails?.teamScore}]`
-                            : `[${teamDetails?.[BATTING_TEAM]?.teamScore || 0}/${teamDetails?.[BATTING_TEAM]?.teamWicket || 0}]`
-                        }`}
+                            {/* {`${overDetails?.totalRun || 0}/${overDetails?.totalWicket || 0} ${overDetails.isComplete ? '['+overDetails.teamScore+']':'['+teamDetails[BATTING_TEAM].teamScore +'/'+teamDetails[BATTING_TEAM].teamWicket+']'}`} */}
+                            {`${overDetails?.totalRun || 0}/${overDetails?.totalWicket || 0} ${overDetails?.isComplete
+                                ? `[${overDetails?.teamScore}]`
+                                : `[${teamDetails?.[BATTING_TEAM]?.teamScore || 0}/${teamDetails?.[BATTING_TEAM]?.teamWicket || 0}]`
+                                }`}
                         </Typography>
                     </RunsInfo>
                 </OverContainer>}
@@ -407,53 +416,56 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
     };
 
     return (
-        <Box sx={{ width: '100%' }}>
-            {sortedKeys.map(key => {
-                const [innings, teamId] = key.split('_');
-                const team = teamId === teamDetails.BATTING_TEAM.teamId.toString()
-                ? teamDetails.BATTING_TEAM
-                : teamDetails.BOWLING_TEAM;
-                const jersy = teamId === teamDetails.BATTING_TEAM.teamId.toString()
-                ? teamDetails.BOWLING_TEAM
-                : teamDetails.BATTING_TEAM
-                return !isEmpty(groupedOvers[key]) && (
-                    <Accordion
+        <>
+            <Box sx={{ width: '100%' }}>
+                {sortedKeys.map(key => {
+                    const [innings, teamId] = key.split('_');
+                    const team = teamId === teamDetails.BATTING_TEAM.teamId.toString()
+                        ? teamDetails.BATTING_TEAM
+                        : teamDetails.BOWLING_TEAM;
+                    const jersy = teamId === teamDetails.BATTING_TEAM.teamId.toString()
+                        ? teamDetails.BOWLING_TEAM
+                        : teamDetails.BATTING_TEAM
+                    return !isEmpty(groupedOvers[key]) && (
+                        <Accordion
+                            // defaultExpanded
+                            className='right-panel-over-accordian'
+                            key={key}
+                            // disabled
+                            expanded={sortedKeys.length > 1 ? expanded === key : expanded}
+                            onChange={handleChange(key)}
+                            sx={{
+                                '&:before': { display: 'none' },
+                                boxShadow: 'none',
+                                '& .MuiAccordionSummary-root': {
+                                    borderBottom: '1px solid #eee'
+                                }
+                            }}
                         // defaultExpanded
-                        className='right-panel-over-accordian'
-                        key={key}
-                        // disabled
-                        expanded={sortedKeys.length > 1 ? expanded === key : expanded}
-                        onChange={handleChange(key)}
-                        sx={{
-                            '&:before': { display: 'none' },
-                            boxShadow: 'none',
-                            '& .MuiAccordionSummary-root': {
-                                borderBottom: '1px solid #eee'
-                            }
-                        }}
-                        // defaultExpanded
-                    >
-                        <AccordionSummary
-                            className='right-panel-over-accordian-summary'
-                            expandIcon={<ExpandMoreIcon style={{color: "unset"}}/>}
-                            sx={{ px: 2 }}
                         >
-                            <Box display="flex" alignItems="center" gap={1}>
-                                <Typography variant="h6" fontWeight="bold" color="text.secondary" className='accordian-text'>
-                                    {team.teamName}
-                                </Typography>
-                                <Typography variant="h6" fontWeight="bold" color="text.secondary" className='accordian-text'>
-                                    - Innings {innings}
-                                </Typography>
-                            </Box>
-                        </AccordionSummary>
-                        <AccordionDetails sx={{ p: 0 }}>
-                            {groupedOvers[key].map(([overKey, balls]) => renderOver(balls, overKey, jersy))}
-                        </AccordionDetails>
-                    </Accordion>
-                );
-            })}
-        </Box>
+                            <AccordionSummary
+                                className='right-panel-over-accordian-summary'
+                                expandIcon={<ExpandMoreIcon style={{ color: "unset" }} />}
+                                sx={{ px: 2 }}
+                            >
+                                <Box display="flex" alignItems="center" gap={1}>
+                                    <Typography variant="h6" fontWeight="bold" color="text.secondary" className='accordian-text'>
+                                        {team.teamName}
+                                    </Typography>
+                                    <Typography variant="h6" fontWeight="bold" color="text.secondary" className='accordian-text'>
+                                        - Innings {innings}
+                                    </Typography>
+                                </Box>
+                            </AccordionSummary>
+                            <AccordionDetails sx={{ p: 0 }}>
+                                {groupedOvers[key].map(([overKey, balls]) => renderOver(balls, overKey, jersy))}
+                            </AccordionDetails>
+                        </Accordion>
+                    );
+                })}
+            </Box>
+            {editBallId && <EditBallModal onClose={() => { setEditBallId(undefined) }} />}
+        </>
     );
 };
 

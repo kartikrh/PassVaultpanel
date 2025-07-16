@@ -274,6 +274,10 @@ export const getBallsForAllOver = (ballHistory = []) => {
             isWicket: ball.ballWicketType || false,
             isBoundary: ball.ballIsBoundry || false,
             overCount: ball?.overCount,
+            batterId: ball?.batStrikeId,
+            bowlerId: ball?.bowlerId,
+            fieldPlayerId: ball?.fieldPlayerId,
+            ballId: ball.commentaryBallByBallId
           }
         ]);
       }
