@@ -115,7 +115,10 @@ const AddWhiteLabel = () => {
         const { name, type } = field;
         if (!name) return;
   
-        const value = dataToSave[name];
+        let value = dataToSave[name];
+        if (value === "" || value == null) {
+          value = null;
+        }
   
         if (type === SELECT) {
           completeData[name] = value ?? 0;
