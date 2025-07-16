@@ -78,23 +78,24 @@ function AddTabs() {
             //   isAutoChangeStriker: dataToSave?.isAutoChangeStriker || false,
             //   isHistory: dataToSave?.isHistory || false,
             };
-            const completeData = {}
+            const completeData = {};
             MatchTypeFields.forEach((field) => {
               const { name, type } = field;
-              if (!name) return; 
+              if (!name) return;
 
-              const value = dataToSave[name];
+              let value = dataToSave[name];
+              if (value === "" || value === undefined) {
+                value = null;
+              }
 
-              if ( type === SELECT) {
+              if (type === SELECT) {
                 completeData[name] = value ?? 0;
-              } else if ( type === SWITCH) {
+              } else if (type === SWITCH) {
                 completeData[name] = value ?? false;
               } else {
-                completeData[name] = value ?? null
+                completeData[name] = value ?? null;
               }
             });
-                console.log("complete:", completeData);
-    console.log("data:", dataToSave);
 
             setCurrentSaveAction(saveAction);
             dispatch(addMatchTypeToDb({ ...completeData, ...extraData }))
