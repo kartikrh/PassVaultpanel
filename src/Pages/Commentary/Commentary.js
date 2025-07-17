@@ -150,19 +150,20 @@ const Commentary = (props) => {
     //         console.error("Error updating commentary console:", error);
     //     }
     // };
+    const syncOverCheck = isEmpty(_currentOver) ? currentOver : _currentOver;
     useEffect(() => {
         localStorage.setItem("superOverText", JSON.stringify(superOverText));
     }, [superOverText]);
 
     useEffect(() => {
         checkForOverSwitch(); // Trigger check whenever currentOver or ball count changes
-    }, [currentOver.ballCount, isWheelShowComplete, isWheelShow]);
+    }, [syncOverCheck.ballCount, isWheelShowComplete, isWheelShow]);
 
     const checkForOverSwitch = () => {
-        const isBallCountExceeded = currentOver.ballCount >= (matchTypeDetails?.ballsPerOver || 6);
+        const isBallCountExceeded = syncOverCheck.ballCount >= (matchTypeDetails?.ballsPerOver || 6);
         const shouldShowWheel = isWheelShowComplete || !isWheelShow;
         const isNotUndoing = !isUndoingLastOver;
-        const isOverNotComplete = !currentOver.isComplete;
+        const isOverNotComplete = !syncOverCheck.isComplete;
 
         if (isNotUndoing && isBallCountExceeded && shouldShowWheel && isOverNotComplete) {
             setShowChangeOverModal(true);
@@ -1103,6 +1104,9 @@ const Commentary = (props) => {
                 ...newPlayer,
                 "playerId": oldPlayer["playerId"],
                 "playerName": oldPlayer["playerName"],
+                "jerseyPlayerImage": oldPlayer["jerseyPlayerImage"],
+                "jerseyPlayerImagePath": oldPlayer["jerseyPlayerImagePath"],
+                "playerimage": oldPlayer["playerimage"],
                 "batsmanAverage": oldPlayer["batsmanAverage"],
                 "bowlerAverage": oldPlayer["bowlerAverage"],
                 "batterOrder": newPlayer["batterOrder"],
@@ -1112,6 +1116,9 @@ const Commentary = (props) => {
                 ...oldPlayer,
                 "playerId": newPlayer["playerId"],
                 "playerName": newPlayer["playerName"],
+                "jerseyPlayerImage": newPlayer["jerseyPlayerImage"],
+                "jerseyPlayerImagePath": newPlayer["jerseyPlayerImagePath"],
+                "playerimage": newPlayer["playerimage"],
                 "batsmanAverage": newPlayer["batsmanAverage"],
                 "bowlerAverage": newPlayer["bowlerAverage"],
                 "batterOrder": oldPlayer["batterOrder"],

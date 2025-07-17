@@ -125,9 +125,11 @@ const WicketModal = ({ onPitchPlayers, bowlingTeam, bowlingTeamDetails, toggle, 
         }
 
         const fieldsToCheck = { ...showFields };
-        if (wicketData.wicketType === RUN_OUT) {
-            fieldsToCheck.fielder2 = false;
-        }
+        fieldsToCheck.fielder2 = false
+        fieldsToCheck.fielder1 = false
+        // if (wicketData.wicketType === RUN_OUT) {
+        //     fieldsToCheck.fielder2 = false;
+        // }
 
         const missingFields = Object.keys(fieldsToCheck)
             .filter(field => fieldsToCheck[field] && !wicketData[field]);
