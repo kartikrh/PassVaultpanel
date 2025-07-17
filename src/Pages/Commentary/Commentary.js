@@ -198,7 +198,7 @@ const Commentary = (props) => {
                 conditionsToCheck = [isRunTargetAchieved()]; break;
             default: break;
         }
-        if (conditionsToCheck.some(condition => condition)) {
+        if (conditionsToCheck.some(condition => condition) && !isMatchCompleted) {
             const runDifference = (teams[BATTING_TEAM]?.teamScore || 0) + (teams[BATTING_TEAM]?.teamLeadRuns || 0) - (teams[BATTING_TEAM]?.teamTrialRuns || 0)
             if (teamToCheck?.[BOWLING_TEAM].isBattingComplete && isLastInnigs) setCompleteMatchModal(true)
             else if (!teams[BOWLING_TEAM].isBattingComplete && isLastInnigs && runDifference < 0) {
