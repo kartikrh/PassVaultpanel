@@ -455,7 +455,7 @@ const Commentary = (props) => {
         setSaveToDb(false)
     }
     const updateRuns = ({ run, ball, batter, bowler, isBoundary, freezePlayers = false }) => {
-        if (isCommentaryBallLoading || showChangeOverModal || isSaving) return;
+        if (isCommentaryBallLoading || isSaving) return;
         setIsSaving(true);
         setBallStatus(SCORING_STATUS);
         setIsUndoingLastOver(false);
@@ -2746,7 +2746,7 @@ const Commentary = (props) => {
             toggle={() => { setExtrasType(undefined) }}
             extraType={extrasType}
             updateExtras={onExtrasChange} />}
-        {(!props?.isNewUi && showChangeOverModal && !changePlayerList && !selectMissingPlayer) && <ChangeOverModal
+        {(!props?.isNewUi && showChangeOverModal && !changePlayerList && !selectMissingPlayer && !showWicketModal) && <ChangeOverModal
             isOpen={showChangeOverModal}
             toggle={() => { setShowChangeOverModal(undefined); }}
             onNoClick={() => { setShowChangeOverModal(undefined); }}
