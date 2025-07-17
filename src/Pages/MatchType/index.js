@@ -156,6 +156,7 @@ const Index = () => {
             type: SUCCESS,
           })
         );
+        setEntityType(undefined)
         setCloneModelVisible(false);
       })
       .catch((error) => {

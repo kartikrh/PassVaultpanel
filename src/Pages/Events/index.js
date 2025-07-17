@@ -227,18 +227,18 @@ const Index = () => {
     {
       title: "Event Name",
       dataIndex: "eventName",
-      render: (text, record) => (
-        <span style={{ cursor: "pointer" }}>{text}</span>
-      ),
+      // render: (text, record) => (
+      //   <span style={{ cursor: "pointer" }}>{text}</span>
+      // ),
       key: "eventName",
       style: { width: "10%" },
     },
     {
       title: "Event Type",
       dataIndex: "eventType",
-      render: (text, record) => (
-        <span style={{ cursor: "pointer" }}>{text}</span>
-      ),
+      // render: (text, record) => (
+      //   <span style={{ cursor: "pointer" }}>{text}</span>
+      // ),
       key: "eventType",
       style: { width: "10%" },
     },
