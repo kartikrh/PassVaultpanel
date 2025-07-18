@@ -1047,6 +1047,7 @@ const Index = forwardRef(
         handleCustomReset();
         return;
       }
+      dateType && setDateType({label: 'Local Timezone', value: 1})
       setSearchTerm("");
       setTableActions({
         isActive: true,
@@ -1338,10 +1339,13 @@ const Index = forwardRef(
 
     useEffect(() => {
       if (searchTerm.length >= 2 || searchTerm.length === 0) {
-        setCurrentPage(0)
-        handleSearchFilter();
+        setCurrentPage(0);
       }
     }, [searchTerm]);
+
+    useEffect(() => {
+      handleSearchFilter();
+    }, [currentPage, searchTerm]);
     // useEffect(() => {
     //   if (searchTerm.length >= 2 || searchTerm.length === 0) {
     //     debouncedHandleSearchFilter(searchTerm);
