@@ -79,8 +79,9 @@ export default function ImportEntity() {
   const [matchData, setMatchData] = useState(null);
   const [dataToDB, setDataToDB] = useState({});
   let entitySportUrl =
-    loadInitData.find((item) => item.key === loadInit.ENTITYSPORT_URL)?.value ||
-    "https://es.deployed.live";
+    loadInitData.find((item) => item.key === loadInit.ENTITYSPORT_URL)?.value;
+
+  // "https://es.deployed.live"
 
   const getCompetitionStatus = (status) => {
     const statusLower = String(status).toLowerCase();
