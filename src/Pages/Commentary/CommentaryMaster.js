@@ -404,14 +404,14 @@ function CommentaryMaster() {
                                     />
                                 </div>
                               }
-                                <button
+                                {/* <button
                                   className="score-header-navigation-btns"
                                   onClick={() => {
                                     setIsNewUi(!isNewUi);
                                   }}
                                 >
                                   Old Ui
-                              </button>
+                              </button> */}
                               {commentaryList === 'commentary' && 
                                 <button 
                                   className="score-header-navigation-btns"
@@ -487,7 +487,7 @@ function CommentaryMaster() {
                               <div>
                                 {commentaryList === 'commentary' && <Button color="primary" className="mx-1" onClick={handleLoadCommentaryClick}>Load Commentary</Button>}
                                 <Button color="primary" className="mx-1" onClick={openIframePopup}>Scorecard</Button>
-                                <Button color="primary" className="mx-1 my-2 my-md-0" onClick={() => {setIsNewUi(!isNewUi)}}>New Ui</Button>
+                                {/* <Button color="primary" className="mx-1 my-2 my-md-0" onClick={() => {setIsNewUi(!isNewUi)}}>New Ui</Button> */}
                                 {(ALL_SCREENS[currentScreen] === COMMENTARY_TOSS_SCREEN || ALL_SCREENS[currentScreen] === COMMENTARY_PLAYER_SELECTION_SCREEN) ? <Button color="primary" className="mx-1 my-2 my-md-0" onClick={handleBallStartClick}>Ball Start</Button> : null}
                               </div>
                             </div>

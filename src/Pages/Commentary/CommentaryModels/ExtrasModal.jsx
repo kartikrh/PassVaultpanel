@@ -11,16 +11,16 @@ const ExtrasModal = ({ toggle, isOpen, extraType, updateExtras }) => {
         const objToSend = { run: +run, type, isBoundary: ((+run === 4) || (+run === 6)) ? isBoundary : false }
         updateExtras(objToSend)
     }
-    const handleKeyPress = (e) => {
-        if (e.key === 'Enter' && e.shiftKey) toggle();
-        else if (e.key === 'Enter') handleSubmit(EXTRAS)
-    };
-    useEffect(() => {
-        document.addEventListener('keydown', handleKeyPress);
-        return () => {
-            document.removeEventListener('keydown', handleKeyPress);
-        };
-    }, [run])
+    // const handleKeyPress = (e) => {
+    //     if (e.key === 'Enter' && e.shiftKey) toggle();
+    //     else if (e.key === 'Enter') handleSubmit(EXTRAS)
+    // };
+    // useEffect(() => {
+    //     document.addEventListener('keydown', handleKeyPress);
+    //     return () => {
+    //         document.removeEventListener('keydown', handleKeyPress);
+    //     };
+    // }, [run])
     useEffect(() => {
         if (isOpen) {
             setTimeout(() => {
