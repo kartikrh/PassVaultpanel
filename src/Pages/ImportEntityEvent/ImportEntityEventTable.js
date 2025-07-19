@@ -97,8 +97,7 @@ export default function ImportEntityEvent() {
   const [matchData, setMatchData] = useState(null);
   const [dataToDB, setDataToDB] = useState({});
   let entitySportUrl =
-    loadInitData.find((item) => item.key === loadInit.ENTITYSPORT_URL)?.value ||
-    "https://es.deployed.live";
+    loadInitData.find((item) => item.key === loadInit.ENTITYSPORT_URL)?.value;
 
   const getEntityEventStatus = (status) => {
     const statusLower = String(status).toLowerCase();
