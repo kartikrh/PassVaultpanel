@@ -252,7 +252,7 @@ const Index = () => {
                 countryCode: record?.countryCode || "",
                 openDate: record?.eventDate,
                 venue: record?.venue || "",
-                competitionName: tournamentObject?.competitionName || "", // Add competitionName here
+                competitionName: tournamentObject?.competitionName || "",
                 compId: tournamentObject?.competitionId,
               });
               addData({
@@ -263,7 +263,7 @@ const Index = () => {
                 countryCode: record?.countryCode || "",
                 openDate: record?.eventDate,
                 venue: record?.venue || "",
-                competitionName: tournamentObject?.competitionName || "", // Add competitionName here
+                competitionName: tournamentObject?.competitionName || "",
                 compId: tournamentObject?.competitionId,
               });
             }
@@ -397,6 +397,8 @@ const Index = () => {
               runner: record?.runner,
               rateSource: rateSource,
               categoryType: record?.categoryType,
+              competitionName: tournamentObject?.competitionName || dataToDB?.competitionName,
+              compId: tournamentObject?.competitionId || dataToDB?.competitionId,
             });
             addMarketData({
               ...dataToDB,
@@ -408,6 +410,8 @@ const Index = () => {
               runner: record?.runner,
               rateSource: rateSource,
               categoryType: record?.categoryType,
+              competitionName: tournamentObject?.competitionName || dataToDB?.competitionName,
+              compId: tournamentObject?.competitionId || dataToDB?.competitionId,
             });
           }}
         >
