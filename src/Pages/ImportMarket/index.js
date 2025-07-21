@@ -9,13 +9,12 @@ import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
-import _, { isEqual } from "lodash";
+import _, { isEqual, isEmpty } from "lodash";
 import Select from "react-select";
 import {
   ERROR,
   PERMISSION_ADD,
-  PERMISSION_DELETE,
-  PERMISSION_EDIT,
+  // PERMISSION_DELETE,
   PERMISSION_VIEW,
   SUCCESS,
   TAB_AUTO_EVENT,
@@ -36,6 +35,7 @@ const Index = () => {
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   document.title =
     "Auto Events";
+  const [permissionChecked, setPermissionChecked] = useState(false);
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
   const [checekedList, setCheckedList] = useState([]);
@@ -72,6 +72,7 @@ const Index = () => {
   const dispatch = useDispatch();
 
   const fetchData = async (latestValueFromTable) => {
+    if (!permissionChecked) return;
     setIsLoading(true);
     finalizeRef.current.getTableAction();
     await axiosInstance
@@ -522,13 +523,31 @@ const Index = () => {
       })
       .catch((error) => { });
   };
+
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
-      navigate("/dashboard")
+    if (!isEmpty(permissionObj)) {
+      if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+        navigate("/dashboard");
+        return;
+      }
+      setPermissionChecked(true);
     }
-    setData([])
-    fetchData();
-  }, [selectedMarket]);
+  }, [permissionObj, navigate]);
+
+  useEffect(() => {
+    if (permissionChecked) {
+      setData([]);
+      fetchData();
+    }
+  }, [permissionChecked, selectedMarket]);
+
+  // useEffect(() => {
+  //   if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+  //     navigate("/dashboard")
+  //   }
+  //   setData([])
+  //   fetchData();
+  // }, [selectedMarket]);
 
   useEffect(() => {
     dispatch(
@@ -570,11 +589,11 @@ const Index = () => {
             changeOrderApiName="eventType"
             singleCheck={checekedList}
             reFetchData={fetchData}
-            isDeletePermission={checkPermission(
-              permissionObj,
-              pageName,
-              PERMISSION_DELETE
-            )}
+            // isDeletePermission={checkPermission(
+            //   permissionObj,
+            //   pageName,
+            //   PERMISSION_DELETE
+            // )}
             onBreadCrumbsClick={handleBreadCrumbsClick}
             breadCrumbs={selectedMarketHistory}
             showtournamentList={showtournamentList}

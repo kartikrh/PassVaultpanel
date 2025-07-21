@@ -14,7 +14,6 @@ import {
   PERMISSION_VIEW,
   SUCCESS,
   TAB_IMPORT_ENTITYEVENTIMPORT,
-  TAB_IMPORT_ENTITYIMPORT,
 } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
@@ -30,7 +29,7 @@ const isSquadOptions = [
 
 export default function ImportEntityEvent() {
   const pageName = TAB_IMPORT_ENTITYEVENTIMPORT;
-  document.title = "Import Entity Event";
+  document.title = "Entity Event Import";
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   const navigate = useNavigate();
