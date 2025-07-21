@@ -141,7 +141,7 @@ export const generatePartnership = ({ currentPartnership, commentaryDetails, tea
     "player1image": currentPartnership.player1image || null,
     "player2image": currentPartnership.player2image || null,
     // "order" : currentPartnership?.order,
-    "order": currentPartnership.commentaryPartnershipId ? currentPartnership.order : teams[BATTING_TEAM].teamWicket + 1 || 1,
+    "order" : currentPartnership.commentaryPartnershipId ? currentPartnership.order : teams[BATTING_TEAM].teamWicket + 1 || 1,
     "isActive": currentPartnership?.isActive,
   };
   return toReturn;
@@ -215,7 +215,7 @@ export const generateDisplayStatus = ({ currentBall, playerSwitch, onStrikePlaye
     if (ballType === BALL_TYPE_REGULAR) {
       if (currentBall.ballIsWicket) {
         if (wicketType === BOLD) displayStatus = `${onStrikePlayer?.playerName ? `${onStrikePlayer.playerName} ${BOLD_LABEL}` : ""} `
-        else if (wicketType === CATCH) displayStatus = `${onStrikePlayer?.playerName ? `${onStrikePlayer.playerName} ${CATCH_LABEL}` : ""}`
+        else if (wicketType === CATCH) displayStatus = `${onStrikePlayer?.playerName ? `${onStrikePlayer.playerName} ${CATCH_LABEL}`: ""}`
         else if (wicketType === STUMP) displayStatus = `${onStrikePlayer?.playerName ? `${onStrikePlayer.playerName} ${STUMP_LABEL}` : ""}`
         else if (wicketType === HIT_WICKET) displayStatus = `${onStrikePlayer?.playerName ? `${onStrikePlayer.playerName} ${HIT_WICKET_LABEL}` : ""}`
         else if (wicketType === LBW) displayStatus = `${onStrikePlayer?.playerName ? `${onStrikePlayer.playerName} ${LBW_LABEL}` : ""}`
@@ -381,31 +381,31 @@ export const fetchWinnerMessageRmk = ({ team, matchTypeDetails, target, isBattin
 // }
 
 export const generateRemainingRuns = (team, ballsPerOver, matchTypeDetails) => {
-  if (matchTypeDetails.noOfIningsPerSide > 1) {
+  if(matchTypeDetails.noOfIningsPerSide > 1){
     const totalRunRemaining = (team.teamTrialRuns || 0) - (team.teamScore || 0);
-    if (team.teamBattingOrder > 2) {
-      if (team.teamLeadRuns > 0) {
+    if(team.teamBattingOrder > 2){
+      if(team.teamLeadRuns > 0){
         const leadBy = team.teamLeadRuns + team.teamScore
         return `${team.shortName} lead by ${leadBy} runs`;
-      } else if (team.teamTrialRuns > 0) {
-        if (team.teamTrialRuns > team.teamScore) {
+      } else if(team.teamTrialRuns > 0){
+        if(team.teamTrialRuns > team.teamScore){
           const trailBy = team.teamTrialRuns - team.teamScore
           return team.teamBattingOrder == 4 ? `${team.shortName} needs ${trailBy} runs to win` : `${team.shortName} trail by ${trailBy} runs`;
-        } else if (team.teamTrialRuns < team.teamScore) {
+        }else if(team.teamTrialRuns < team.teamScore){
           const trailBy = team.teamScore - team.teamTrialRuns
           return `${team.shortName} lead by ${trailBy} runs`;
         }
       }
-    } else {
+    }else{
       if (team.teamScore < team.teamTrialRuns) {
         return `${team.shortName} trail by ${totalRunRemaining} runs`;
-      } else if (team.teamScore > team.teamTrialRuns) {
-        const leadBy = team.teamScore - team.teamTrialRuns
+      } else if( team.teamScore > team.teamTrialRuns){
+        const leadBy =  team.teamScore - team.teamTrialRuns
         return `${team.shortName} lead by ${leadBy} runs`;
       }
     }
-
-  } else {
+      
+  }else {
     const oversParts = String(team.teamOver || "0").split(".");
     const completedOvers = parseInt(oversParts[0], 10);
     const ballsInCurrentOver = parseInt(oversParts[1] || "0", 10);
@@ -465,22 +465,5 @@ export const fetchConfig = (data) => {
   const dpSocketUrl = data.find(config => config.key === loadInit.DP_SOCKET_URL)?.value;
   const dpApiXkey = data.find(config => config.key === loadInit.DP_API_KEY)?.value;
   const dpApiURL = data.find(config => config.key === loadInit.DP_API_URL)?.value;
-  return { dpSocketUrl, dpApiXkey, dpApiURL }
+  return {dpSocketUrl, dpApiXkey, dpApiURL}
 }
-
-export const shouldIncrementOverCount = (currentBallIsCountable, ballHistory) => {
-  const lastBall = ballHistory[ballHistory.length - 1];
-  if (!lastBall) return true; // First ball of match
-
-  const lastBallWasCountable = lastBall.ballIsCount;
-  return lastBallWasCountable && !currentBallIsCountable;
-};
-export const shouldDecrementOverCount = (ballHistory) => {
-  if (ballHistory.length < 2) return false;
-
-  const currentBall = ballHistory[ballHistory.length - 1]; // ball being undone
-  const previousBall = ballHistory[ballHistory.length - 2]; // ball before that
-
-  // Decrement if: previous ball was countable AND current ball (being undone) is not countable
-  return previousBall.ballIsCount && !currentBall.ballIsCount;
-};
