@@ -51,10 +51,10 @@ const TossScreen = ({ data, next, save, isPredictToggle }) => {
         ...commentaryDetails,
         ...values,
         rmk: `${winnerTeam?.shortName} opt to ${
-          values.choseTo == 1 ? "Bat" : "Ball"
+          values.choseTo == 1 ? "Bat" : "Bowl"
         }`,
         displayStatus: `${winnerTeam?.shortName} opt to ${
-          values.choseTo == 1 ? "Bat" : "Ball"
+          values.choseTo == 1 ? "Bat" : "Bowl"
         }`,
         commentaryStatus: "2",
       },

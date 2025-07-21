@@ -62,7 +62,9 @@ export const MatchTypeClone = ({ cloneModelVisible, setCloneModelVisible, handle
           )}
 
           <div className="hstack gap-2 justify-content-end">
-            <button type="button" className="btn btn-light" onClick={() => setCloneModelVisible(false)}>Close</button>
+            <button type="button" className="btn btn-light" onClick={() => {setCloneModelVisible(false)
+              setEntityType(undefined)
+            }}>Close</button>
             {singleCheck.length === 1 && (
               <button type="submit" className="btn btn-warning" onClick={handleClone}>Clone Match Type</button>
             )}
