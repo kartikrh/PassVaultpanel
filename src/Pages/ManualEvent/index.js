@@ -253,7 +253,7 @@ const Index = () => {
                 openDate: record?.eventDate,
                 venue: record?.venue || "",
                 competitionName: tournamentObject?.competitionName || "", // Add competitionName here
-                competitionId: tournamentObject?.competitionId,
+                compId: tournamentObject?.competitionId,
               });
               addData({
                 ...dataToDB,
@@ -264,7 +264,7 @@ const Index = () => {
                 openDate: record?.eventDate,
                 venue: record?.venue || "",
                 competitionName: tournamentObject?.competitionName || "", // Add competitionName here
-                competitionId: tournamentObject?.competitionId,
+                compId: tournamentObject?.competitionId,
               });
             }
             else{
@@ -276,6 +276,7 @@ const Index = () => {
                 countryCode: record?.countryCode || "",
                 openDate: record?.eventDate,
                 venue: record?.venue || "",
+                compId: tournamentObject?.competitionId || 0,
               });
               addData({
                 ...dataToDB,
@@ -285,6 +286,7 @@ const Index = () => {
                 countryCode: record?.countryCode || "",
                 openDate: record?.eventDate,
                 venue: record?.venue || "",
+                compId: tournamentObject?.competitionId || 0,
               });
             }
           }}
