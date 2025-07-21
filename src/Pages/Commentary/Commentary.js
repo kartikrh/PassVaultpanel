@@ -150,20 +150,19 @@ const Commentary = (props) => {
     //         console.error("Error updating commentary console:", error);
     //     }
     // };
-    const syncOverCheck = isEmpty(_currentOver) ? currentOver : _currentOver;
     useEffect(() => {
         localStorage.setItem("superOverText", JSON.stringify(superOverText));
     }, [superOverText]);
 
     useEffect(() => {
         checkForOverSwitch(); // Trigger check whenever currentOver or ball count changes
-    }, [syncOverCheck.ballCount, isWheelShowComplete, isWheelShow]);
+    }, [currentOver.ballCount, isWheelShowComplete, isWheelShow]);
 
     const checkForOverSwitch = () => {
-        const isBallCountExceeded = syncOverCheck.ballCount >= (matchTypeDetails?.ballsPerOver || 6);
+        const isBallCountExceeded = currentOver.ballCount >= (matchTypeDetails?.ballsPerOver || 6);
         const shouldShowWheel = isWheelShowComplete || !isWheelShow;
         const isNotUndoing = !isUndoingLastOver;
-        const isOverNotComplete = !syncOverCheck.isComplete;
+        const isOverNotComplete = !currentOver.isComplete;
 
         if (isNotUndoing && isBallCountExceeded && shouldShowWheel && isOverNotComplete) {
             setShowChangeOverModal(true);
@@ -198,7 +197,7 @@ const Commentary = (props) => {
                 conditionsToCheck = [isRunTargetAchieved()]; break;
             default: break;
         }
-        if (conditionsToCheck.some(condition => condition) && !isMatchCompleted) {
+        if (conditionsToCheck.some(condition => condition)) {
             const runDifference = (teams[BATTING_TEAM]?.teamScore || 0) + (teams[BATTING_TEAM]?.teamLeadRuns || 0) - (teams[BATTING_TEAM]?.teamTrialRuns || 0)
             if (teamToCheck?.[BOWLING_TEAM].isBattingComplete && isLastInnigs) setCompleteMatchModal(true)
             else if (!teams[BOWLING_TEAM].isBattingComplete && isLastInnigs && runDifference < 0) {
@@ -455,7 +454,7 @@ const Commentary = (props) => {
         setSaveToDb(false)
     }
     const updateRuns = ({ run, ball, batter, bowler, isBoundary, freezePlayers = false }) => {
-        if (isCommentaryBallLoading || isSaving) return;
+        if (isCommentaryBallLoading || showChangeOverModal || isSaving) return;
         setIsSaving(true);
         setBallStatus(SCORING_STATUS);
         setIsUndoingLastOver(false);
@@ -1367,7 +1366,7 @@ const Commentary = (props) => {
         setCurrentWicket(undefined)
     }
     const handleUndoClick = () => {
-        if (isSaving || isCommentaryBallLoading || !currentBall?.overCount || currentBall?.commentaryBallByBallId === lastUndoId) return;
+        if (isCommentaryBallLoading || currentBall?.commentaryBallByBallId === lastUndoId) return;
         if (currentBall?.commentaryBallByBallId && (+currentBall?.overCount === +teams[BATTING_TEAM].teamOver)) {
             setLastUndoId(currentBall?.commentaryBallByBallId);
             if (((currentOver.over || 0) === 0) && ((currentOver.ballCount || 0) === 0) && (currentBall.ballType === BALL_TYPE_OVER_COMPLETE)
@@ -2297,7 +2296,7 @@ const Commentary = (props) => {
                 // } catch (error) {
                 //     console.error("Error updating commentary console:", error);
                 // }
-                setCurrentBall(commentaryDataToUpdate.commentaryBallByBallDetails);
+                setCurrentBall(commentaryDataToUpdate.commentaryBallByBallDetails)
                 //checkForOverSwitch(_currentOver?.ballCount || currentOver?.ballCount)
                 // handleCommentaryConsole(_currentOver, currentOver);
                 // console.log(`Temporary _over : ${_currentOver?.over}, _ballCount: ${_currentOver?.ballCount}, _teamScore: ${_currentOver?.teamScore} & permanent over : ${currentOver?.over}, ballCount: ${currentOver?.ballCount}, teamScore: ${currentOver?.teamScore}`);
@@ -2770,7 +2769,7 @@ const Commentary = (props) => {
             toggle={() => { setExtrasType(undefined) }}
             extraType={extrasType}
             updateExtras={onExtrasChange} />}
-        {(!props?.isNewUi && showChangeOverModal && !changePlayerList && !selectMissingPlayer && !showWicketModal) && <ChangeOverModal
+        {(!props?.isNewUi && showChangeOverModal && !changePlayerList && !selectMissingPlayer) && <ChangeOverModal
             isOpen={showChangeOverModal}
             toggle={() => { setShowChangeOverModal(undefined); }}
             onNoClick={() => { setShowChangeOverModal(undefined); }}

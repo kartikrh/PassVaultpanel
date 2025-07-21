@@ -163,7 +163,6 @@ const Index = forwardRef(
     const [pageSize, setPageSize] = useState(globalPageSize || 10);
     const [currentPage, setCurrentPage] = useState(0);
     const [filteredData, setFilteredData] = useState([]);
-    const [searchedData, setSearchedData] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [sortOrder, setSortOrder] = useState({
       sortOrder: "",
@@ -181,7 +180,6 @@ const Index = forwardRef(
     const [selectedTableElements, setSelectedTableElements] = useState({});
     const [delayValidationMessage, setDelayValidationMessage] = useState("");
     const [expandedRows, setExpandedRows] = useState({});
-    const [shouldCallHandleReset, setShouldCallHandleReset] = useState(false);
     const [isSearching, setIsSearching] = useState(false);
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -292,7 +290,6 @@ const Index = forwardRef(
                 (currentPage == 0 ? 0 : Number((currentPage - 1) * pageSize)) +
                   Number(pageSize)
               );
-              
               setFilteredData(sliced);
             } else {
               setFilteredData(updatedData);
@@ -661,7 +658,6 @@ const Index = forwardRef(
         }
       } else {
         const updatedData = dataSource.filter((val) => {
-          // console.log("val", val)
           const found = Object.values(val).some((value) => {
             if (typeof value === "string" || value instanceof String) {
               return value.toLowerCase().includes(searchTerm.toLowerCase());
@@ -670,24 +666,21 @@ const Index = forwardRef(
           });
           return found === true;
         });
-        setSearchedData(updatedData)
         if (searchTerm.length <= 2) {
           setTotal(dataSource.length);
           const sliced = dataSource.slice(
-            (currentPage == 1 ? currentPage - 1 : currentPage == 0 ? currentPage : currentPage - 1) * pageSize,
+            (currentPage == 1
+              ? currentPage - 1
+              : currentPage == 0
+              ? currentPage
+              : currentPage - 1) * pageSize,
             (currentPage == 0 ? 0 : Number((currentPage - 1) * pageSize)) +
               Number(pageSize)
           );
           setFilteredData(sliced);
         } else {
+          setFilteredData(updatedData);
           setTotal(updatedData.length);
-          const sliced = updatedData.slice(
-            (currentPage == 1 ? currentPage - 1 : currentPage == 0 ? currentPage : currentPage - 1) * pageSize,
-            (currentPage == 0 ? 0 : Number((currentPage - 1) * pageSize)) +
-              Number(pageSize)
-          );
-          setFilteredData(sliced);
-          // setTotal(updatedData.length);
         }
       }
     };
@@ -987,9 +980,6 @@ const Index = forwardRef(
         }
         setData(sliced);
       } else if (isPagination) {
-        if(searchTerm.length > 2){
-          dataSource = searchedData
-        }
         const possibleNoOfPages = Math.ceil(dataSource?.length / pageSize);
         let sliced;
         if (currentPage < possibleNoOfPages) {
@@ -1013,7 +1003,7 @@ const Index = forwardRef(
       } else {
         setData(dataSource);
       }
-      setTotal(searchedData.length > 0 ? searchedData.length : dataSource.length);
+      setTotal(dataSource.length);
     };
 
     const handleDragEnd = (result) => {
@@ -1029,25 +1019,11 @@ const Index = forwardRef(
       changeDisplayOrder(tabOrders, changeOrderApiName || "");
     };
 
-    const triggerResetWithState = (payload) => {
-      setTableActions(payload);
-      setShouldCallHandleReset(true);
-    };
-
-    useEffect(() => {
-      if (shouldCallHandleReset) {
-        handleReset(tableActions);
-        setShouldCallHandleReset(false);
-      }
-    }, [shouldCallHandleReset, tableActions]);
-
-
     const handleTableReset = () => {
       if (renderCustomFilter && handleCustomReset) {
         handleCustomReset();
         return;
       }
-      dateType && setDateType({label: 'Local Timezone', value: 1})
       setSearchTerm("");
       setTableActions({
         isActive: true,
@@ -1126,8 +1102,6 @@ const Index = forwardRef(
           label: "API",
         },
       });
-      setMenSwitch(null)
-      setTrendingStatusSwitch(null)
       if (
         tableElement?.dateRange &&
         tableElement?.title === "Commentary History"
@@ -1140,14 +1114,19 @@ const Index = forwardRef(
         });
       }
       setStatusSwitch(true);
-      setIsSearch && setIsSearch(false);
+      setIsSearch(false);
       if (tableElement?.rateSourceListSelect) {
-        triggerResetWithState({
+        handleReset({
           isActive: true,
           rateSourceRefId: 1,
         });
+        // } else if (tableElement?.isVirtual) {
+        //   handleReset({
+        //     isActive: true,
+        //     isVirtual: 0,
+        //   });
       } else {
-        triggerResetWithState({
+        handleReset({
           isActive: true,
         });
       }
@@ -1180,7 +1159,7 @@ const Index = forwardRef(
         });
       }
 
-      // setStatusSwitch(true);
+      setStatusSwitch(true);
       if (tableElement?.rateSourceListSelect) {
         handleReload({
           isActive: true,
@@ -1291,9 +1270,9 @@ const Index = forwardRef(
     //   }
     // };
 
-    // const getTableAction = () => {
-    //   return tableActions;
-    // };
+    const getTableAction = () => {
+      return tableActions;
+    };
 
     useEffect(() => {
       if (!data || data.length === 0) return;
@@ -1339,39 +1318,19 @@ const Index = forwardRef(
 
     useEffect(() => {
       if (searchTerm.length >= 2 || searchTerm.length === 0) {
-        setCurrentPage(0);
+        debouncedHandleSearchFilter(searchTerm);
       }
-    }, [searchTerm]);
+    }, [searchTerm, debouncedHandleSearchFilter]);
 
-    useEffect(() => {
-      handleSearchFilter();
-    }, [currentPage, searchTerm]);
-    // useEffect(() => {
-    //   if (searchTerm.length >= 2 || searchTerm.length === 0) {
-    //     debouncedHandleSearchFilter(searchTerm);
-    //   }
-    // }, [searchTerm, debouncedHandleSearchFilter]);
-
-    useEffect(() => {
-      if(searchTerm.length === 0){
-        setSearchedData([])
-      }
-    }, [searchTerm])
     useEffect(() => {
       fetchData();
     }, [dataSource]);
-    // useEffect(() => {
-    //   return () => {
-    //     debouncedHandleSearchFilter.cancel();
-    //   };
-    // }, [debouncedHandleSearchFilter]);
-    // useImperativeHandle(ref, () => ({ getTableAction }));
-    const getTableAction = () => tableActions;
-
-    useImperativeHandle(ref, () => {
-      return { getTableAction };
-    }, [tableActions]);
-
+    useEffect(() => {
+      return () => {
+        debouncedHandleSearchFilter.cancel();
+      };
+    }, [debouncedHandleSearchFilter]);
+    useImperativeHandle(ref, () => ({ getTableAction }));
     return (
       <Row>
         <Col lg={12}>
@@ -3330,95 +3289,44 @@ const Index = forwardRef(
                       {Number(currentPage) != 0 &&
                       Number((Number(currentPage) - 1) * pageSize) + 1 >
                         (tableElement.title === "Tabs"
-                          ? serverTotal: searchTerm.length > 2 ? searchedData.length
+                          ? serverTotal
                           : dataSource?.length) ==
                         false ? (
                         <span>
                           Showing{" "}
                           {Number((Number(currentPage) - 1) * pageSize) + 1} -{" "}
-                          {
-                            (() => {
-                              const totalEntries =
-                                tableElement.title === "Tabs"
-                                  ? serverTotal
-                                  : searchTerm.length > 2
-                                    ? searchedData.length
-                                    : dataSource?.length;
-
-                              const calculatedEnd =
-                                Number((Number(currentPage) - 1) * pageSize) + data.length;
-
-                              return calculatedEnd > totalEntries ? totalEntries : calculatedEnd;
-                            })()
-                          } of{" "}
-                          {
-                            tableElement.title === "Tabs"
-                              ? serverTotal
-                              : searchTerm.length > 2
-                                ? searchedData.length
-                                : dataSource?.length
-                          } entries
+                          {Number((Number(currentPage) - 1) * pageSize) +
+                            data.length}{" "}
+                          of{" "}
+                          {tableElement.title === "Tabs"
+                            ? serverTotal
+                            : dataSource?.length}{" "}
+                          entries
                         </span>
-
                       ) : Number((Number(currentPage) - 1) * pageSize) + 1 >
                         (tableElement.title === "Tabs"
-                          ? serverTotal: searchTerm.length > 2 ? searchedData.length
+                          ? serverTotal
                           : dataSource?.length) ? (
                         <span>
                           Showing{" "}
                           {Number((Number(currentPage) - 2) * pageSize) + 1} -{" "}
-                          {
-                            (() => {
-                              const totalEntries =
-                                tableElement.title === "Tabs"
-                                  ? serverTotal
-                                  : searchTerm.length > 2
-                                    ? searchedData.length
-                                    : dataSource?.length;
-
-                              const calculatedEnd =
-                                Number((Number(currentPage) - 2) * pageSize) + data.length;
-
-                              return calculatedEnd > totalEntries ? totalEntries : calculatedEnd;
-                            })()
-                          } of{" "}
-                          {
-                            tableElement.title === "Tabs"
-                              ? serverTotal
-                              : searchTerm.length > 2
-                                ? searchedData.length
-                                : dataSource?.length
-                          } entries
+                          {Number((Number(currentPage) - 2) * pageSize) +
+                            data.length}{" "}
+                          of{" "}
+                          {tableElement.title === "Tabs"
+                            ? serverTotal
+                            : dataSource?.length}{" "}
+                          entries
                         </span>
-
                       ) : (
                         <span>
                           Showing {currentPage * pageSize + 1} -{" "}
-                          {
-                            (() => {
-                              const totalEntries =
-                                tableElement.title === "Tabs"
-                                  ? serverTotal
-                                  : searchTerm.length > 2
-                                    ? searchedData.length
-                                    : dataSource?.length;
-
-                              const calculatedEnd = searchTerm.length > 2
-                                ? (currentPage + 1) * pageSize
-                                : currentPage * pageSize + data.length;
-
-                              return pageSize > totalEntries ? totalEntries : calculatedEnd;
-                            })()
-                          } of{" "}
-                          {
-                            tableElement.title === "Tabs"
-                              ? serverTotal
-                              : searchTerm.length > 2
-                                ? searchedData.length
-                                : dataSource?.length
-                          } entries
+                          {currentPage * pageSize + data.length} of{" "}
+                          {tableElement.title === "Tabs"
+                            ? serverTotal
+                            : dataSource?.length}{" "}
+                          entries
                         </span>
-
                       )}
                       <div className="d-flex align-items-center justify-content-end"></div>
                     </Col>

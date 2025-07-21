@@ -40,7 +40,8 @@ export default function ImportEntityTeam() {
   const [dataToDB, setDataToDB] = useState({});
   
   let entitySportUrl =
-    loadInitData.find((item) => item.key === loadInit.ENTITYSPORT_URL)?.value;
+    loadInitData.find((item) => item.key === loadInit.ENTITYSPORT_URL)?.value ||
+    "https://es.deployed.live";
 
   useEffect(() => {
     if (!isEmpty(permissionObj)) {

@@ -163,7 +163,7 @@ const Index = () => {
   };
 
   const handleReset = (value) => {
-    fetchData(value);
+    fetchData();
   };
 
   const handleToggleDefault = async (record, cState) => {

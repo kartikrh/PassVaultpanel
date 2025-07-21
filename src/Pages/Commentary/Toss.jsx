@@ -54,9 +54,9 @@ const Index = ({ data, next, save, isPredictToggle }) => {
       commentaryDetails: {
         ...commentaryDetails,
         ...values,
-        rmk: `${winnerTeam?.shortName} opt to ${values.choseTo == 1 ? "Bat" : "Bowl"
+        rmk: `${winnerTeam?.shortName} opt to ${values.choseTo == 1 ? "Bat" : "Ball"
           }`,
-        displayStatus: `${winnerTeam?.shortName} opt to ${values.choseTo == 1 ? "Bat" : "Bowl"
+        displayStatus: `${winnerTeam?.shortName} opt to ${values.choseTo == 1 ? "Bat" : "Ball"
           }`,
         commentaryStatus: "2",
       },

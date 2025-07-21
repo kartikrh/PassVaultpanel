@@ -190,8 +190,8 @@ const Sidebar = (props) => {
         activeMenu();
       }
     };
-    // console.log("newTabList", newTabList);
-    // console.log("UL Element", document.getElementById("side-menu-item"));
+    console.log("newTabList", newTabList);
+    console.log("UL Element", document.getElementById("side-menu-item"));
     // Small delay to ensure DOM is ready
     const timer = setTimeout(initMenu, 100);
     return () => clearTimeout(timer);

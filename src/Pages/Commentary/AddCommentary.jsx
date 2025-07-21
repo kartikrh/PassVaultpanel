@@ -514,11 +514,7 @@ function AddCommentary() {
             const completeData = {};
             allFields.forEach(({ name, type }) => {
             if (!name) return;
-            let value = mergedData[name];
-
-            if (value === "" || value === undefined) {
-                value = null;
-            }
+            const value = mergedData[name];
             if (type === SELECT) {
                 completeData[name] = value ?? 0;
             } else if (type === SWITCH) {

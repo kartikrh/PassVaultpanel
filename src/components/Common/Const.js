@@ -31,7 +31,7 @@ export const TAB_API_ENDPOINTS = "API Endpoints";
 
 export const TAB_IMPORT_ENTITYIMPORT = "Import EntityImport";
 export const TAB_IMPORT_ENTITYEVENTIMPORT = "Import EntityEventImport";
-export const TAB_IMPORT_ENTITYTEAMIMPORT = "Import EntityTeamImport";
+export const TAB_IMPORT_ENTITYTEAMIMPORT = "Import EntityEventImport";
 export const TAB_AUTO_EVENT = "Auto Event";
 export const TAB_AWARDS = "Awards";
 export const TAB_PACKAGE = "Package";

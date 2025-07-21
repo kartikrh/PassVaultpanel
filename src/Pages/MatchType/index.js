@@ -146,6 +146,7 @@ const Index = () => {
         matchTypeId: checekedList?.[0],
         matchType: cloneName,
         entityEnum: +entityType,
+        // added entityEnum clone request payload
       })
       .then((response) => {
         fetchData();
@@ -156,7 +157,6 @@ const Index = () => {
             type: SUCCESS,
           })
         );
-        setEntityType(undefined)
         setCloneModelVisible(false);
       })
       .catch((error) => {
@@ -245,15 +245,19 @@ const Index = () => {
     window.open(url.href, "_blank");
   };
 
+  // Separate filter function for dropdown filter
   const handleFilterChange = (key, value) => {
     const filterDataToUpdate = { ...selectedFilter, [key]: value };
     setSelectedFilter(filterDataToUpdate);
 
+    // Create the API payload based on the filter
     const apiPayload = {};
 
+    // If "Select Entity" (value 0) is selected, don't call API
     if (value && value.value === 0) {
       return;
     }
+    // Add entityEnum if an entity is selected (and not "Select Entity")
     if (
       filterDataToUpdate.selectedEntity &&
       filterDataToUpdate.selectedEntity.value !== 0
@@ -261,12 +265,15 @@ const Index = () => {
       apiPayload.entityEnum = filterDataToUpdate.selectedEntity.value;
     }
 
+    // Call fetchData with the filter payload
     fetchData(apiPayload);
   };
 
+  // Reload function that respects current filter
   const handleReload = () => {
     const apiPayload = {};
 
+    // Add entityEnum if an entity is selected (and not "Select Entity")
     if (
       selectedFilter.selectedEntity &&
       selectedFilter.selectedEntity.value !== 0
@@ -281,9 +288,10 @@ const Index = () => {
     setSelectedFilter({
       selectedEntity: { label: "Select Entity", value: 0 },
     });
-    fetchData({});
+    fetchData({}); // Fetch all data without filter
   };
 
+  // Helper function to get entity label by value
   const getEntityLabel = (entityEnum) => {
     const entity = ENTITY_OPTIONS.find((option) => option.value === entityEnum);
     return entity ? entity.label : "";
@@ -441,6 +449,7 @@ const Index = () => {
     resetButton: true,
   };
 
+  // Modified useEffect to prevent double API calls
   useEffect(() => {
     if (
       !checkPermission(permissionObj, pageName, PERMISSION_VIEW) &&
@@ -449,6 +458,7 @@ const Index = () => {
       navigate("/dashboard");
     }
 
+    // Only call fetchData once on initial load
     if (!initialLoadDone && !isEmpty(permissionObj)) {
       fetchData();
       setInitialLoadDone(true);

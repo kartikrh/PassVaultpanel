@@ -23,9 +23,9 @@ import { loadInit } from "../../config";
 import MatchCard from "./MatchCard";
 
 const isSquadOptions = [
-      { value: null, label: "Select Squad" },
-      { value: true, label: "true" },
-      { value: false, label: "false" },
+      { value: "Select", label: "Select" },
+      { value: "true", label: "true" },
+      { value: "false", label: "false" },
     ];
 
 export default function ImportEntityEvent() {
@@ -61,7 +61,7 @@ export default function ImportEntityEvent() {
   });
   const [statusOptionsforMatch, setStatusOptionsforMatch] = useState([]);
   const [statusOptions, setStatusOptions] = useState([]);
-  const [isSquadSelectedOption, setIsSquadSelectedOption] = useState(true);
+  const [isSquadSelectedOption, setIsSquadSelectedOption] = useState('Select');
 
   // Initialize filter based on level
   const getDefaultFilter = (level) => {
@@ -97,7 +97,8 @@ export default function ImportEntityEvent() {
   const [matchData, setMatchData] = useState(null);
   const [dataToDB, setDataToDB] = useState({});
   let entitySportUrl =
-    loadInitData.find((item) => item.key === loadInit.ENTITYSPORT_URL)?.value;
+    loadInitData.find((item) => item.key === loadInit.ENTITYSPORT_URL)?.value ||
+    "https://es.deployed.live";
 
   const getEntityEventStatus = (status) => {
     const statusLower = String(status).toLowerCase();
@@ -189,7 +190,7 @@ export default function ImportEntityEvent() {
             page: currentPage == 0 ? 1 : currentPage,
             limit: pageSize,
             timezone: dateType.value,
-            pre_squad: isSquadSelectedOption 
+            pre_squad: isSquadSelectedOption === "Select" ? null : isSquadSelectedOption 
           };
           //status filter if selected - server-side filtering for Entity Event Import
           if (
@@ -490,7 +491,7 @@ export default function ImportEntityEvent() {
     setSelectedFilter(getDefaultFilter(selectedLevel.level));
     setSelectedFormateOption(0)
     setDateType({ label: "Local Timezone", value: 'IST: +5:30' })
-    setIsSquadSelectedOption(true)
+    setIsSquadSelectedOption('true')
     setCurrentPage(0);
     setIsFilter((pre) => !pre)
   };
@@ -824,8 +825,8 @@ export default function ImportEntityEvent() {
                   styles={{
                     control: (provided) => ({ ...provided, width: 140 }),
                   }}
-                  value={isSquadOptions.find((option) => option.value === isSquadSelectedOption)}
-                  onChange={(e) => setIsSquadSelectedOption(e?.value)}
+                  value={isSquadOptions.find((option) => option.value === isSquadSelectedOption) || isSquadOptions[0]}
+                  onChange={(e) => setIsSquadSelectedOption(e?.value === "Select" ? null : e?.value)}
                   options={isSquadOptions}
                   placeholder="Is Squad"
                   classNamePrefix="filter-dropdown"

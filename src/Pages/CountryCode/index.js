@@ -267,7 +267,7 @@ const Index = () => {
       title: "Code",
       dataIndex: "countryCode",
       key: "countryCode",
-      style: { width: "2%", textAlign: "left" },
+      style: { width: "5%", textAlign: "center" },
       sort: true,
     },
     {
@@ -293,7 +293,7 @@ const Index = () => {
       //   </span>
       // ),
       key: "timezone",
-      style: { width: "2%", textAlign: "center" },
+      style: { width: "5%", textAlign: "center" },
       sort: true,
     },
     {

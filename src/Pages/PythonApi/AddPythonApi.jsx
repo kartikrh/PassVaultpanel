@@ -107,10 +107,7 @@ const AddPythonAPI = () => {
         const { name, type } = field;
         if (!name) return;
 
-        let value = dataToSave[name];
-        if (value === "" || value === undefined) {
-          value = null;
-        }
+        const value = dataToSave[name];
 
         if (type === SELECT) {
           completeData[name] = value ?? 0;
