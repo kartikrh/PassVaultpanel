@@ -387,7 +387,7 @@ const Index = () => {
     }
     fetchData();
     fetchEventTypeData()
-  }, []);
+  }, [permissionObj]);
 
   const handleReload = (value) => {
     fetchData();

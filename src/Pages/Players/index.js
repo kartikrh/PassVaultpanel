@@ -489,7 +489,7 @@ const Index = () => {
     fetchData();
     fetchEventTypeData()
     fetchTeamsData()
-  }, []);
+  }, [permissionObj]);
 
   const handleReload = (value) => {
     fetchData();

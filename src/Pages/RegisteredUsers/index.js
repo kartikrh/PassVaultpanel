@@ -8,7 +8,7 @@ import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
-import { isEqual } from "lodash";
+import { isEqual, isEmpty } from "lodash";
 import {
   ERROR,
   MODULE_CLIENTS,
@@ -224,7 +224,6 @@ const Index = () => {
       dataIndex: "createdDate",
       render: (text, record) => (
         <span>
-          {console.log("record", record)}
           {dateType?.value == 1
             ? convertDateUTCToLocal2(text, "index")
             : convertDateUtcFormat(text, "index")}
@@ -564,11 +563,11 @@ const Index = () => {
       });
   };
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard");
     }
     fetchData();
-  }, []);
+  }, [permissionObj]);
 
   const handleReload = (value) => {
     fetchData();

@@ -281,7 +281,7 @@ const Index = () => {
       navigate("/dashboard")
     }
     fetchData();
-  }, []);
+  }, [permissionObj]);
 
   const handleReload = (value) => {
     fetchData();
