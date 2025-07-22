@@ -24,7 +24,7 @@ import MatchCard from "./MatchCard";
 
 export default function ImportEntity() {
   const pageName = TAB_IMPORT_ENTITYIMPORT;
-  document.title = "Import EntityImport";
+  document.title = "Entity Competition import";
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   const navigate = useNavigate();

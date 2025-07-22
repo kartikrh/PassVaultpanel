@@ -8,7 +8,7 @@ import DeleteTabModel from "../../components/Model/DeleteModel";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
-import { isEqual } from "lodash";
+import { isEqual, isEmpty } from "lodash";
 import { TAB_PLAYERS, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, ERROR, MODULE_PLAYERS, } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
@@ -483,13 +483,13 @@ const Index = () => {
   };
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard")
     }
     fetchData();
     fetchEventTypeData()
     fetchTeamsData()
-  }, []);
+  }, [permissionObj]);
 
   const handleReload = (value) => {
     fetchData();

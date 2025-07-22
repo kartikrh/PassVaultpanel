@@ -6,7 +6,7 @@ import {
   ERROR,
   SUCCESS,
   PERMISSION_VIEW,
-  WHITE_LABEL_EVENT_DATA,
+  WHITE_LABEL,
   MODULE_WHITE_LABEL_SHOW_HIDE,
 } from "../../../components/Common/Const";
 import {
@@ -32,7 +32,7 @@ const HideEventType = {
 
 export const ShowHide = () => {
   const [data, setData] = useState([]);
-  const pageName = WHITE_LABEL_EVENT_DATA;
+  const pageName = WHITE_LABEL;
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
   // const [isLoading, setIsLoading] = useState(false);
@@ -144,7 +144,7 @@ export const ShowHide = () => {
               type: SUCCESS,
             })
           );
-          fetchData(); // Refresh data
+          fetchData();
         })
         .catch((error) => {
           dispatch(
@@ -172,7 +172,7 @@ export const ShowHide = () => {
               type: SUCCESS,
             })
           );
-          fetchData(); // Refresh data
+          fetchData();
         })
         .catch((error) => {
           dispatch(
@@ -194,7 +194,6 @@ export const ShowHide = () => {
       value: { ...selectedLevel },
     };
 
-    // eslint-disable-next-line default-case
     switch (nextLevel) {
       case "competition":
         newSelectedLevel = {
@@ -217,7 +216,7 @@ export const ShowHide = () => {
     const newHistory = [...navigationHistory, currentRecord];
     setNavigationHistory(newHistory);
     setSelectedLevel(newSelectedLevel);
-    setData([]); // Clear current data
+    setData([]);
   };
 
   const handleBreadcrumbClick = (value) => {
@@ -226,7 +225,7 @@ export const ShowHide = () => {
     historyList = index === -1 ? [] : historyList.slice(0, index + 1);
     setNavigationHistory(historyList);
     setSelectedLevel(value);
-    setData([]); // Clear current data
+    setData([]);
   };
 
   const handleLoadData = async (password) => {

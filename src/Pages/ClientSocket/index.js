@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
-import { isEqual } from "lodash";
+import { isEqual, isEmpty } from "lodash";
 import { ERROR, MODULE_CLIENT_SOCKETS, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, TAB_ClientSocket } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
@@ -317,11 +317,11 @@ const Index = () => {
   };
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard")
     }
     fetchData();
-  }, []);
+  }, [permissionObj]);
 
   const handleReload = (value) => {
     fetchData();

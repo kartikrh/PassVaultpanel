@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import LoadDataModal from "../../components/Model/LoadDataModal";
+import { isEmpty } from "lodash";
 
 const Index = () => {
   const pageName = TAB_MARKET_TYPE;
@@ -70,7 +71,7 @@ const Index = () => {
   };
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard");
     }
     fetchData();

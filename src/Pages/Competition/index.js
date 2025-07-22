@@ -904,14 +904,14 @@ const Index = () => {
   };
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard");
     }
     fetchData();
     fetchEventTypeData();
     fetchMatchTypeData();
     fetchPythonAPIData();
-  }, []);
+  }, [permissionObj]);
 
   const handleReload = (value) => {
     fetchData();

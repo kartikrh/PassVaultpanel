@@ -10,7 +10,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
-import _, { isEqual } from "lodash";
+import _, { isEqual, isEmpty } from "lodash";
 import {
   ERROR,
   MODULE_MENU_LIST,
@@ -507,7 +507,7 @@ const Index = () => {
   };
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard");
     }
     fetchData();
@@ -525,7 +525,7 @@ const Index = () => {
     // })
     // )
     // dispatch()
-  }, []);
+  }, [permissionObj]);
 
   useEffect(() => {
     fetchData();
