@@ -52,6 +52,7 @@ export const TAB_EVENT = "Events";
 export const TAB_IMPORT_ENTITYIMPORT = "Entity Competition import";
 export const TAB_IMPORT_ENTITYEVENTIMPORT = "Entity Event Import";
 export const TAB_IMPORT_ENTITYTEAMIMPORT = "Entity Team Import";
+export const TAB_IMPORT_ENTITYPLAYERIMPORT = "Entity Player Import";
 export const TAB_ERROR_LOGS = "Error Logs";
 export const TAB_EVENT_TYPES = "Event Types";
 export const TAB_EVENT_HISTORY = "Event History";
