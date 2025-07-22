@@ -190,11 +190,12 @@ function AddCommentary() {
                     });
                 const selectedCompetition = competitionList.find(item => item?.competitionId == newFormData["competitionId"]);
                 if (selectedCompetition) {
-                    const { matchTypeId, drsCount, isVirtual, pythonId } = selectedCompetition;
+                    const { matchTypeId, drsCount, isVirtual, pythonId, countryId } = selectedCompetition;
                     finalizeRef1.current.updateFormFromParent({ matchTypeId });
                     finalizeRef1.current.updateFormFromParent({ isVirtual });
                     finalizeRef1.current.updateFormFromParent({ pythonId });
                     finalizeRef2.current.updateFormFromParent({ drsCount });
+                    finalizeRef3.current.updateFormFromParent({ countryId });
                 }
             } else {
                 setMasterData((preData) => ({
@@ -304,8 +305,36 @@ function AddCommentary() {
         }
     };
 
+    const handleFormDDataChange = (newFormData) => {
+        setSavedFormState({...savedFormState, ...newFormData});
+    }
+
     const handleFormCDataChange = (newFormData) => {
         setSavedFormState({...savedFormState, ...newFormData});
+        if (newFormData["countryId"] !== "0") {
+            setIsApiLoading(true);
+            axiosInstance.post('/admin/list/venueList', { countryId: (newFormData["countryId"]) })
+                .then((response) => {
+                    const resultData = fetchResult(response);
+                    // setCompetitionList(resultData);
+                    const formattedData = resultData?.map(item => {
+                        return { label: item?.name, value: item?.venueId }
+                    })
+                    setMasterData((preData) => ({
+                        ...preData,
+                        "location": formattedData,
+                    }));
+                    setIsApiLoading(false);
+                }).catch((error) => {
+                    dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+                    setIsApiLoading(false);
+                });
+        } else {
+            setMasterData((preData) => ({
+                ...preData,
+                "location": [],
+            }));
+        }
     }
 
     const fetchData = async (id) => {
@@ -372,6 +401,41 @@ function AddCommentary() {
                     }).catch((error) => {
                         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
                     });
+                await axiosInstance.post('/admin/list/venueList', { countryId: updateScreenData["countryId"] })
+                    .then((response) => {
+                        const resultData = fetchResult(response);
+                        // setCompetitionList(resultData);
+                        const formattedData = resultData?.map(item => {
+                            return { label: item?.name, value: item?.venueId }
+                        })
+                        setMasterData((preData) => ({
+                            ...preData,
+                            "location": formattedData,
+                        }));
+                        setIsApiLoading(false);
+                    }).catch((error) => {
+                        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+                        setIsApiLoading(false);
+                    });
+                // await axiosInstance
+                //     .post("/admin/list/countryList", {})
+                //     .then((response) => {
+                //         setMasterData((preData) => ({
+                //         ...preData,
+                //         countryId: response.result?.map((item) => {
+                //             return { label: item.countryName, value: item.countryId };
+                //         }),
+                //         }));
+                //     })
+                //     .catch((error) => {
+                //         dispatch(
+                //         updateToastData({
+                //             data: error?.message,
+                //             title: error?.title,
+                //             type: ERROR,
+                //         })
+                //         );
+                //     });
                 setIsFetchApiLoading(false);
             }).catch((error) => {
                 dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
@@ -464,6 +528,26 @@ function AddCommentary() {
                 dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
                 setIsApiLoading(false);
             });
+        
+        await axiosInstance
+            .post("/admin/list/countryList", {})
+            .then((response) => {
+                setMasterData((preData) => ({
+                ...preData,
+                    countryId: response.result?.map((item) => {
+                        return { label: item.countryName, value: item.countryId };
+                    }),
+                }));
+            })
+            .catch((error) => {
+                dispatch(
+                updateToastData({
+                    data: error?.message,
+                    title: error?.title,
+                    type: ERROR,
+                })
+                );
+            });
     };
 
     const handleSaveClick = async (saveAction) => {
@@ -507,8 +591,8 @@ function AddCommentary() {
             const mergedData = {
             ...dataToSave1,
             ...dataToSave2,
-            ...dataToSave3,
             ...dataToSave4,
+            ...dataToSave3,
             };
 
             const completeData = {};
@@ -686,7 +770,6 @@ function AddCommentary() {
                                                 editFormData={initialEditData}
                                                 masterData={masterData}
                                                 onFormDataChange={handleFormCDataChange}
-                                                
                                                 disabledFields={disabledFields}
                                                 pageName="Commentary"
                                             />
@@ -697,7 +780,7 @@ function AddCommentary() {
                                                 fields={PitchDetailsFields}
                                                 editFormData={initialEditData}
                                                 masterData={masterData}
-                                                onFormDataChange={handleFormCDataChange}
+                                                onFormDataChange={handleFormDDataChange}
                                                 disabledFields={disabledFields}
                                                 pageName="Commentary"
                                             />
