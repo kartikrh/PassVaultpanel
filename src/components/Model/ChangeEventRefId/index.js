@@ -48,7 +48,7 @@ export const ChangeEventRefIdModel = ({
               style={{ width: "400px", marginLeft: "8px" }}
               onChange={(e) => {
                 setSelectedEventRef({
-                  eventRefId: e.target.value,
+                  eventRefId: e.target.value || null,
                   commentaryId: selectedEventRef?.commentaryId,
                 });
               }}
