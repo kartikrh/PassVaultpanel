@@ -735,6 +735,7 @@ const Index = () => {
             type: ERROR,
           })
         );
+        setIsLoading(false);
       });
   };
   const handlePythonChange = async () => {
@@ -776,6 +777,7 @@ const Index = () => {
             type: ERROR,
           })
         );
+        setIsLoading(false);
       });
   };
   const handleChangeRunner = async () => {
@@ -876,6 +878,7 @@ const Index = () => {
             type: ERROR,
           })
         );
+        setIsLoading(false);
       });
   };
   const handleChangeEventRef = async () => {
@@ -917,6 +920,7 @@ const Index = () => {
             type: ERROR,
           })
         );
+        setIsLoading(false);
       });
   };
   const handleChangeCompitition = async () => {
@@ -960,6 +964,7 @@ const Index = () => {
             type: ERROR,
           })
         );
+        setIsLoading(false);
       });
   };
   const handleActiveInactive = async (pType, record, cState) => {

@@ -293,7 +293,7 @@ export const ShowHide = () => {
           overlayInnerStyle={{ color: "#000" }}
         >
           <Button
-            color={`${!record.isHide ? "success" : "danger"}`}
+            color={`${!record.isHide ? "primary" : "danger"}`}
             size="sm"
             className="btn"
             style={{ marginRight: "350px" }}
@@ -359,7 +359,7 @@ export const ShowHide = () => {
           overlayInnerStyle={{ color: "#000" }}
         >
           <Button
-            color={`${!record.isHide ? "success" : "danger"}`}
+            color={`${!record.isHide ? "primary" : "danger"}`}
             size="sm"
             className="btn"
             style={{ marginRight: "350px" }}
@@ -432,7 +432,7 @@ export const ShowHide = () => {
           overlayInnerStyle={{ color: "#000" }}
         >
           <Button
-            color={`${!record.isHide ? "success" : "danger"}`}
+            color={`${!record.isHide ? "primary" : "danger"}`}
             size="sm"
             className="btn"
             style={{ marginRight: "350px" }}
