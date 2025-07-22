@@ -53,7 +53,7 @@ export default function ImportEntityPlayer() {
     }
   }, [permissionObj, navigate]);
 
-  const fetchData = useCallback(async (countrycode) => {
+  const fetchData = useCallback(async () => {
     if (!permissionChecked) return;
 
     setIsLoading(true);
@@ -63,7 +63,7 @@ export default function ImportEntityPlayer() {
       const response = await axiosInstance.post(`${entitySportUrl}/admin/v3/players/search`, {
         page: currentPage === 0 ? 1 : currentPage,
         limit: pageSize,
-        country: countrycode?.value || null,
+        country: selectedCountry?.value || null,
         // search: "",
       });
 
@@ -84,6 +84,7 @@ export default function ImportEntityPlayer() {
     // navigationHistory,
     permissionChecked,
     currentPage,
+    selectedCountry,
     pageSize,
     entitySportUrl,
     dispatch
@@ -308,7 +309,6 @@ export default function ImportEntityPlayer() {
                   value={selectedCountry}
                   onChange={(selected) => {
                     setSelectedCountry(selected);
-                    fetchData(selected);
                     setCurrentPage(1);
                   }}
                   classNamePrefix="filter-dropdown"
