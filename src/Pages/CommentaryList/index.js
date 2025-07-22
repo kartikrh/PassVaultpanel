@@ -8,7 +8,7 @@ import CancelTabModel from "../../components/Model/CancelModel";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
 import { CommentaryClone } from "../../components/Model/Clone";
-import { isEqual } from "lodash";
+import { isEqual, isEmpty } from "lodash";
 import {
   ERROR,
   MODULE_COMMENTARY,
@@ -1560,11 +1560,11 @@ const Index = () => {
   };
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard");
     }
     fetchData();
-  }, [isSearch]);
+  }, [isSearch, permissionObj]);
 
   useEffect(() => {
     fetchEventTypeData();

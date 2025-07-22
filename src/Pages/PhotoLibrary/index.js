@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
 import { Button, Container } from "reactstrap";
-import _, { isEqual } from "lodash";
+import _, { isEqual,isEmpty } from "lodash";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
@@ -355,7 +355,7 @@ const Index = () => {
   };
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard");
     }
     fetchData();

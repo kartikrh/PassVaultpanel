@@ -290,12 +290,6 @@ const Index = () => {
         );
       });
   };
-  useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
-      navigate("/dashboard");
-    }
-    fetchData();
-  }, []);
 
   const handleReload = (value) => {
     fetchData();

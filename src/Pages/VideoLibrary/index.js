@@ -3,7 +3,7 @@ import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
 import { Avatar, Tooltip } from "antd";
 import { Button } from "reactstrap";
-import _, { isEqual } from "lodash";
+import _, { isEqual, isEmpty } from "lodash";
 import { Container } from "reactstrap";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import SpinnerModel from "../../components/Model/SpinnerModel";
@@ -335,7 +335,7 @@ const Index = () => {
     };
 
     useEffect(() => {
-        if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+        if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
             navigate("/dashboard")
         }
         fetchData();

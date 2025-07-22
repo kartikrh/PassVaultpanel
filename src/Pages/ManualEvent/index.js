@@ -7,11 +7,11 @@ import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
-import _ from "lodash";
+import _, {isEmpty }from "lodash";
 import {
   ERROR,
   PERMISSION_VIEW,
-  PERMISSION_DELETE,
+  // PERMISSION_DELETE,
   SUCCESS,
   TAB_MANUAL_EVENT,
 } from "../../components/Common/Const";
@@ -29,6 +29,7 @@ const Index = () => {
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   document.title =
     "Manual Events";
+  const [permissionChecked, setPermissionChecked] = useState(false);
   const [data, setData] = useState([]);
   const [checekedList, setCheckedList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -66,6 +67,7 @@ const Index = () => {
   const dispatch = useDispatch();
 
   const fetchData = async (latestValueFromTable) => {
+    if (!permissionChecked) return;
     setIsLoading(true);
     finalizeRef.current.getTableAction();
     await axiosInstance
@@ -252,8 +254,8 @@ const Index = () => {
                 countryCode: record?.countryCode || "",
                 openDate: record?.eventDate,
                 venue: record?.venue || "",
-                competitionName: tournamentObject?.competitionName || "", // Add competitionName here
-                competitionId: tournamentObject?.competitionId,
+                competitionName: tournamentObject?.competitionName || "",
+                compId: tournamentObject?.competitionId,
               });
               addData({
                 ...dataToDB,
@@ -263,8 +265,8 @@ const Index = () => {
                 countryCode: record?.countryCode || "",
                 openDate: record?.eventDate,
                 venue: record?.venue || "",
-                competitionName: tournamentObject?.competitionName || "", // Add competitionName here
-                competitionId: tournamentObject?.competitionId,
+                competitionName: tournamentObject?.competitionName || "",
+                compId: tournamentObject?.competitionId,
               });
             }
             else{
@@ -276,6 +278,7 @@ const Index = () => {
                 countryCode: record?.countryCode || "",
                 openDate: record?.eventDate,
                 venue: record?.venue || "",
+                compId: tournamentObject?.competitionId || 0,
               });
               addData({
                 ...dataToDB,
@@ -285,6 +288,7 @@ const Index = () => {
                 countryCode: record?.countryCode || "",
                 openDate: record?.eventDate,
                 venue: record?.venue || "",
+                compId: tournamentObject?.competitionId || 0,
               });
             }
           }}
@@ -395,6 +399,8 @@ const Index = () => {
               runner: record?.runner,
               rateSource: rateSource,
               categoryType: record?.categoryType,
+              competitionName: tournamentObject?.competitionName || dataToDB?.competitionName,
+              compId: tournamentObject?.competitionId || dataToDB?.competitionId,
             });
             addMarketData({
               ...dataToDB,
@@ -406,6 +412,8 @@ const Index = () => {
               runner: record?.runner,
               rateSource: rateSource,
               categoryType: record?.categoryType,
+              competitionName: tournamentObject?.competitionName || dataToDB?.competitionName,
+              compId: tournamentObject?.competitionId || dataToDB?.competitionId,
             });
           }}
         >
@@ -519,12 +527,29 @@ const Index = () => {
   };
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
-      navigate("/dashboard")
+    if (!isEmpty(permissionObj)) {
+      if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+        navigate("/dashboard");
+        return;
+      }
+      setPermissionChecked(true);
     }
-    setData([])
-    fetchData();
-  }, [selectedMarket]);
+  }, [permissionObj, navigate]);
+
+  useEffect(() => {
+    if (permissionChecked) {
+      setData([]);
+      fetchData();
+    }
+  }, [permissionChecked, selectedMarket]);
+
+  // useEffect(() => {
+  //   if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+  //     navigate("/dashboard")
+  //   }
+  //   setData([])
+  //   fetchData();
+  // }, [selectedMarket]);
 
   useEffect(() => {
     dispatch(
@@ -564,11 +589,11 @@ const Index = () => {
             changeOrderApiName="eventType"
             singleCheck={checekedList}
             reFetchData={fetchData}
-            isDeletePermission={checkPermission(
-              permissionObj,
-              pageName,
-              PERMISSION_DELETE
-            )}
+            // isDeletePermission={checkPermission(
+            //   permissionObj,
+            //   pageName,
+            //   PERMISSION_DELETE
+            // )}
             onBreadCrumbsClick={handleBreadCrumbsClick}
             breadCrumbs={selectedMarketHistory}
             showtournamentList={showtournamentList}
