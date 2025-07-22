@@ -146,7 +146,21 @@ export default function ImportEntityTeam() {
   // Column configurations
   const columns = [
     {
-      title: "Import",
+      title: (
+          <button
+            color={"primary"}
+            size="sm"
+            className="btn-primary"
+            onClick={() => {
+              addTeamData({
+              ...dataToDB,
+              tid:-1,
+            });
+            }}
+          >
+            <i className="bx bx-plus"></i>
+          </button>
+      ),
       dataIndex: "import",
       key: "import",
       style: { width: "7.5%", textAlign: "left" },
