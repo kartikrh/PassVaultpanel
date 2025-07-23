@@ -4,7 +4,7 @@ import FormBuilder from '../../components/Common/Reusables/FormBuilder';
 import { MatchDetailFields, PitchDetailsFields, TeamDetailsFields, WeatherDetailsFields } from '../../constants/FieldConst/CommentaryConst';
 import { Button, ButtonDropdown, Card, CardBody, Col, Container, DropdownItem, DropdownMenu, DropdownToggle, NavItem, NavLink, Row, TabContent, TabPane } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_COMMENTARY, SWITCH, SELECT } from '../../components/Common/Const';
+import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_COMMENTARY, TAB_COMMENTARY_LIST, SWITCH, SELECT } from '../../components/Common/Const';
 import { addCommentaryToDb, updateSavedState } from '../../Features/Tabs/commentarySlice';
 import axiosInstance from '../../Features/axios';
 import classnames from "classnames";
@@ -56,12 +56,46 @@ function AddCommentary() {
     const [competitionId, setCompetitionId] = useState(0);
     const [isFormAValid, setIsFormAValid] = useState(false);
 
+    // useEffect(() => {
+    //     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW) && !isEmpty(permissionObj)) {
+    //         navigate("/dashboard")
+    //     }
+    //     fetchMasterData()
+    // }, [permissionObj]);
+
     useEffect(() => {
-        if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW) && !isEmpty(permissionObj)) {
-            navigate("/dashboard")
-        }
-        fetchMasterData()
+      const hasCommentaryPermission = checkPermission(
+        permissionObj,
+        TAB_COMMENTARY,
+        PERMISSION_VIEW
+      );
+      const hasCommentaryListPermission = checkPermission(
+        permissionObj,
+        TAB_COMMENTARY_LIST,
+        PERMISSION_VIEW
+      );
+
+      if (
+        !hasCommentaryPermission &&
+        !hasCommentaryListPermission &&
+        !isEmpty(permissionObj)
+      ) {
+        navigate("/dashboard");
+      }
+      fetchMasterData();
     }, [permissionObj]);
+
+    // Add permission from either tab
+    const canAdd = !isEmpty(permissionObj) &&
+    (checkPermission(permissionObj, TAB_COMMENTARY, PERMISSION_ADD) ||
+    checkPermission(permissionObj, TAB_COMMENTARY_LIST, PERMISSION_ADD));
+
+    // Edit permission from either tab
+    const canEdit = !isEmpty(permissionObj) &&
+    (checkPermission(permissionObj, TAB_COMMENTARY, PERMISSION_EDIT) ||
+    checkPermission(permissionObj, TAB_COMMENTARY_LIST, PERMISSION_EDIT));
+
+    const canSaveOrClose = canAdd || canEdit;
 
     useEffect(() => {
         if (id !== "0") {
@@ -661,10 +695,15 @@ function AddCommentary() {
                                                 isOpen={drp_up}
                                                 toggle={() => setDrp_up(!drp_up)}
                                             >
-                                                <Button
+                                                {/* <Button
                                                     disabled={
                                                         !(checkPermission(permissionObj, pageName, PERMISSION_ADD) ||
                                                             checkPermission(permissionObj, pageName, PERMISSION_EDIT))}
+                                                    id="caret" color="primary" onClick={() => { handleSaveClick(SAVE_AND_CLOSE) }}>
+                                                    Save & Close
+                                                </Button> */}
+                                                <Button
+                                                    disabled={!canSaveOrClose}
                                                     id="caret" color="primary" onClick={() => { handleSaveClick(SAVE_AND_CLOSE) }}>
                                                     Save & Close
                                                 </Button>
@@ -672,10 +711,10 @@ function AddCommentary() {
                                                     <i className="mdi mdi-chevron-down" />
                                                 </DropdownToggle>
                                                 <DropdownMenu>
-                                                    {checkPermission(permissionObj, pageName, PERMISSION_EDIT)
+                                                    {canEdit 
                                                         && <DropdownItem onClick={() => { handleSaveClick(SAVE) }}>Save</DropdownItem>
                                                     }
-                                                    {checkPermission(permissionObj, pageName, PERMISSION_ADD)
+                                                    {canAdd 
                                                         && <DropdownItem onClick={() => { handleSaveClick(SAVE_AND_NEW) }}>Save & New</DropdownItem>
                                                     }
                                                 </DropdownMenu>

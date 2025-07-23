@@ -34,6 +34,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { convertObjtoFormData } from "../../components/Common/utilities";
+import { isEmpty } from "lodash";
 
 function AddNotification() {
   const pageName = TAB_NOTIFICATION;
@@ -69,11 +70,11 @@ function AddNotification() {
   },[initialEditData?.isSend])
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard");
     }
     fetchMasterData()
-  }, []);
+  }, [permissionObj]);
 
   useEffect(() => {
     if (isSaved) {

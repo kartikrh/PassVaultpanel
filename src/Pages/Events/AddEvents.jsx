@@ -23,6 +23,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import { checkPermission } from '../../components/Common/Reusables/reusableMethods';
 import { updateToastData } from "../../Features/toasterSlice";
 import moment from "moment";
+import { isEmpty } from "lodash";
 
 function AddEvents() {
   const pageName = TAB_EVENT
@@ -42,11 +43,11 @@ function AddEvents() {
   const [eventId, setEventId] = useState(location.state?.userId || "0")
   const [count, setCount] = useState(0)
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard")
     }
     fetchMasterData();
-  }, []);
+  }, [permissionObj]);
 
   useEffect(() => {
     if (eventId !== "0") {

@@ -31,6 +31,7 @@ import { convertObjtoFormData } from "../../components/Common/utilities";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { bannerFields } from "../../constants/FieldConst/BannerConst";
+import { isEmpty } from "lodash";
 
 const AddBanner = () => {
   const pageName = TAB_BANNER;
@@ -52,10 +53,10 @@ const AddBanner = () => {
   }, [bannerId]);
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard");
     }
-  }, []);
+  }, [permissionObj]);
 
   useEffect(() => {
     if (isSaved) {

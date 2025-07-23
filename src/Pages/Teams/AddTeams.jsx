@@ -22,6 +22,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import { convertObjtoFormData } from "../../components/Common/utilities";
 import { checkPermission } from '../../components/Common/Reusables/reusableMethods';
 import { updateToastData } from "../../Features/toasterSlice";
+import { isEmpty } from "lodash";
 
 const formatMultiSelectDataPlayers = (inputList) => {
   const outputList = [];
@@ -54,11 +55,11 @@ function AddTeams() {
   const [teamId, setTeamId] = useState(location.state?.userId || "0");
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard")
     }
     fetchMasterData();
-  }, []);
+  }, [permissionObj]);
 
   useEffect(() => {
     if (teamId !== "0") {

@@ -30,6 +30,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import { checkPermission, convertDateLocalToUTC } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { addVendorToDb, updateSavedState } from "../../Features/Tabs/addVendorSlice";
+import { isEmpty } from "lodash";
 
 function AddVendor() {
   const pageName = TAB_VENDOR;
@@ -48,10 +49,10 @@ function AddVendor() {
     location.state?.vendorId || "0"
   );
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard");
     }
-  }, []);
+  }, [permissionObj]);
 
   useEffect(() => {
     if (vendorId !== "0") {

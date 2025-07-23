@@ -10,7 +10,7 @@ import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
 import { Tooltip } from 'antd';
 import { oldSchoolCopy } from "../../Hooks/useCopyToClipboard";
-import { isEqual } from "lodash";
+import { isEqual,isEmpty } from "lodash";
 import { ERROR, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, TAB_USERS } from "../../components/Common/Const";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { useDispatch, useSelector } from "react-redux";
@@ -254,12 +254,12 @@ const Index = () => {
   ];
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard")
     }
     setIsLoading(true);
     fetchData();
-  }, []);
+  }, [permissionObj]);
   //elements required
   const tableElement = {
     title: "Block",
