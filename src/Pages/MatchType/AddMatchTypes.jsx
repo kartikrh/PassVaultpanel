@@ -121,7 +121,6 @@ function AddTabs() {
             setMasterData((preData) => ({
                 ...preData,
                 entityEnum: [
-                { label: "Select Module Type", value: "0" },
                 ...formattedData
                 ]
             }));
