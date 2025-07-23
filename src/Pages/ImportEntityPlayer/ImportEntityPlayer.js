@@ -165,6 +165,11 @@ export default function ImportEntityPlayer() {
     fetchData();
   };
 
+  const handleReset = () => {
+    setSelectedCountry(null)
+    setCurrentPage(1);
+  };
+
   // Column configurations
   const columns = [
     {
@@ -281,6 +286,8 @@ export default function ImportEntityPlayer() {
     isActive: false,
     isServerPagination: true,
     countryCodeSelect: true,
+    resetButton: true,
+    reloadButton: true,
   };
 
   return (
@@ -300,6 +307,7 @@ export default function ImportEntityPlayer() {
             serverTotal={total}
             setServerCurrentPage={handlePageChange}
             setServerPageSize={handlePageSizeChange}
+            handleCustomReset={handleReset}
             handleReload={handleReload}
             renderCustomFilter={() => (
               <div className="d-flex align-items-center gap-2">
