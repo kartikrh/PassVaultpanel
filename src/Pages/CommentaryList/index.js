@@ -65,7 +65,7 @@ const Index = () => {
     eventName: "",
     eventRefId: "",
   });
-  const [isSearch, setIsSearch] = useState(false);
+  const [isSearch, setIsSearch] = useState(true);
   const [dateType, setDateType] = useState({
     label: "Local Timezone",
     value: 1,
