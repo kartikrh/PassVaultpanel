@@ -17,6 +17,7 @@ import {
   SAVE_AND_NEXT,
   SUCCESS,
   TAB_COMMENTARY,
+  TAB_COMMENTARY_LIST,
   WARNING,
 } from "../../components/Common/Const";
 import axiosInstance from "../../Features/axios";
@@ -218,7 +219,10 @@ function CommentaryMaster() {
   }, [commentaryId]);
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW) && !isEmpty(permissionObj)) {
+    const hasCommentaryPermission = checkPermission(permissionObj, TAB_COMMENTARY, PERMISSION_VIEW);
+    const hasCommentaryListPermission = checkPermission(permissionObj, TAB_COMMENTARY_LIST, PERMISSION_VIEW);
+
+    if (!hasCommentaryPermission && !hasCommentaryListPermission && !isEmpty(permissionObj)) {
       navigate("/dashboard");
     }
   }, [permissionObj]); // Runs again when permissionObj updates
