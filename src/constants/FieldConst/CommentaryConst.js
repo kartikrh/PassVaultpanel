@@ -317,6 +317,30 @@ export const TeamDetailsFields = [
 
 export const WeatherDetailsFields = [
     {
+        type: SELECT,
+        name: "countryId",
+        label: "Country",
+        parentclassName: "",
+        options: [{ label: "Select a Country", value: "0" }],
+        defaultValue: "0",
+        // regex: /^[^']{1,100}$/,
+        // regexErrorMessage: "Max allowed Characters 100, No Spacial(') Character",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
+    },
+    {
+        name: "location",
+        label: "Location",
+        regex: /^.{0,100}$/,
+        options: [{ label: "Select a Location", value: "0" }],
+        defaultValue: "0",
+        // regexErrorMessage: "Max allowed Characters 100",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
+        type: SELECT,
+        // options: [],
+    },
+    {
         name: "weatherCondition",
         label: "Weather Condition",
         // isRequired: true,
@@ -379,15 +403,7 @@ export const WeatherDetailsFields = [
         fieldColspan: { xs: 12, md: 4, lg: 4 },
         type: COUNTER,
     },
-    {
-        name: "location",
-        label: "Location",
-        regex: /^.{0,100}$/,
-        regexErrorMessage: "Max allowed Characters 100",
-        labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 4, lg: 4 },
-        type: TEXT,
-    },
+    
     {
         name: "weather",
         label: "Weather",
