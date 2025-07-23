@@ -31,6 +31,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import { convertObjtoFormData } from "../../components/Common/utilities";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
+import { isEmpty } from "lodash";
 
 const AddNews = () => {
   const pageName = TAB_NEWS;
@@ -52,10 +53,10 @@ const AddNews = () => {
   }, [newsId]);
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard");
     }
-  }, []);
+  }, [permissionObj]);
 
   useEffect(() => {
     if (isSaved) {

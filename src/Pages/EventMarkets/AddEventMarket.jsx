@@ -33,6 +33,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import { updateToastData } from "../../Features/toasterSlice";
 import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import { EventMarketFields } from "../../constants/FieldConst/EventMarketConst";
+import { isEmpty } from "lodash";
 
 function AddEventMarket() {
   const pageName = TAB_EVENT_MARKETS;
@@ -57,11 +58,11 @@ function AddEventMarket() {
   const location = useLocation();
   const [id, setId] = useState(location.state?.userId || "0");
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard");
     }
     fetchMasterData();
-  }, []);
+  }, [permissionObj]);
 
   useEffect(() => {
     if (id !== "0") {

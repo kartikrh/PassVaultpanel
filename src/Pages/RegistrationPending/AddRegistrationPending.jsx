@@ -34,6 +34,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { ClientConst } from "../../constants/FieldConst/ClientConst";
+import { isEmpty } from "lodash";
 
 function AddRegistrationPending() {
   const pageName = TAB_CLIENT;
@@ -57,10 +58,10 @@ function AddRegistrationPending() {
   }, [clientId]);
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard");
     }
-  }, []);
+  }, [permissionObj]);
 
   useEffect(() => {
     if (isSaved) {

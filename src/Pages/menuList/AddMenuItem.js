@@ -40,6 +40,7 @@ import { convertObjtoFormData } from "../../components/Common/utilities";
 import { convertDateLocalToUTC } from "../../components/Common/Reusables/reusableMethods";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
+import { isEmpty } from "lodash";
 
 const AddMenuType = () => {
   const pageName = Tab_Menu_List;
@@ -69,7 +70,7 @@ const AddMenuType = () => {
   }, [menuItemId]);
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard");
     }
     if (menuItemId !== "0") {
@@ -77,7 +78,7 @@ const AddMenuType = () => {
     } else {
       setInitialFields(menuItemFields)
     }
-  }, []);
+  }, [permissionObj]);
 
   useEffect(() => {
     if (isSaved) {

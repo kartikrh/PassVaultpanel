@@ -21,6 +21,7 @@ import axiosInstance from "../../Features/axios";
 import { addUserToDb, updateSavedState } from "../../Features/Tabs/usersSlice";
 import { checkPermission } from '../../components/Common/Reusables/reusableMethods';
 import { updateToastData } from "../../Features/toasterSlice";
+import { isEmpty } from "lodash";
 
 function AddUsers() {
   const pageName = TAB_USERS
@@ -38,11 +39,11 @@ function AddUsers() {
   const [userId, setUserId] = useState(location.state?.userId || "0");
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard")
     }
     fetchMasterData();
-  }, []);
+  }, [permissionObj]);
 
   useEffect(() => {
     if (initialEditData?.eventTypeId && +initialEditData?.eventTypeId !== 0) {

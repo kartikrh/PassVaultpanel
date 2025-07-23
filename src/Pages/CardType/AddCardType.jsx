@@ -23,6 +23,7 @@ import {
 import { CardTypeFields } from '../../constants/FieldConst/CardTypeConst';
 import { addCardTypeToDB, updateSavedState } from '../../Features/Tabs/CardTypeSlice';
 import { convertObjtoFormData } from '../../components/Common/utilities';
+import { isEmpty } from 'lodash';
 
 const AddCardType = () => {
   const finalizeRef = useRef(null);
@@ -49,10 +50,10 @@ const AddCardType = () => {
   }, [id]);
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard")
     }
-  }, []);
+  }, [permissionObj]);
 
   useEffect(() => {
     if (isSaved) {
