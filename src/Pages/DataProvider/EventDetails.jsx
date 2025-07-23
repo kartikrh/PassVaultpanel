@@ -72,7 +72,7 @@ const EventDetails = () => {
 
   useEffect(() => {
     if (!isEmpty(eventDetails))
-      document.title = `View Market - ${eventDetails?.eventName} [${eventDetails?.eventId}]`;
+      document.title = `View Market - ${eventDetails?.eventName} [${eventDetails?.eventRefId ? eventDetails?.eventRefId : eventDetails?.eventId}]`;
   }, [eventDetails]);
 
   useEffect(() => {
@@ -161,8 +161,8 @@ const EventDetails = () => {
 
   useEffect(() => {
     if (
-      eventInfo.length > 0 &&
-      categories.length > 0
+      eventInfo?.length > 0 &&
+      categories?.length > 0
     ) {
       const data = groupMarkets(eventInfo);
       setMarketsGrouped(data);

@@ -656,6 +656,15 @@ const Index = () => {
     const url = new URL(window.location.origin + "/manualOddsMarket");
     window.open(url.href, "_blank");
   };
+  const handleTraderClick = (details) => {
+    console.log("details", details)
+      const url = new URL(window.location.origin + "/dataproviderMarkets");
+      sessionStorage.setItem('dataproviderEventId', "" + details?.eventRefId);
+      sessionStorage.setItem('dataproviderEventDetails', "" + JSON.stringify(details));
+      window.open(url.href, '_blank');
+      sessionStorage.removeItem("dataproviderEventId");
+      sessionStorage.removeItem("dataproviderEventDetails");
+  };
 
   const handleClone = async () => {
     if (cloneValues.name !== "" && cloneValues.refrenceId !== "") {
@@ -1901,6 +1910,26 @@ const Index = () => {
                   }}
                 >
                   C
+                </Button>
+              </Tooltip>
+              <Tooltip
+                title="Trader"
+                color={"#e8e8ea"}
+                // color="#f1734f"
+                overlayInnerStyle={{ color: "#000" }}
+              >
+                <Button
+                  // color="f1734f"
+                  style={{ backgroundColor: "#f1734f", color: "#fff", border: "#f1734f" }}
+                  size="sm"
+                  className="btn"
+                  onClick={() => {
+                    handleTraderClick(record)
+                    // setSelectedCommentaryId(record.commentaryId); // Store the commentaryId
+                    // setLoadSingleDataModelVisible(true); // Open the modal
+                  }}
+                >
+                  T
                 </Button>
               </Tooltip>
             </>
