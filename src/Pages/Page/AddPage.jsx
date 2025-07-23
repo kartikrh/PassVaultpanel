@@ -10,6 +10,7 @@ import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { checkPermission } from '../../components/Common/Reusables/reusableMethods';
 import { updateToastData } from "../../Features/toasterSlice";
+import { isEmpty } from 'lodash';
 
 const AddPage = () => {
   const pageName = TAB_PAGE
@@ -32,11 +33,11 @@ const AddPage = () => {
   }, [pageId]);
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard")
     }
     fetchMasterData()
-  }, []);
+  }, [permissionObj]);
 
   useEffect(() => {
     if (isSaved) {

@@ -58,7 +58,7 @@ function AddRegisteredUsers() {
   }, [clientId]);
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW) && isEmpty(permissionObj)) {
+    if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard");
     }
   }, [permissionObj]);

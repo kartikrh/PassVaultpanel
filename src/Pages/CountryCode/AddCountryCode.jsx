@@ -31,6 +31,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import { checkPermission, convertDateLocalToUTC } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { convertObjtoFormData } from "../../components/Common/utilities";
+import { isEmpty } from "lodash";
 
 const AddCountryCode = () => {
   const pageName = TAB_COUNTRY_CODE;
@@ -52,10 +53,10 @@ const AddCountryCode = () => {
   }, [countryCodeId]);
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard");
     }
-  }, []);
+  }, [permissionObj]);
 
   useEffect(() => {
     if (isSaved) {

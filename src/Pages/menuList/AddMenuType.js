@@ -14,6 +14,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import { convertObjtoFormData } from "../../components/Common/utilities";
 import { checkPermission } from '../../components/Common/Reusables/reusableMethods';
 import { updateToastData } from "../../Features/toasterSlice";
+import { isEmpty } from 'lodash';
 
 const AddMenuType = () => {
   const pageName = Tab_Menu_List
@@ -36,11 +37,11 @@ const AddMenuType = () => {
   }, [menuTypeId]);
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard")
     }
     fetchMasterData()
-  }, []);
+  }, [permissionObj]);
 
   useEffect(() => {
     if (isSaved) {
