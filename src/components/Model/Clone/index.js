@@ -194,7 +194,7 @@ export const MarketTemplateClone = ({cloneModelVisible, cloneValues, setCloneMod
 export const MarketTemplateMultiClone = ({cloneModelVisible, cloneValues, setCloneModelVisible, handleClone, setCloneValues, singleCheck}) => {
   const [matchType, setMatchType] = useState([]);
   const handleCloneValues = (index, event) => {
-    const { name, value } = event;
+    const { name, value } = event.target;
     const updatedCloneValues = cloneValues.map((item, i) => {
       if (i === index) {
         return { ...item, [name]: value };
@@ -242,7 +242,8 @@ export const MarketTemplateMultiClone = ({cloneModelVisible, cloneValues, setClo
               <thead>
                 <tr>
                   <th className='tournament-team-name'>Template Name</th>
-                  <th className='tournament-team-name'>Match Type</th>
+                  <th className='tournament-team-name'>Developer Name</th>
+                  {/* <th className='tournament-team-name'>Match Type</th> */}
                 </tr>
               </thead>
               <tbody>
@@ -250,6 +251,20 @@ export const MarketTemplateMultiClone = ({cloneModelVisible, cloneValues, setClo
                 <tr key={index}>
                   <td>{cloneValue.templateName}</td>
                   <td>
+                    <input
+                        type="text"
+                        className="form-control my-1"
+                        placeholder="Developer Name"
+                        value={cloneValue?.devTemplateName || ''}
+                        id={`devTemplateName-${index}`}
+                        name="devTemplateName"
+                        onChange={(event) =>
+                            handleCloneValues(index, event)
+                        }
+                        required={true}
+                    />
+                  </td>
+                  {/* <td>
                     <Select
                       classNamePrefix="select2-selection"
                       placeholder="Match Type"
@@ -268,7 +283,7 @@ export const MarketTemplateMultiClone = ({cloneModelVisible, cloneValues, setClo
                       className='my-1 multi-dropdown-width'
                       required={true}
                     />
-                  </td>
+                  </td> */}
                 </tr>
                 ))}
               </tbody>

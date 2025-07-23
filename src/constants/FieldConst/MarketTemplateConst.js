@@ -1,13 +1,11 @@
-import { COUNTER, SELECT, SWITCH, TEXT } from "../../components/Common/Const";
+import { COUNTER, MULTI_SELECT, SELECT, SWITCH, TEXT } from "../../components/Common/Const";
 
 export const MarketTemplateFileds = [
     {
-        name: "matchTypeID",
-        label: "Match Type",
-        type: SELECT,
+        name: "devTemplateName",
+        label: "Developer Name",
+        type: TEXT,
         isRequired: true,
-        options: [{ label: "Select MatchType", value: "0" }],
-        requiredErrorMessage: "Please enter name.",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
@@ -409,4 +407,21 @@ export const MarketTemplateFileds = [
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
+    {
+        name: "matchTypeID",
+        label: "Match Type",
+        type: SELECT,
+        options: [{ label: "Select MatchType", value: "0" }],
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
+    },
+    // {
+    //     name: "matchTypeID",
+    //     label: "Match Type",
+    //     type: MULTI_SELECT,
+    //     options: [{ label: "Select MatchType", value: "0" }],
+    //     showSelectAll: true,
+    //     labelColspan: { xs: 12, md: 2, lg: 2 },
+    //     fieldColspan: { xs: 12, md: 4, lg: 4 },
+    // },
 ];
