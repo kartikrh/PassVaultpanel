@@ -841,6 +841,7 @@ const Index = () => {
         <Button
           color="primary"
           size="sm"
+          style={{ backgroundColor: "#51d9e1", color: "#fff", border: "#51d9e1" }}
           className="btn"
           onClick={() => openScorecardIframe(record)}
         >
@@ -1097,7 +1098,8 @@ const Index = () => {
           overlayInnerStyle={{ color: "#000" }}
         >
           <Button
-            color={"success"}
+            // color={"success"}
+            style={{ backgroundColor: "#0055a9", color: "#fff", border: "#0055a9" }}
             size="sm"
             className="btn"
             onClick={() => {
@@ -1147,6 +1149,7 @@ const Index = () => {
         >
           <Button
             size="sm"
+            style={{ backgroundColor: "#f759bb", color: "#fff", border: "#f759bb" }}
             className="dls-button btn"
             onClick={() => {
               setDlsModalCommentary(record);
@@ -1183,7 +1186,8 @@ const Index = () => {
             overlayInnerStyle={{ color: "#000" }}
           >
             <Button
-              color={"info"}
+              // color={"info"}
+              style={{ backgroundColor: "#ad0947", color: "#fff", border: "#ad0947" }}
               size="sm"
               className="btn"
               onClick={() => {
@@ -1209,7 +1213,8 @@ const Index = () => {
             overlayInnerStyle={{ color: "#000" }}
           >
             <Button
-              color={"primary"}
+              // color={"primary"}
+              style={{ backgroundColor: "#ba9bd8", color: "#fff", border: "#ba9bd8" }}
               size="sm"
               className="btn"
               onClick={() => {
@@ -1225,7 +1230,8 @@ const Index = () => {
             overlayInnerStyle={{ color: "#000" }}
           >
             <Button
-              color={"warning"}
+              // color={"warning"}
+              style={{ backgroundColor: "#c88e8e", color: "#fff", border: "#c88e8e" }}
               size="sm"
               className="btn"
               onClick={() => {

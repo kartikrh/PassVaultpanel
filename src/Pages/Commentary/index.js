@@ -1332,6 +1332,7 @@ const Index = () => {
           color="primary"
           size="sm"
           className="btn"
+          style={{ backgroundColor: "#51d9e1", color: "#fff", border: "#51d9e1" }}
           onClick={() => openScorecardIframe(record)}
         >
           S
@@ -1698,7 +1699,7 @@ const Index = () => {
                 overlayInnerStyle={{ color: "#000" }}
               >
                 <Button
-                  color={"primary"}
+                  color={"success"}
                   size="sm"
                   className="btn"
                   onClick={() => {
@@ -1730,9 +1731,10 @@ const Index = () => {
                 overlayInnerStyle={{ color: "#000" }}
               >
                 <Button
-                  color={"primary"}
+                  // color={"primary"}
                   size="sm"
                   className="btn"
+                  style={{ backgroundColor: "#4676ff", color: "#fff", border: "#4676ff" }}
                   onClick={() => {
                     handleCommentaryMarketTemplateClickV1(record);
                   }}
@@ -1761,8 +1763,9 @@ const Index = () => {
                 overlayInnerStyle={{ color: "#000" }}
               >
                 <Button
-                  color={"primary"}
+                  // color={"primary"}
                   size="sm"
+                  style={{ backgroundColor: "#01ccc3", color: "#fff", border: "#01ccc3" }}
                   className="btn"
                   onClick={() => {
                     handlePredictorDetailsClick(record);
@@ -1831,7 +1834,8 @@ const Index = () => {
                   overlayInnerStyle={{ color: "#000" }}
                 >
                   <Button
-                    color={"danger"}
+                    // color={"danger"}
+                    style={{ backgroundColor: "#f579e0", color: "#fff", border: "#f579e0" }}
                     size="sm"
                     className="bstn"
                     onClick={() => {
@@ -1902,7 +1906,7 @@ const Index = () => {
                 overlayInnerStyle={{ color: "#000" }}
               >
                 <Button
-                  color={"warning"}
+                  color={"danger"}
                   size="sm"
                   className="btn"
                   onClick={() => {
@@ -1949,7 +1953,8 @@ const Index = () => {
           overlayInnerStyle={{ color: "#000" }}
         >
           <Button
-            color={"success"}
+            // color={"success"}
+            style={{ backgroundColor: "#0055a9", color: "#fff", border: "#0055a9" }}
             size="sm"
             className="btn"
             onClick={() => {
@@ -1999,7 +2004,8 @@ const Index = () => {
         >
           <Button
             size="sm"
-            className="dls-button btn"
+            style={{ backgroundColor: "#f759bb", color: "#fff", border: "#f759bb" }}
+            className="btn"
             onClick={() => {
               setDlsModalCommentary(record);
             }}
@@ -2087,7 +2093,8 @@ const Index = () => {
             overlayInnerStyle={{ color: "#000" }}
           >
             <Button
-              color={"info"}
+              // color={"info"}
+              style={{ backgroundColor: "#ad0947", color: "#fff", border: "#ad0947" }}
               size="sm"
               className="btn"
               onClick={() => {
@@ -2113,7 +2120,8 @@ const Index = () => {
             overlayInnerStyle={{ color: "#000" }}
           >
             <Button
-              color={"primary"}
+              // color={"primary"}
+              style={{ backgroundColor: "#ba9bd8", color: "#fff", border: "#ba9bd8" }}
               size="sm"
               className="btn"
               onClick={() => {
@@ -2129,7 +2137,8 @@ const Index = () => {
             overlayInnerStyle={{ color: "#000" }}
           >
             <Button
-              color={"info"}
+              // color={"info"}
+              style={{ backgroundColor: "#8ec8b7", color: "#fff", border: "#8ec8b7" }}
               size="sm"
               className="btn"
               onClick={() => {
@@ -2145,7 +2154,8 @@ const Index = () => {
             overlayInnerStyle={{ color: "#000" }}
           >
             <Button
-              color={"warning"}
+              // color={"warning"}
+              style={{ backgroundColor: "#c88e8e", color: "#fff", border: "#c88e8e" }}
               size="sm"
               className="btn"
               onClick={() => {
@@ -2161,7 +2171,8 @@ const Index = () => {
             overlayInnerStyle={{ color: "#000" }}
           >
             <Button
-              color={"info"}
+              // color={"info"}
+              style={{ backgroundColor: "#8e9dc8", color: "#fff", border: "#8e9dc8" }}
               size="sm"
               className="btn"
               onClick={() => {
@@ -2185,7 +2196,8 @@ const Index = () => {
           overlayInnerStyle={{ color: "#000" }}
         >
           <Button
-            color={"warning"}
+            // color={"warning"}
+            style={{ backgroundColor: "#512cb2", color: "#fff", border: "#512cb2" }}
             size="sm"
             className="btn"
             onClick={() => {
@@ -2211,6 +2223,7 @@ const Index = () => {
           <Button
             color={"secondary"}
             size="sm"
+            // style={{ backgroundColor: "#0055a9", color: "#fff", border: "#0055a9" }}
             className="btn"
             onClick={() => {
               handleShortCommentaryClick(record.commentaryId);
