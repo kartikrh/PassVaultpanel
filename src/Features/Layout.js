@@ -9,7 +9,7 @@ const initialState = {
     panelTheme: theme,
     leftSideBarType: 'default',
     topbarTheme: 'light',
-    showRightSidebar: false,
+    isRightSidebar: false,
     isMobile: false,
     showSidebar: true,
     leftMenu: false,
@@ -40,7 +40,8 @@ const layoutSlice = createSlice({
             state.topbarTheme = action.payload;
         },
         showRightSidebar: (state, action) => {
-            state.showRightSidebar = action.payload;
+            console.log(action.payload)
+            state.isRightSidebar = action.payload;
         },
         showSidebar: (state, action) => {
             state.showSidebar = action.payload;

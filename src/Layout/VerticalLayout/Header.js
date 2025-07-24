@@ -22,13 +22,20 @@ import logoLight from "../../assets/images/logo-light.png";
 // } from "../../store/actions";
 import ProfileMenu from "../../components/Common/TopbarDropdown/ProfileMenu";
 import { FormGroup, Input, Label } from "reactstrap";
-import { changeSidebarTheme } from "../../Features/Layout";
+import { changeSidebarTheme, showRightSidebar } from "../../Features/Layout";
 // import AppsDropdown from "../../components/Common/TopbarDropdown/AppsDropdown";
 
 const Header = (props) => {
   const [search, setsearch] = useState(false);
   const theme = useSelector((state) => state.layout.panelTheme);
   const dispatch = useDispatch();
+  const layoutType = useSelector((state) => state.layout.layoutType);
+  const isRightSidebar = useSelector((state) => state.layout.isRightSidebar);
+  const action = useSelector((state) => state.layout.showRightSidebarAction);
+  
+  console.log("layout", layoutType);
+  console.log("isRightSidebar", isRightSidebar);
+  console.log("action", action);
 
   function toggleFullscreen() {
     if (
@@ -188,10 +195,12 @@ const Header = (props) => {
 
             <ProfileMenu />
 
-            {/* <div
+            <div
               className="dropdown d-inline-block"
               onClick={() => {
-                props.showRightSidebarAction(!props.showRightSidebar);
+                // console.log(!isRightSidebar)
+                  console.log("4",isRightSidebar)
+                  showRightSidebar(!isRightSidebar);
               }}
             >
               <button
@@ -200,7 +209,7 @@ const Header = (props) => {
               >
                 <i className="mdi mdi-cog"></i>
               </button>
-            </div> */}
+            </div>
           </div>
         </div>
       </header>
@@ -208,5 +217,13 @@ const Header = (props) => {
   );
 };
 
+// const mapStatetoProps = (state) => {
+//   const { layoutType, showRightSidebar, leftMenu, leftSideBarType } =
+//     state.Layout;
+//   return { layoutType, showRightSidebar, leftMenu, leftSideBarType };
+// };
 
+// export default connect(mapStatetoProps, {
+//   showRightSidebar,
+// })(withTranslation()(Header));
 export default Header;

@@ -12,6 +12,7 @@ import withRouter from "../../components/Common/withRouter";
 
 //redux
 import { useSelector, useDispatch } from "react-redux";
+import { changeLayout, showRightSidebar } from "../../Features/Layout";
 
 //components
 import Navbar from "./NavBar";
@@ -22,12 +23,11 @@ import RightSidebar from "../../components/Common/RightSideBar";
 const Layout = (props) => {
   const dispatch = useDispatch();
 
-  const { topbarTheme, layoutWidth, showRightSidebar } =
-    useSelector((state) => ({
-      topbarTheme: state?.Layout.topbarTheme,
-      layoutWidth: state?.Layout.layoutWidth,
-      showRightSidebar: state?.Layout.showRightSidebar,
-    }));
+  const { topbarTheme, layoutWidth, isRightSidebar } = useSelector((state) => ({
+    topbarTheme: state?.Layout.topbarTheme,
+    layoutWidth: state?.Layout.layoutWidth,
+    isRightSidebar: state?.Layout.isRightSidebar,
+  }));
 
   /*
   document title
@@ -52,7 +52,8 @@ const Layout = (props) => {
         return;
       } else {
         //if clicked in outside of rightbar then fire action for hide rightbar
-        // dispatch(showRightSidebarAction(false));
+        console.log("3", isRightSidebar);
+        dispatch(showRightSidebar(false));
       }
     },
     [dispatch]
@@ -61,9 +62,9 @@ const Layout = (props) => {
   /*
   layout settings
   */
-  // useEffect(() => {
-  //   dispatch(changeLayout("horizontal"));
-  // }, [dispatch]);
+  useEffect(() => {
+    dispatch(changeLayout("horizontal"));
+  }, [dispatch]);
 
   useEffect(() => {
     //init body click event fot toggle rightbar
@@ -89,7 +90,6 @@ const Layout = (props) => {
 
   return (
     <React.Fragment>
-
       <div id="layout-wrapper">
         <Header
           theme={topbarTheme}
@@ -101,7 +101,7 @@ const Layout = (props) => {
         <Footer />
       </div>
 
-      {showRightSidebar ? <RightSidebar /> : null}
+      {isRightSidebar ? <RightSidebar /> : null}
     </React.Fragment>
   );
 };
@@ -113,7 +113,7 @@ Layout.propTypes = {
   children: PropTypes.object,
   layoutWidth: PropTypes.any,
   location: PropTypes.object,
-  showRightSidebar: PropTypes.any,
+  isRightSidebar: PropTypes.any,
   topbarTheme: PropTypes.any,
 };
 

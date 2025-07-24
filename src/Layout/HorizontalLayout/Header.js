@@ -5,7 +5,8 @@ import { Link } from "react-router-dom";
 
 import LanguageDropdown from "../../components/Common/TopbarDropdown/LanguageDropdown";
 import NotificationDropdown from "../../components/Common/TopbarDropdown/NotificationDropdown";
-
+import { withTranslation } from "react-i18next";
+import { connect, useSelector, useDispatch } from "react-redux";
 
 //import images
 import logoSm from "../../assets/images/logo-sm.png";
@@ -21,10 +22,12 @@ import logoLight from "../../assets/images/logo-light.png";
 
 import ProfileMenu from "../../components/Common/TopbarDropdown/ProfileMenu";
 import AppsDropdown from "../../components/Common/TopbarDropdown/AppsDropdown";
+import { showRightSidebar } from "../../Features/Layout";
 
 const Header = (props) => {
   const [search, setsearch] = useState(false);
-
+   const isRightSidebar = useSelector((state) => state.layout.isRightSidebar);
+ 
   function toggleFullscreen() {
     if (
       !document.fullscreenElement &&
@@ -166,7 +169,8 @@ const Header = (props) => {
             <div
               className="dropdown d-inline-block"
               onClick={() => {
-                props.showRightSidebarAction(!props.showRightSidebar);
+                  console.log("2",isRightSidebar)
+                showRightSidebar(!isRightSidebar);
               }}
             >
               <button
@@ -187,11 +191,20 @@ Header.propTypes = {
   changeSidebarType: PropTypes.func,
   leftMenu: PropTypes.any,
   leftSideBarType: PropTypes.any,
-  showRightSidebar: PropTypes.any,
+  isRightSidebar: PropTypes.any,
   showRightSidebarAction: PropTypes.func,
   t: PropTypes.any,
   toggleLeftmenu: PropTypes.func,
 };
 
+// const mapStatetoProps = (state) => {
+//   const { layoutType, showRightSidebar, leftMenu, leftSideBarType } =
+//     state.Layout;
+//   return { layoutType, showRightSidebar, leftMenu, leftSideBarType };
+// };
+
+// export default connect(mapStatetoProps, {
+//   showRightSidebar,
+// })(withTranslation()(Header));
 
 export default Header;

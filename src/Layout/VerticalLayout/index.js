@@ -10,7 +10,7 @@ import RightSidebar from '../../components/Common/RightSideBar';
 
 //redux
 import { useSelector, useDispatch } from "react-redux";
-
+import { changeLayout, showRightSidebar } from '../../Features/Layout';
 // import {
 //   changeLayout,
 //   changeSidebarTheme,
@@ -26,15 +26,21 @@ const Layout = props => {
     layoutWidth,
     leftSideBarType,
     topbarTheme,
-    showRightSidebar,
+    isRightSidebar,
     panelTheme,
   } = useSelector(state => ({
     leftSideBarType: state?.Layout?.leftSideBarType,
     layoutWidth: state?.Layout?.layoutWidth,
     topbarTheme: state?.Layout?.topbarTheme,
-    showRightSidebar: state?.Layout?.showRightSidebar,
+    isRightSidebar: state?.Layout?.isRightSidebar,
     panelTheme: state?.Layout?.panelTheme,
   }));
+  const state = useSelector((state) => state);
+
+  useEffect(() => {
+    console.log("Redux State Snapshot:", state);
+  }, [state]);
+
   const theme = useSelector((state) => state.layout.panelTheme);
 
   const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
@@ -55,7 +61,8 @@ const Layout = props => {
       return;
     } else {
       //if clicked in outside of rightbar then fire action for hide rightbar
-      // dispatch(showRightSidebarAction(false));
+      console.log("5", isRightSidebar)
+      dispatch(showRightSidebar(false));
     }
   }, [dispatch]);
 
@@ -73,7 +80,7 @@ const Layout = props => {
   }, []);
 
   useEffect(() => {
-    // dispatch(changeLayout("vertical"));
+    dispatch(changeLayout("vertical"));
   }, [dispatch]);
 
   useEffect(() => {
@@ -112,7 +119,8 @@ const Layout = props => {
         <div className="main-content" >{props.children}</div>
         {/* <Footer /> */}
       </div>
-      {showRightSidebar ? <RightSidebar /> : null}
+      {console.log("-----", isRightSidebar)}
+      {isRightSidebar ? <RightSidebar /> : null}
     </React.Fragment>
   );
 };
