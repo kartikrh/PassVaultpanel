@@ -407,21 +407,21 @@ export const MarketTemplateFileds = [
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
-    {
-        name: "matchTypeID",
-        label: "Match Type",
-        type: SELECT,
-        options: [{ label: "Select MatchType", value: "0" }],
-        labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 4, lg: 4 }
-    },
     // {
     //     name: "matchTypeID",
     //     label: "Match Type",
-    //     type: MULTI_SELECT,
+    //     type: SELECT,
     //     options: [{ label: "Select MatchType", value: "0" }],
-    //     showSelectAll: true,
     //     labelColspan: { xs: 12, md: 2, lg: 2 },
-    //     fieldColspan: { xs: 12, md: 4, lg: 4 },
+    //     fieldColspan: { xs: 12, md: 4, lg: 4 }
     // },
+    {
+        name: "matchTypeIds",
+        label: "Match Type",
+        type: MULTI_SELECT,
+        options: [],
+        showSelectAll: true,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
+    },
 ];

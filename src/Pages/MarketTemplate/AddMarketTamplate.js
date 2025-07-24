@@ -119,7 +119,7 @@ function AddMarketTemaplate() {
       .then((response) => {
         setMasterData((preData) => ({
           ...preData,
-          matchTypeID: response.result?.map((item) => {
+          matchTypeIds: response.result?.map((item) => {
             return { label: item.matchType, value: item.matchTypeId };
           }),
         }));
