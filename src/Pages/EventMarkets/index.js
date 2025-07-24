@@ -833,9 +833,9 @@ const Index = () => {
             overlayInnerStyle={{ color: "#000" }}
           >
             <Button
-              color="primary"
+              // color="primary"
               size="sm"
-              className="btn"
+              className="btn slBtn"
               onClick={() => {
                 handleSL(record);
               }}
@@ -849,9 +849,9 @@ const Index = () => {
             overlayInnerStyle={{ color: "#000" }}
           >
             <Button
-              color="primary"
+              // color="primary"
               size="sm"
-              className="btn"
+              className="btn dsBtn"
               onClick={() => {
                 handleDS(record);
               }}
@@ -865,9 +865,9 @@ const Index = () => {
             overlayInnerStyle={{ color: "#000" }}
           >
             <Button
-              color="primary"
+              // color="primary"
               size="sm"
-              className="btn mx-1"
+              className="btn mx-1 atBtn"
               onClick={() => {
                 setCloseSuspendTimeModelVisible(true);
                 setCloseSuspendTimeRecord(record);

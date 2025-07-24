@@ -154,9 +154,9 @@ export default function ImportEntityTeam() {
           overlayInnerStyle={{ color: "#000" }}
         >
           <button
-            color={"primary"}
+            // color={"primary"}
             size="sm"
-            className="btn-primary"
+            className="sucessBtn"
             onClick={() => setIsImportModalOpen(true)}
           >
             <i className="bx bx-plus"></i>
@@ -168,9 +168,9 @@ export default function ImportEntityTeam() {
       style: { width: "7.5%", textAlign: "left" },
       render: (text, record) => (
         <button
-          color={"primary"}
+          // color={"primary"}
           size="sm"
-          className="btn-primary"
+          className="sucessBtn"
           onClick={() => {
             setDataToDB({
               ...dataToDB,
