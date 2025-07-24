@@ -29,12 +29,12 @@ const Index = () => {
   const [mtAndCategories, setMtAndCategories] = useState(null);
   const [selectedMarketType, setSelectedMarketType] = useState(null);
   const [categories, setCategories] = useState([]);
-  const [cloneModelVisible, setCloneModelVisible] = useState(false);
-  const [cloneValues, setCloneValues] = useState({
-    marketTemplateId: "",
-    matchTypeID: "",
-    templateName: "",
-  });
+  // const [cloneModelVisible, setCloneModelVisible] = useState(false);
+  // const [cloneValues, setCloneValues] = useState({
+  //   marketTemplateId: "",
+  //   matchTypeID: "",
+  //   templateName: "",
+  // });
   const [multiCloneModelVisible, setMultiCloneModelVisible] = useState(false);
   const [multiCloneValues, setMultiCloneValues] = useState([]);
   const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
@@ -95,45 +95,45 @@ const Index = () => {
     }
     setCheckedList(updateSingleCheck)
   };
-  const handleClone = async () => {
-    if (cloneValues.matchTypeID !== "" && cloneValues?.templateName !== "") {
-      setIsLoading(true);
-      await axiosInstance
-        .post(`/admin/marketTemplate/clone`, {
-          marketTemplateId: checekedList?.[0],
-          ...cloneValues,
-        })
-        .then((response) => {
-          fetchData();
-          dispatch(
-            updateToastData({
-              data: response?.message,
-              title: response?.title,
-              type: SUCCESS,
-            })
-          );
-          setCloneModelVisible(false);
-        })
-        .catch((error) => {
-          setCloneModelVisible(false);
-          dispatch(
-            updateToastData({
-              data: error?.message,
-              title: error?.title,
-              type: ERROR,
-            })
-          );
-        });
-    } else {
-      dispatch(
-        updateToastData({
-          data: "MatchType is required",
-          title: "Required",
-          type: ERROR,
-        })
-      );
-    }
-  };
+  // const handleClone = async () => {
+  //   if (cloneValues.matchTypeID !== "" && cloneValues?.templateName !== "") {
+  //     setIsLoading(true);
+  //     await axiosInstance
+  //       .post(`/admin/marketTemplate/clone`, {
+  //         marketTemplateId: checekedList?.[0],
+  //         ...cloneValues,
+  //       })
+  //       .then((response) => {
+  //         fetchData();
+  //         dispatch(
+  //           updateToastData({
+  //             data: response?.message,
+  //             title: response?.title,
+  //             type: SUCCESS,
+  //           })
+  //         );
+  //         setCloneModelVisible(false);
+  //       })
+  //       .catch((error) => {
+  //         setCloneModelVisible(false);
+  //         dispatch(
+  //           updateToastData({
+  //             data: error?.message,
+  //             title: error?.title,
+  //             type: ERROR,
+  //           })
+  //         );
+  //       });
+  //   } else {
+  //     dispatch(
+  //       updateToastData({
+  //         data: "MatchType is required",
+  //         title: "Required",
+  //         type: ERROR,
+  //       })
+  //     );
+  //   }
+  // };
   const handleMultiClone = async () => {
     if (multiCloneValues && multiCloneValues?.length > 0) {
       setIsLoading(true);
@@ -378,11 +378,11 @@ const Index = () => {
             onChange={() => {
               const isChecked = checekedList.includes(record.marketTemplateId);
               handleSingleCheck(record);
-              setCloneValues({
-                marketTemplateId: record?.marketTemplateId,
-                matchTypeID: record?.matchTypeID,
-                templateName: record?.templateName,
-              });
+              // setCloneValues({
+              //   marketTemplateId: record?.marketTemplateId,
+              //   matchTypeID: record?.matchTypeID,
+              //   templateName: record?.templateName,
+              // });
               if (isChecked) {
                 setMultiCloneValues(multiCloneValues.filter(item => item.marketTemplateId !== record.marketTemplateId));
               } else {
@@ -390,6 +390,7 @@ const Index = () => {
                   marketTemplateId: record?.marketTemplateId,
                   matchTypeID: record?.matchTypeID,
                   templateName: record?.templateName,
+                  devTemplateName: record?.devTemplateName,
                 }]);
               }
             }}
@@ -412,6 +413,16 @@ const Index = () => {
         ></i>
       ),
       style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Developer",
+      dataIndex: "devTemplateName",
+      render: (text, record) => (
+        <span style={{ cursor: "pointer" }}>{text}</span>
+      ),
+      key: "devTemplateName",
+      style: { width: "70%" },
+      sort: true,
     },
     {
       title: "Match Type",
@@ -602,7 +613,7 @@ const Index = () => {
     resetButton: true,
     reloadButton: true,
     loadData: true,
-    clone: true,
+    // clone: true,
     multiClone: true,
   };
 
@@ -641,7 +652,7 @@ const Index = () => {
             dataSource={data}
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
-            cloneModelFunction={setCloneModelVisible}
+            // cloneModelFunction={setCloneModelVisible}
             multiCloneModelFunction={setMultiCloneModelVisible}
             matchType = {matchType}
             reFetchData={fetchData}
@@ -662,14 +673,14 @@ const Index = () => {
             handleDelete={handleDelete}
             singleCheck={checekedList}
           />
-          <MarketTemplateClone
+          {/* <MarketTemplateClone
             cloneModelVisible={cloneModelVisible}
             setCloneModelVisible={setCloneModelVisible}
             handleClone={handleClone}
             setCloneValues={setCloneValues}
             cloneValues={cloneValues}
             singleCheck={checekedList}
-          />
+          /> */}
           <MarketTemplateMultiClone
             cloneModelVisible={multiCloneModelVisible}
             setCloneModelVisible={setMultiCloneModelVisible}
