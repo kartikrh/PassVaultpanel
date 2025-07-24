@@ -32,7 +32,7 @@ const Header = (props) => {
   const layoutType = useSelector((state) => state.layout.layoutType);
   const isRightSidebar = useSelector((state) => state.layout.isRightSidebar);
   const action = useSelector((state) => state.layout.showRightSidebarAction);
-  
+
   console.log("layout", layoutType);
   console.log("isRightSidebar", isRightSidebar);
   console.log("action", action);
@@ -84,7 +84,7 @@ const Header = (props) => {
                 <span className="logo-sm">
                   <img src={logoSm} alt="logo-sm-dark" height="22" />
                 </span>
-                <span className="logo-lg text-black" style={{fontSize: "medium"}}>
+                <span className="logo-lg text-black" style={{ fontSize: "medium" }}>
                   <img src={logoDark} alt="logo-dark" height="24" /> <strong className="panel-name">Panel</strong>
                 </span>
               </Link>
@@ -98,17 +98,19 @@ const Header = (props) => {
                 </span>
               </Link>
             </div>
+            {!props.isHorizontalLayout && (
+              <button
+                type="button"
+                className="btn btn-sm px-3 font-size-24 header-item waves-effect"
+                id="vertical-menu-btn"
+                onClick={() => {
+                  tToggle();
+                }}
+              >
+                <i className="fa fa-fw fa-bars"></i>
+              </button>
+            )}
 
-            <button
-              type="button"
-              className="btn btn-sm px-3 font-size-24 header-item waves-effect"
-              id="vertical-menu-btn"
-              onClick={() => {
-                tToggle();
-              }}
-            >
-              <i className="ri-menu-2-line align-middle"></i>
-            </button>
 
             {/* <form className="app-search d-none d-lg-block">
               <div className="position-relative">
@@ -199,8 +201,8 @@ const Header = (props) => {
               className="dropdown d-inline-block"
               onClick={() => {
                 // console.log(!isRightSidebar)
-                  console.log("4",isRightSidebar)
-                  showRightSidebar(!isRightSidebar);
+                console.log("4", isRightSidebar)
+                showRightSidebar(!isRightSidebar);
               }}
             >
               <button

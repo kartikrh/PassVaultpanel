@@ -26,8 +26,8 @@ import { showRightSidebar } from "../../Features/Layout";
 
 const Header = (props) => {
   const [search, setsearch] = useState(false);
-   const isRightSidebar = useSelector((state) => state.layout.isRightSidebar);
- 
+  const isRightSidebar = useSelector((state) => state.layout.isRightSidebar);
+
   function toggleFullscreen() {
     if (
       !document.fullscreenElement &&
@@ -80,17 +80,16 @@ const Header = (props) => {
               </Link>
             </div>
 
-            <button
-              type="button"
-              className="btn btn-sm px-3 font-size-16 d-lg-none header-item"
-              data-toggle="collapse"
-              onClick={() => {
-                props.toggleLeftmenu(!props.leftMenu);
-              }}
-              data-target="#topnav-menu-content"
-            >
-              <i className="fa fa-fw fa-bars" />
-            </button>
+            {!props.isHorizontalLayout && (
+              <button
+                type="button"
+                className="btn btn-sm px-3 font-size-16 header-item"
+                id="vertical-menu-btn"
+                onClick={props.LanguageDropdowntoggleMenuCallback}
+              >
+                <i className="fa fa-fw fa-bars"></i>
+              </button>
+            )}
 
             <form className="app-search d-none d-lg-block">
               <div className="position-relative">
@@ -169,7 +168,7 @@ const Header = (props) => {
             <div
               className="dropdown d-inline-block"
               onClick={() => {
-                  console.log("2",isRightSidebar)
+                console.log("2", isRightSidebar)
                 showRightSidebar(!isRightSidebar);
               }}
             >

@@ -11,14 +11,7 @@ import RightSidebar from '../../components/Common/RightSideBar';
 //redux
 import { useSelector, useDispatch } from "react-redux";
 import { changeLayout, showRightSidebar } from '../../Features/Layout';
-// import {
-//   changeLayout,
-//   changeSidebarTheme,
-//   changeSidebarType,
-//   changeTopbarTheme,
-//   changeLayoutWidth,
-//   showRightSidebarAction
-// } from "../../store/actions";
+import TopBar from '../../components/Common/TopBar';
 
 const Layout = props => {
   const dispatch = useDispatch();
@@ -28,13 +21,16 @@ const Layout = props => {
     topbarTheme,
     isRightSidebar,
     panelTheme,
+    layoutType, // Add this to get current layout type
   } = useSelector(state => ({
     leftSideBarType: state?.Layout?.leftSideBarType,
     layoutWidth: state?.Layout?.layoutWidth,
     topbarTheme: state?.Layout?.topbarTheme,
     isRightSidebar: state?.Layout?.isRightSidebar,
     panelTheme: state?.Layout?.panelTheme,
+    layoutType: "horizontal", // Get layout type from redux
   }));
+
   const state = useSelector((state) => state);
 
   useEffect(() => {
@@ -45,10 +41,14 @@ const Layout = props => {
 
   const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
+  // Determine if we're using horizontal layout
+  const isHorizontalLayout = layoutType === "horizontal";
+
   const toggleMenuCallback = () => {
-    if (leftSideBarType === "default") {
+    // Only handle menu toggle for vertical layout
+    if (!isHorizontalLayout && leftSideBarType === "default") {
       // dispatch(changeSidebarType("condensed", isMobile));
-    } else if (leftSideBarType === "condensed") {
+    } else if (!isHorizontalLayout && leftSideBarType === "condensed") {
       // dispatch(changeSidebarType("default", isMobile));
     }
   };
@@ -80,7 +80,9 @@ const Layout = props => {
   }, []);
 
   useEffect(() => {
-    dispatch(changeLayout("vertical"));
+    // You can change this to switch between layouts
+    // dispatch(changeLayout("vertical"));
+    dispatch(changeLayout("horizontal")); // Set to horizontal for testing
   }, [dispatch]);
 
   useEffect(() => {
@@ -110,17 +112,30 @@ const Layout = props => {
   return (
     <React.Fragment>
       <div id="layout-wrapper">
-        <Header toggleMenuCallback={toggleMenuCallback} />
+        <Header
+          toggleMenuCallback={isHorizontalLayout ? null : toggleMenuCallback}
+          isHorizontalLayout={isHorizontalLayout}
+        />
+        {/* <TopBar /> */}
         <Sidebar
           theme={panelTheme}
           type={leftSideBarType}
           isMobile={isMobile}
+          style={isHorizontalLayout ? "horizontal" : "vertical"}
         />
-        <div className="main-content" >{props.children}</div>
+        <div
+          className="main-content"
+          style={{
+            marginLeft: isHorizontalLayout ? '0' : undefined,
+            paddingTop: isHorizontalLayout ? 'calc(70px + 55px + 20px)' : undefined
+          }}
+        >
+          {props.children}
+        </div>
         {/* <Footer /> */}
       </div>
       {console.log("-----", isRightSidebar)}
-      {isRightSidebar ? <RightSidebar /> : null}
+      <RightSidebar />
     </React.Fragment>
   );
 };
