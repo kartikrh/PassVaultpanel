@@ -138,7 +138,7 @@ const Index = () => {
     if (multiCloneValues && multiCloneValues?.length > 0) {
       setIsLoading(true);
       await axiosInstance
-        .post(`/admin/marketTemplate/multiClone`, {
+        .post(`/admin/marketTemplate/cloneMultipleTemp`, {
           marketTemplates : multiCloneValues,
         })
         .then((response) => {
@@ -151,9 +151,11 @@ const Index = () => {
             })
           );
           setMultiCloneModelVisible(false);
+          setIsLoading(false);
         })
         .catch((error) => {
           setMultiCloneModelVisible(false);
+          setIsLoading(false);
           dispatch(
             updateToastData({
               data: error?.message,
@@ -163,6 +165,7 @@ const Index = () => {
           );
         });
     } else {
+      setIsLoading(false);
       dispatch(
         updateToastData({
           data: "MatchType is required",
@@ -424,16 +427,16 @@ const Index = () => {
       style: { width: "70%" },
       sort: true,
     },
-    {
-      title: "Match Type",
-      dataIndex: "matchType",
-      render: (text, record) => (
-        <span style={{ cursor: "pointer" }}>{text}</span>
-      ),
-      key: "matchType",
-      style: { width: "20%" },
-      sort: true,
-    },
+    // {
+    //   title: "Match Type",
+    //   dataIndex: "matchType",
+    //   render: (text, record) => (
+    //     <span style={{ cursor: "pointer" }}>{text}</span>
+    //   ),
+    //   key: "matchType",
+    //   style: { width: "20%" },
+    //   sort: true,
+    // },
     {
       title: "Template",
       dataIndex: "templateName",
