@@ -503,9 +503,9 @@ export default function ImportEntityEvent() {
       width: "7.5%",
       render: (text, record) => (
         <button
-          color={"primary"}
+          // color={"primary"}
           size="sm"
-          className="btn-primary"
+          className="sucessBtn"
           onClick={() => {
             setDataToDB({
               ...dataToDB,

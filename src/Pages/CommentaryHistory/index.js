@@ -1187,9 +1187,9 @@ const Index = () => {
       printType: "ignore",
       render: (text, record) => (
         <Button
-          color="primary"
+          // color="primary"
           size="sm"
-          className="btn"
+          className="btn viewScoreCard"
           onClick={() => openScorecardIframe(record)}
         >
           S
@@ -1526,7 +1526,7 @@ const Index = () => {
                 overlayInnerStyle={{ color: "#000" }}
               >
                 <Button
-                  color={"primary"}
+                  color={"success"}
                   size="sm"
                   className="btn"
                   onClick={() => {
@@ -1558,9 +1558,9 @@ const Index = () => {
                 overlayInnerStyle={{ color: "#000" }}
               >
                 <Button
-                  color={"primary"}
+                  // color={"primary"}
                   size="sm"
-                  className="btn"
+                  className="btn createMarketTemplateBtn"
                   onClick={() => {
                     handleCommentaryMarketTemplateClickV1(record);
                   }}
@@ -1589,9 +1589,9 @@ const Index = () => {
                 overlayInnerStyle={{ color: "#000" }}
               >
                 <Button
-                  color={"primary"}
+                  // color={"primary"}
                   size="sm"
-                  className="btn"
+                  className="btn predictorApiLogsBtn"
                   onClick={() => {
                     handlePredictorDetailsClick(record);
                   }}
@@ -1730,7 +1730,7 @@ const Index = () => {
                 overlayInnerStyle={{ color: "#000" }}
               >
                 <Button
-                  color={"warning"}
+                  color={"danger"}
                   size="sm"
                   className="btn"
                   onClick={() => {
@@ -1757,9 +1757,9 @@ const Index = () => {
           overlayInnerStyle={{ color: "#000" }}
         >
           <Button
-            color={"success"}
+            // color={"success"}
             size="sm"
-            className="btn"
+            className="btn updateCommentaryBtn"
             onClick={() => {
               handleUpdateCommentaryClick(record.commentaryId);
             }}
@@ -1807,7 +1807,7 @@ const Index = () => {
         >
           <Button
             size="sm"
-            className="dls-button btn"
+            className="dlsBtn btn"
             onClick={() => {
               setDlsModalCommentary(record);
             }}
@@ -1895,9 +1895,9 @@ const Index = () => {
             overlayInnerStyle={{ color: "#000" }}
           >
             <Button
-              color={"info"}
+              // color={"info"}
               size="sm"
-              className="btn"
+              className="btn generateImageBtn"
               onClick={() => {
                 setGenerateModalData(record);
                 setIsGenerateModalOpen(true);
@@ -1921,9 +1921,9 @@ const Index = () => {
             overlayInnerStyle={{ color: "#000" }}
           >
             <Button
-              color={"primary"}
+              // color={"primary"}
               size="sm"
-              className="btn"
+              className="btn commentaryLogsBtn"
               onClick={() => {
                 handleCommentaryLogsClick(record);
               }}
@@ -1937,9 +1937,9 @@ const Index = () => {
             overlayInnerStyle={{ color: "#000" }}
           >
             <Button
-              color={"info"}
+              // color={"info"}
               size="sm"
-              className="btn"
+              className="btn scoringLogsBtn"
               onClick={() => {
                 handleScoringLogsClick(record);
               }}
@@ -1953,9 +1953,9 @@ const Index = () => {
             overlayInnerStyle={{ color: "#000" }}
           >
             <Button
-              color={"warning"}
+              // color={"warning"}
               size="sm"
-              className="btn"
+              className="btn undoLogsBtn"
               onClick={() => {
                 handleUndoLogsClick(record);
               }}
@@ -1969,9 +1969,9 @@ const Index = () => {
             overlayInnerStyle={{ color: "#000" }}
           >
             <Button
-              color={"info"}
+              // color={"info"}
               size="sm"
-              className="btn"
+              className="btn eventMarketLogsBtn"
               onClick={() => {
                 handleEventMarketLogsClick(record);
               }}
@@ -1993,9 +1993,9 @@ const Index = () => {
           overlayInnerStyle={{ color: "#000" }}
         >
           <Button
-            color={"warning"}
+            // color={"warning"}
             size="sm"
-            className="btn"
+            className="btn marketRunnerBtn"
             onClick={() => {
               handleCommentaryMarketRunnerClick(record);
             }}

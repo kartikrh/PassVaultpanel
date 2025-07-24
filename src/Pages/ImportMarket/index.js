@@ -244,9 +244,9 @@ const Index = () => {
         }`,
       render: (text, record) => (
         <button
-          color={"primary"}
+          // color={"primary"}
           size="sm"
-          className="btn-primary"
+          className="sucessBtn"
           onClick={() => {
             if(showtournamentList && tournamentObject?.competitionId != 0){
               setDataToDB({
@@ -385,9 +385,9 @@ const Index = () => {
         }`,
       render: (text, record) => (
         <button
-          color={"primary"}
+          // color={"primary"}
           size="sm"
-          className="btn-primary"
+          className="sucessBtn"
           onClick={() => {
             setDataToDB({
               ...dataToDB,

@@ -179,9 +179,9 @@ export default function ImportEntityPlayer() {
       style: { width: "7.5%", textAlign: "left" },
       render: (text, record) => (
         <button
-          color={"primary"}
+          // color={"primary"}
           size="sm"
-          className="btn-primary"
+          className="sucessBtn"
           onClick={() => {
             setDataToDB({
               ...dataToDB,
