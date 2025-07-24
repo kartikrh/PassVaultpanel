@@ -841,8 +841,7 @@ const Index = () => {
         <Button
           color="primary"
           size="sm"
-          style={{ backgroundColor: "#51d9e1", color: "#fff", border: "#51d9e1" }}
-          className="btn"
+          className="btn viewScoreCard"
           onClick={() => openScorecardIframe(record)}
         >
           S
@@ -1099,9 +1098,8 @@ const Index = () => {
         >
           <Button
             // color={"success"}
-            style={{ backgroundColor: "#0055a9", color: "#fff", border: "#0055a9" }}
             size="sm"
-            className="btn"
+            className="btn updateCommentaryBtn"
             onClick={() => {
               handleUpdateCommentaryClick(record.commentaryId);
             }}
@@ -1149,8 +1147,7 @@ const Index = () => {
         >
           <Button
             size="sm"
-            style={{ backgroundColor: "#f759bb", color: "#fff", border: "#f759bb" }}
-            className="dls-button btn"
+            className="dlsBtn btn"
             onClick={() => {
               setDlsModalCommentary(record);
             }}
@@ -1187,9 +1184,8 @@ const Index = () => {
           >
             <Button
               // color={"info"}
-              style={{ backgroundColor: "#ad0947", color: "#fff", border: "#ad0947" }}
               size="sm"
-              className="btn"
+              className="btn generateImageBtn"
               onClick={() => {
                 setGenerateModalData(record);
                 setIsGenerateModalOpen(true);
@@ -1214,9 +1210,8 @@ const Index = () => {
           >
             <Button
               // color={"primary"}
-              style={{ backgroundColor: "#ba9bd8", color: "#fff", border: "#ba9bd8" }}
               size="sm"
-              className="btn"
+              className="btn commentaryLogsBtn"
               onClick={() => {
                 handleCommentaryLogsClick(record);
               }}
@@ -1231,9 +1226,8 @@ const Index = () => {
           >
             <Button
               // color={"warning"}
-              style={{ backgroundColor: "#c88e8e", color: "#fff", border: "#c88e8e" }}
               size="sm"
-              className="btn"
+              className="btn undoLogsBtn"
               onClick={() => {
                 handleUndoLogsClick(record);
               }}
@@ -1429,23 +1423,35 @@ const Index = () => {
     //   sort: true,
     //   style: { width: "10%" },
     // },
+    {
+      title: "TPID",
+      dataIndex: "tpId",
+      key: "tpId",
+      style: { width: "10%" },
+      sort: true,
+    },
   ];
 
   const getColumns = (data) => {
     const resultColumn = {
       title: "Change Result",
       dataIndex: "result",
-      render: (text, record) => (
-        <span
-          onClick={() => {
-            setResultModelVisible(true);
-            setSelectedResult(record);
-          }}
-          style={{ cursor: "pointer" }}
-        >
-          {text} {<a className="bx bx-edit-alt"></a>}
-        </span>
-      ),
+      render: (text, record) => {
+        if (record.commentaryStatus === 4 || record.commentaryStatus === 10) {
+          return (
+            <span
+              onClick={() => {
+                setResultModelVisible(true);
+                setSelectedResult(record);
+              }}
+              style={{ cursor: "pointer" }}
+            >
+              {text} <i className="bx bx-edit-alt"></i>
+            </span>
+          );
+        }
+        return <span>{text}</span>; // fallback when condition is not met
+      },
       key: "result",
       sort: true,
       style: { width: "10%" },
@@ -1454,23 +1460,29 @@ const Index = () => {
       title: "Award",
       key: "commentaryAward",
       printType: "ignore",
-      render: (text, record) => (
-        <Tooltip
-          title={"Awards"}
-          color={"#e8e8ea"}
-          overlayInnerStyle={{ color: "#000" }}
-        >
-          <Button
-            size="sm"
-            className="award-button btn"
-            onClick={() => {
-              setShowAwardModel(record.commentaryId);
-            }}
-          >
-            <i class="bx bxs-award"></i>
-          </Button>
-        </Tooltip>
-      ),
+      render: (text, record) => {
+        if (record.commentaryStatus === 4 || record.commentaryStatus === 10) {
+          return (
+            <Tooltip
+              title="Awards"
+              color="#e8e8ea"
+              overlayInnerStyle={{ color: "#000" }}
+            >
+              <Button
+                size="sm"
+                className="award-button btn"
+                onClick={() => setShowAwardModel(record.commentaryId)}
+              >
+                <i className="bx bxs-award"></i>
+              </Button>
+            </Tooltip>
+          );
+        }
+
+        return null;
+      }
+
+      ,
       style: { width: "2%", textAlign: "center" },
     };
     const eventSnapColumn = {
@@ -1500,9 +1512,12 @@ const Index = () => {
     };
     const updatedColumn = [...columns];
 
-    if (data.some((record) => record?.commentaryStatus === 4)) {
+    if (data.some((record) => record?.commentaryStatus === 4 || record?.commentaryStatus === 10)) {
       updatedColumn.splice(6, 0, AwardColumn);
       updatedColumn.splice(7, 0, resultColumn);
+    }
+
+    if (data.some((record) => record?.commentaryStatus === 4)) {
       updatedColumn.splice(8, 0, eventSnapColumn);
     }
     return updatedColumn;

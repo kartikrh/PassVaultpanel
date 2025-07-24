@@ -586,12 +586,12 @@ const Index = () => {
       render: (text, record) => (
       <Tooltip title={"Runner"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
-          color={"primary"}
+          // color={"primary"}
           size="sm"
           disabled={
             !record.isPredefineRunnerValue
           }
-          className="btn"
+          className="btn marketTemplateBtn"
           onClick={() => {
             handleMarketTemplateRunnerClick(record?.marketTemplateId);
           }}

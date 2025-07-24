@@ -837,9 +837,9 @@ const Index = () => {
             overlayInnerStyle={{ color: "#000" }}
           >
             <Button
-              color={"primary"}
+              // color={"teamsBtn"}
               size="sm"
-              className="btn"
+              className="btn teamsBtn"
               onClick={() => {
                 handleTournament(record);
               }}
