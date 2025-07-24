@@ -333,7 +333,7 @@ const Index = () => {
       key: "image",
       render: (text, record) => (
         <Button
-          color="primary"
+          color="success"
           size="sm"
           style={{ marginRight: "300px" }}
           onClick={() => {

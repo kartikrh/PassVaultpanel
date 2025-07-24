@@ -11,6 +11,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import { convertObjtoFormData } from '../../components/Common/utilities';
 import { checkPermission } from '../../components/Common/Reusables/reusableMethods';
 import { updateToastData } from '../../Features/toasterSlice';
+import { isEmpty } from 'lodash';
 
 function AddEventType() {
     const pageName = TAB_EVENT_TYPES
@@ -32,10 +33,10 @@ function AddEventType() {
     }, [eventTypeId]);
 
     useEffect(() => {
-        if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+        if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
             navigate("/dashboard")
         }
-    }, []);
+    }, [permissionObj]);
 
     useEffect(() => {
         if (isSaved) {

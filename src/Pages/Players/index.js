@@ -359,9 +359,9 @@ const Index = () => {
         <>
           <Tooltip title={"Player History"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
             <Button
-              color={"primary"}
+              // color={"primary"}
               size="sm"
-              className="btn"
+              className="btn playerHistoryBtn"
               onClick={() => {
                 handlePlayerHistory(record);
               }}
@@ -380,9 +380,9 @@ const Index = () => {
         <>
           <Tooltip title={"Generate Image"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
             <Button
-              color={"info"}
+              // color={"info"}
               size="sm"
-              className="btn"
+              className="btn generateImageBtn"
               onClick={() => {
                 setGenerateModalData(record);
                 setIsGenerateModalOpen(true);

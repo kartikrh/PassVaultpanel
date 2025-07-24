@@ -34,6 +34,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { APIEndpointConst } from "../../constants/FieldConst/APIEndpointConst";
+import { isEmpty } from "lodash";
 
 function AddAPIEndpoint() {
   const pageName = TAB_API_ENDPOINTS;
@@ -59,10 +60,10 @@ function AddAPIEndpoint() {
   }, [apiEndPointId]);
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard");
     }
-  }, []);
+  }, [permissionObj]);
 
   useEffect(() => {
     if (isSaved) {

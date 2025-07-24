@@ -22,6 +22,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import { convertObjtoFormData } from "../../components/Common/utilities";
 import { checkPermission } from '../../components/Common/Reusables/reusableMethods';
 import { updateToastData } from "../../Features/toasterSlice";
+import { isEmpty } from "lodash";
 
 function AddClientSocket() {
   const pageName = TAB_ClientSocket
@@ -40,10 +41,10 @@ function AddClientSocket() {
   const [clientSocketId, setClientSocketId] = useState(location.state?.userId || "0");
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard")
     }
-  }, []);
+  }, [permissionObj]);
 
   useEffect(() => {
     if (clientSocketId !== "0") {

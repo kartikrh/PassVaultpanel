@@ -10,7 +10,7 @@ import axiosInstance from '../../Features/axios';
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { updateToastData } from '../../Features/toasterSlice';
 import { checkPermission } from '../../components/Common/Reusables/reusableMethods';
-import { isEqual } from 'lodash';
+import { isEqual, isEmpty } from 'lodash';
 const navigateTo = "/tabs"
 
 function AddTabs() {
@@ -30,11 +30,11 @@ function AddTabs() {
     const [id, setId] = useState(location.state?.userId || "0");
 
     useEffect(() => {
-        if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+        if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
             navigate("/dashboard")
         }
         fetchMasterData()
-    }, []);
+    }, [permissionObj]);
     useEffect(() => {
         if (id !== "0") {
             fetchData(id);

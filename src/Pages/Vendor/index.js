@@ -297,12 +297,12 @@ const Index = () => {
       render: (text, record) => (
       <Tooltip title={"View Vendor Ip List"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
-          color={"primary"}
+          // color={"primary"}
           size="sm"
           disabled={
             !record.isIPCheck
           }
-          className="btn"
+          className="btn vendorIpBtn"
           onClick={() => {
             handleVendorIpList(record);
           }}

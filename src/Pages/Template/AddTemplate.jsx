@@ -34,6 +34,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { TemplateConst } from "../../constants/FieldConst/TemplateConst";
+import { isEmpty } from "lodash";
 
 function AddTemplate() {
   const pageName = TAB_TEMPLATE;
@@ -60,10 +61,10 @@ function AddTemplate() {
   }, [templateId]);
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard");
     }
-  }, []);
+  }, [permissionObj]);
 
   useEffect(() => {
     if (isSaved) {

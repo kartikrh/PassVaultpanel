@@ -34,6 +34,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { MailSettingsConst } from "../../constants/FieldConst/MailSettingsConst";
+import { isEmpty } from "lodash";
 
 function AddMailSettings() {
   const pageName = TAB_MAIL_SETTINGS;
@@ -61,10 +62,10 @@ function AddMailSettings() {
   }, [id]);
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard");
     }
-  }, []);
+  }, [permissionObj]);
 
   useEffect(() => {
     if (isSaved) {

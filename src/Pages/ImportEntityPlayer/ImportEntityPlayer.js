@@ -165,6 +165,11 @@ export default function ImportEntityPlayer() {
     fetchData();
   };
 
+  const handleReset = () => {
+    setSelectedCountry(null)
+    setCurrentPage(1);
+  };
+
   // Column configurations
   const columns = [
     {
@@ -174,9 +179,9 @@ export default function ImportEntityPlayer() {
       style: { width: "7.5%", textAlign: "left" },
       render: (text, record) => (
         <button
-          color={"primary"}
+          // color={"primary"}
           size="sm"
-          className="btn-primary"
+          className="sucessBtn"
           onClick={() => {
             setDataToDB({
               ...dataToDB,
@@ -281,6 +286,8 @@ export default function ImportEntityPlayer() {
     isActive: false,
     isServerPagination: true,
     countryCodeSelect: true,
+    resetButton: true,
+    reloadButton: true,
   };
 
   return (
@@ -300,6 +307,7 @@ export default function ImportEntityPlayer() {
             serverTotal={total}
             setServerCurrentPage={handlePageChange}
             setServerPageSize={handlePageSizeChange}
+            handleCustomReset={handleReset}
             handleReload={handleReload}
             renderCustomFilter={() => (
               <div className="d-flex align-items-center gap-2">

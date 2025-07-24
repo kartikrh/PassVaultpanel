@@ -10,6 +10,7 @@ import axiosInstance from '../../Features/axios';
 import { updateToastData } from '../../Features/toasterSlice';
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { checkPermission } from '../../components/Common/Reusables/reusableMethods';
+import { isEmpty } from 'lodash';
 
 function AddTabs() {
     const pageName = TAB_MATCH_TYPE
@@ -33,11 +34,11 @@ function AddTabs() {
     }, [id]);
 
     useEffect(() => {
-        if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+        if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
             navigate("/dashboard")
         }
         fetchMasterData()
-    }, []);
+    }, [permissionObj]);
 
     useEffect(() => {
         if (isSaved) {
@@ -121,7 +122,6 @@ function AddTabs() {
             setMasterData((preData) => ({
                 ...preData,
                 entityEnum: [
-                { label: "Select Module Type", value: "0" },
                 ...formattedData
                 ]
             }));

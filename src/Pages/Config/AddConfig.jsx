@@ -22,6 +22,7 @@ import {
   DropdownToggle,
   Row,
 } from "reactstrap";
+import { isEmpty } from 'lodash';
 
 const AddConfig = () => {
   const finalizeRef = useRef(null);
@@ -54,10 +55,10 @@ const AddConfig = () => {
   }, [configId]);
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard")
     }
-  }, []);
+  }, [permissionObj]);
 
   useEffect(() => {
     if (isSaved) {

@@ -29,12 +29,12 @@ const Index = () => {
   const [mtAndCategories, setMtAndCategories] = useState(null);
   const [selectedMarketType, setSelectedMarketType] = useState(null);
   const [categories, setCategories] = useState([]);
-  const [cloneModelVisible, setCloneModelVisible] = useState(false);
-  const [cloneValues, setCloneValues] = useState({
-    marketTemplateId: "",
-    matchTypeID: "",
-    templateName: "",
-  });
+  // const [cloneModelVisible, setCloneModelVisible] = useState(false);
+  // const [cloneValues, setCloneValues] = useState({
+  //   marketTemplateId: "",
+  //   matchTypeID: "",
+  //   templateName: "",
+  // });
   const [multiCloneModelVisible, setMultiCloneModelVisible] = useState(false);
   const [multiCloneValues, setMultiCloneValues] = useState([]);
   const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
@@ -95,50 +95,50 @@ const Index = () => {
     }
     setCheckedList(updateSingleCheck)
   };
-  const handleClone = async () => {
-    if (cloneValues.matchTypeID !== "" && cloneValues?.templateName !== "") {
-      setIsLoading(true);
-      await axiosInstance
-        .post(`/admin/marketTemplate/clone`, {
-          marketTemplateId: checekedList?.[0],
-          ...cloneValues,
-        })
-        .then((response) => {
-          fetchData();
-          dispatch(
-            updateToastData({
-              data: response?.message,
-              title: response?.title,
-              type: SUCCESS,
-            })
-          );
-          setCloneModelVisible(false);
-        })
-        .catch((error) => {
-          setCloneModelVisible(false);
-          dispatch(
-            updateToastData({
-              data: error?.message,
-              title: error?.title,
-              type: ERROR,
-            })
-          );
-        });
-    } else {
-      dispatch(
-        updateToastData({
-          data: "MatchType is required",
-          title: "Required",
-          type: ERROR,
-        })
-      );
-    }
-  };
+  // const handleClone = async () => {
+  //   if (cloneValues.matchTypeID !== "" && cloneValues?.templateName !== "") {
+  //     setIsLoading(true);
+  //     await axiosInstance
+  //       .post(`/admin/marketTemplate/clone`, {
+  //         marketTemplateId: checekedList?.[0],
+  //         ...cloneValues,
+  //       })
+  //       .then((response) => {
+  //         fetchData();
+  //         dispatch(
+  //           updateToastData({
+  //             data: response?.message,
+  //             title: response?.title,
+  //             type: SUCCESS,
+  //           })
+  //         );
+  //         setCloneModelVisible(false);
+  //       })
+  //       .catch((error) => {
+  //         setCloneModelVisible(false);
+  //         dispatch(
+  //           updateToastData({
+  //             data: error?.message,
+  //             title: error?.title,
+  //             type: ERROR,
+  //           })
+  //         );
+  //       });
+  //   } else {
+  //     dispatch(
+  //       updateToastData({
+  //         data: "MatchType is required",
+  //         title: "Required",
+  //         type: ERROR,
+  //       })
+  //     );
+  //   }
+  // };
   const handleMultiClone = async () => {
     if (multiCloneValues && multiCloneValues?.length > 0) {
       setIsLoading(true);
       await axiosInstance
-        .post(`/admin/marketTemplate/multiClone`, {
+        .post(`/admin/marketTemplate/cloneMultipleTemp`, {
           marketTemplates : multiCloneValues,
         })
         .then((response) => {
@@ -151,9 +151,11 @@ const Index = () => {
             })
           );
           setMultiCloneModelVisible(false);
+          setIsLoading(false);
         })
         .catch((error) => {
           setMultiCloneModelVisible(false);
+          setIsLoading(false);
           dispatch(
             updateToastData({
               data: error?.message,
@@ -163,6 +165,7 @@ const Index = () => {
           );
         });
     } else {
+      setIsLoading(false);
       dispatch(
         updateToastData({
           data: "MatchType is required",
@@ -378,11 +381,11 @@ const Index = () => {
             onChange={() => {
               const isChecked = checekedList.includes(record.marketTemplateId);
               handleSingleCheck(record);
-              setCloneValues({
-                marketTemplateId: record?.marketTemplateId,
-                matchTypeID: record?.matchTypeID,
-                templateName: record?.templateName,
-              });
+              // setCloneValues({
+              //   marketTemplateId: record?.marketTemplateId,
+              //   matchTypeID: record?.matchTypeID,
+              //   templateName: record?.templateName,
+              // });
               if (isChecked) {
                 setMultiCloneValues(multiCloneValues.filter(item => item.marketTemplateId !== record.marketTemplateId));
               } else {
@@ -390,6 +393,7 @@ const Index = () => {
                   marketTemplateId: record?.marketTemplateId,
                   matchTypeID: record?.matchTypeID,
                   templateName: record?.templateName,
+                  devTemplateName: record?.devTemplateName,
                 }]);
               }
             }}
@@ -414,15 +418,25 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Match Type",
-      dataIndex: "matchType",
+      title: "Developer",
+      dataIndex: "devTemplateName",
       render: (text, record) => (
         <span style={{ cursor: "pointer" }}>{text}</span>
       ),
-      key: "matchType",
-      style: { width: "20%" },
+      key: "devTemplateName",
+      style: { width: "70%" },
       sort: true,
     },
+    // {
+    //   title: "Match Type",
+    //   dataIndex: "matchType",
+    //   render: (text, record) => (
+    //     <span style={{ cursor: "pointer" }}>{text}</span>
+    //   ),
+    //   key: "matchType",
+    //   style: { width: "20%" },
+    //   sort: true,
+    // },
     {
       title: "Template",
       dataIndex: "templateName",
@@ -575,12 +589,12 @@ const Index = () => {
       render: (text, record) => (
       <Tooltip title={"Runner"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
-          color={"primary"}
+          // color={"primary"}
           size="sm"
           disabled={
             !record.isPredefineRunnerValue
           }
-          className="btn"
+          className="btn marketTemplateBtn"
           onClick={() => {
             handleMarketTemplateRunnerClick(record?.marketTemplateId);
           }}
@@ -602,7 +616,7 @@ const Index = () => {
     resetButton: true,
     reloadButton: true,
     loadData: true,
-    clone: true,
+    // clone: true,
     multiClone: true,
   };
 
@@ -641,7 +655,7 @@ const Index = () => {
             dataSource={data}
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
-            cloneModelFunction={setCloneModelVisible}
+            // cloneModelFunction={setCloneModelVisible}
             multiCloneModelFunction={setMultiCloneModelVisible}
             matchType = {matchType}
             reFetchData={fetchData}
@@ -662,14 +676,14 @@ const Index = () => {
             handleDelete={handleDelete}
             singleCheck={checekedList}
           />
-          <MarketTemplateClone
+          {/* <MarketTemplateClone
             cloneModelVisible={cloneModelVisible}
             setCloneModelVisible={setCloneModelVisible}
             handleClone={handleClone}
             setCloneValues={setCloneValues}
             cloneValues={cloneValues}
             singleCheck={checekedList}
-          />
+          /> */}
           <MarketTemplateMultiClone
             cloneModelVisible={multiCloneModelVisible}
             setCloneModelVisible={setMultiCloneModelVisible}

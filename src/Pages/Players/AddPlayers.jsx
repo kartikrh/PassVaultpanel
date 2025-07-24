@@ -34,6 +34,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import { updateToastData } from "../../Features/toasterSlice";
 import { convertObjtoFormData } from "../../components/Common/utilities";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
+import { isEmpty } from "lodash";
 
 const formatMultiSelectDataTeams = (inputList) => {
   const outputList = [];
@@ -56,13 +57,18 @@ function AddPlayer() {
   let navigate = useNavigate();
   const location = useLocation();
   const [id, setId] = useState(location.state?.userId || "0");
+  const isPermissionLoaded = !isEmpty(permissionObj);
+  const canAdd = isPermissionLoaded && checkPermission(permissionObj, pageName, PERMISSION_ADD);
+  const canEdit = isPermissionLoaded && checkPermission(permissionObj, pageName, PERMISSION_EDIT);
+  const canSaveOrClose = canAdd || canEdit;
+
 
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (isPermissionLoaded && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard");
     }
     fetchMasterData();
-  }, []);
+  }, [permissionObj]);
 
   useEffect(() => {
     if (id !== "0") {
@@ -256,18 +262,7 @@ function AddPlayer() {
                     >
                       <Button
                         disabled={
-                          !(
-                            checkPermission(
-                              permissionObj,
-                              pageName,
-                              PERMISSION_ADD
-                            ) ||
-                            checkPermission(
-                              permissionObj,
-                              pageName,
-                              PERMISSION_EDIT
-                            )
-                          )
+                          !canSaveOrClose
                         }
                         id="caret"
                         color="primary"
@@ -281,11 +276,7 @@ function AddPlayer() {
                         <i className="mdi mdi-chevron-down" />
                       </DropdownToggle>
                       <DropdownMenu>
-                        {checkPermission(
-                          permissionObj,
-                          pageName,
-                          PERMISSION_EDIT
-                        ) && (
+                        {canEdit && (
                           <DropdownItem
                             onClick={() => {
                               handleSaveClick(SAVE);
@@ -294,11 +285,7 @@ function AddPlayer() {
                             Save
                           </DropdownItem>
                         )}
-                        {checkPermission(
-                          permissionObj,
-                          pageName,
-                          PERMISSION_ADD
-                        ) && (
+                        {canAdd && (
                           <DropdownItem
                             onClick={() => {
                               handleSaveClick(SAVE_AND_NEW);

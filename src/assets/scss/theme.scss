@@ -19,12 +19,12 @@
 // @import "./custom/rtl/components-rtl";
 // @import "./custom/rtl/pages-rtl";
 
-
 body {
   * {
     outline: none;
   }
 }
+
 
 .close {
   background: transparent;
@@ -44,4 +44,49 @@ body {
     display: none;
   }
 }
+// Variables
+$color-text-light: #fff;
 
+$btn-colors: (
+  viewScoreCard: #51d9e1,
+  predictorApiLogsBtn: #01ccc3,
+  createMarketTemplateBtn: #4676ff,
+  eventMarketBtn: #f579e0,
+  traderBtn: #f1734f,
+  updateCommentaryBtn: #0055a9,
+  dlsBtn: #f759bb,
+  generateImageBtn: #ad0947,
+  commentaryLogsBtn: #ba9bd8,
+  scoringLogsBtn: #8ec8b7,
+  undoLogsBtn: #c88e8e,
+  eventMarketLogsBtn: #8e9dc8,
+  marketRunnerBtn: #512cb2,
+  playerHistoryBtn: #889a5b,
+  snapBtn: #0d4e42,
+  marketTemplateBtn:#3eb0c2,
+  teamsBtn : #de90f8,
+  slBtn: #66277b,
+  dsBtn: #3f277b,
+  atBtn: #7b2751,
+  vendorIpBtn: #d56535,
+  sucessBtn: #0ac074
+);
+
+// Mixin for buttons
+@mixin colored-btn($color) {
+  background-color: $color !important;
+  color: $color-text-light !important;
+  border: none;
+
+  &:hover {
+    background-color: darken($color, 10%) !important;
+    cursor: pointer;
+  }
+}
+
+// Generate classes
+@each $class, $color in $btn-colors {
+  .#{$class} {
+    @include colored-btn($color);
+  }
+}

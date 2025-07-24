@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { Avatar } from "antd";
 import Table from "../../components/Common/Table";
-import { Button, Container } from "reactstrap";
+import { Container } from "reactstrap";
+import { Tooltip } from "antd";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
@@ -17,6 +18,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { loadInit } from "../../config";
+import ImportModel from "./ImportModel";
 
 export default function ImportEntityTeam() {
   const pageName = TAB_IMPORT_ENTITYTEAMIMPORT;
@@ -28,15 +30,14 @@ export default function ImportEntityTeam() {
 
   // State variables
   const [data, setData] = useState([]);
-  const [rawData, setRawData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [checekedList, setCheckedList] = useState([]);
   const loadInitData = useSelector((state) => state.loadInit.loadInitData);
   const [currentPage, setCurrentPage] = useState(1);
   const globalPageSize = parseInt(localStorage.getItem("pageSize")) || 10;
   const [pageSize, setPageSize] = useState(globalPageSize);
   const [total, setTotal] = useState(0);
   const [permissionChecked, setPermissionChecked] = useState(false);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [dataToDB, setDataToDB] = useState({});
   
   let entitySportUrl =
@@ -147,28 +148,29 @@ export default function ImportEntityTeam() {
   const columns = [
     {
       title: (
+        <Tooltip
+          title={"Import All Team"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
           <button
-            color={"primary"}
+            // color={"primary"}
             size="sm"
-            className="btn-primary"
-            onClick={() => {
-              addTeamData({
-              ...dataToDB,
-              tid:-1,
-            });
-            }}
+            className="sucessBtn"
+            onClick={() => setIsImportModalOpen(true)}
           >
             <i className="bx bx-plus"></i>
           </button>
+        </Tooltip>
       ),
       dataIndex: "import",
       key: "import",
       style: { width: "7.5%", textAlign: "left" },
       render: (text, record) => (
         <button
-          color={"primary"}
+          // color={"primary"}
           size="sm"
-          className="btn-primary"
+          className="sucessBtn"
           onClick={() => {
             setDataToDB({
               ...dataToDB,
@@ -259,7 +261,6 @@ export default function ImportEntityTeam() {
             columns={columns}
             dataSource={data}
             tableElement={tableElement}
-            singleCheck={checekedList}
             reFetchData={fetchData}
             serverCurrentPage={currentPage}
             serverPageSize={pageSize}
@@ -271,6 +272,17 @@ export default function ImportEntityTeam() {
             // handleCustomReset={handleReset}
             handleReload={handleReload}
           />
+          {isImportModalOpen && <ImportModel
+            isOpen={isImportModalOpen}
+            toggle={() => setIsImportModalOpen(!isImportModalOpen)}
+            handleImport={() => {
+                addTeamData({
+                    ...dataToDB,
+                    tid:-1,
+                });
+                setIsImportModalOpen(!isImportModalOpen);
+            }}
+          />}
         </Container>
       </div>
     </React.Fragment>

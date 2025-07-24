@@ -713,6 +713,7 @@ body[data-theme="dark"]{
                         a {
                             padding: 0.4rem 1.5rem 0.4rem 3.2rem;
                             font-size: 14px;
+                            background-color: $vertical-menu-dark-bg;
                             color: $sidebar-dark-menu-sub-item-color;
                         }
     
@@ -720,6 +721,7 @@ body[data-theme="dark"]{
                             padding: 0;
     
                             li {
+                                background: $vertical-menu-dark-bg;
                                 a {
                                     padding: 0.4rem 1.5rem 0.4rem 4.2rem;
                                     font-size: 14px;

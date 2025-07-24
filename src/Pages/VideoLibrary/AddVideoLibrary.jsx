@@ -32,6 +32,7 @@ import { convertObjtoFormData } from "../../components/Common/utilities";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { string } from "prop-types";
+import { isEmpty } from "lodash";
 
 const AddVideoLibrary = () => {
     const pageName = TAB_VIDEOLIBRARY;
@@ -53,10 +54,10 @@ const AddVideoLibrary = () => {
     }, [videoLibraryId]);
 
     useEffect(() => {
-        if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+        if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
             navigate("/dashboard");
         }
-    }, []);
+    }, [permissionObj]);
 
     useEffect(() => {
         if (isSaved) {

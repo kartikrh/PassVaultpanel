@@ -34,6 +34,7 @@ import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
+import { isEmpty } from "lodash";
 
 const fetchResult = (response) => {
   return Array.isArray(response.result) ? response?.result : [response?.result]
@@ -61,11 +62,11 @@ function AddMarketTemaplate() {
   );
   const [isOverMarket, setIsOverMarket] = useState(undefined);
   useEffect(() => {
-    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard");
     }
     fetchMasterData();
-  }, []);
+  }, [permissionObj]);
 
   useEffect(() => {
     if (marketTemplateId !== "0") {
@@ -118,7 +119,7 @@ function AddMarketTemaplate() {
       .then((response) => {
         setMasterData((preData) => ({
           ...preData,
-          matchTypeID: response.result?.map((item) => {
+          matchTypeIds: response.result?.map((item) => {
             return { label: item.matchType, value: item.matchTypeId };
           }),
         }));

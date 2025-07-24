@@ -83,7 +83,7 @@ const Index = () => {
     eventName: "",
     eventRefId: "",
   });
-  const [isSearch, setIsSearch] = useState(false);
+  const [isSearch, setIsSearch] = useState(true);
   const [dateType, setDateType] = useState({
     label: "Local Timezone",
     value: 1,
@@ -655,6 +655,14 @@ const Index = () => {
     );
     const url = new URL(window.location.origin + "/manualOddsMarket");
     window.open(url.href, "_blank");
+  };
+  const handleTraderClick = (details) => {
+      const url = new URL(window.location.origin + "/dataproviderMarkets");
+      sessionStorage.setItem('dataproviderEventId', "" + details?.eventRefId);
+      sessionStorage.setItem('dataproviderEventDetails', "" + JSON.stringify(details));
+      window.open(url.href, '_blank');
+      sessionStorage.removeItem("dataproviderEventId");
+      sessionStorage.removeItem("dataproviderEventDetails");
   };
 
   const handleClone = async () => {
@@ -1322,7 +1330,8 @@ const Index = () => {
         <Button
           color="primary"
           size="sm"
-          className="btn"
+          className="btn viewScoreCard"
+          // style={{ backgroundColor: "#51d9e1", color: "#fff", border: "#51d9e1" }}
           onClick={() => openScorecardIframe(record)}
         >
           S
@@ -1689,7 +1698,7 @@ const Index = () => {
                 overlayInnerStyle={{ color: "#000" }}
               >
                 <Button
-                  color={"primary"}
+                  color={"success"}
                   size="sm"
                   className="btn"
                   onClick={() => {
@@ -1721,9 +1730,10 @@ const Index = () => {
                 overlayInnerStyle={{ color: "#000" }}
               >
                 <Button
-                  color={"primary"}
+                  // color={"primary"}
                   size="sm"
-                  className="btn"
+                  className="btn createMarketTemplateBtn"
+                  // style={{ backgroundColor: "#4676ff", color: "#fff", border: "#4676ff" }}
                   onClick={() => {
                     handleCommentaryMarketTemplateClickV1(record);
                   }}
@@ -1752,9 +1762,10 @@ const Index = () => {
                 overlayInnerStyle={{ color: "#000" }}
               >
                 <Button
-                  color={"primary"}
+                  // color={"primary"}
                   size="sm"
-                  className="btn"
+                  // style={{ backgroundColor: "#01ccc3", color: "#fff", border: "#01ccc3" }}
+                  className="btn predictorApiLogsBtn"
                   onClick={() => {
                     handlePredictorDetailsClick(record);
                   }}
@@ -1822,9 +1833,10 @@ const Index = () => {
                   overlayInnerStyle={{ color: "#000" }}
                 >
                   <Button
-                    color={"danger"}
+                    // color={"danger"}
+                    // style={{ backgroundColor: "#f579e0", color: "#fff", border: "#f579e0" }}
                     size="sm"
-                    className="bstn"
+                    className="bstn eventMarketBtn"
                     onClick={() => {
                       handleEventMarketClick(record);
                     }}
@@ -1893,7 +1905,7 @@ const Index = () => {
                 overlayInnerStyle={{ color: "#000" }}
               >
                 <Button
-                  color={"warning"}
+                  color={"danger"}
                   size="sm"
                   className="btn"
                   onClick={() => {
@@ -1901,6 +1913,26 @@ const Index = () => {
                   }}
                 >
                   C
+                </Button>
+              </Tooltip>
+              <Tooltip
+                title="Trader"
+                color={"#e8e8ea"}
+                // color="#f1734f"
+                overlayInnerStyle={{ color: "#000" }}
+              >
+                <Button
+                  // color="f1734f"
+                  // style={{ backgroundColor: "#f1734f", color: "#fff", border: "#f1734f" }}
+                  size="sm"
+                  className="btn traderBtn"
+                  onClick={() => {
+                    handleTraderClick(record)
+                    // setSelectedCommentaryId(record.commentaryId); // Store the commentaryId
+                    // setLoadSingleDataModelVisible(true); // Open the modal
+                  }}
+                >
+                  T
                 </Button>
               </Tooltip>
             </>
@@ -1920,9 +1952,10 @@ const Index = () => {
           overlayInnerStyle={{ color: "#000" }}
         >
           <Button
-            color={"success"}
+            // color={"success"}
+            // style={{ backgroundColor: "#0055a9", color: "#fff", border: "#0055a9" }}
             size="sm"
-            className="btn"
+            className="btn updateCommentaryBtn"
             onClick={() => {
               handleUpdateCommentaryClick(record.commentaryId);
             }}
@@ -1970,7 +2003,8 @@ const Index = () => {
         >
           <Button
             size="sm"
-            className="dls-button btn"
+            // style={{ backgroundColor: "#f759bb", color: "#fff", border: "#f759bb" }}
+            className="btn dlsBtn"
             onClick={() => {
               setDlsModalCommentary(record);
             }}
@@ -2058,9 +2092,10 @@ const Index = () => {
             overlayInnerStyle={{ color: "#000" }}
           >
             <Button
-              color={"info"}
+              // color={"info"}
+              // style={{ backgroundColor: "#ad0947", color: "#fff", border: "#ad0947" }}
               size="sm"
-              className="btn"
+              className="btn generateImageBtn"
               onClick={() => {
                 setGenerateModalData(record);
                 setIsGenerateModalOpen(true);
@@ -2084,9 +2119,9 @@ const Index = () => {
             overlayInnerStyle={{ color: "#000" }}
           >
             <Button
-              color={"primary"}
+              // color={"primary"}
               size="sm"
-              className="btn"
+              className="btn commentaryLogsBtn"
               onClick={() => {
                 handleCommentaryLogsClick(record);
               }}
@@ -2100,9 +2135,10 @@ const Index = () => {
             overlayInnerStyle={{ color: "#000" }}
           >
             <Button
-              color={"info"}
+              // color={"info"}
+              // style={{ backgroundColor: "#8ec8b7", color: "#fff", border: "#8ec8b7" }}
               size="sm"
-              className="btn"
+              className="btn scoringLogsBtn"
               onClick={() => {
                 handleScoringLogsClick(record);
               }}
@@ -2116,9 +2152,10 @@ const Index = () => {
             overlayInnerStyle={{ color: "#000" }}
           >
             <Button
-              color={"warning"}
+              // color={"warning"}
+              // style={{ backgroundColor: "#c88e8e", color: "#fff", border: "#c88e8e" }}
               size="sm"
-              className="btn"
+              className="btn undoLogsBtn"
               onClick={() => {
                 handleUndoLogsClick(record);
               }}
@@ -2132,9 +2169,10 @@ const Index = () => {
             overlayInnerStyle={{ color: "#000" }}
           >
             <Button
-              color={"info"}
+              // color={"info"}
+              // style={{ backgroundColor: "#8e9dc8", color: "#fff", border: "#8e9dc8" }}
               size="sm"
-              className="btn"
+              className="btn eventMarketLogsBtn"
               onClick={() => {
                 handleEventMarketLogsClick(record);
               }}
@@ -2156,9 +2194,10 @@ const Index = () => {
           overlayInnerStyle={{ color: "#000" }}
         >
           <Button
-            color={"warning"}
+            // color={"warning"}
+            // style={{ backgroundColor: "#512cb2", color: "#fff", border: "#512cb2" }}
             size="sm"
-            className="btn"
+            className="btn marketRunnerBtn"
             onClick={() => {
               handleCommentaryMarketRunnerClick(record);
             }}
@@ -2182,6 +2221,7 @@ const Index = () => {
           <Button
             color={"secondary"}
             size="sm"
+            // style={{ backgroundColor: "#0055a9", color: "#fff", border: "#0055a9" }}
             className="btn"
             onClick={() => {
               handleShortCommentaryClick(record.commentaryId);
@@ -2365,23 +2405,36 @@ const Index = () => {
       ),
       style: { width: "2%", textAlign: "center" },
     },
+    {
+      title: "TPID",
+      dataIndex: "tpId",
+      key: "tpId",
+      style: { width: "10%" },
+      sort: true,
+    },
   ];
 
   const getColumns = (data) => {
     const resultColumn = {
       title: "Change Result",
       dataIndex: "result",
-      render: (text, record) => (
-        <span
-          onClick={() => {
-            setResultModelVisible(true);
-            setSelectedResult(record);
-          }}
-          style={{ cursor: "pointer" }}
-        >
-          {text} {<a className="bx bx-edit-alt"></a>}
-        </span>
-      ),
+      render: (text, record) => {
+        if (record.commentaryStatus === 4 || record.commentaryStatus === 10) {
+          return (
+            <span
+              onClick={() => {
+                setResultModelVisible(true);
+                setSelectedResult(record);
+              }}
+              style={{ cursor: "pointer" }}
+            >
+              {text} <a className="bx bx-edit-alt"></a>
+            </span>
+          );
+        }
+
+        return null; // or return text if you want to still show plain text
+      },
       key: "result",
       sort: true,
       style: { width: "10%" },
@@ -2390,23 +2443,27 @@ const Index = () => {
       title: "Award",
       key: "commentaryAward",
       printType: "ignore",
-      render: (text, record) => (
-        <Tooltip
-          title={"Awards"}
-          color={"#e8e8ea"}
-          overlayInnerStyle={{ color: "#000" }}
-        >
-          <Button
-            size="sm"
-            className="award-button btn"
-            onClick={() => {
-              setShowAwardModel(record.commentaryId);
-            }}
-          >
-            <i class="bx bxs-award"></i>
-          </Button>
-        </Tooltip>
-      ),
+      render: (text, record) => {
+        if (record.commentaryStatus === 4 || record.commentaryStatus === 10) {
+          return (
+            <Tooltip
+              title="Awards"
+              color="#e8e8ea"
+              overlayInnerStyle={{ color: "#000" }}
+            >
+              <Button
+                size="sm"
+                className="award-button btn"
+                onClick={() => setShowAwardModel(record.commentaryId)}
+              >
+                <i className="bx bxs-award"></i>
+              </Button>
+            </Tooltip>
+          );
+        }
+
+        return null;
+      },
       style: { width: "2%", textAlign: "center" },
     };
     const eventSnapColumn = {
@@ -2436,9 +2493,12 @@ const Index = () => {
     };
     const updatedColumn = [...columns];
 
-    if (data.some((record) => record?.commentaryStatus === 4)) {
+    if (data.some((record) => record?.commentaryStatus === 4 || record?.commentaryStatus === 10)) {
       updatedColumn.splice(6, 0, AwardColumn);
       updatedColumn.splice(7, 0, resultColumn);
+    }
+
+    if (data.some((record) => record?.commentaryStatus === 4)) {
       updatedColumn.splice(8, 0, eventSnapColumn);
     }
     return updatedColumn;
