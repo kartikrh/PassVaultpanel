@@ -479,7 +479,7 @@ const TournamentTeamPoints = () => {
               overlayInnerStyle={{ color: "#000" }}
             >
               <Button
-                color={"primary"}
+                color={"success"}
                 size="sm"
                 className="btn"
                 onClick={() => {
@@ -512,9 +512,9 @@ const TournamentTeamPoints = () => {
             overlayInnerStyle={{ color: "#000" }}
           >
             <Button
-              color={"primary"}
+              // color={"primary"}
               size="sm"
-              className="btn"
+              className="btn teamsBtn"
               onClick={() => {
                 handleTournamentTeam({...record, teamName: team?.label });
               }}

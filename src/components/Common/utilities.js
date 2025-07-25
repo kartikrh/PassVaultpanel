@@ -13,7 +13,7 @@ export const convertObjtoFormData2 = (obj) => {
   const formData = new FormData();
   for (const key in obj) {
     if (key === 'tpId') {
-      formData.append(key, obj[key] === null ? "" : obj[key]);
+      formData.append(key, obj[key] ? obj[key] : 0 );
     } else if (obj[key] || obj[key] === false || obj[key] === 0) {
       formData.append(key, obj[key]);
     }
