@@ -32,7 +32,7 @@ import {
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { updateToastData } from "../../Features/toasterSlice";
-import { convertObjtoFormData } from "../../components/Common/utilities";
+import { convertObjtoFormData2 } from "../../components/Common/utilities";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { isEmpty } from "lodash";
 
@@ -222,7 +222,7 @@ function AddPlayer() {
       };
       setCurrentSaveAction(saveAction);
       dispatch(
-        addPlayerToDb(convertObjtoFormData({ ...dataToSave, ...extraData }))
+        addPlayerToDb(convertObjtoFormData2({ ...dataToSave, ...extraData }))
       );
     }
   };
