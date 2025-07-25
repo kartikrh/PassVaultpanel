@@ -19,7 +19,7 @@ import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND
 import { addTeamToDb, updateSavedState } from "../../Features/Tabs/teamSlice";
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
-import { convertObjtoFormData } from "../../components/Common/utilities";
+import { convertObjtoFormData2 } from "../../components/Common/utilities";
 import { checkPermission } from '../../components/Common/Reusables/reusableMethods';
 import { updateToastData } from "../../Features/toasterSlice";
 import { isEmpty } from "lodash";
@@ -156,7 +156,7 @@ function AddTeams() {
         backgroundColor: dataToSave1?.backgroundColor ? dataToSave1.backgroundColor : "#1677FF" 
       }
       setCurrentSaveAction(saveAction);
-      dispatch(addTeamToDb(convertObjtoFormData({ ...dataToSave, ...extraData })))
+      dispatch(addTeamToDb(convertObjtoFormData2({ ...dataToSave, ...extraData })))
     }
   };
   const handleBackClick = () => {
