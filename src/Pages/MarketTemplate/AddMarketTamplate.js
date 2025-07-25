@@ -40,6 +40,11 @@ const fetchResult = (response) => {
   return Array.isArray(response.result) ? response?.result : [response?.result]
 }
 
+const formatMultiSelectMatchTypeData = (matchTypeIds) => {
+  const selectedIds = matchTypeIds && matchTypeIds.length > 0 ? matchTypeIds.map(item => item?.matchTypeId) : [];
+  return selectedIds;
+};
+
 function AddMarketTemaplate() {
   const pageName = TAB_MARKET_TEMPLATE;
   const finalizeRef = useRef(null);
@@ -99,6 +104,7 @@ function AddMarketTemaplate() {
           ...response?.result,
           create : response?.result?.create === 0 ? "0.00" : response?.result?.create,
           autoOpen :  response?.result?.autoOpen === 0 ? "0.00" : response?.result?.autoOpen,
+          matchTypeIds: formatMultiSelectMatchTypeData(response?.result?.matchTypeIds),
         }
         setInitialEditData({ ...data});
       })

@@ -1,13 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { CardHeader, Col, Container, Row } from "reactstrap";
-import { useDispatch } from "react-redux";
-import { ERROR } from "../../components/Common/Const";
+import { useDispatch, useSelector } from "react-redux";
 import axiosInstance from "../../Features/axios";
 import Table from "../../components/Common/Table";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { updateToastData } from "../../Features/toasterSlice";
-import { convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
+import { convertDateUTCToLocal, checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
+import { useNavigate } from "react-router-dom";
+import {
+  PERMISSION_VIEW,
+  TAB_EVENT_MARKETS,
+  ERROR
+} from "../../components/Common/Const";
+import { isEmpty } from "lodash";
 
 function MarketLogs() {
   const [data, setData] = useState([]);
@@ -15,12 +21,26 @@ function MarketLogs() {
   const dispatch = useDispatch();
   const eventMarketId = +sessionStorage.getItem('eventMarketLogId') || "0";
   const marketDetails = JSON.parse(sessionStorage.getItem('eventMarketLogDetails') || "{}");
+  const pageName = TAB_EVENT_MARKETS;
+  const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
+  const navigate = useNavigate();
 
+  // useEffect(() => {
+  //   if (eventMarketId !== "0") {
+  //     fetchData(eventMarketId);
+  //   }
+  // }, [eventMarketId]);
+  
   useEffect(() => {
-    if (eventMarketId !== "0") {
-      fetchData(eventMarketId);
+    if (!isEmpty(permissionObj)) {
+      if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+        navigate("/dashboard");
+      } else if (eventMarketId !== "0") {
+        fetchData(eventMarketId);
+      }
     }
-  }, [eventMarketId]);
+  }, [permissionObj, eventMarketId]);
+
 
   const fetchData = async (eventMarketId) => {
     setIsLoading(true);

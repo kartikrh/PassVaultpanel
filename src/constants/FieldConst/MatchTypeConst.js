@@ -4,6 +4,7 @@ import {
   SWITCH,
   SELECT,
   TEXT,
+  MULTI_SELECT,
 } from "../../components/Common/Const";
 
 export const MatchTypeFields = [
@@ -424,6 +425,15 @@ export const MatchTypeFields = [
     defaultValue: true,
     type: SWITCH,
     labelColspan: { xs: 12, md: 2, lg: 2 },
-    fieldColspan: { xs: 12, md: 1, lg: 1 },
+    fieldColspan: { xs: 12, md: 4, lg: 4 },
+  },
+  {
+    name: "templateIds",
+    label: "Market Template",
+    type: MULTI_SELECT,
+    options: [],
+    showSelectAll: true,
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
 ];

@@ -19,6 +19,7 @@ import { isEmpty, isEqual } from "lodash";
 import CheckBackLayPrice from "./CheckBackLayPrice";
 import {
   PERMISSION_VIEW,
+  TAB_EVENT_MARKETS,
   TAB_MARKET_DATA_LOGS,
 } from "../../components/Common/Const";
 
@@ -26,7 +27,7 @@ function MarketDataLogs() {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
-  const pageName = TAB_MARKET_DATA_LOGS;
+  const pageName = TAB_EVENT_MARKETS;
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   document.title = "Market Data Logs";
   const [category, setCategory] = useState(null);

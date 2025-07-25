@@ -27,7 +27,7 @@ const Index = ({
     try {
       setIsLoading(true);
       const response = await axiosInstance.post(
-        "/admin/competition/getTemplateByComp",
+        "/admin/competition/getMatchTypeTempByComp",
         {
           competitionId: competitionId,
         }

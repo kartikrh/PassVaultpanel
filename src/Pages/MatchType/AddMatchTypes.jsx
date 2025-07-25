@@ -12,6 +12,11 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import { checkPermission } from '../../components/Common/Reusables/reusableMethods';
 import { isEmpty } from 'lodash';
 
+const formatMultiSelectMarketTemplateData = (marketTemplateIds) => {
+  const selectedIds = marketTemplateIds && marketTemplateIds.length > 0 ? marketTemplateIds.map(item => item?.marketTemplateId) : [];
+  return selectedIds;
+};
+
 function AddTabs() {
     const pageName = TAB_MATCH_TYPE
     const finalizeRef = useRef(null);
@@ -58,7 +63,11 @@ function AddTabs() {
     const fetchData = async (id) => {
         await axiosInstance.post('/admin/matchType/byId', { matchTypeId: id })
             .then((response) => {
-                setInitialEditData(response?.result);
+                const data = {
+                    ...response?.result,
+                    templateIds: formatMultiSelectMarketTemplateData(response?.result?.templateIds),
+                }
+                setInitialEditData({ ...data});
             }).catch((error) => {
                 dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
             });
@@ -128,13 +137,29 @@ function AddTabs() {
             } else {
             console.error("Invalid response format", result);
             }
+
+            const response2 = await axiosInstance.post('/admin/list/marketTemplateList', {});
+            const result2 = response2?.result;
+
+            if (Array.isArray(result2)) {
+            const formattedMatchTypes = result2.map((item) => ({
+                label: item?.devTemplateName || item?.templateName,
+                value: item?.marketTemplateId
+            }));
+
+            setMasterData((preData) => ({
+                ...preData,
+                templateIds: formattedMatchTypes
+            }));
+            } else {
+            console.error("Invalid matchType list format", result2);
+            }
         } catch (error) {
             dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
         } finally {
             setIsApiLoading(false);
         }
     };
-
 
     return (
         <React.Fragment>
