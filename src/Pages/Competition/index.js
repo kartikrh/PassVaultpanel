@@ -627,7 +627,7 @@ const Index = () => {
                   overlayInnerStyle={{ color: "#000" }}
                 >
                   <Button
-                    color={"primary"}
+                    color={"success"}
                     size="sm"
                     className="btn"
                     onClick={() => {
