@@ -19,7 +19,7 @@ import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND
 import { addCompetitionToDb, updateSavedState } from "../../Features/Tabs/competitionSlice";
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
-import { convertObjtoFormData2 } from "../../components/Common/utilities";
+import { convertObjtoFormData } from "../../components/Common/utilities";
 import { checkPermission, convertDateLocalToUTC } from '../../components/Common/Reusables/reusableMethods';
 import { updateToastData } from "../../Features/toasterSlice";
 import { isEmpty } from "lodash";
@@ -169,7 +169,7 @@ function AddCompetitions() {
         startDate: convertDateLocalToUTC(dataToSave.startDate),
       }
       setCurrentSaveAction(saveAction);
-      dispatch(addCompetitionToDb(convertObjtoFormData2({ ...dataToSave, ...extraData })))
+      dispatch(addCompetitionToDb(convertObjtoFormData({ ...dataToSave, ...extraData })))
     }
   };
   const handleBackClick = () => {
