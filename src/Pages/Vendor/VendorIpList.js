@@ -6,7 +6,7 @@ import { Button, Card, CardBody, Col, Container, Row } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
-import { isEmpty, isEqual } from "lodash";
+import { isEqual } from "lodash";
 import {
   ERROR,
   PERMISSION_DELETE,
@@ -246,17 +246,11 @@ const VendorIpList = () => {
     resetButton: true,
   };
 
-  // useEffect(() => {
-  //   if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
-  //     navigate("/dashboard");
-  //   }
-  // }, [permissionObj]);
-
   useEffect(() => {
-    if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard");
     }
-  }, [permissionObj]);
+  }, []);
 
   useEffect(() => {
     if (vendorId !== "0") {
