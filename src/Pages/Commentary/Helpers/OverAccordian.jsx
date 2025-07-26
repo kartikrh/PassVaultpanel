@@ -13,7 +13,8 @@ import _, { isEmpty } from 'lodash';
 import { generateBallLabelFromBall } from '../functions';
 import PlayerImage from '../../../components/Common/Reusables/PlayerImage';
 import { BATTING_TEAM } from '../CommentartConst';
-import EditBallModal from '../CommentaryModels/EditBallModal';
+import { Col, Row } from 'reactstrap';
+import EditWicketDetails from '../CommentaryModels/EditWicketModal';
 
 // Styled components remain the same
 // const BallBox = styled(Box)(({ theme, balltype }) => ({
@@ -91,8 +92,11 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
     // const viewportWidth = window.innerWidth;
     const [viewportWidth, setViewportWidth] = useState();
     const [expanded, setExpanded] = useState(false);
-    const [editBallId, setEditBallId] = useState(undefined);
+    const [editWicketId, setEditWicketId] = useState(undefined);
     const [hasInitialized, setHasInitialized] = useState(false); // ✅ to track one-time init
+
+    // New state for individual over accordions within teams
+    const [overExpanded, setOverExpanded] = useState(new Map());
 
     const processedHistory = React.useMemo(() => {
         if (!overHistory?.length) return [];
@@ -163,8 +167,40 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
         }
     }, []);
 
+    // Initialize over-level accordion states - open latest 3 overs for each team
+    useEffect(() => {
+        if (groupedOvers && Object.keys(groupedOvers).length > 0) {
+            const newOverExpanded = new Map();
+
+            Object.entries(groupedOvers).forEach(([teamKey, overs]) => {
+                // Sort overs by over number descending (latest first)
+                const sortedOvers = overs.sort((a, b) => {
+                    const overNumA = parseFloat(a[0].split('_##_')[2]);
+                    const overNumB = parseFloat(b[0].split('_##_')[2]);
+                    return overNumB - overNumA;
+                });
+
+                // Open first 3 overs (latest)
+                sortedOvers.slice(0, 3).forEach(([overKey]) => {
+                    newOverExpanded.set(overKey, true);
+                });
+            });
+
+            setOverExpanded(newOverExpanded);
+        }
+    }, [groupedOvers]);
+
     const handleChange = (panel) => (event, isExpanded) => {
         setExpanded(isExpanded ? panel : false);
+    };
+
+    // Handler for individual over accordions
+    const handleOverChange = (overKey) => (event, isExpanded) => {
+        setOverExpanded(prev => {
+            const newMap = new Map(prev);
+            newMap.set(overKey, isExpanded);
+            return newMap;
+        });
     };
 
     const getPlayerDetails = (bowlerId) => {
@@ -186,55 +222,8 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
         return over || null;
     };
 
-    // const renderBall = (ball) => {
-    //     const isWicket = ball.isWicket;
-    //     const isBoundary = ball.isBoundary;
-    //     const isExtra = ball.type !== 1;
-
-    //     let ballType = 'normal';
-    //     if (isWicket) ballType = 'wicket';
-    //     else if (isBoundary) ballType = 'boundary';
-    //     else if (isExtra) ballType = 'extra';
-    //     // let displayValue = generateBallLabelFromBall(ball.type, isWicket)
-    //     //         export const BALL_TYPE_OVER_COMPLETE = 0;
-    //     // export const BALL_TYPE_REGULAR = 1;
-    //     // export const BALL_TYPE_WIDE = 2;
-    //     // export const BALL_TYPE_BYE = 3;
-    //     // export const BALL_TYPE_LEG_BYE = 4;
-    //     // export const BALL_TYPE_NO_BALL = 5;
-    //     // export const BALL_TYPE_NO_BALL_BYE = 6;
-    //     // export const BALL_TYPE_NO_BALL_LEG_BYE = 7;
-    //     // export const BALL_TYPE_PANELTY_RUN = 8;
-    //     // export const BALL_TYPE_RETIRED_HURT = 9;
-    //     // export const BALL_TYPE_BOWLER_RETIRED_HURT = 10;
-
-    //     let displayValue = ball.value;
-    //     if (isWicket) displayValue = 'W';
-    //     if (isExtra && ball.type === 2) displayValue = 'WB';
-    //     if (isExtra && ball.type === 3) displayValue = 'NB';
-    //     if (isExtra && ball.type === 4) displayValue = 'B';
-    //     if (isExtra && ball.type === 5) displayValue = 'B';
-    //     if (isExtra && ball.type === 6) displayValue = 'B';
-    //     if (isExtra && ball.type === 7) displayValue = 'NLB';
-    //     if (isExtra && ball.type === 8) displayValue = 'B';
-    //     if (isExtra && ball.type === 9) displayValue = 'B';
-    //     if (isExtra && ball.type === 10) displayValue = 'B';
-
-    //     return (
-    //         <BallBox
-    //             sx={{
-    //                 fontFamily: "'Work Sans', sans-serif", color: '#505d69'
-    //             }}
-    //             balltype={ballType}
-    //             className={isBoundary ? 'boundary' : isWicket ? 'wicket' : ''}
-    //         >
-    //             {/* {ball.type != 1 ? displayValue} */}
-    //             {displayValue}
-    //         </BallBox>
-    //     );
-    // };
-
     const generateBallfromArray = (ballArray = []) => {
+        console.log(ballArray)
         return ballArray?.map((element, index) => {
             const previousValue = ballArray[index - 1]
             const nextValue = ballArray[index + 1]
@@ -243,7 +232,7 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
             // const isBoundary = +element?.isBoundary !== 0
             const ballTypeAdd = generateBallLabelFromBall(element?.type, isWicket)
             const ballColor = isWicket ? "wicket-overball" : ballTypeAdd ? "extra-overball" : isBoundary ? "boundary-overball" : "regular-overball"
-            const ballFontColor = isWicket ? "text-white" : ballTypeAdd ? "text-white" : isBoundary ? "text-white" : "text-muted"
+            // const ballFontColor = isWicket ? "text-white" : ballTypeAdd ? "text-white" : isBoundary ? "text-white" : "text-muted"
             const ballValue = ballTypeAdd ?
                 element.value > 0 ?
                     element.value : ""
@@ -265,14 +254,20 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
             }
             const batter = getPlayerDetails(element.batterId)?.playerName
             return (
-                <div className='d-flex w-100 cursor-pointer'>
-                    <div key={`ball ${index}`} className={` d-flex justify-content-center align-items-center ${ballColor}`}
-                        onClick={() => setEditBallId(element.ballId)}>
-                        {/* return <div key={`ball ${index}`} className={`px-0.5 py-0.5 shadow-sm rounded mx-1 over-ball-display ${ballColor} ${ballFontColor}`}> */}
+                <Row className={`d-flex w-100 ${isWicket ? "cursor-pointer" : "cursor-default"}`}>
+                    <Col xs={2} md={2} lg={2}>{element.overCount}</Col>
+                    <Col xs={1} md={1} lg={1}
+                        onClick={() => {
+                            if (!isWicket) return;
+                            setEditWicketId(element.wicketId)
+                        }}
+                        className={` d-flex justify-content-center align-items-center ${ballColor}`}>
                         {displayValue}
-                    </div>
-                    <div className='mx-4 d-flex justify-content-center align-items-center'>{`To ${batter}`}</div>
-                </div>
+                    </Col>
+                    <Col xs={9} md={9} lg={9} className="px-4">
+                        {`To ${batter}`}
+                    </Col>
+                </Row>
             )
         })
     }
@@ -295,63 +290,10 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
     }, []);
 
     const renderOver = (balls, overKey, team) => {
-        const [innings, teamId, overNum] = overKey.split('_##_');
-        const overDetails = getOverDetails(overNum, innings, teamId);
-
-        const bowler = getPlayerDetails(overDetails?.bowlerId);
-
-        const sortedBalls = [...balls].sort((a, b) => b.overCount - a.overCount);
         // const viewportWidth = window.innerWidth;
         return (<>
             {viewportWidth < 578 ?
                 <OverContainer className='accordian-container'>
-                    <div className="d-flex justify-content-between w-100 px-0">
-                        <PlayerInfo>
-                            {bowler?.playerimage ?
-                                <PlayerImage
-                                    // width="30px"
-                                    playerImage={bowler?.playerimage}
-                                    jerseyImage={team.jersey}
-                                /> : <Avatar
-                                    src="/api/placeholder/48/48"
-                                    alt={bowler?.playerName || 'Bowler'}
-                                    sx={{ width: 32, height: 32 }}
-                                />
-                                // <Avatar
-                                //     src={bowler?.playerimage}
-                                //     alt={bowler?.playerName || 'Bowler'}
-                                //     sx={{ width: 32, height: 32 }}
-                                // />
-                                // : <Avatar
-                                //     src="/api/placeholder/48/48"
-                                //     alt={bowler?.playerName || 'Bowler'}
-                                //     sx={{ width: 32, height: 32 }}
-                                // />
-                            }
-                            <Box>
-                                <Typography variant="subtitle2" fontWeight="bold" noWrap sx={{
-                                    fontFamily: "'Work Sans', sans-serif", color: '#505d69'
-                                }} className='accordian-text'>
-                                    {bowler?.playerName || 'Unknown Bowler'}
-                                </Typography>
-                                <Typography variant="caption" color="text.secondary" sx={{
-                                    fontFamily: "'Work Sans', sans-serif"
-                                }} className='accordian-text'>
-                                    Over {Math.floor(parseFloat(overNum))}
-                                </Typography>
-                            </Box>
-                        </PlayerInfo>
-                        <RunsInfo>
-                            <Typography variant="subtitle2" sx={{
-                                fontFamily: "'Work Sans', sans-serif"
-                            }} className='accordian-text'>
-                                {`${overDetails?.totalRun || 0}/${overDetails?.totalWicket || 0} ${overDetails?.isComplete
-                                    ? `[${overDetails?.teamScore}]`
-                                    : `[${teamDetails?.[BATTING_TEAM]?.teamScore || 0}/${teamDetails?.[BATTING_TEAM]?.teamWicket || 0}]`
-                                    }`}
-                            </Typography>
-                        </RunsInfo>
-                    </div>
                     <BallsContainer>
                         <Box display="flex" flexWrap="wrap" gap={1} >
                             <React.Fragment >
@@ -363,37 +305,6 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                     </BallsContainer>
                 </OverContainer>
                 : <OverContainer className='accordian-container'>
-                    <PlayerInfo>
-                        {bowler?.playerimage ?
-                            <PlayerImage
-                                // width="30px"
-                                playerImage={bowler?.playerimage}
-                                jerseyImage={team.jersey}
-                            /> : <Avatar
-                                src="/api/placeholder/48/48"
-                                alt={bowler?.playerName || 'Bowler'}
-                                sx={{ width: 32, height: 32 }}
-                            />}
-                        <Box>
-                            <Typography variant="subtitle2" fontWeight="bold"
-                                sx={{
-                                    "&[data-theme='dark']": {
-                                        color: "white",
-                                    },
-                                }}
-                                data-theme={document.body.getAttribute("data-theme")}
-                                noWrap className='accordian-text'
-                            >
-                                {bowler?.playerName || 'Unknown Bowler'}
-                            </Typography>
-                            <Typography variant="caption" color="text.secondary" className='accordian-text'>
-                                Over {Math.floor(parseFloat(overNum))}
-                            </Typography>
-                            {/* sx={{
-                                fontFamily: "'Work Sans', sans-serif"
-                            }}  */}
-                        </Box>
-                    </PlayerInfo>
                     <BallsContainer>
                         <Box display="flex" flexWrap="wrap" gap={1}>
                             <React.Fragment >
@@ -401,15 +312,6 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                             </React.Fragment>
                         </Box>
                     </BallsContainer>
-                    <RunsInfo>
-                        <Typography variant="subtitle2" className='accordian-text'>
-                            {/* {`${overDetails?.totalRun || 0}/${overDetails?.totalWicket || 0} ${overDetails.isComplete ? '['+overDetails.teamScore+']':'['+teamDetails[BATTING_TEAM].teamScore +'/'+teamDetails[BATTING_TEAM].teamWicket+']'}`} */}
-                            {`${overDetails?.totalRun || 0}/${overDetails?.totalWicket || 0} ${overDetails?.isComplete
-                                ? `[${overDetails?.teamScore}]`
-                                : `[${teamDetails?.[BATTING_TEAM]?.teamScore || 0}/${teamDetails?.[BATTING_TEAM]?.teamWicket || 0}]`
-                                }`}
-                        </Typography>
-                    </RunsInfo>
                 </OverContainer>}
         </>
         );
@@ -458,13 +360,81 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                                 </Box>
                             </AccordionSummary>
                             <AccordionDetails sx={{ p: 0 }}>
-                                {groupedOvers[key].map(([overKey, balls]) => renderOver(balls, overKey, jersy))}
+                                {/* Sort overs by over number descending */}
+                                {groupedOvers[key]
+                                    .sort((a, b) => {
+                                        const overNumA = parseFloat(a[0].split('_##_')[2]);
+                                        const overNumB = parseFloat(b[0].split('_##_')[2]);
+                                        return overNumB - overNumA;
+                                    })
+                                    .map(([overKey, balls]) => {
+                                        const [, , overNum] = overKey.split('_##_');
+                                        const overDetails = getOverDetails(overNum, innings, teamId);
+                                        const bowler = getPlayerDetails(overDetails?.bowlerId);
+
+                                        return (
+                                            <Accordion
+                                                key={overKey}
+                                                expanded={overExpanded.get(overKey) || false}
+                                                onChange={handleOverChange(overKey)}
+                                                sx={{
+                                                    '&:before': { display: 'none' },
+                                                    boxShadow: 'none',
+                                                    '& .MuiAccordionSummary-root': {
+                                                        borderBottom: '1px solid #f0f0f0',
+                                                        minHeight: '48px',
+                                                        backgroundColor: '#fafafa'
+                                                    }
+                                                }}
+                                            >
+                                                <AccordionSummary
+                                                    expandIcon={<ExpandMoreIcon style={{ color: "unset", fontSize: '18px' }} />}
+                                                    sx={{ px: 3, py: 1 }}
+                                                >
+                                                    <Box display="flex" alignItems="center" justifyContent="space-between" width="100%">
+                                                        <Box display="flex" alignItems="center" gap={1}>
+                                                            <Typography variant="subtitle2" fontWeight="bold" className='accordian-text'>
+                                                                Over {Math.floor(parseFloat(overNum))}
+                                                            </Typography>
+                                                            {bowler?.playerimage ?
+                                                                <PlayerImage
+                                                                    // width="30px"
+                                                                    playerImage={bowler?.playerimage}
+                                                                    jerseyImage={jersy.jersey}
+                                                                /> : <Avatar
+                                                                    src="/api/placeholder/48/48"
+                                                                    alt={bowler?.playerName || 'Bowler'}
+                                                                    sx={{ width: 32, height: 32 }}
+                                                                />
+                                                            }
+                                                            <Typography variant="subtitle2" fontWeight="bold" className='accordian-text'>{bowler?.playerName || 'Unknown Bowler'}
+                                                            </Typography>
+                                                        </Box>
+                                                        <Typography variant="caption" color="text.secondary" className='accordian-text'>
+                                                            {/* {`${overDetails?.totalRun || 0}/${overDetails?.totalWicket || 0}`} */}
+                                                            <Typography variant="subtitle2" sx={{
+                                                                fontFamily: "'Work Sans', sans-serif"
+                                                            }} className='accordian-text'>
+                                                                {`${overDetails?.totalRun || 0}/${overDetails?.totalWicket || 0} ${overDetails?.isComplete
+                                                                    ? `[${overDetails?.teamScore}]`
+                                                                    : `[${teamDetails?.[BATTING_TEAM]?.teamScore || 0}/${teamDetails?.[BATTING_TEAM]?.teamWicket || 0}]`
+                                                                    }`}
+                                                            </Typography>
+                                                        </Typography>
+                                                    </Box>
+                                                </AccordionSummary>
+                                                <AccordionDetails sx={{ p: 0 }}>
+                                                    {renderOver(balls, overKey, jersy)}
+                                                </AccordionDetails>
+                                            </Accordion>
+                                        );
+                                    })}
                             </AccordionDetails>
                         </Accordion>
                     );
                 })}
             </Box>
-            {editBallId && <EditBallModal onClose={() => { setEditBallId(undefined) }} />}
+            {editWicketId && <EditWicketDetails onClose={() => { setEditWicketId(undefined) }} ballId={editWicketId} playersList={playersList} />}
         </>
     );
 };

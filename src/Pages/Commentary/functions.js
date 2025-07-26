@@ -2,7 +2,6 @@ import _ from "lodash";
 import { STRING_SEPERATOR } from "../../components/Common/Const";
 import { fixDecimal } from "../../components/Common/Reusables/reusableMethods";
 import { BALL_TYPE_BOWLER_RETIRED_HURT, BALL_TYPE_BYE, BALL_TYPE_LEG_BYE, BALL_TYPE_NO_BALL, BALL_TYPE_NO_BALL_BYE, BALL_TYPE_NO_BALL_LEG_BYE, BALL_TYPE_OVER_COMPLETE, BALL_TYPE_PANELTY_RUN, BALL_TYPE_REGULAR, BALL_TYPE_RETIRED_HURT, BALL_TYPE_WIDE, BATTER_SWITCH, BATTING_TEAM, BOLD, BOLD_LABEL, BOWLING_TEAM, CATCH, CATCH_LABEL, CHANGE_BOWLER, CURRENT_BOWLER, HIT_BALL_TWICE, HIT_BALL_TWICE_LABEL, HIT_WICKET, HIT_WICKET_LABEL, LBW, LBW_LABEL, LIST_TO_EXCLUDE_WICKET_FOR_BOWLER, NON_STRIKE, OBSTRACT_THE_FIELDING, OBSTRACT_THE_FIELDING_LABEL, ON_STRIKE, RETIRED_OUT, RETIRED_OUT_LABEL, RUN_OUT, RUN_OUT_LABEL, STUMP, STUMP_LABEL, SWITCH_BOWLER, TIMED_OUT, TIMED_OUT_LABEL } from "./CommentartConst";
-import { useSelector } from "react-redux";
 import { loadInit } from "../../config";
 
 export function mapCommentaryStatus(status) {
@@ -141,7 +140,7 @@ export const generatePartnership = ({ currentPartnership, commentaryDetails, tea
     "player1image": currentPartnership.player1image || null,
     "player2image": currentPartnership.player2image || null,
     // "order" : currentPartnership?.order,
-    "order" : currentPartnership.commentaryPartnershipId ? currentPartnership.order : teams[BATTING_TEAM].teamWicket + 1 || 1,
+    "order": currentPartnership.commentaryPartnershipId ? currentPartnership.order : teams[BATTING_TEAM].teamWicket + 1 || 1,
     "isActive": currentPartnership?.isActive,
   };
   return toReturn;
@@ -215,7 +214,7 @@ export const generateDisplayStatus = ({ currentBall, playerSwitch, onStrikePlaye
     if (ballType === BALL_TYPE_REGULAR) {
       if (currentBall.ballIsWicket) {
         if (wicketType === BOLD) displayStatus = `${onStrikePlayer?.playerName ? `${onStrikePlayer.playerName} ${BOLD_LABEL}` : ""} `
-        else if (wicketType === CATCH) displayStatus = `${onStrikePlayer?.playerName ? `${onStrikePlayer.playerName} ${CATCH_LABEL}`: ""}`
+        else if (wicketType === CATCH) displayStatus = `${onStrikePlayer?.playerName ? `${onStrikePlayer.playerName} ${CATCH_LABEL}` : ""}`
         else if (wicketType === STUMP) displayStatus = `${onStrikePlayer?.playerName ? `${onStrikePlayer.playerName} ${STUMP_LABEL}` : ""}`
         else if (wicketType === HIT_WICKET) displayStatus = `${onStrikePlayer?.playerName ? `${onStrikePlayer.playerName} ${HIT_WICKET_LABEL}` : ""}`
         else if (wicketType === LBW) displayStatus = `${onStrikePlayer?.playerName ? `${onStrikePlayer.playerName} ${LBW_LABEL}` : ""}`
@@ -248,10 +247,13 @@ export const generateDisplayStatus = ({ currentBall, playerSwitch, onStrikePlaye
 }
 
 
-export const getBallsForAllOver = (ballHistory = []) => {
+export const getBallsForAllOver = (ballHistory = [], wicketHistory = []) => {
   ballHistory = _.orderBy(ballHistory, ["commentaryBallByBallId"], ["desc"]);
   let toReturn = {};
-
+  const findWicketIdFromBallId = (ballIdToLookFor) => {
+    const wicketData = wicketHistory.find(element => element.commentaryBallByBallId === ballIdToLookFor)
+    return wicketData
+  }
   ballHistory.forEach(ball => {
     if (ball) {
       const overCount = +ball?.overCount % 1 === 0 ? (+ball?.overCount + 0.1) : +ball?.overCount;
@@ -277,7 +279,8 @@ export const getBallsForAllOver = (ballHistory = []) => {
             batterId: ball?.batStrikeId,
             bowlerId: ball?.bowlerId,
             fieldPlayerId: ball?.fieldPlayerId,
-            ballId: ball.commentaryBallByBallId
+            ballId: ball.commentaryBallByBallId,
+            wicketId: findWicketIdFromBallId(ball.commentaryBallByBallId)?.commentaryWicketId
           }
         ]);
       }
@@ -381,31 +384,31 @@ export const fetchWinnerMessageRmk = ({ team, matchTypeDetails, target, isBattin
 // }
 
 export const generateRemainingRuns = (team, ballsPerOver, matchTypeDetails) => {
-  if(matchTypeDetails.noOfIningsPerSide > 1){
+  if (matchTypeDetails.noOfIningsPerSide > 1) {
     const totalRunRemaining = (team.teamTrialRuns || 0) - (team.teamScore || 0);
-    if(team.teamBattingOrder > 2){
-      if(team.teamLeadRuns > 0){
+    if (team.teamBattingOrder > 2) {
+      if (team.teamLeadRuns > 0) {
         const leadBy = team.teamLeadRuns + team.teamScore
         return `${team.shortName} lead by ${leadBy} runs`;
-      } else if(team.teamTrialRuns > 0){
-        if(team.teamTrialRuns > team.teamScore){
+      } else if (team.teamTrialRuns > 0) {
+        if (team.teamTrialRuns > team.teamScore) {
           const trailBy = team.teamTrialRuns - team.teamScore
           return team.teamBattingOrder == 4 ? `${team.shortName} needs ${trailBy} runs to win` : `${team.shortName} trail by ${trailBy} runs`;
-        }else if(team.teamTrialRuns < team.teamScore){
+        } else if (team.teamTrialRuns < team.teamScore) {
           const trailBy = team.teamScore - team.teamTrialRuns
           return `${team.shortName} lead by ${trailBy} runs`;
         }
       }
-    }else{
+    } else {
       if (team.teamScore < team.teamTrialRuns) {
         return `${team.shortName} trail by ${totalRunRemaining} runs`;
-      } else if( team.teamScore > team.teamTrialRuns){
-        const leadBy =  team.teamScore - team.teamTrialRuns
+      } else if (team.teamScore > team.teamTrialRuns) {
+        const leadBy = team.teamScore - team.teamTrialRuns
         return `${team.shortName} lead by ${leadBy} runs`;
       }
     }
-      
-  }else {
+
+  } else {
     const oversParts = String(team.teamOver || "0").split(".");
     const completedOvers = parseInt(oversParts[0], 10);
     const ballsInCurrentOver = parseInt(oversParts[1] || "0", 10);
@@ -465,5 +468,5 @@ export const fetchConfig = (data) => {
   const dpSocketUrl = data.find(config => config.key === loadInit.DP_SOCKET_URL)?.value;
   const dpApiXkey = data.find(config => config.key === loadInit.DP_API_KEY)?.value;
   const dpApiURL = data.find(config => config.key === loadInit.DP_API_URL)?.value;
-  return {dpSocketUrl, dpApiXkey, dpApiURL}
+  return { dpSocketUrl, dpApiXkey, dpApiURL }
 }
