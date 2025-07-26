@@ -111,6 +111,14 @@ export const MatchTypeFields = [
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
   {
+    name: "isActive",
+    label: "Active",
+    defaultValue: false,
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 4, lg: 4 },
+    type: SWITCH,
+  },
+  {
     type: DIVIDER,
     sectionLabel: "Over Information",
     labelColspan: { xs: 12, md: 12, lg: 12 },
