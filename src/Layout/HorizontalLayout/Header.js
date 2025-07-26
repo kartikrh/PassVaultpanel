@@ -168,8 +168,8 @@ const Header = (props) => {
             <div
               className="dropdown d-inline-block"
               onClick={() => {
-                console.log("2", isRightSidebar)
-                showRightSidebar(!isRightSidebar);
+                // console.log("2", isRightSidebar)
+                // showRightSidebar(!isRightSidebar);
               }}
             >
               <button

@@ -3,8 +3,10 @@ import { createSlice } from '@reduxjs/toolkit';
 const theme = localStorage.getItem('panelTheme') || 'light';
 document.body.setAttribute('data-theme', theme);
 
+const layout = localStorage.getItem('layoutType') || 'vertical';
+
 const initialState = {
-    layoutType: 'vertical',
+    layoutType: layout,
     layoutWidth: 'fluid',
     panelTheme: theme,
     leftSideBarType: 'default',
@@ -22,6 +24,7 @@ const layoutSlice = createSlice({
     reducers: {
         changeLayout: (state, action) => {
             state.layoutType = action.payload;
+            localStorage.setItem('layoutType', action.payload);
         },
         changeLayoutWidth: (state, action) => {
             state.layoutWidth = action.payload;

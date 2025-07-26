@@ -2,6 +2,12 @@ import React, { useState } from "react";
 
 import { connect, useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
+import {
+  MdDarkMode,
+  MdOutlineDarkMode,
+  MdLightMode,
+  MdOutlineLightMode,
+} from "react-icons/md";
 
 // import LanguageDropdown from "../../components/Common/TopbarDropdown/LanguageDropdown";
 // import NotificationDropdown from "../../components/Common/TopbarDropdown/NotificationDropdown";
@@ -21,21 +27,21 @@ import logoLight from "../../assets/images/logo-light.png";
 //   changeSidebarType,
 // } from "../../store/actions";
 import ProfileMenu from "../../components/Common/TopbarDropdown/ProfileMenu";
-import { FormGroup, Input, Label } from "reactstrap";
-import { changeSidebarTheme, showRightSidebar } from "../../Features/Layout";
+import { Col, FormGroup, Input, Label, Row } from "reactstrap";
+import {
+  changeSidebarTheme,
+  changeLayout,
+} from "../../Features/Layout";
 // import AppsDropdown from "../../components/Common/TopbarDropdown/AppsDropdown";
 
 const Header = (props) => {
   const [search, setsearch] = useState(false);
   const theme = useSelector((state) => state.layout.panelTheme);
+  const isDarkMode = theme === "dark";
   const dispatch = useDispatch();
   const layoutType = useSelector((state) => state.layout.layoutType);
-  const isRightSidebar = useSelector((state) => state.layout.isRightSidebar);
-  const action = useSelector((state) => state.layout.showRightSidebarAction);
-
-  console.log("layout", layoutType);
-  console.log("isRightSidebar", isRightSidebar);
-  console.log("action", action);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [currentLayout, setCurrentLayout] = useState(layoutType); // Add this state
 
   function toggleFullscreen() {
     if (
@@ -84,8 +90,12 @@ const Header = (props) => {
                 <span className="logo-sm">
                   <img src={logoSm} alt="logo-sm-dark" height="22" />
                 </span>
-                <span className="logo-lg text-black" style={{ fontSize: "medium" }}>
-                  <img src={logoDark} alt="logo-dark" height="24" /> <strong className="panel-name">Panel</strong>
+                <span
+                  className="logo-lg text-black"
+                  style={{ fontSize: "medium" }}
+                >
+                  <img src={logoDark} alt="logo-dark" height="24" />{" "}
+                  <strong className="panel-name">Panel</strong>
                 </span>
               </Link>
 
@@ -110,7 +120,6 @@ const Header = (props) => {
                 <i className="fa fa-fw fa-bars"></i>
               </button>
             )}
-
 
             {/* <form className="app-search d-none d-lg-block">
               <div className="position-relative">
@@ -166,19 +175,6 @@ const Header = (props) => {
 
             {/* <LanguageDropdown /> */}
             {/* <AppsDropdown /> */}
-            <FormGroup switch>
-              <Input
-                type="switch"
-                role="switch"
-                id="customSwitch1"
-                className="custom-switch"
-                checked={theme === 'dark'} // Correctly bind the Redux state
-                onChange={() => {
-                  const newTheme = theme === "light" ? "dark" : "light";
-                  dispatch(changeSidebarTheme(newTheme)); // Dispatch action with new theme
-                }}
-              />
-            </FormGroup>
 
             <div className="dropdown d-none d-lg-inline-block ms-1">
               <button
@@ -200,9 +196,7 @@ const Header = (props) => {
             <div
               className="dropdown d-inline-block"
               onClick={() => {
-                // console.log(!isRightSidebar)
-                console.log("4", isRightSidebar)
-                showRightSidebar(!isRightSidebar);
+                setIsSidebarOpen(!isSidebarOpen);
               }}
             >
               <button
@@ -212,20 +206,71 @@ const Header = (props) => {
                 <i className="mdi mdi-cog"></i>
               </button>
             </div>
+            {/* Right Sidebar */}
+            {isSidebarOpen && (
+              <div
+                style={{
+                  position: "fixed",
+                  top: currentLayout === "horizontal" ? "120px" : "70px", // Use local state
+                  right: 0,
+                  width: "200px",
+                  height: `calc(100% - ${
+                    currentLayout === "horizontal" ? "120px" : "70px"
+                  })`,
+                  backgroundColor: isDarkMode ? "#333333" : "#f8f9fa",
+                  boxShadow: "-2px 0 8px rgba(0, 0, 0, 0.15)",
+                  padding: "20px",
+                  zIndex: 1000,
+                  textAlign: "left",
+                }}
+              >
+                <h6 style={{ color: isDarkMode ? "#ffffff": "#74788d " }}>Change Layout</h6>
+                <button
+                  className="btn btn-primary mb-2"
+                  onClick={() => {
+                    const newLayout =
+                      currentLayout === "vertical" ? "horizontal" : "vertical";
+                    setCurrentLayout(newLayout); // Update local state
+                    dispatch(changeLayout(newLayout)); // Dispatch to Redux
+                  }}
+                >
+                  Switch to{" "}
+                  {currentLayout === "vertical" ? "Horizontal" : "Vertical"}
+                </button>
+
+                <Row>
+                  <h6 style={{ color: isDarkMode ? "#ffffff": "#74788d " }}>Change Theme</h6>
+                </Row>
+                <Row>
+                  <Col className={"p-0"}>
+                    <button
+                      className={`btn btn-primary ${isDarkMode ? "bg-white":""} w-100`}
+                      onClick={() => {
+                        dispatch(changeSidebarTheme("dark"));
+                      }}
+                      disabled = {isDarkMode}
+                    >
+                      {isDarkMode ? <MdDarkMode color={isDarkMode ? "black" : ""}/> : <MdOutlineDarkMode color={isDarkMode ? "black" : ""} />}
+                    </button>
+                  </Col>
+                  <Col className={"p-0 px-1"}>
+                    <button
+                      className={`btn btn-primary ${isDarkMode ? "":"bg-white"} w-100`}
+                      onClick={() => {
+                        dispatch(changeSidebarTheme("light"));
+                      }}
+                      disabled = {!isDarkMode}
+                    >
+                      {isDarkMode ? <MdOutlineLightMode  color={isDarkMode ? "" : "black"} /> : <MdLightMode  color={isDarkMode ? "black" : "black"} />}
+                    </button>
+                  </Col>
+                </Row>
+              </div>
+            )}
           </div>
         </div>
       </header>
     </React.Fragment>
   );
 };
-
-// const mapStatetoProps = (state) => {
-//   const { layoutType, showRightSidebar, leftMenu, leftSideBarType } =
-//     state.Layout;
-//   return { layoutType, showRightSidebar, leftMenu, leftSideBarType };
-// };
-
-// export default connect(mapStatetoProps, {
-//   showRightSidebar,
-// })(withTranslation()(Header));
 export default Header;

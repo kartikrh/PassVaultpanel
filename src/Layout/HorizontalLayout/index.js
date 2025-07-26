@@ -52,7 +52,7 @@ const Layout = (props) => {
         return;
       } else {
         //if clicked in outside of rightbar then fire action for hide rightbar
-        console.log("3", isRightSidebar);
+        // console.log("3", isRightSidebar);
         dispatch(showRightSidebar(false));
       }
     },
@@ -62,9 +62,9 @@ const Layout = (props) => {
   /*
   layout settings
   */
-  useEffect(() => {
-    dispatch(changeLayout("horizontal"));
-  }, [dispatch]);
+  // useEffect(() => {
+  //   dispatch(changeLayout("horizontal"));
+  // }, [dispatch]);
 
   useEffect(() => {
     //init body click event fot toggle rightbar

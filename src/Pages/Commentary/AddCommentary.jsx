@@ -589,8 +589,43 @@ function AddCommentary() {
         const dataToSave2 = finalizeRef2.current.finalizeData()
         const dataToSave3 = finalizeRef3.current.finalizeData()
         const dataToSave4 = finalizeRef4.current.finalizeData()
+
+        // Filter each dataToSave to only include fields from their respective tabs
+        const filteredDataToSave1 = {};
+        const filteredDataToSave2 = {};
+        const filteredDataToSave3 = {};
+        const filteredDataToSave4 = {};
+        
+        // Filter Tab 1 data (Match Details)
+        MatchDetailFields.forEach(field => {
+            if (field.name && dataToSave1.hasOwnProperty(field.name)) {
+                filteredDataToSave1[field.name] = dataToSave1[field.name];
+            }
+        });
+        
+        // Filter Tab 2 data (Team Details)
+        TeamDetailsFields.forEach(field => {
+            if (field.name && dataToSave2.hasOwnProperty(field.name)) {
+                filteredDataToSave2[field.name] = dataToSave2[field.name];
+            }
+        });
+        
+        // Filter Tab 3 data (Weather Details)
+        WeatherDetailsFields.forEach(field => {
+            if (field.name && dataToSave3.hasOwnProperty(field.name)) {
+                filteredDataToSave3[field.name] = dataToSave3[field.name];
+            }
+        });
+        
+        // Filter Tab 4 data (Pitch Details)
+        PitchDetailsFields.forEach(field => {
+            if (field.name && dataToSave4.hasOwnProperty(field.name)) {
+                filteredDataToSave4[field.name] = dataToSave4[field.name];
+            }
+        });
+
         const pythonURI = pythonList && pythonList.length > 0 && pythonList.find((item) => item?.id == dataToSave1?.pythonId)?.URI;
-        if (dataToSave1 && dataToSave2 && dataToSave3 && dataToSave4) {
+        if (filteredDataToSave1 && filteredDataToSave2 && filteredDataToSave3 && filteredDataToSave4) {
             // const dataToSave = {
             //     ...dataToSave1,
             //     ...dataToSave3,
@@ -623,10 +658,10 @@ function AddCommentary() {
             ];
 
             const mergedData = {
-            ...dataToSave1,
-            ...dataToSave2,
-            ...dataToSave4,
-            ...dataToSave3,
+            ...filteredDataToSave1,
+            ...filteredDataToSave2,
+            ...filteredDataToSave3,
+            ...filteredDataToSave4,
             };
 
             const completeData = {};
@@ -650,7 +685,7 @@ function AddCommentary() {
                 commentaryId: id,
                 eventDate: convertDateLocalToUTC(dataToSave1.eventDate),
                 pythonURI,
-                isSignalROn: mergedData?.isSignalROn,
+                isSignalROn: dataToSave1?.isSignalROn,
                 // marketId: "0", tpId: "0", matchTypeId: "0"
                 // , currentInnings: 0
             }

@@ -10,7 +10,6 @@ import RightSidebar from '../../components/Common/RightSideBar';
 
 //redux
 import { useSelector, useDispatch } from "react-redux";
-import { changeLayout, showRightSidebar } from '../../Features/Layout';
 import TopBar from '../../components/Common/TopBar';
 
 const Layout = props => {
@@ -28,14 +27,10 @@ const Layout = props => {
     topbarTheme: state?.Layout?.topbarTheme,
     isRightSidebar: state?.Layout?.isRightSidebar,
     panelTheme: state?.Layout?.panelTheme,
-    layoutType: "horizontal", // Get layout type from redux
+    layoutType: state.layout?.layoutType
   }));
 
   const state = useSelector((state) => state);
-
-  useEffect(() => {
-    console.log("Redux State Snapshot:", state);
-  }, [state]);
 
   const theme = useSelector((state) => state.layout.panelTheme);
 
@@ -61,8 +56,7 @@ const Layout = props => {
       return;
     } else {
       //if clicked in outside of rightbar then fire action for hide rightbar
-      console.log("5", isRightSidebar)
-      dispatch(showRightSidebar(false));
+      // dispatch(showRightSidebar(false));
     }
   }, [dispatch]);
 
@@ -79,11 +73,9 @@ const Layout = props => {
     window.scrollTo(0, 0);
   }, []);
 
-  useEffect(() => {
-    // You can change this to switch between layouts
-    // dispatch(changeLayout("vertical"));
-    dispatch(changeLayout("horizontal")); // Set to horizontal for testing
-  }, [dispatch]);
+  // useEffect(() => {
+  //   // dispatch(changeLayout("vertical"));
+  // }, [dispatch]);
 
   useEffect(() => {
     if (panelTheme) {
@@ -108,6 +100,15 @@ const Layout = props => {
       // dispatch(changeTopbarTheme(topbarTheme));
     }
   }, [topbarTheme, dispatch]);
+
+  useEffect(() => {
+    if (isHorizontalLayout) {
+      document.body.classList.add("right-sidebar-open");
+    } else {
+      document.body.classList.remove("right-sidebar-open");
+    }
+  }, [isHorizontalLayout]);
+
 
   return (
     <React.Fragment>
@@ -134,8 +135,6 @@ const Layout = props => {
         </div>
         {/* <Footer /> */}
       </div>
-      {console.log("-----", isRightSidebar)}
-      <RightSidebar />
     </React.Fragment>
   );
 };

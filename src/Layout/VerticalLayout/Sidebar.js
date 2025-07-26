@@ -6,17 +6,23 @@ import withRouter from "../../components/Common/withRouter";
 import { Link } from "react-router-dom";
 import { withTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { getAuthorisedTabs, getTabPermissions } from "../../Features/Authentication/authorizationSlice";
+import {
+  getAuthorisedTabs,
+  getTabPermissions,
+} from "../../Features/Authentication/authorizationSlice";
 import MetisMenu from "metismenujs";
 import { getMarketType } from "../../Features/Authentication/marketTypeSlice";
 import { configInit } from "../../Features/Config/configSlice";
 import "./sidebar.css";
-import LogRocket from 'logrocket';
+import LogRocket from "logrocket";
 import { loadInit } from "../../config";
-import { LOG_ROCKET_TO_INCLUDE_ONLY, USER_DATA_KEY } from "../../components/Common/Const";
+import {
+  LOG_ROCKET_TO_INCLUDE_ONLY,
+  USER_DATA_KEY,
+} from "../../components/Common/Const";
 
 const Sidebar = (props) => {
-  const { style = "vertical" } = props; // Default to vertical layout
+  const { style = "vertical" } = props;
   const ref = useRef();
   const newTabList = useSelector((state) => state.auth.tabList);
   const dispatch = useDispatch();
@@ -24,9 +30,11 @@ const Sidebar = (props) => {
   const loadInitData = useSelector((state) => state.loadInit.loadInitData);
   const [isLogRocketInitialized, setIsLogRocketInitialized] = useState(false);
 
-  let initLogRocket = loadInitData.find(item => item.key === loadInit.ENABLE_LOGROCKET)?.value;
+  let initLogRocket = loadInitData.find(
+    (item) => item.key === loadInit.ENABLE_LOGROCKET
+  )?.value;
 
-  // Add body class for horizontal layout
+  // body class for horizontal layout
   useEffect(() => {
     if (style === "horizontal") {
       document.body.classList.add("horizontal-layout");
@@ -36,7 +44,6 @@ const Sidebar = (props) => {
       document.body.classList.remove("horizontal-layout");
     }
 
-    // Cleanup on unmount
     return () => {
       document.body.classList.remove("horizontal-layout", "vertical-layout");
     };
@@ -44,14 +51,19 @@ const Sidebar = (props) => {
 
   useEffect(() => {
     if (initLogRocket && initLogRocket === "TRUE" && !isLogRocketInitialized) {
-      const logRocketAppId = loadInitData.find(item => item.key === loadInit.LOG_ROCKET_AP_ID)?.value;
-      const userObj = JSON.parse(localStorage.getItem(USER_DATA_KEY) || "{}")
-      if (!userObj?.userName || userObj?.userName === LOG_ROCKET_TO_INCLUDE_ONLY)
+      const logRocketAppId = loadInitData.find(
+        (item) => item.key === loadInit.LOG_ROCKET_AP_ID
+      )?.value;
+      const userObj = JSON.parse(localStorage.getItem(USER_DATA_KEY) || "{}");
+      if (
+        !userObj?.userName ||
+        userObj?.userName === LOG_ROCKET_TO_INCLUDE_ONLY
+      )
         LogRocket.init(logRocketAppId);
       LogRocket.identify(userObj?.userName, {
         name: userObj?.userName,
         email: userObj?.userName,
-        subscriptionType: 'pro'
+        subscriptionType: "pro",
       });
       setIsLogRocketInitialized(true);
     }
@@ -71,41 +83,44 @@ const Sidebar = (props) => {
     }));
   };
 
-  const activateParentDropdown = useCallback((item) => {
-    if (style === "horizontal") return; // Skip dropdown activation for horizontal layout
+  const activateParentDropdown = useCallback(
+    (item) => {
+      if (style === "horizontal") return; // Skip dropdown activation for horizontal layout
 
-    item.classList.add("active");
-    const parent = item.parentElement;
-    const parent2El = parent.childNodes[1];
-    if (parent2El && parent2El.id !== "side-menu") {
-      parent2El.classList.add("mm-show");
-    }
-    if (parent) {
-      parent.classList.add("mm-active");
-      const parent2 = parent.parentElement;
-      if (parent2) {
-        parent2.classList.add("mm-show");
-        const parent3 = parent2.parentElement;
-        if (parent3) {
-          parent3.classList.add("mm-active");
-          parent3.childNodes[0].classList.add("mm-active");
-          const parent4 = parent3.parentElement;
-          if (parent4) {
-            parent4.classList.add("mm-show");
-            const parent5 = parent4.parentElement;
-            if (parent5) {
-              parent5.classList.add("mm-show");
-              parent5.childNodes[0].classList.add("mm-active");
+      item.classList.add("active");
+      const parent = item.parentElement;
+      const parent2El = parent.childNodes[1];
+      if (parent2El && parent2El.id !== "side-menu") {
+        parent2El.classList.add("mm-show");
+      }
+      if (parent) {
+        parent.classList.add("mm-active");
+        const parent2 = parent.parentElement;
+        if (parent2) {
+          parent2.classList.add("mm-show"); // ul tag
+          const parent3 = parent2.parentElement; // li tag
+          if (parent3) {
+            parent3.classList.add("mm-active"); // li
+            parent3.childNodes[0].classList.add("mm-active"); //a
+            const parent4 = parent3.parentElement; // ul
+            if (parent4) {
+              parent4.classList.add("mm-show"); // ul
+              const parent5 = parent4.parentElement;
+              if (parent5) {
+                parent5.classList.add("mm-show"); // li
+                parent5.childNodes[0].classList.add("mm-active"); // a tag
+              }
             }
           }
         }
+        scrollElement(item);
+        return false;
       }
       scrollElement(item);
       return false;
-    }
-    scrollElement(item);
-    return false;
-  }, [style]);
+    },
+    [style]
+  );
 
   const removeActivation = (items) => {
     for (var i = 0; i < items.length; ++i) {
@@ -150,7 +165,8 @@ const Sidebar = (props) => {
     const fullPath = pathName;
     let matchingMenuItem = null;
     const ul = document.getElementById("side-menu-item");
-    if (ul) { // Add null check
+    if (ul) {
+      // Add null check
       const items = ul.getElementsByTagName("a");
       removeActivation(items);
       for (let i = 0; i < items.length; ++i) {
@@ -175,7 +191,6 @@ const Sidebar = (props) => {
   useEffect(() => {
     activeMenu();
   }, [activeMenu]);
-
   function scrollElement(item) {
     if (item && style === "vertical") {
       const currentPosition = item.offsetTop;
@@ -196,7 +211,7 @@ const Sidebar = (props) => {
         if (window.metisMenuInstance) {
           try {
             window.metisMenuInstance.dispose();
-          } catch (e) { }
+          } catch (e) {}
         }
         // Initialize MetisMenu for both vertical and horizontal
         window.metisMenuInstance = new MetisMenu("#side-menu-item");
@@ -206,7 +221,7 @@ const Sidebar = (props) => {
     const timer = setTimeout(initMenu, 100);
     return () => clearTimeout(timer);
   }, [newTabList, activeMenu, style]);
-
+  
   // Render horizontal layout
   if (style === "horizontal") {
     return (
@@ -214,7 +229,10 @@ const Sidebar = (props) => {
         <div className="horizontal-menu">
           <SimpleBar className="horizontal-scroll" ref={ref}>
             <div id="sidebar-menu">
-              <ul className="metismenu list-unstyled horizontal-nav" id="side-menu-item">
+              <ul
+                className="metismenu list-unstyled horizontal-nav"
+                id="side-menu-item"
+              >
                 {(newTabList || sidebarData)
                   .slice()
                   .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0))
@@ -222,7 +240,10 @@ const Sidebar = (props) => {
                     <React.Fragment key={key}>
                       {item.isMainMenu && item.subItem?.length === 0 ? (
                         <li key={key}>
-                          <Link to={item.url ? item.url : "/#"} onClick={tToggle}>
+                          <Link
+                            to={item.url ? item.url : "/#"}
+                            onClick={tToggle}
+                          >
                             <i className={item.icon}></i>
                             <span>{props.t(item.label)}</span>
                           </Link>
@@ -242,7 +263,8 @@ const Sidebar = (props) => {
                               {item.issubMenubadge && (
                                 <span
                                   className={
-                                    "badge rounded-pill float-end " + item.bgcolor
+                                    "badge rounded-pill float-end " +
+                                    item.bgcolor
                                   }
                                 >
                                   {" "}
@@ -282,7 +304,7 @@ const Sidebar = (props) => {
     );
   }
 
-  // Default vertical layout (your existing code)
+  // Default vertical layout 
   return (
     <React.Fragment>
       <div className="vertical-menu">
@@ -290,7 +312,7 @@ const Sidebar = (props) => {
           <div id="sidebar-menu">
             <ul className="metismenu list-unstyled" id="side-menu-item">
               {(newTabList || sidebarData)
-                .slice()
+                .slice() // Create a shallow copy
                 .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0))
                 .map((item, key) => (
                   <React.Fragment key={key}>
@@ -328,7 +350,7 @@ const Sidebar = (props) => {
                           {item.subItem && item.subItem.length > 0 && (
                             <ul className="sub-menu">
                               {item.subItem
-                                .slice()
+                                .slice() // Create a shallow copy
                                 .sort(
                                   (subA, subB) =>
                                     (subA.displayOrder || 0) -
@@ -336,7 +358,7 @@ const Sidebar = (props) => {
                                 )
                                 .map((subItem, subKey) => (
                                   <li key={subKey}>
-                                    <Link className={"eqweqweqweqwe"} to={subItem.link} onClick={tToggle}>
+                                    <Link to={subItem.link} onClick={tToggle}>
                                       {props.t(subItem.sublabel)}
                                     </Link>
                                   </li>
@@ -355,7 +377,6 @@ const Sidebar = (props) => {
     </React.Fragment>
   );
 };
-
 Sidebar.propTypes = {
   location: PropTypes.object,
   t: PropTypes.any,
