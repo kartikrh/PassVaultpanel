@@ -13,8 +13,8 @@ import _, { isEmpty } from 'lodash';
 import { generateBallLabelFromBall } from '../functions';
 import PlayerImage from '../../../components/Common/Reusables/PlayerImage';
 import { BATTING_TEAM } from '../CommentartConst';
-import EditBallModal from '../CommentaryModels/EditBallModal';
 import { Col, Row } from 'reactstrap';
+import EditWicketDetails from '../CommentaryModels/EditWicketModal';
 
 // Styled components remain the same
 // const BallBox = styled(Box)(({ theme, balltype }) => ({
@@ -92,7 +92,7 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
     // const viewportWidth = window.innerWidth;
     const [viewportWidth, setViewportWidth] = useState();
     const [expanded, setExpanded] = useState(false);
-    const [editBallId, setEditBallId] = useState(undefined);
+    const [editWicketId, setEditWicketId] = useState(undefined);
     const [hasInitialized, setHasInitialized] = useState(false); // ✅ to track one-time init
 
     // New state for individual over accordions within teams
@@ -259,7 +259,7 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                     <Col xs={1} md={1} lg={1}
                         onClick={() => {
                             if (!isWicket) return;
-                            setEditBallId(element.ballId)
+                            setEditWicketId(element.wicketId)
                         }}
                         className={` d-flex justify-content-center align-items-center ${ballColor}`}>
                         {displayValue}
@@ -434,7 +434,7 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                     );
                 })}
             </Box>
-            {editBallId && <EditBallModal onClose={() => { setEditBallId(undefined) }} />}
+            {editWicketId && <EditWicketDetails onClose={() => { setEditWicketId(undefined) }} ballId={editWicketId} playersList={playersList} />}
         </>
     );
 };
