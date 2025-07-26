@@ -261,6 +261,8 @@ function AddMarketTemaplate() {
       }
     });
 
+    completeData["matchTypeIds"] = dataToSave?.matchTypeIds ?? [];
+
     if (dataToSave) {
       const finalData = {
         ...impKeys,
