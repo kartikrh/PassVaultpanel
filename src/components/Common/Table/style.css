@@ -22,17 +22,17 @@ tr.selected .sticky-column {
 
 body[data-theme="dark"] {
   .hover .sticky-column {
-    background-color: #3a3a3a;
+    background-color: #333333;
   }
   .hover:hover .sticky-column {
     /* background-color: #202936; */
-    background-color: #333333;  
+    background-color: #3c3c3c;  
   }
   .selected {
-    background-color: #333333 !important;
+    background-color: #3c3c3c !important;
   }
   tr.selected .sticky-column {
-    background-color: #333333 !important;
+    background-color: #3c3c3c !important;
   }
 }
 

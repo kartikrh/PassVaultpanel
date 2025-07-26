@@ -3,6 +3,7 @@ import React from "react";
 import PropTypes from "prop-types";
 
 import { connect } from "react-redux";
+import { changeLayout, showRightSidebar } from "../../Features/Layout";
 // import {
 //   changeLayout,
 //   changeLayoutWidth,
@@ -44,7 +45,8 @@ const RightSidebar = props => {
                 to="#"
                 onClick={e => {
                   e.preventDefault();
-                  props?.showRightSidebarAction(false);
+                  console.log("1")
+                  showRightSidebar(false);
                 }}
                 className="right-bar-toggle float-end"
               >
@@ -296,10 +298,10 @@ const mapStateToProps = state => {
 };
 
 export default connect(mapStateToProps, {
-  // changeLayout,
+  changeLayout,
   // changeSidebarTheme,
   // changeSidebarType,
   // changeLayoutWidth,
   // changeTopbarTheme,
-  // showRightSidebarAction,
+  showRightSidebar,
 })(RightSidebar);
