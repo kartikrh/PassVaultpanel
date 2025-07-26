@@ -107,6 +107,8 @@ function AddTabs() {
               }
             });
 
+            completeData["templateIds"] = dataToSave?.templateIds ?? [];
+
             setCurrentSaveAction(saveAction);
             dispatch(addMatchTypeToDb({ ...completeData, ...extraData }))
         }

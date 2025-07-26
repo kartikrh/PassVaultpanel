@@ -281,12 +281,41 @@ const Index = () => {
     setSelectedFilter({
       selectedEntity: { label: "Select Entity", value: 0 },
     });
-    fetchData({});
+    fetchData({isActive: true});
   };
 
   const getEntityLabel = (entityEnum) => {
     const entity = ENTITY_OPTIONS.find((option) => option.value === entityEnum);
     return entity ? entity.label : "";
+  };
+
+  const handleActiveInactive = async (pType, record, cState) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/matchType/activeInactive`, {
+        matchTypeId: record?.matchTypeId,
+        [pType]: cState ? false : true,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
   };
 
   const columns = [
@@ -375,6 +404,31 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
+      title: "Active",
+      key: "isActive",
+      render: (text, record) => (
+        <Tooltip
+          title={"Commentary"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
+          <Button
+            color={`${record.isActive ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleActiveInactive("isActive", record, record?.isActive);
+            }}
+          >
+            <i
+              className={`bx ${record?.isActive ? "bx-check" : "bx-block"}`}
+            ></i>
+          </Button>
+        </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
       title: "Predictor",
       key: "predictor",
       printType: "ignore",
@@ -439,6 +493,7 @@ const Index = () => {
     reloadButton: true,
     loadData: true,
     resetButton: true,
+    isActive: true
   };
 
   useEffect(() => {
@@ -467,7 +522,8 @@ const Index = () => {
             tableElement={tableElement}
             reFetchData={fetchData}
             handleReload={handleReload}
-            handleCustomReset={handleReset}
+            handleReset={handleReset}
+            // handleCustomReset={handleReset}
             loadDataModelFunction={setLoadDataModelVisable}
             cloneModelFunction={setCloneModelVisible}
             deleteModelFunction={setDeleteModelVisable}
