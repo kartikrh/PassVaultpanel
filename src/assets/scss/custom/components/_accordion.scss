@@ -76,4 +76,7 @@ body[data-theme="dark"] {
     .css-1fxc493-MuiPaper-root-MuiAccordion-root, .MuiAccordionSummary-root{
         border: none !important;
     }
+    .accordion-button.collapsed {
+        background-color: $dark-body-color;
+    }
 }
