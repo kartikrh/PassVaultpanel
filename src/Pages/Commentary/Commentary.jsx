@@ -14,7 +14,8 @@ export const CommentaryScreen = ({
     overBalls, anyPopup, handleRetiredHurt = {}, target, partnerships, commentaryId, handleWheelShowToggle, handleRemainingBallsShowToggle, isRemainingBallsShow, isWheelShow, overHistory,
     players, currentOver, currentInnings, isPredict, isPredictToggle, setIsPredictToggle,allteams, fetchData, isSaving, isAnyPopupOpen }) => {
     const [actionPopup, setActionPopup] = useState(undefined);
-    
+    const isDarkTheme = document.body.getAttribute('data-theme') === 'dark';
+
     const OffSymbolStatus = () => {
         return (
             <div
@@ -473,6 +474,37 @@ export const CommentaryScreen = ({
                         />
                     </div>
                 }
+                </div>
+                <div
+                    style={{
+                        background: isDarkTheme ? "#2c2c2c" : "#e0e0e0",
+                        color: isDarkTheme ? "#f0f0f0" : "#000",
+                        padding: "1rem",
+                        borderRadius: "8px",
+                        maxWidth: "500px"
+                    }}
+                >
+                    <strong><i>Note: </i></strong>
+                    <div style={{ display: "block", marginBottom: "1rem" }}>Keyboard Shortcuts for Scoring:</div>
+                    <div
+                        style={{
+                        display: "grid",
+                        gridTemplateColumns: "repeat(3, 1fr)",
+                        gap: "0.75rem 1rem"
+                        }}
+                    >
+                        <div><kbd>0</kbd> = 0 run</div>
+                        <div><kbd>1</kbd> = 1 run</div>
+                        <div><kbd>2</kbd> = 2 run</div>
+                        <div><kbd>3</kbd> = 3 run</div>
+                        <div><kbd>4</kbd> = 4 run</div>
+                        <div><kbd>6</kbd> = 6 run</div>
+                        <div><kbd>-</kbd> = Undo</div>
+                        <div><kbd>7</kbd> = Wide Ball</div>
+                        <div><kbd>8</kbd> = No Ball</div>
+                        <div><kbd>9</kbd> = Leg Bye</div>
+                        <div><kbd>+</kbd> = Ball Start </div>
+                    </div>
                 </div>
             </Col>
             <Col className="over-render p-0 m-0 px-md-2" xs={12} md={12} lg={6}>
