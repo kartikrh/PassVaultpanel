@@ -286,7 +286,6 @@ const Index = () => {
               openDate: text?.openDate,
               venue: text?.venue || "",
               compId: tournamentObject?.competitionId || 0,
-              competitionId: tournamentObject?.compRefId
             });
             addData({
               ...dataToDB,
@@ -297,7 +296,6 @@ const Index = () => {
               openDate: text?.openDate,
               venue: text?.venue || "",
               compId: tournamentObject?.competitionId || 0,
-              competitionId: tournamentObject?.compRefId
             });
           }
           }}
@@ -378,6 +376,7 @@ const Index = () => {
       style: { width: "30%" },
     },
   ];
+  
   const columnsC = [
     selectedMarket?.isMarket && {
       title: "Import",
@@ -406,8 +405,8 @@ const Index = () => {
               rateSource: rateSource,
               categoryType: record?.categoryType,
               competitionName: tournamentObject?.competitionName || dataToDB?.competitionName,
-              compId: tournamentObject?.competitionId || dataToDB?.competitionId,
-              competitionId: tournamentObject?.compRefId
+              compId: tournamentObject?.competitionId || 0,
+              competitionId: tournamentObject?.compRefId || dataToDB?.competitionId
             });
             addMarketData({
               ...dataToDB,
@@ -420,8 +419,8 @@ const Index = () => {
               rateSource: rateSource,
               categoryType: record?.categoryType,
               competitionName: tournamentObject?.competitionName || dataToDB?.competitionName,
-              compId: tournamentObject?.competitionId || dataToDB?.competitionId,
-              competitionId: tournamentObject?.compRefId
+              compId: tournamentObject?.competitionId || 0,
+              competitionId: tournamentObject?.compRefId || dataToDB?.competitionId
             });
           }}
         >
