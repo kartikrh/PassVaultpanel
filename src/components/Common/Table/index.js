@@ -3192,6 +3192,7 @@ const Index = forwardRef(
                       options={tournamentList?.map((item) => ({
                         label: item?.competition,
                         value: item?.competitionId,
+                        compRefId: item?.competitionRefId
                       }))}
                       classNamePrefix="filter-dropdown"
                     />

@@ -58,6 +58,7 @@ const Index = () => {
   const [tournamentObject, setTournamentObject] = useState({
     competitionId: 0,
     competitionName: "",
+    compRefId: ""
   });
 
   // Define handleClick function to update state
@@ -65,6 +66,7 @@ const Index = () => {
     setTournamentObject({
       competitionId: val.value.toString(),
       competitionName: val.label,
+      compRefId: val.compRefId
     });
   };
 
@@ -259,6 +261,7 @@ const Index = () => {
                 venue: text?.venue || "",
                 competitionName: tournamentObject?.competitionName || "", // Add competitionName here
                 compId: tournamentObject?.competitionId,
+                competitionId: tournamentObject?.compRefId
               });
               addData({
                 ...dataToDB,
@@ -270,6 +273,7 @@ const Index = () => {
                 venue: text?.venue || "",
                 competitionName: tournamentObject?.competitionName || "", // Add competitionName here
                 compId: tournamentObject?.competitionId,
+                competitionId: tournamentObject?.compRefId
               });
             }
             else{
