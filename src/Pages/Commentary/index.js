@@ -88,10 +88,15 @@ const Index = () => {
     label: "Local Timezone",
     value: 1,
   });
+  // const [dateRange, setDateRange] = useState({
+  //   startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
+  //   endDate: `${new Date().toISOString().split("T")[0]}T23:59:00`,
+  // });
   const [dateRange, setDateRange] = useState({
     startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
-    endDate: `${new Date().toISOString().split("T")[0]}T23:59:00`,
+    endDate: `${new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split("T")[0]}T23:59:00`,
   });
+
   const [checekedList, setCheckedList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);

@@ -73,33 +73,52 @@ const Index = () => {
   };
 
   const handlePermissions = async (pType, record, cState) => {
-    setIsLoading(true);
-    await axiosInstance
-      .post(`/admin/countryCode/activeInactive`, {
-        id: record.id,
-        [pType]: cState ? false : true,
+  setIsLoading(true);
+
+  let endpoint = "";
+  switch (pType) {
+    case "isActive":
+      endpoint = "/admin/countryCode/activeInactive";
+      break;
+    case "isDefault":
+      endpoint = "/admin/countryCode/isDefault";
+      break;
+    case "isClientShow":
+      endpoint = "/admin/countryCode/isClientShow";
+      break;
+    default:
+      console.error("Invalid permission type:", pType);
+      setIsLoading(false);
+      return;
+  }
+
+  try {
+    const response = await axiosInstance.post(endpoint, {
+      id: record.id,
+      [pType]: !cState,
+    });
+
+    fetchData();
+    dispatch(
+      updateToastData({
+        data: response?.message,
+        title: response?.title,
+        type: SUCCESS,
       })
-      .then((response) => {
-        fetchData();
-        dispatch(
-          updateToastData({
-            data: response?.message,
-            title: response?.title,
-            type: SUCCESS,
-          })
-        );
+    );
+  } catch (error) {
+    dispatch(
+      updateToastData({
+        data: error?.message,
+        title: error?.title,
+        type: ERROR,
       })
-      .catch((error) => {
-        setIsLoading(false);
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
-      });
-  };
+    );
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   const handleLoadData = async (password) => {
     setIsLoading(true);
@@ -323,6 +342,56 @@ const Index = () => {
           >
             <i
               className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}
+            ></i>
+          </Button>
+        </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Client Show",
+      key: "isClientShow",
+      render: (text, record) => (
+        <Tooltip
+          title={"Country Code"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
+          <Button
+            color={`${record.isClientShow ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handlePermissions("isClientShow", record, record.isClientShow);
+            }}
+          >
+            <i
+              className={`bx ${record.isClientShow ? "bx-check" : "bx-block"}`}
+            ></i>
+          </Button>
+        </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Default",
+      key: "isDefault",
+      render: (text, record) => (
+        <Tooltip
+          title={"Country Code"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
+          <Button
+            color={`${record.isDefault ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handlePermissions("isDefault", record, record.isDefault);
+            }}
+          >
+            <i
+              className={`bx ${record.isDefault ? "bx-check" : "bx-block"}`}
             ></i>
           </Button>
         </Tooltip>

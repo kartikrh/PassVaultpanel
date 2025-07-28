@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-
+import { Tooltip } from "antd";
 import { connect, useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import {
@@ -211,11 +211,11 @@ const Header = (props) => {
               <div
                 style={{
                   position: "fixed",
-                  top: currentLayout === "horizontal" ? "120px" : "70px", // Use local state
+                  top: currentLayout === "horizontal" ? "120px" : "71px", // Use local state
                   right: 0,
                   width: "200px",
                   height: `calc(100% - ${
-                    currentLayout === "horizontal" ? "120px" : "70px"
+                    currentLayout === "horizontal" ? "120px" : "71px"
                   })`,
                   backgroundColor: isDarkMode ? "#333333" : "#f8f9fa",
                   boxShadow: "-2px 0 8px rgba(0, 0, 0, 0.15)",
@@ -224,9 +224,11 @@ const Header = (props) => {
                   textAlign: "left",
                 }}
               >
-                <h6 style={{ color: isDarkMode ? "#ffffff": "#74788d " }}>Change Layout</h6>
+                <h6 style={{ color: isDarkMode ? "#ffffff" : "#74788d " }}>
+                  Change Layout
+                </h6>
                 <button
-                  className="btn btn-primary mb-2"
+                  className="btn btn-primary mb-4"
                   onClick={() => {
                     const newLayout =
                       currentLayout === "vertical" ? "horizontal" : "vertical";
@@ -239,30 +241,57 @@ const Header = (props) => {
                 </button>
 
                 <Row>
-                  <h6 style={{ color: isDarkMode ? "#ffffff": "#74788d " }}>Change Theme</h6>
+                  <h6 style={{ color: isDarkMode ? "#ffffff" : "#74788d " }}>
+                    Change Theme
+                  </h6>
                 </Row>
                 <Row>
                   <Col className={"p-0"}>
-                    <button
-                      className={`btn btn-primary ${isDarkMode ? "bg-white":""} w-100`}
-                      onClick={() => {
-                        dispatch(changeSidebarTheme("dark"));
-                      }}
-                      disabled = {isDarkMode}
+                    <Tooltip
+                      title="Dark"
+                      color={"#e8e8ea"}
+                      overlayInnerStyle={{ color: "#000" }}
                     >
-                      {isDarkMode ? <MdDarkMode color={isDarkMode ? "black" : ""}/> : <MdOutlineDarkMode color={isDarkMode ? "black" : ""} />}
-                    </button>
+                      <button
+                        className={`btn btn-primary ${
+                          isDarkMode ? "bg-white" : ""
+                        } w-100`}
+                        onClick={() => {
+                          dispatch(changeSidebarTheme("dark"));
+                        }}
+                        disabled={isDarkMode}
+                      >
+                        {isDarkMode ? (
+                          <MdDarkMode color={isDarkMode ? "black" : ""} />
+                        ) : (
+                          <MdOutlineDarkMode
+                            color={isDarkMode ? "black" : ""}
+                          />
+                        )}
+                      </button>
+                    </Tooltip>
                   </Col>
                   <Col className={"p-0 px-1"}>
+                  <Tooltip
+                      title="Light"
+                      color={"#e8e8ea"}
+                      overlayInnerStyle={{ color: "#000" }}
+                    >
                     <button
-                      className={`btn btn-primary ${isDarkMode ? "":"bg-white"} w-100`}
+                      className={`btn btn-primary ${
+                        isDarkMode ? "" : "bg-white"
+                      } w-100`}
                       onClick={() => {
                         dispatch(changeSidebarTheme("light"));
                       }}
-                      disabled = {!isDarkMode}
+                      disabled={!isDarkMode}
                     >
-                      {isDarkMode ? <MdOutlineLightMode  color={isDarkMode ? "" : "black"} /> : <MdLightMode  color={isDarkMode ? "black" : "black"} />}
-                    </button>
+                      {isDarkMode ? (
+                        <MdOutlineLightMode color={isDarkMode ? "" : "black"} />
+                      ) : (
+                        <MdLightMode color={isDarkMode ? "black" : "black"} />
+                      )}
+                    </button></Tooltip>
                   </Col>
                 </Row>
               </div>
