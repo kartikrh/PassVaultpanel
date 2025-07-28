@@ -1580,6 +1580,7 @@
 
 body[data-theme="dark"] {
   .header-sticky {
-    background-color: #1a2942 !important;
+    /* background-color: #1a2942 !important; */
+    background-color: #2c2c2c !important;
   }
 }
