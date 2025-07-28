@@ -62,7 +62,12 @@ function AddCommentary() {
     //     }
     //     fetchMasterData()
     // }, [permissionObj]);
-
+    const updateSavedFormState = (newFormData) => {
+        setSavedFormState(prevState => {
+            const merged = { ...prevState, ...newFormData };
+            return merged;
+        });
+    };
     useEffect(() => {
       const hasCommentaryPermission = checkPermission(
         permissionObj,
@@ -145,7 +150,12 @@ function AddCommentary() {
     }, [isSaved]);
 
     const handleFormADataChange = (newFormData) => {
-        setSavedFormState({...savedFormState, ...newFormData});
+        // setSavedFormState({...savedFormState, ...newFormData});
+        const allowedFields = MatchDetailFields.map(field => field.name).filter(Boolean);
+        const filteredData = Object.fromEntries(
+            Object.entries(newFormData).filter(([key]) => allowedFields.includes(key))
+        );
+        updateSavedFormState(filteredData);
         setCompetitionId(newFormData["competitionId"]);
         const requiredFields = ["competitionId", "eventTypeId", "matchTypeId", "eventName", "eventDate", "delay"];
         const isValid = requiredFields.every(
@@ -278,7 +288,12 @@ function AddCommentary() {
         }
     }
     const handleFormBDataChange = (newFormData) => {
-        setSavedFormState({...savedFormState, ...newFormData});
+        // setSavedFormState({...savedFormState, ...newFormData});
+        const allowedFields = TeamDetailsFields.map(field => field.name).filter(Boolean);
+        const filteredData = Object.fromEntries(
+            Object.entries(newFormData).filter(([key]) => allowedFields.includes(key))
+        );
+        updateSavedFormState(filteredData);
         
         // if both data are not same then do API call and fetch data
         if (newFormData["team1Id"] !== savedFormState["team1Id"]) {
@@ -340,12 +355,22 @@ function AddCommentary() {
     };
 
     const handleFormDDataChange = (newFormData) => {
-        setSavedFormState({...savedFormState, ...newFormData});
+        // setSavedFormState({...savedFormState, ...newFormData});
+        const allowedFields = PitchDetailsFields.map(field => field.name).filter(Boolean);
+        const filteredData = Object.fromEntries(
+            Object.entries(newFormData).filter(([key]) => allowedFields.includes(key))
+        );
+        updateSavedFormState(filteredData);
     }
 
     const handleFormCDataChange = (newFormData) => {
-        setSavedFormState({...savedFormState, ...newFormData});
-        if (newFormData["countryId"] !== "0") {
+        // setSavedFormState({...savedFormState, ...newFormData});
+        const allowedFields = WeatherDetailsFields.map(field => field.name).filter(Boolean);
+        const filteredData = Object.fromEntries(
+            Object.entries(newFormData).filter(([key]) => allowedFields.includes(key))
+        );
+        updateSavedFormState(filteredData);
+        if (newFormData["countryId"] && newFormData["countryId"] !== "0") {
             setIsApiLoading(true);
             axiosInstance.post('/admin/list/venueList', { countryId: (newFormData["countryId"]) })
                 .then((response) => {
@@ -435,22 +460,22 @@ function AddCommentary() {
                     }).catch((error) => {
                         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
                     });
-                await axiosInstance.post('/admin/list/venueList', { countryId: updateScreenData["countryId"] })
-                    .then((response) => {
-                        const resultData = fetchResult(response);
-                        // setCompetitionList(resultData);
-                        const formattedData = resultData?.map(item => {
-                            return { label: item?.name, value: item?.venueId }
-                        })
-                        setMasterData((preData) => ({
-                            ...preData,
-                            "location": formattedData,
-                        }));
-                        setIsApiLoading(false);
-                    }).catch((error) => {
-                        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-                        setIsApiLoading(false);
-                    });
+                // await axiosInstance.post('/admin/list/venueList', { countryId: updateScreenData["countryId"] })
+                //     .then((response) => {
+                //         const resultData = fetchResult(response);
+                //         // setCompetitionList(resultData);
+                //         const formattedData = resultData?.map(item => {
+                //             return { label: item?.name, value: item?.venueId }
+                //         })
+                //         setMasterData((preData) => ({
+                //             ...preData,
+                //             "location": formattedData,
+                //         }));
+                //         setIsApiLoading(false);
+                //     }).catch((error) => {
+                //         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+                //         setIsApiLoading(false);
+                //     });
                 // await axiosInstance
                 //     .post("/admin/list/countryList", {})
                 //     .then((response) => {
