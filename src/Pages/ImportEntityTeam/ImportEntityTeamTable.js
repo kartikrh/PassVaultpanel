@@ -248,6 +248,7 @@ export default function ImportEntityTeam() {
     // resetButton: true,
     // reloadButton: true,
   };
+  const customPageSizeOptions = ["10", "20", "50", "100"];
 
   return (
     <React.Fragment>
@@ -267,6 +268,7 @@ export default function ImportEntityTeam() {
             serverTotal={total}
             setServerCurrentPage={handlePageChange}
             setServerPageSize={handlePageSizeChange}
+            customPageSizeOptions={customPageSizeOptions}
             // onBreadCrumbsClick={handleBreadcrumbClick}
             // breadCrumbs={navigationHistory}
             // handleCustomReset={handleReset}

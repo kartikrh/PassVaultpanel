@@ -7,6 +7,7 @@ const Index = ({
   fetchData,
   setCurrentPage,
   setPageSize,
+  customPageSizeOptions, //for customising page options
 }) => {
   const shouldShowSizeChanger = total >= 10;
   const [prev, setPrev] = useState(pageSize);
@@ -21,22 +22,16 @@ const Index = ({
   useEffect(() => {
     fetchData();
   }, [currentPage, pageSize]);
+
+  const defaultOptions = ["10", "20", "50", "100", "500", "1000", "5000", "10000"];
+
   return (
     <Pagination
       showSizeChanger={shouldShowSizeChanger}
       onShowSizeChange={onShowSizeChange}
       onChange={onShowSizeChange}
       current={currentPage}
-      pageSizeOptions={[
-        "10",
-        "20",
-        "50",
-        "100",
-        "500",
-        "1000",
-        "5000",
-        "10000",
-      ]}
+      pageSizeOptions={customPageSizeOptions || defaultOptions}
       // defaultCurrent={currentPage}
       total={total}
       pageSize={pageSize}
