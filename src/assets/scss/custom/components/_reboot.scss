@@ -52,4 +52,20 @@ label {
         position: relative;
     }
   }
+
+body[data-theme="dark"].h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: $dark-font-color;
+    font-family: $font-family-secondary;
+}
   
