@@ -95,6 +95,8 @@ const AddCountryCode = () => {
       const extraData = {
         id: countryCodeId,
         isActive: dataToSave?.isActive || false,
+        isDefault: dataToSave?.isDefault || false,
+        isClientShow: dataToSave?.isClientShow || false,
         // timezone: convertDateLocalToUTC(dataToSave?.timezone),
       };
       dispatch(
