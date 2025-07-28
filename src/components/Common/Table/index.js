@@ -148,6 +148,7 @@ const Index = forwardRef(
       renderCustomFilter,
       handleCustomReset,
       pythonApis,
+      customPageSizeOptions,
     },
     ref
   ) => {
@@ -3793,6 +3794,7 @@ const Index = forwardRef(
                           setCurrentPage={setServerCurrentPage}
                           setPageSize={setServerPageSize}
                           isServerSide={true}
+                          customPageSizeOptions={customPageSizeOptions} //for custom pageSizeOptions like in team import
                         />
                       ) : isPagination ? (
                         <Pagination

@@ -469,7 +469,7 @@ const EventDetails = () => {
                 {loading && <SpinnerModel />}
                 <Row>
                   <Col>
-                    <h5>
+                    <h5 className="event-header">
                       {eventDetails?.eventName} [
                       {convertDateUTCToLocal(eventDetails?.eventDate, "index")}]
                     </h5>

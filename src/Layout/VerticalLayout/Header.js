@@ -251,6 +251,7 @@ const Header = (props) => {
                       title="Dark"
                       color={"#e8e8ea"}
                       overlayInnerStyle={{ color: "#000" }}
+                      placement="bottom"
                     >
                       <button
                         className={`btn btn-primary ${
@@ -276,6 +277,7 @@ const Header = (props) => {
                       title="Light"
                       color={"#e8e8ea"}
                       overlayInnerStyle={{ color: "#000" }}
+                      placement="bottom"
                     >
                     <button
                       className={`btn btn-primary ${
