@@ -290,6 +290,8 @@ export default function ImportEntityPlayer() {
     reloadButton: true,
   };
 
+  const customPageSizeOptions = ["10", "20", "50", "100"];
+
   return (
     <React.Fragment>
       <div className="page-content">
@@ -307,6 +309,7 @@ export default function ImportEntityPlayer() {
             serverTotal={total}
             setServerCurrentPage={handlePageChange}
             setServerPageSize={handlePageSizeChange}
+            customPageSizeOptions={customPageSizeOptions}
             handleCustomReset={handleReset}
             handleReload={handleReload}
             renderCustomFilter={() => (

@@ -74,14 +74,14 @@ const MatchCard = ({ matchData }) => {
       <Row gutter={[24, 24]} className="mb-2">
         <Col xs={24} sm={11}>
           <Card
-            className="text-center bg-light border"
+            className="text-center team-card border"
             bodyStyle={{ padding: 5 }}
             style={{ minHeight: 215 }}
           >
             <Avatar size={75} src={teama?.logo_url} className="bg-primary mb-3">
               {teama?.short_name}
             </Avatar>
-            <h3 className="my-2 h5">{teama?.name}</h3>
+            <h3 className="matchCardText my-2 h5">{teama?.name}</h3>
             <p className="m-0 text-muted">({teama?.short_name})</p>
             {teama?.scores_full && (
               <div className="mt-3">
@@ -105,7 +105,7 @@ const MatchCard = ({ matchData }) => {
 
         <Col xs={24} sm={11}>
           <Card
-            className="text-center bg-light border"
+            className="text-center team-card border"
             bodyStyle={{ padding: 5 }}
             style={{ minHeight: 215 }}
           >
@@ -117,7 +117,7 @@ const MatchCard = ({ matchData }) => {
             >
               {teamb?.short_name}
             </Avatar>
-            <h3 className="my-2 h5">{teamb?.name}</h3>
+            <h3 className="matchCardText my-2 h5">{teamb?.name}</h3>
             <p className="m-0 text-muted">({teamb?.short_name})</p>
             {teamb?.scores_full && (
               <div className="mt-3">
@@ -134,7 +134,7 @@ const MatchCard = ({ matchData }) => {
       {result && status === 2 && (
         <div className="text-center mb-3">
           <Card
-            className="bg-light-success border border-success rounded p-2"
+            className="team-card bg-light-success border border-success rounded p-2"
             bodyStyle={{ padding: "0px 10px" }} // Reduce internal padding
           >
             <TrophyOutlined className="fs-4 text-success me-2" />
@@ -151,27 +151,27 @@ const MatchCard = ({ matchData }) => {
       {/* Match Details */}
       <Row gutter={[24, 16]}>
         <Col xs={24} md={12}>
-          <Card title="Match Information" size="small" className="h-100">
-            <div className="d-flex align-items-center mb-2">
+          <Card title={<span className="matchCardText">Match Information: </span>} size="small" className="team-card h-100">
+            <div className="d-flex align-items-center mb-2 matchCardText">
               <CalendarOutlined className="me-2 text-primary" />
               <span>
                 <strong>Start:</strong> {formatDateTime(date_start_ist)}
               </span>
             </div>
-            <div className="d-flex align-items-center mb-2">
+            <div className="d-flex align-items-center mb-2 matchCardText">
               <CalendarOutlined className="me-2 text-primary" />
               <span>
                 <strong>End:</strong> {formatDateTime(date_end_ist)}
               </span>
             </div>
-            <div className="d-flex align-items-center mb-2">
+            <div className="d-flex align-items-center mb-2 matchCardText">
               <EnvironmentOutlined className="me-2 text-primary" />
               <span>
                 <strong>Venue:</strong> {venue?.name}, {venue?.location}
               </span>
             </div>
             {toss && (status === 2 || status === 3) && (
-              <div className="mt-3">
+              <div className="mt-3 matchCardText">
                 <strong>Toss:</strong> {toss.text}
               </div>
             )}
@@ -179,21 +179,21 @@ const MatchCard = ({ matchData }) => {
         </Col>
 
         <Col xs={24} md={12}>
-          <Card title="Competition Details" size="small" className="h-100">
-            <div className="mb-2">
+          <Card title={<span className="matchCardText">Competition Details: </span>} size="small" className="team-card h-100">
+            <div className="mb-2 matchCardText">
               <strong>Tournament:</strong> {competition?.title}
             </div>
-            <div className="mb-2">
+            <div className="mb-2 matchCardText">
               <strong>Season:</strong> {competition?.season}
             </div>
-            <div className="mb-2">
+            <div className="mb-2 matchCardText">
               <strong>Category:</strong>{" "}
               {competition?.category
                 ? competition.category.toUpperCase()
                 : "N/A"}
             </div>
             {umpires && (
-              <div className="mt-3">
+              <div className="mt-3 matchCardText">
                 <strong>Umpires:</strong>
                 <p className="mt-1 mb-0 small text-muted">{umpires}</p>
               </div>

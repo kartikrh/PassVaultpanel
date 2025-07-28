@@ -366,7 +366,6 @@ const Index = () => {
   };
   return (
     <React.Fragment>
-      Photo library
       <div className="page-content">
         <Container fluid={true}>
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Photo library" />

@@ -346,7 +346,6 @@ const Index = () => {
     };
     return (
         <React.Fragment>
-            Video library
             <div className="page-content">
                 <Container fluid={true}>
                     <Breadcrumbs title="ScoreCard" breadcrumbItem="Video library" />

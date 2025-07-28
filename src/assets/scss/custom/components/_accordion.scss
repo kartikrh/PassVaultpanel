@@ -79,4 +79,7 @@ body[data-theme="dark"] {
     .accordion-button.collapsed {
         background-color: $dark-body-color;
     }
+    .market-category-body .table-hover > tbody > tr:hover > td {
+        color: $sidebar-menu-item-hover-color;
+    }
 }

@@ -622,6 +622,9 @@ body[data-sidebar-size="small"] {
 .ball-white {
     background-color: white;
   }
+.team-card{
+    background-color: $gray-300;
+    }
 
 body[data-theme="dark"]{
     .css-1wqf3nl-MuiAccordionSummary-expandIconWrapper{
@@ -1042,5 +1045,21 @@ body[data-theme="dark"]{
     .ant-pagination-item-ellipsis{
         color: $dark-font-color !important
     }
-      
+
+    .event-header {
+        color: $dark-font-color;
+    }  
+    .team-card{
+    background-color: $sidebar-dark-bg; // Softer dark variant
+    }     
+    .team-card .text-muted {
+        color: #d1d1d1 !important;
+    }
+    .team-card .matchCardText {
+        color: white;
+    }
+    .ant-modal-content {
+        background-color: #3f3f3f;
+        border-color: $gray-100 1 rem;
+    }
 }
