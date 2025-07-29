@@ -75,11 +75,22 @@ body[data-theme="dark"] {
     // }
     .css-1fxc493-MuiPaper-root-MuiAccordion-root, .MuiAccordionSummary-root{
         border: none !important;
+        background-color: $dark-body-bg; //used for Over background in Scoring
     }
     .accordion-button.collapsed {
         background-color: $dark-body-color;
     }
     .market-category-body .table-hover > tbody > tr:hover > td {
         color: $sidebar-menu-item-hover-color;
+    }
+    .overHeadTextColor{
+        color: #e5e5e5 !important;
+    }
+    .rightPanelTabsText, .partnershipTextColor{
+        color: $text-color-for-dark-theme;
+    }
+    .MuiTableCell-root {
+        background-color: $dark-body-bg;
+        color: #e5e5e5 !important;
     }
 }

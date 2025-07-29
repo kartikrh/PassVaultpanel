@@ -124,22 +124,22 @@ const PartnershipAccordian = ({ partnerships, overBalls, teamDetails, overHistor
                                 <div className={`${cardType}-player-name`}>
                                     {partnership.batter1Name}
                                 </div>
-                                <div className={`${cardType}-player-stats`}>
+                                <div className={`${cardType}-player-stats partnershipTextColor`}>
                                     {partnership.batter1Runs || 0} ({partnership.batter1Balls || 0})
                                 </div>
                             </div>
                         </div>
-                        <div className={`${cardType}-partnership-stats`}>
+                        <div className={`${cardType}-partnership-stats partnershipTextColor`}>
                             <div className={`${cardType}-total-runs`}>
                                 {partnership.totalRuns}
-                                <span className="text-secondary small fs-6 fw-normal">
+                                <span className="partnershipTextColor small fs-6 fw-normal">
                                     ({partnership.totalBalls})
                                 </span>
                             </div>
-                            <div className={`${cardType}-total-balls`}>
+                            <div className={`${cardType}-total-balls partnershipTextColor`}>
                                 {partnership.totalFour} 4s {partnership.totalSix} 6s
                             </div>
-                            <div className={`${cardType}-partnership-extras`}>
+                            <div className={`${cardType}-partnership-extras partnershipTextColor`}>
                                 Extras: {partnership.extras || 0}
                             </div>
                         </div>
@@ -156,7 +156,7 @@ const PartnershipAccordian = ({ partnerships, overBalls, teamDetails, overHistor
                                 <div className={`${cardType}-player-name`}>
                                     {partnership.batter2Name}
                                 </div>
-                                <div className={`${cardType}-player-stats`}>
+                                <div className={`${cardType}-player-stats partnershipTextColor`}>
                                     {partnership.batter2Runs || 0} ({partnership.batter2Balls || 0})
                                 </div>
                             </div>

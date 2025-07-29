@@ -393,7 +393,7 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                                                 >
                                                     <Box display="flex" alignItems="center" justifyContent="space-between" width="100%">
                                                         <Box display="flex" alignItems="center" gap={1}>
-                                                            <Typography variant="subtitle2" fontWeight="bold" className='accordian-text'>
+                                                            <Typography variant="subtitle2" fontWeight="bold" className='overHeadTextColor accordian-text'>
                                                                 Over {Math.floor(parseFloat(overNum))}
                                                             </Typography>
                                                             {bowler?.playerimage ?
@@ -407,14 +407,14 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                                                                     sx={{ width: 32, height: 32 }}
                                                                 />
                                                             }
-                                                            <Typography variant="subtitle2" fontWeight="bold" className='accordian-text'>{bowler?.playerName || 'Unknown Bowler'}
+                                                            <Typography variant="subtitle2" fontWeight="bold" className='overHeadTextColor accordian-text'>{bowler?.playerName || 'Unknown Bowler'}
                                                             </Typography>
                                                         </Box>
-                                                        <Typography variant="caption" color="text.secondary" className='accordian-text'>
+                                                        <Typography variant="caption" color="text.secondary" className='overHeadTextColor accordian-text'>
                                                             {/* {`${overDetails?.totalRun || 0}/${overDetails?.totalWicket || 0}`} */}
                                                             <Typography variant="subtitle2" sx={{
                                                                 fontFamily: "'Work Sans', sans-serif"
-                                                            }} className='accordian-text'>
+                                                            }} className='overHeadTextColor accordian-text'>
                                                                 {`${overDetails?.totalRun || 0}/${overDetails?.totalWicket || 0} ${overDetails?.isComplete
                                                                     ? `[${overDetails?.teamScore}]`
                                                                     : `[${teamDetails?.[BATTING_TEAM]?.teamScore || 0}/${teamDetails?.[BATTING_TEAM]?.teamWicket || 0}]`

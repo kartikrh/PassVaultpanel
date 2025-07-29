@@ -10,19 +10,19 @@ const CommentaryRightPanel = ({ overBalls, partnerships, teamDetails, overHistor
             <div className="partnership-tab-navigation mb-1">
                 <div className="d-flex justify-content-between align-items-center mt-1">
                     <button
-                        className={`tab-button ${activeTab === 'overs' ? 'active' : ''}`}
+                        className={`tab-button ${activeTab === 'overs' ? 'active' : 'rightPanelTabsText'}`}
                         onClick={() => setActiveTab('overs')}
                     >
                         Overs
                     </button>
                     <button
-                        className={`tab-button ${activeTab === 'partnerships' ? 'active' : ''}`}
+                        className={`tab-button ${activeTab === 'partnerships' ? 'active' : 'rightPanelTabsText'}`}
                         onClick={() => setActiveTab('partnerships')}
                     >
                         Partnerships
                     </button>
                     <button
-                        className={`tab-button ${activeTab === 'drs' ? 'active' : ''}`}
+                        className={`tab-button ${activeTab === 'drs' ? 'active' : 'rightPanelTabsText'}`}
                         onClick={() => setActiveTab('drs')}
                     >
                         DRS
