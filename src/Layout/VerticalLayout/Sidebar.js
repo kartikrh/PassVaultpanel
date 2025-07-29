@@ -227,8 +227,8 @@ const Sidebar = (props) => {
     return (
       <React.Fragment>
         <div className="horizontal-menu">
-          <SimpleBar className="horizontal-scroll" ref={ref}>
-            <div id="sidebar-menu">
+          {/* <SimpleBar className="horizontal-scroll" ref={ref}> */}
+            <div id="sidebar-menu horizontal-scroll">
               <ul
                 className="metismenu list-unstyled horizontal-nav"
                 id="side-menu-item"
@@ -298,7 +298,7 @@ const Sidebar = (props) => {
                   ))}
               </ul>
             </div>
-          </SimpleBar>
+          {/* </SimpleBar> */}
         </div>
       </React.Fragment>
     );
