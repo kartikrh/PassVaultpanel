@@ -72,12 +72,12 @@ const Index = () => {
         pickBy(
           {
             ...data,
-            isTrending:
-              data?.isTrending !== undefined
-                ? data?.isTrending
-                : tableActions?.isTrending !== undefined
-                ? tableActions?.isTrending
-                : false,
+            // isTrending:
+            //   data?.isTrending !== undefined
+            //     ? data?.isTrending
+            //     : tableActions?.isTrending !== undefined
+            //     ? tableActions?.isTrending
+            //     : false,
           },
           (value) => value !== null
         )
