@@ -8,7 +8,7 @@ import ChangeOverModal from "./CommentaryModels/ChangeOverModal.jsx"
 import WicketModal from "./CommentaryModels/WicketModal.jsx"
 import { fetchNextPlayerOrder, fetchWinnerMessage, fetchWinnerMessageRmk, generateBall, generateDisplayStatus, generateOver, generatePartnership, generateRemainingRuns, generateWicket, getBallsForAllOver, getBowlerOnlyRuns, getBowlerRelatedWickets, getEconomyRate, getNonNegativeValue, getPlayerNameById, getRequiredRunRate, getRunRate, getStrikeRate } from "./functions.js"
 import { useDispatch, useSelector } from "react-redux"
-import { addCommentaryScreenData, addSuperOverCall, changeBowlerFromCommentary, clearAddCommentaryScreenData, clearLoadingAndError, clearUndoFlag, updateCommentaryBallStatus, updateCommentaryDisplayStatus } from "../../Features/Tabs/commentarySlice.js"
+import { addCommentaryScreenData, addSuperOverCall, changeBowlerFromCommentary, clearAddCommentaryScreenData, clearLoadingAndError, clearUndoFlag, inningsChangeData, updateCommentaryBallStatus, updateCommentaryDisplayStatus } from "../../Features/Tabs/commentarySlice.js"
 import ChangeInningsModal from "./CommentaryModels/ChangeInningsModal.jsx"
 import { useNavigate } from "react-router-dom"
 import UpdateInningsModal from "./CommentaryModels/UpdateInningsModal.jsx"
@@ -326,6 +326,7 @@ const Commentary = (props) => {
             "commentaryTeams": teamUpdates,
             "commentaryPartnership": updatedPartnership,
             "commentaryPlayers": setAllPlayerToNull(),
+            "isTeamStatusUpdate": true,
             "isEndInnings": true
         }
         // console.log("Called from : 2")
@@ -367,6 +368,7 @@ const Commentary = (props) => {
             },
             "commentaryTeams": updatedInningsTeam,
             "commentaryPlayers": setAllPlayerToNull(),
+            "isTeamStatusUpdate": true,
             "isEndInnings": true
         }
         // console.log("Called from : 3")
@@ -1731,6 +1733,7 @@ const Commentary = (props) => {
                 { ...onPitchPlayers[NON_STRIKE], isPlay: null, },
                 { ...onPitchPlayers[CURRENT_BOWLER], isPlay: null, }
             ],
+            "isTeamStatusUpdate": true,
         }
         setRedirectOnScreenChange(true)
         // console.log("Called from : 17")
