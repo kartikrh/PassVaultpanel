@@ -42,6 +42,12 @@ body.horizontal-layout .vertical-menu {
 
 }
 
+.horizontal-layout .commentary-content {
+  padding-top: 0 !important;
+  margin-top: 0;
+}
+
+
 body.horizontal-layout .horizontal-menu .simplebar-wrapper,
 body.horizontal-layout .horizontal-menu .simplebar-mask,
 body.horizontal-layout .horizontal-menu .simplebar-content-wrapper {
