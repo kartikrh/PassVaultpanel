@@ -238,6 +238,7 @@ const TeamPlayerCard = ({ commentaryId, teamDetails, inningPlayers, fetchData, c
                 <Col lg={8} className="my-1">
                     <Select
                         class="form-control"
+                        classNamePrefix="filter-dropdown"
                         value={selectedPlayer || ""}
                         onChange={(value) => {
                             setSelectedPlayer(value);

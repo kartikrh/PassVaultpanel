@@ -16,7 +16,7 @@ $light-score-card-bg: #E6E6E6;
 
 // Dark mode variables
 $dark-score-body-bg: #3f3f3f;
-$dark-score-card-bg: #333333;
+$dark-score-card-bg: #2c2c2c; // for scoring rightPanelBackground
 $dark-body-bg: #3f3f3f; // for table background
 $dark-body-color: #fff;
 $dark-font-color: #fff;
@@ -57,6 +57,8 @@ $sidebar-dark-menu-item-hover-color: #0bb197;
 $sidebar-dark-menu-item-hover-bg: #fff;
 $sidebar-dark-menu-item-active-color: #0bb197;
 $sidebar-dark-menu-item-active-bg: #ffffff;
+
+$text-color-for-dark-theme: #d1d1d1;
 
 // Topbar - Deafult Light
 $header-height: 70px;
