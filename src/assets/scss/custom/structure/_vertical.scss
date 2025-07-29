@@ -1050,7 +1050,7 @@ body[data-theme="dark"]{
         color: $dark-font-color;
     }  
     .team-card{
-    background-color: $sidebar-dark-bg; // Softer dark variant
+        background-color: $sidebar-dark-bg; // Softer dark variant
     }     
     .team-card .text-muted {
         color: #d1d1d1 !important;
@@ -1060,6 +1060,5 @@ body[data-theme="dark"]{
     }
     .ant-modal-content {
         background-color: #3f3f3f;
-        border-color: $gray-100 1 rem;
     }
 }
