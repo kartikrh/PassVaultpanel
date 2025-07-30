@@ -9,7 +9,7 @@ import PlayerImage from "../../components/Common/Reusables/PlayerImage"
 import _ from "lodash"
 
 export const CommentaryScreen = ({
-    refId, teamDetails, onPitchPlayers, updateRuns, changePlayer, changeOver, updateExtras, onWicketClick,
+    refId, teamDetails, onPitchPlayers, _onPitchPlayers, updateRuns, changePlayer, changeOver, updateExtras, onWicketClick,
     onUndoClick, changeStrike, endInnings, isLoading, changeBowler, updateDisplayStatus, showPaneltyRuns,
     overBalls, anyPopup, handleRetiredHurt = {}, target, partnerships, commentaryId, handleWheelShowToggle, handleRemainingBallsShowToggle, isRemainingBallsShow, isWheelShow, overHistory,
     players, currentOver, currentInnings, isPredict, isPredictToggle, setIsPredictToggle,allteams, fetchData, isSaving, isAnyPopupOpen }) => {
@@ -194,8 +194,8 @@ export const CommentaryScreen = ({
             {
                 run: run,
                 ball: ball,
-                batter: onPitchPlayers[ON_STRIKE],
-                bowler: onPitchPlayers[CURRENT_BOWLER],
+                batter: _onPitchPlayers?.[ON_STRIKE] || onPitchPlayers[ON_STRIKE],
+                bowler: _onPitchPlayers?.[CURRENT_BOWLER] || onPitchPlayers[CURRENT_BOWLER],
                 isBoundary
             }
         )

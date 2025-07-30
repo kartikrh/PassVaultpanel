@@ -2670,6 +2670,7 @@ const Commentary = (props) => {
                 commentaryId={commentaryDetails?.commentaryId}
                 teamDetails={teams}
                 onPitchPlayers={onPitchPlayers}
+                _onPitchPlayers={_onPitchPlayers}
                 updateRuns={updateRuns}
                 changePlayer={(type) => {
                     setIsSwapPlayer(true)
