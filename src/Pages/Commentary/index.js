@@ -940,12 +940,12 @@ const Index = () => {
         setIsLoading(false);
       });
   };
-
+  
   const handleChangeScoring = async (e) => {
     setIsLoading(true);
     await axiosInstance
       .post(`/admin/commentary/scoringType`, {
-        "scoringType": selectedTableElements?.scoringType?.value,
+        "scoringType": selectedTableElements?.scoringType?.value ? selectedTableElements?.scoringType?.value : null,
         // "competitionId": selectedTableElements?.competition?.value,
         "commentaryId": selectedCompititon?.commentaryId,
         "tpId" : selectedTableElements?.scoringType?.value == 2 ? selectedTableElements?.tpId : null
