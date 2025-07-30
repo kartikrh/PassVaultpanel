@@ -23,6 +23,8 @@ export const ChangeScoringModel = ({
                   label: selectedCompititon.scoringType == 1 ? "Manual" : selectedCompititon.scoringType == 2 ? "Entity" : "",
               }
               : null,
+          tpId: selectedCompititon?.tpId ? selectedCompititon.tpId
+              : null,
           });
 
       }
@@ -61,9 +63,10 @@ export const ChangeScoringModel = ({
                     value={selectedTableElements?.scoringType ? selectedTableElements?.scoringType : selectedCompititon.scoringType}
                     placeholder="Scoring Type"
                     onChange={(e) => {
-                      setSelectedTableElements({
+                      setSelectedTableElements((prev) => ({
+                        ...prev,
                           scoringType: e,
-                      });
+                      }));
                     // setEventTypeId(e?.value);
                     }}
                     options={[
