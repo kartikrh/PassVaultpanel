@@ -21,6 +21,171 @@ import {
   USER_DATA_KEY,
 } from "../../components/Common/Const";
 
+// HorizontalMenu Component
+const HorizontalMenu = ({ menuData, t, onItemClick }) => {
+  const [activeDropdown, setActiveDropdown] = useState(null);
+  const scrollContainerRef = useRef(null);
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showRightArrow, setShowRightArrow] = useState(false);
+
+  useEffect(() => {
+    const checkScrollButtons = () => {
+      if (scrollContainerRef.current) {
+        const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
+        setShowLeftArrow(scrollLeft > 0);
+        setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 1);
+      }
+    };
+
+    const container = scrollContainerRef.current;
+    if (container) {
+      container.addEventListener('scroll', checkScrollButtons);
+      checkScrollButtons();
+      
+      // Check on resize
+      const resizeObserver = new ResizeObserver(checkScrollButtons);
+      resizeObserver.observe(container);
+      
+      return () => {
+        container.removeEventListener('scroll', checkScrollButtons);
+        resizeObserver.disconnect();
+      };
+    }
+  }, [menuData]);
+
+  const handleMouseEnter = (itemId) => {
+    setActiveDropdown(itemId);
+  };
+
+  const handleMouseLeave = () => {
+    setActiveDropdown(null);
+  };
+
+  const scrollLeft = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: -200, behavior: 'smooth' });
+    }
+  };
+
+  const scrollRight = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: 200, behavior: 'smooth' });
+    }
+  };
+
+  const sortedMenuData = (menuData || [])
+    .slice()
+    .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+
+  return (
+    <div className="horizontal-menu-wrapper">
+      {/* Left scroll arrow */}
+      {showLeftArrow && (
+        <button 
+          className="scroll-arrow scroll-arrow-left" 
+          onClick={scrollLeft}
+          aria-label="Scroll left"
+        >
+          <i className="mdi mdi-chevron-left"></i>
+        </button>
+      )}
+
+      {/* Scrollable menu container */}
+      <div 
+        className="horizontal-menu-scroll" 
+        ref={scrollContainerRef}
+      >
+        <nav className="horizontal-nav">
+          <ul className="horizontal-menu-list">
+            {sortedMenuData.map((item, index) => {
+              // Check if any submenu item is active
+              const hasActiveChild = item.subItem?.some(subItem => 
+                window.location.pathname === subItem.link
+              );
+              
+              return (
+                <li 
+                  key={index}
+                  className={`horizontal-menu-item ${activeDropdown === index ? 'active' : ''} ${hasActiveChild ? 'has-active-child' : ''}`}
+                  onMouseEnter={() => item.subItem?.length > 0 && handleMouseEnter(index)}
+                  onMouseLeave={handleMouseLeave}
+                >
+                  <Link
+                    to={item.url || '/#'}
+                    className={`horizontal-menu-link ${item.subItem?.length > 0 ? 'has-dropdown' : ''}`}
+                    onClick={onItemClick}
+                  >
+                    <i className={item.icon}></i>
+                    <span className="menu-text">{t ? t(item.label) : item.label}</span>
+                    {item.subItem?.length > 0 && (
+                      <i className="dropdown-arrow mdi mdi-chevron-down"></i>
+                    )}
+                    {item.issubMenubadge && (
+                      <span className={`menu-badge ${item.bgcolor || 'bg-primary'}`}>
+                        {item.badgeValue}
+                      </span>
+                    )}
+                  </Link>
+
+                  {/* Dropdown menu - rendered outside scroll container using portal-like approach */}
+                  {item.subItem?.length > 0 && activeDropdown === index && (
+                    <div className="horizontal-dropdown">
+                      <div className="horizontal-dropdown-content">
+                        {item.subItem
+                          .slice()
+                          .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0))
+                          .map((subItem, subIndex) => {
+                            // Check if this submenu item is currently active
+                            const isActive = window.location.pathname === subItem.link;
+                            
+                            return (
+                              <Link
+                                key={subIndex}
+                                to={subItem.link || '/#'}
+                                className={`horizontal-dropdown-item ${isActive ? 'active' : ''}`}
+                                onClick={onItemClick}
+                              >
+                                {t ? t(subItem.sublabel) : subItem.sublabel}
+                              </Link>
+                            );
+                          })
+                        }
+                      </div>
+                    </div>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+      </div>
+
+      {/* Right scroll arrow */}
+      {showRightArrow && (
+        <button 
+          className="scroll-arrow scroll-arrow-right" 
+          onClick={scrollRight}
+          aria-label="Scroll right"
+        >
+          <i className="mdi mdi-chevron-right"></i>
+        </button>
+      )}
+    </div>
+  );
+};
+
+HorizontalMenu.propTypes = {
+  menuData: PropTypes.array.isRequired,
+  t: PropTypes.func,
+  onItemClick: PropTypes.func
+};
+
+HorizontalMenu.defaultProps = {
+  t: (text) => text,
+  onItemClick: () => {}
+};
+
+// Main Sidebar Component
 const Sidebar = (props) => {
   const { style = "vertical" } = props;
   const ref = useRef();
@@ -161,12 +326,13 @@ const Sidebar = (props) => {
   };
 
   const activeMenu = useCallback(() => {
+    if (style === "horizontal") return; // Skip for horizontal layout
+    
     const pathName = props.router.location.pathname;
     const fullPath = pathName;
     let matchingMenuItem = null;
     const ul = document.getElementById("side-menu-item");
     if (ul) {
-      // Add null check
       const items = ul.getElementsByTagName("a");
       removeActivation(items);
       for (let i = 0; i < items.length; ++i) {
@@ -179,7 +345,7 @@ const Sidebar = (props) => {
         activateParentDropdown(matchingMenuItem);
       }
     }
-  }, [props.router.location.pathname, activateParentDropdown]);
+  }, [props.router.location.pathname, activateParentDropdown, style]);
 
   function tToggle() {
     var body = document.body;
@@ -191,6 +357,7 @@ const Sidebar = (props) => {
   useEffect(() => {
     activeMenu();
   }, [activeMenu]);
+
   function scrollElement(item) {
     if (item && style === "vertical") {
       const currentPosition = item.offsetTop;
@@ -201,105 +368,64 @@ const Sidebar = (props) => {
   }
 
   useEffect(() => {
-    const initMenu = () => {
-      const menuElement = document.getElementById("side-menu-item");
-      if (menuElement && ref.current) {
-        if (style === "vertical") {
+    if (style === "vertical") {
+      const initMenu = () => {
+        const menuElement = document.getElementById("side-menu-item");
+        if (menuElement && ref.current) {
           ref.current.recalculate();
+          // Destroy existing instance if any
+          if (window.metisMenuInstance) {
+            try {
+              window.metisMenuInstance.dispose();
+            } catch (e) {}
+          }
+          // Initialize MetisMenu for vertical layout only
+          window.metisMenuInstance = new MetisMenu("#side-menu-item");
         }
-        // Destroy existing instance if any
-        if (window.metisMenuInstance) {
-          try {
-            window.metisMenuInstance.dispose();
-          } catch (e) {}
-        }
-        // Initialize MetisMenu for both vertical and horizontal
-        window.metisMenuInstance = new MetisMenu("#side-menu-item");
-      }
-      activeMenu(); // Call activeMenu for both layouts
-    };
-    const timer = setTimeout(initMenu, 100);
-    return () => clearTimeout(timer);
+        activeMenu();
+      };
+      const timer = setTimeout(initMenu, 100);
+      return () => clearTimeout(timer);
+    }
   }, [newTabList, activeMenu, style]);
-  
-  // Render horizontal layout
+
+  // Handle dropdown positioning for horizontal menu
+  useEffect(() => {
+    if (style === "horizontal") {
+      const handleDropdownPosition = () => {
+        const menuItems = document.querySelectorAll('.horizontal-menu-item');
+        menuItems.forEach((item, index) => {
+          const dropdown = item.querySelector('.horizontal-dropdown');
+          if (dropdown) {
+            const rect = item.getBoundingClientRect();
+            dropdown.style.left = `${rect.left}px`;
+          }
+        });
+      };
+
+      const observer = new MutationObserver(handleDropdownPosition);
+      observer.observe(document.body, { childList: true, subtree: true });
+      
+      window.addEventListener('resize', handleDropdownPosition);
+      window.addEventListener('scroll', handleDropdownPosition);
+      
+      return () => {
+        observer.disconnect();
+        window.removeEventListener('resize', handleDropdownPosition);
+        window.removeEventListener('scroll', handleDropdownPosition);
+      };
+    }
+  }, [style]);
+
+  // Render horizontal layout with the new component
   if (style === "horizontal") {
     return (
       <React.Fragment>
-        <div className="horizontal-menu">
-          {/* <SimpleBar className="horizontal-scroll" ref={ref}> */}
-            <div id="sidebar-menu horizontal-scroll">
-              <ul
-                className="metismenu list-unstyled horizontal-nav"
-                id="side-menu-item"
-              >
-                {(newTabList || sidebarData)
-                  .slice()
-                  .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0))
-                  .map((item, key) => (
-                    <React.Fragment key={key}>
-                      {item.isMainMenu && item.subItem?.length === 0 ? (
-                        <li key={key}>
-                          <Link
-                            to={item.url ? item.url : "/#"}
-                            onClick={tToggle}
-                          >
-                            <i className={item.icon}></i>
-                            <span>{props.t(item.label)}</span>
-                          </Link>
-                        </li>
-                      ) : (
-                        <>
-                          <li key={key}>
-                            <Link
-                              to={item.url ? item.url : "/#"}
-                              className={
-                                item.issubMenubadge || item.isHasArrow
-                                  ? " "
-                                  : "has-arrow"
-                              }
-                            >
-                              <i className={item.icon}></i>
-                              {item.issubMenubadge && (
-                                <span
-                                  className={
-                                    "badge rounded-pill float-end " +
-                                    item.bgcolor
-                                  }
-                                >
-                                  {" "}
-                                  {item.badgeValue}{" "}
-                                </span>
-                              )}
-                              <span>{props.t(item.label)}</span>
-                            </Link>
-                            {item.subItem && item.subItem.length > 0 && (
-                              <ul className="sub-menu">
-                                {item.subItem
-                                  .slice()
-                                  .sort(
-                                    (subA, subB) =>
-                                      (subA.displayOrder || 0) -
-                                      (subB.displayOrder || 0)
-                                  )
-                                  .map((subItem, subKey) => (
-                                    <li key={subKey}>
-                                      <Link to={subItem.link} onClick={tToggle}>
-                                        {props.t(subItem.sublabel)}
-                                      </Link>
-                                    </li>
-                                  ))}
-                              </ul>
-                            )}
-                          </li>
-                        </>
-                      )}
-                    </React.Fragment>
-                  ))}
-              </ul>
-            </div>
-          {/* </SimpleBar> */}
-        </div>
+        <HorizontalMenu
+          menuData={newTabList || sidebarData}
+          t={props.t}
+          onItemClick={tToggle}
+        />
       </React.Fragment>
     );
   }
@@ -377,10 +503,11 @@ const Sidebar = (props) => {
     </React.Fragment>
   );
 };
+
 Sidebar.propTypes = {
   location: PropTypes.object,
   t: PropTypes.any,
-  style: PropTypes.oneOf(["vertical", "horizontal"]), // New prop
+  style: PropTypes.oneOf(["vertical", "horizontal"]),
 };
 
 export default withRouter(withTranslation()(Sidebar));
