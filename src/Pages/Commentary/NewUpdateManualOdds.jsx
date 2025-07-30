@@ -2437,39 +2437,43 @@ export const NewUpdateManualOdds = () => {
             };
 
             // ONLY apply new calculation logic in manual mode
+            // ONLY apply new calculation logic in manual mode
             if (isManualMode && otherRunner) {
                 if (field === 'back') {
-                    const changedBackPrice = adjustedValue;
-                    const changedLayPrice = Number((changedBackPrice + parseFloat(settings.rateDifferent)).toFixed(2));
+                    // Step 1: Selected Runner Price Input
+                    const selectedBackPrice = adjustedValue;
 
-                    if (changedBackPrice === 0) {
+                    // Step 2: Calculate Selected Runner Lay Price
+                    const selectedLayPrice = Number((selectedBackPrice + parseFloat(settings.rateDifferent)).toFixed(2));
+
+                    if (selectedBackPrice === 0) {
                         const otherBackPrice = 1.01;
                         const otherLayPrice = Number((otherBackPrice + parseFloat(settings.rateDifferent)).toFixed(2));
 
-                        newSavedPrices[runnerId] = { back: 0, lay: changedLayPrice };
+                        newSavedPrices[runnerId] = { back: 0, lay: selectedLayPrice };
                         newSavedPrices[otherRunner.runnerId] = { back: otherBackPrice, lay: otherLayPrice };
                     } else {
-                        // Calculate using two-outcome probability (MANUAL MODE ONLY)
-                        const changedProbability = 1 / changedBackPrice;
-                        const otherProbability = 1 - changedProbability;
-                        const otherBackPrice = Number((1 / otherProbability).toFixed(2));
-                        const otherLayPrice = Number((otherBackPrice + parseFloat(settings.rateDifferent)).toFixed(2));
+                        // Step 3: Calculate Non-Selected Runner Prices Using Two-Outcome Formula
+                        const nonSelectedBackPrice = Number((1 / (1 - (1 / selectedLayPrice))).toFixed(2));
+                        const nonSelectedLayPrice = Number((1 / (1 - (1 / selectedBackPrice))).toFixed(2));
 
-                        newSavedPrices[runnerId] = { back: changedBackPrice, lay: changedLayPrice };
-                        newSavedPrices[otherRunner.runnerId] = { back: otherBackPrice, lay: otherLayPrice };
+                        newSavedPrices[runnerId] = { back: selectedBackPrice, lay: selectedLayPrice };
+                        newSavedPrices[otherRunner.runnerId] = { back: nonSelectedBackPrice, lay: nonSelectedLayPrice };
                     }
                 } else if (field === 'lay') {
-                    const changedLayPrice = adjustedValue;
-                    const changedBackPrice = Math.max(0, Number((changedLayPrice - parseFloat(settings.rateDifferent)).toFixed(2)));
+                    // Step 1: Selected Runner Lay Price Input
+                    const selectedLayPrice = adjustedValue;
 
-                    if (changedBackPrice > 0) {
-                        const changedProbability = 1 / changedBackPrice;
-                        const otherProbability = 1 - changedProbability;
-                        const otherBackPrice = Number((1 / otherProbability).toFixed(2));
-                        const otherLayPrice = Number((otherBackPrice + parseFloat(settings.rateDifferent)).toFixed(2));
+                    // Step 2: Calculate Selected Runner Back Price (reverse calculation)
+                    const selectedBackPrice = Math.max(0, Number((selectedLayPrice - parseFloat(settings.rateDifferent)).toFixed(2)));
 
-                        newSavedPrices[runnerId] = { back: changedBackPrice, lay: changedLayPrice };
-                        newSavedPrices[otherRunner.runnerId] = { back: otherBackPrice, lay: otherLayPrice };
+                    if (selectedBackPrice > 0) {
+                        // Step 3: Calculate Non-Selected Runner Prices Using Two-Outcome Formula
+                        const nonSelectedBackPrice = Number((1 / (1 - (1 / selectedLayPrice))).toFixed(2));
+                        const nonSelectedLayPrice = Number((1 / (1 - (1 / selectedBackPrice))).toFixed(2));
+
+                        newSavedPrices[runnerId] = { back: selectedBackPrice, lay: selectedLayPrice };
+                        newSavedPrices[otherRunner.runnerId] = { back: nonSelectedBackPrice, lay: nonSelectedLayPrice };
                     }
                 }
             } else if (!isManualMode && otherRunner) {
