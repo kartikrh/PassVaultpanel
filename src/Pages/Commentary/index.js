@@ -2478,7 +2478,7 @@ const Index = () => {
             //   }
             // }}
           >
-            {text}
+            {text == 1 ? "Manual" : text == 2 ? "Entity" : ""}
           </span>
           <span
             style={{ cursor: "pointer" }}
