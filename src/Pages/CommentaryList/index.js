@@ -1220,7 +1220,8 @@ const Index = () => {
                 handleCommentaryLogsClick(record);
               }}
             >
-              <i class="bx bxs-up-arrow-square"></i>
+              C
+              {/* <i class="bx bxs-up-arrow-square"></i> */}
             </Button>
           </Tooltip>
           <Tooltip
@@ -1236,7 +1237,8 @@ const Index = () => {
                 handleUndoLogsClick(record);
               }}
             >
-              <i class="bx bxs-up-arrow-square"></i>
+              U
+              {/* <i class="bx bxs-up-arrow-square"></i> */}
             </Button>
           </Tooltip>
         </div>
