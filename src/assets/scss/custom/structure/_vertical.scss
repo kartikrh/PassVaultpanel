@@ -1045,7 +1045,6 @@ body[data-theme="dark"]{
     .ant-pagination-item-ellipsis{
         color: $dark-font-color !important
     }
-
     .event-header {
         color: $dark-font-color;
     }  
@@ -1060,5 +1059,8 @@ body[data-theme="dark"]{
     }
     .ant-modal-content {
         background-color: #3f3f3f; //used in matchCard
+    }
+    .event-Name {
+        color: $dark-font-color;
     }
 }

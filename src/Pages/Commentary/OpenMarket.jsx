@@ -136,8 +136,11 @@ export const OpenMarket = () => {
         console.log("player.batRun:", player.batRun);
         console.log("player.batBall:", player.batBall);
 
-        const SR = player.batRun / player.batBall;
+        let SR = player.batRun / player.batBall;
         console.log("Strike Rate (SR) = player.batRun / player.batBall =", SR);
+        
+        SR = SR > 1.1 ? 1.1 : SR < 0.9 ? 0.9 : SR
+        console.log("Strike Rate (SR) after =", SR);
 
         const oversRatio = oversCompleted / maxOvers;
         console.log("Overs Ratio = oversCompleted / maxOvers =", oversRatio);
@@ -1157,6 +1160,17 @@ export const OpenMarket = () => {
         saveData({ dataToSave: dataToSend })
     }
 
+    // const handleSingleAction = (record, key, value) => {
+    //     const updatedRecord = { ...record, [key]: value };
+    //     setData(prevData =>
+    //         prevData.map(market =>
+    //         market.marketId === record.marketId ? updatedRecord : market
+    //         )
+    //     );
+    //     setHasUnsavedChanges(true);
+    // };
+
+
     const saveData = async ({ dataToSave, action }) => {
         for (const item of dataToSave) {
             const rawValue = item.predefinedValue;
@@ -1722,7 +1736,8 @@ export const OpenMarket = () => {
                     size="sm"
                     className="btn"
                     onClick={() => {
-                        handleSingleAction(record, "isSendData", !record.isSendData);
+                        // handleSingleAction(record, "isSendData", !record.isSendData);
+                        handleValueChange(record, "isSendData", !record.isSendData);
                     }}
                 >
                     <i className={`bx ${record.isSendData ? "bx-check" : "bx-block"}`}></i>
