@@ -49,6 +49,7 @@ import GenerateModal from "./GenerateModal";
 import { loadInit } from "../../config";
 import { ChangePythonType } from "../../components/Model/ChangePythonType";
 import { ChangeCompititionModel } from "../../components/Model/ChangeCompititionModel";
+import { ChangeScoringModel } from "../../components/Model/ChangeScoringModel";
 
 const Index = () => {
   const pageName = TAB_COMMENTARY;
@@ -58,6 +59,8 @@ const Index = () => {
   const [selectedTableElements, setSelectedTableElements] = useState({
       eventType: null,
       competition: null,
+      scoringType: null,
+      tpId: null
   });
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
@@ -67,6 +70,7 @@ const Index = () => {
   const [delayModelVisible, setDelayModelVisible] = useState(false);
   const [eventRefModelVisible, setEventRefModelVisible] = useState(false);
   const [compititionModelVisible, setCompititionModelVisible] = useState(false);
+  const [scoringModelVisible, setScoringModelVisible] = useState(false);
   const [changePythonModel, setChangePythonModel] = useState(false);
   const [matchType, setMatchType] = useState("");
   const [selectedCommentary, setSelectedCommentary] = useState({});
@@ -936,6 +940,52 @@ const Index = () => {
         setIsLoading(false);
       });
   };
+
+  const handleChangeScoring = async (e) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/commentary/scoringType`, {
+        "scoringType": selectedTableElements?.scoringType?.value,
+        // "competitionId": selectedTableElements?.competition?.value,
+        "commentaryId": selectedCompititon?.commentaryId,
+        "tpId" : selectedTableElements?.scoringType?.value == 2 ? selectedTableElements?.tpId : null
+      })
+      .then((response) => {
+        fetchData();
+        if (response?.result?.callPrediction?.predictioncallSuccess === false) {
+          const predictionMessage =
+            response?.result?.callPrediction?.predictionMessage;
+          const endPoint = response?.result?.callPrediction?.endPoint;
+          dispatch(
+            updateToastData({
+              data: `${endPoint}\n${predictionMessage}`,
+              title: "Call Prediction",
+              type: WARNING,
+            })
+          );
+        } else {
+          dispatch(
+            updateToastData({
+              data: response?.message,
+              title: response?.title,
+              type: SUCCESS,
+            })
+          );
+        }
+        setScoringModelVisible(false);
+      })
+      .catch((error) => {
+        setScoringModelVisible(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+        setIsLoading(false);
+      });
+  }
   const handleChangeCompitition = async () => {
     setIsLoading(true);
     await axiosInstance
@@ -2411,11 +2461,46 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "TPID",
-      dataIndex: "tpId",
-      key: "tpId",
-      style: { width: "10%" },
+      title: "Scoring Type",
+      dataIndex: "scoringType",
+      key: "scoringType",
       sort: true,
+      render: (text, record) => (
+        <div className="">
+        <div className="d-flex align-items-center gap-2">
+          <span
+            style={{ cursor: record.isPredictMarket && "pointer" }}
+            // onClick={() => {
+            //   if (record.isPredictMarket) {
+            //     handleOddsViewClick(record.commentaryId);
+            //   }
+            // }}
+          >
+            {text}
+          </span>
+          <span
+            style={{ cursor: "pointer" }}
+            onClick={() => {
+              setScoringModelVisible(true);
+              setSelectedCompititon(record);
+            }}
+          >
+            {" "}
+            <Tooltip
+              title="Edit Scoring type"
+              color={"#e8e8ea"}
+              overlayInnerStyle={{ color: "#000" }}
+            >
+              {<a className="bx bx-edit-alt"></a>}
+            </Tooltip>
+          </span>
+        </div>
+        <div>
+          {record?.tpId}
+        </div>
+        </div>
+      ),
+      style: { width: "10%"},
     },
   ];
 
@@ -2798,6 +2883,18 @@ const Index = () => {
               compititonModelVisible={compititionModelVisible}
               setCompititonModelVisible={setCompititionModelVisible}
               handleChange={handleChangeCompitition}
+              singleCheck={checekedList}
+              selectedCompititon={selectedCompititon}
+              setSelectedCompititon={setSelectedCompititon}
+              setSelectedTableElements={setSelectedTableElements}
+              selectedTableElements={selectedTableElements}
+            />
+          )}
+          {scoringModelVisible && (
+            <ChangeScoringModel
+              scoringModelVisible={scoringModelVisible}
+              setScoringModelVisible={setScoringModelVisible}
+              handleChange={handleChangeScoring}
               singleCheck={checekedList}
               selectedCompititon={selectedCompititon}
               setSelectedCompititon={setSelectedCompititon}
