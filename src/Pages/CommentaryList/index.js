@@ -1220,7 +1220,8 @@ const Index = () => {
                 handleCommentaryLogsClick(record);
               }}
             >
-              <i class="bx bxs-up-arrow-square"></i>
+              C
+              {/* <i class="bx bxs-up-arrow-square"></i> */}
             </Button>
           </Tooltip>
           <Tooltip
@@ -1236,7 +1237,8 @@ const Index = () => {
                 handleUndoLogsClick(record);
               }}
             >
-              <i class="bx bxs-up-arrow-square"></i>
+              U
+              {/* <i class="bx bxs-up-arrow-square"></i> */}
             </Button>
           </Tooltip>
         </div>
@@ -1427,13 +1429,33 @@ const Index = () => {
     //   sort: true,
     //   style: { width: "10%" },
     // },
+    
     {
-      title: "TPID",
-      dataIndex: "tpId",
-      key: "tpId",
-      style: { width: "10%" },
-      sort: true,
-    },
+          title: "Scoring Type",
+          dataIndex: "scoringType",
+          key: "scoringType",
+          sort: true,
+          render: (text, record) => (
+            <div className="">
+            <div className="d-flex align-items-center gap-2">
+              <span
+                style={{ cursor: record.isPredictMarket && "pointer" }}
+                // onClick={() => {
+                //   if (record.isPredictMarket) {
+                //     handleOddsViewClick(record.commentaryId);
+                //   }
+                // }}
+              >
+                {text == 1 ? "Manual" : text == 2 ? "Entity" : ""}
+              </span>
+            </div>
+            <div>
+              {record?.tpId}
+            </div>
+            </div>
+          ),
+          style: { width: "10%" },
+        },
   ];
 
   const getColumns = (data) => {

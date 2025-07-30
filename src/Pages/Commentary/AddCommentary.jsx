@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import FormBuilder from '../../components/Common/Reusables/FormBuilder';
-import { MatchDetailFields, PitchDetailsFields, TeamDetailsFields, WeatherDetailsFields } from '../../constants/FieldConst/CommentaryConst';
+import { MatchDetailFields, ExtraInfoFields, PitchDetailsFields, TeamDetailsFields, WeatherDetailsFields } from '../../constants/FieldConst/CommentaryConst';
 import { Button, ButtonDropdown, Card, CardBody, Col, Container, DropdownItem, DropdownMenu, DropdownToggle, NavItem, NavLink, Row, TabContent, TabPane } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_COMMENTARY, TAB_COMMENTARY_LIST, SWITCH, SELECT } from '../../components/Common/Const';
@@ -34,6 +34,7 @@ function AddCommentary() {
     const finalizeRef2 = useRef(null);
     const finalizeRef3 = useRef(null);
     const finalizeRef4 = useRef(null);
+    const finalizeRef5 = useRef(null);
     const [savedFormState, setSavedFormState] = useState({});
     const [activeTab, setactiveTab] = useState(1);
     const [isApiLoading, setIsApiLoading] = useState(false);
@@ -143,6 +144,7 @@ function AddCommentary() {
                 finalizeRef2.current.resetForm()
                 finalizeRef3.current.resetForm()
                 finalizeRef4.current.resetForm()
+                finalizeRef5.current.resetForm()
                 setactiveTab(1);
             }
             setCurrentSaveAction(undefined)
@@ -157,7 +159,7 @@ function AddCommentary() {
         );
         updateSavedFormState(filteredData);
         setCompetitionId(newFormData["competitionId"]);
-        const requiredFields = ["competitionId", "eventTypeId", "matchTypeId", "eventName", "eventDate", "delay"];
+        const requiredFields = ["competitionId", "eventTypeId", "matchTypeId", "eventName", "eventDate"];
         const isValid = requiredFields.every(
            (field) => newFormData[field] && newFormData[field] !== "0"
         );
@@ -237,9 +239,9 @@ function AddCommentary() {
                     const { matchTypeId, drsCount, isVirtual, pythonId, countryId } = selectedCompetition;
                     finalizeRef1.current.updateFormFromParent({ matchTypeId });
                     finalizeRef1.current.updateFormFromParent({ isVirtual });
-                    finalizeRef1.current.updateFormFromParent({ pythonId });
+                    finalizeRef3.current.updateFormFromParent({ pythonId });
                     finalizeRef2.current.updateFormFromParent({ drsCount });
-                    finalizeRef3.current.updateFormFromParent({ countryId });
+                    finalizeRef4.current.updateFormFromParent({ countryId });
                 }
             } else {
                 setMasterData((preData) => ({
@@ -357,6 +359,14 @@ function AddCommentary() {
     const handleFormDDataChange = (newFormData) => {
         // setSavedFormState({...savedFormState, ...newFormData});
         const allowedFields = PitchDetailsFields.map(field => field.name).filter(Boolean);
+        const filteredData = Object.fromEntries(
+            Object.entries(newFormData).filter(([key]) => allowedFields.includes(key))
+        );
+        updateSavedFormState(filteredData);
+    }
+    const handleFormEDataChange = (newFormData) => {
+        // setSavedFormState({...savedFormState, ...newFormData});
+        const allowedFields = ExtraInfoFields.map(field => field.name).filter(Boolean);
         const filteredData = Object.fromEntries(
             Object.entries(newFormData).filter(([key]) => allowedFields.includes(key))
         );
@@ -614,12 +624,14 @@ function AddCommentary() {
         const dataToSave2 = finalizeRef2.current.finalizeData()
         const dataToSave3 = finalizeRef3.current.finalizeData()
         const dataToSave4 = finalizeRef4.current.finalizeData()
+        const dataToSave5 = finalizeRef5.current.finalizeData()
 
         // Filter each dataToSave to only include fields from their respective tabs
         const filteredDataToSave1 = {};
         const filteredDataToSave2 = {};
         const filteredDataToSave3 = {};
         const filteredDataToSave4 = {};
+        const filteredDataToSave5 = {};
         
         // Filter Tab 1 data (Match Details)
         MatchDetailFields.forEach(field => {
@@ -634,23 +646,30 @@ function AddCommentary() {
                 filteredDataToSave2[field.name] = dataToSave2[field.name];
             }
         });
-        
-        // Filter Tab 3 data (Weather Details)
-        WeatherDetailsFields.forEach(field => {
+
+        // Filter Tab 3 data (Extra Details)
+        ExtraInfoFields.forEach(field => {
             if (field.name && dataToSave3.hasOwnProperty(field.name)) {
                 filteredDataToSave3[field.name] = dataToSave3[field.name];
             }
         });
         
-        // Filter Tab 4 data (Pitch Details)
-        PitchDetailsFields.forEach(field => {
+        // Filter Tab 4 data (Weather Details)
+        WeatherDetailsFields.forEach(field => {
             if (field.name && dataToSave4.hasOwnProperty(field.name)) {
                 filteredDataToSave4[field.name] = dataToSave4[field.name];
             }
         });
+        
+        // Filter Tab 5 data (Pitch Details)
+        PitchDetailsFields.forEach(field => {
+            if (field.name && dataToSave5.hasOwnProperty(field.name)) {
+                filteredDataToSave5[field.name] = dataToSave5[field.name];
+            }
+        });
 
-        const pythonURI = pythonList && pythonList.length > 0 && pythonList.find((item) => item?.id == dataToSave1?.pythonId)?.URI;
-        if (filteredDataToSave1 && filteredDataToSave2 && filteredDataToSave3 && filteredDataToSave4) {
+        const pythonURI = pythonList && pythonList.length > 0 && pythonList.find((item) => item?.id == dataToSave3?.pythonId)?.URI;
+        if (filteredDataToSave1 && filteredDataToSave2 && filteredDataToSave3 && filteredDataToSave4 && filteredDataToSave5) {
             // const dataToSave = {
             //     ...dataToSave1,
             //     ...dataToSave3,
@@ -680,6 +699,7 @@ function AddCommentary() {
             ...PitchDetailsFields,
             ...TeamDetailsFields,
             ...WeatherDetailsFields,
+            ...ExtraInfoFields
             ];
 
             const mergedData = {
@@ -687,6 +707,7 @@ function AddCommentary() {
             ...filteredDataToSave2,
             ...filteredDataToSave3,
             ...filteredDataToSave4,
+            ...filteredDataToSave5
             };
 
             const completeData = {};
@@ -723,7 +744,7 @@ function AddCommentary() {
     function toggleTab(tab) {
         if (activeTab !== tab) {
             var modifiedSteps = [...passedSteps, tab];
-            if (tab >= 1 && tab <= 4) {
+            if (tab >= 1 && tab <= 5) {
                 setactiveTab(tab);
                 setPassedSteps(modifiedSteps);
             }
@@ -817,7 +838,7 @@ function AddCommentary() {
                                                 }}
                                             >
                                                 <span className="step-number">03</span>
-                                                <span className="step-title" style={{ paddingLeft: "10px" }}>Weather Details </span>
+                                                <span className="step-title" style={{ paddingLeft: "10px" }}>Extra Info </span>
                                             </NavLink>
                                         </NavItem>
                                         <NavItem className={classnames({ active: activeTab === 4 })}>
@@ -829,13 +850,25 @@ function AddCommentary() {
                                                 }}
                                             >
                                                 <span className="step-number">04</span>
+                                                <span className="step-title" style={{ paddingLeft: "10px" }}>Weather Details </span>
+                                            </NavLink>
+                                        </NavItem>
+                                        <NavItem className={classnames({ active: activeTab === 5 })}>
+                                            <NavLink
+                                                data-toggle="tab"
+                                                className={classnames({ active: activeTab === 5 })}
+                                                onClick={() => {
+                                                    setactiveTab(5);
+                                                }}
+                                            >
+                                                <span className="step-number">05</span>
                                                 <span className="step-title" style={{ paddingLeft: "10px" }}>Pitch Details </span>
                                             </NavLink>
                                         </NavItem>
                                     </ul>
                                     {activeTab === 2 && savedFormState.eventName && (
                                         <div className="mb-1 p-2 bg-light border">
-                                            <h6 className="mb-0 font-medium">Event Name: {savedFormState.eventName}</h6>
+                                            <h6 className="mb-0 font-medium event-Name">Event Name: {savedFormState.eventName}</h6>
                                         </div>
                                     )}
                                     <TabContent activeTab={activeTab} className="twitter-bs-wizard-tab-content">
@@ -865,6 +898,17 @@ function AddCommentary() {
                                         <TabPane tabId={3}>
                                             <FormBuilder
                                                 ref={finalizeRef3}
+                                                fields={ExtraInfoFields}
+                                                editFormData={initialEditData}
+                                                masterData={masterData}
+                                                disabledFields={disabledFields}
+                                                onFormDataChange={handleFormEDataChange}
+                                                pageName="Commentary"
+                                            />
+                                        </TabPane>
+                                        <TabPane tabId={4}>
+                                            <FormBuilder
+                                                ref={finalizeRef4}
                                                 fields={WeatherDetailsFields}
                                                 editFormData={initialEditData}
                                                 masterData={masterData}
@@ -873,9 +917,9 @@ function AddCommentary() {
                                                 pageName="Commentary"
                                             />
                                         </TabPane>
-                                        <TabPane tabId={4}>
+                                        <TabPane tabId={5}>
                                             <FormBuilder
-                                                ref={finalizeRef4}
+                                                ref={finalizeRef5}
                                                 fields={PitchDetailsFields}
                                                 editFormData={initialEditData}
                                                 masterData={masterData}
@@ -894,7 +938,7 @@ function AddCommentary() {
                                                     toggleTab(activeTab - 1);
                                                 }}>Previous</Button>
                                         </li>}
-                                        {activeTab !== 4 && <li className="next">
+                                        {activeTab !== 5 && <li className="next">
                                             <Button
                                                 color="primary"
                                                 className="btn"

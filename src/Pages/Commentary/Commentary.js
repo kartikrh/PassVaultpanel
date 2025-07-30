@@ -326,6 +326,7 @@ const Commentary = (props) => {
             "commentaryTeams": teamUpdates,
             "commentaryPartnership": updatedPartnership,
             "commentaryPlayers": setAllPlayerToNull(),
+            "isTeamStatusUpdate": true,
             "isEndInnings": true
         }
         // console.log("Called from : 2")
@@ -367,6 +368,7 @@ const Commentary = (props) => {
             },
             "commentaryTeams": updatedInningsTeam,
             "commentaryPlayers": setAllPlayerToNull(),
+            "isTeamStatusUpdate": true,
             "isEndInnings": true
         }
         // console.log("Called from : 3")
@@ -1731,6 +1733,7 @@ const Commentary = (props) => {
                 { ...onPitchPlayers[NON_STRIKE], isPlay: null, },
                 { ...onPitchPlayers[CURRENT_BOWLER], isPlay: null, }
             ],
+            "isTeamStatusUpdate": true,
         }
         setRedirectOnScreenChange(true)
         // console.log("Called from : 17")
@@ -2667,6 +2670,7 @@ const Commentary = (props) => {
                 commentaryId={commentaryDetails?.commentaryId}
                 teamDetails={teams}
                 onPitchPlayers={onPitchPlayers}
+                _onPitchPlayers={_onPitchPlayers}
                 updateRuns={updateRuns}
                 changePlayer={(type) => {
                     setIsSwapPlayer(true)
