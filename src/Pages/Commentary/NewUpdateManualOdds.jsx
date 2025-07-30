@@ -1249,10 +1249,9 @@ export const NewUpdateManualOdds = () => {
                         processInningsData(originalInningsData);
                     }
                 } else if (!isLive && !directLineEnabled) {
-                    // MANUAL MODE: Update savedPrices to reflect rate difference changes
+                    // MANUAL MODE: Update savedPrices when rateDifferent changes
                     if (key === 'rateDifferent') {
                         const newRateDiff = parseFloat(numericValue);
-                        const isManualMode = !isLive && !directLineEnabled;
 
                         setSavedPrices(prevSavedPrices => {
                             const updatedPrices = { ...prevSavedPrices };
@@ -1266,39 +1265,23 @@ export const NewUpdateManualOdds = () => {
                             const selectedBackPrice = prevSavedPrices[selectedRunnerData.runnerId]?.back || 0;
 
                             if (selectedBackPrice > 0) {
+                                // Step 1: Keep Selected Runner Price Input (no change in reference)
+                                // Step 2: Calculate Selected Runner Lay Price with new rateDifferent
                                 const selectedLayPrice = Math.max(1.01, parseFloat((selectedBackPrice + newRateDiff).toFixed(2)));
 
-                                if (isManualMode) {
-                                    // MANUAL MODE: Use proper two-outcome calculation
-                                    const selectedProbability = 1 / selectedBackPrice;
-                                    const nonSelectedProbability = 1 - selectedProbability;
-                                    const nonSelectedBackPrice = Number((1 / nonSelectedProbability).toFixed(2));
-                                    const nonSelectedLayPrice = Number((nonSelectedBackPrice + newRateDiff).toFixed(2));
+                                // Step 3: Calculate Non-Selected Runner Prices Using Two-Outcome Formula
+                                const nonSelectedBackPrice = Number((1 / (1 - (1 / selectedLayPrice))).toFixed(2));
+                                const nonSelectedLayPrice = Number((1 / (1 - (1 / selectedBackPrice))).toFixed(2));
 
-                                    updatedPrices[selectedRunnerData.runnerId] = {
-                                        back: selectedBackPrice,
-                                        lay: selectedLayPrice
-                                    };
+                                updatedPrices[selectedRunnerData.runnerId] = {
+                                    back: selectedBackPrice, // Keep same reference value
+                                    lay: selectedLayPrice    // Apply new formula
+                                };
 
-                                    updatedPrices[nonSelectedRunner.runnerId] = {
-                                        back: nonSelectedBackPrice,
-                                        lay: nonSelectedLayPrice
-                                    };
-                                } else {
-                                    // OTHER MODES: Keep original calculation
-                                    const nonSelectedBackPrice = parseFloat((1 / (1 - (1 / selectedLayPrice))).toFixed(2));
-                                    const nonSelectedLayPrice = parseFloat((1 / (1 - (1 / selectedBackPrice))).toFixed(2));
-
-                                    updatedPrices[selectedRunnerData.runnerId] = {
-                                        back: selectedBackPrice,
-                                        lay: selectedLayPrice
-                                    };
-
-                                    updatedPrices[nonSelectedRunner.runnerId] = {
-                                        back: nonSelectedBackPrice,
-                                        lay: nonSelectedLayPrice
-                                    };
-                                }
+                                updatedPrices[nonSelectedRunner.runnerId] = {
+                                    back: nonSelectedBackPrice,
+                                    lay: nonSelectedLayPrice
+                                };
                             }
 
                             return updatedPrices;
