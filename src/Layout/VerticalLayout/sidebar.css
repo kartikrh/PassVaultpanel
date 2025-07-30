@@ -163,7 +163,7 @@ body.horizontal-layout .commentary-content {
   background-color: #fff;
   border: 1px solid #e9ecef;
   border-radius: 6px;
-  box-shadow: 0 10px 25px ;
+  box-shadow: none;
   padding: 8px 0;
 }
 
@@ -248,8 +248,9 @@ body[data-theme="dark"] .horizontal-menu-wrapper {
   background-color: #333333;
   border-bottom-color: #3e4853;
 }
-body[data-theme="dark"].horizontal-menu-item.active .horizontal-menu-link,
-body[data-theme="dark"].horizontal-menu-link.active {
+
+body[data-theme="dark"] .horizontal-menu-item.active .horizontal-menu-link,
+body[data-theme="dark"] .horizontal-menu-link.active {
   color: #0bb197;
   background-color: #3f3f3f;
 }
