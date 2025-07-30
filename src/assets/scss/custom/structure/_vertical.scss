@@ -624,7 +624,7 @@ body[data-sidebar-size="small"] {
   }
 .team-card{
     background-color: $gray-300;
-    }
+}
 
 body[data-theme="dark"]{
     .css-1wqf3nl-MuiAccordionSummary-expandIconWrapper{
@@ -1050,16 +1050,15 @@ body[data-theme="dark"]{
         color: $dark-font-color;
     }  
     .team-card{
-    background-color: $sidebar-dark-bg; // Softer dark variant
+        background-color: $sidebar-dark-bg; 
     }     
     .team-card .text-muted {
-        color: #d1d1d1 !important;
+        color: $text-color-for-dark-theme !important;
     }
     .team-card .matchCardText {
-        color: white;
+        color: $sidebar-dark-menu-item-color;
     }
     .ant-modal-content {
-        background-color: #3f3f3f;
-        border-color: $gray-100 1 rem;
+        background-color: #3f3f3f; //used in matchCard
     }
 }

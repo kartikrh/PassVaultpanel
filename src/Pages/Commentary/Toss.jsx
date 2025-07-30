@@ -61,6 +61,7 @@ const Index = ({ data, next, save, isPredictToggle }) => {
         commentaryStatus: "2",
       },
       commentaryTeams: UpdatedCurrentInningTeams,
+      isTeamStatusUpdate: true,
     }
     save(newData, 2, {
       ...data,

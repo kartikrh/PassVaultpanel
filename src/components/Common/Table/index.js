@@ -539,38 +539,38 @@ const Index = forwardRef(
           ...tableActions,
           isApproved: id,
         });
-      } else if (key === "isTrending") {
-        if (setServerCurrentPage) {
-          setServerCurrentPage(0);
-        }
+      // } else if (key === "isTrending") {
+      //   if (setServerCurrentPage) {
+      //     setServerCurrentPage(0);
+      //   }
 
-        setTrendingStatusSwitch(id);
-        setTableActions((preValue) => {
-          return {
-            ...preValue,
-            [key]: id,
-          };
-        });
-        reFetchData({
-          ...tableActions,
-          isTrending: id,
-        });
-      } else if (key === "isMen") {
-        if (setServerCurrentPage) {
-          setServerCurrentPage(0);
-        }
+      //   setTrendingStatusSwitch(id);
+      //   setTableActions((preValue) => {
+      //     return {
+      //       ...preValue,
+      //       [key]: id,
+      //     };
+      //   });
+      //   reFetchData({
+      //     ...tableActions,
+      //     isTrending: id.value,
+      //   });
+      // } else if (key === "isMen") {
+        // if (setServerCurrentPage) {
+        //   setServerCurrentPage(0);
+        // }
 
-        setMenSwitch(id);
-        setTableActions((preValue) => {
-          return {
-            ...preValue,
-            [key]: id,
-          };
-        });
-        reFetchData({
-          ...tableActions,
-          isMen: id,
-        });
+        // setMenSwitch(id);
+        // setTableActions((preValue) => {
+        //   return {
+        //     ...preValue,
+        //     [key]: id,
+        //   };
+        // });
+        // reFetchData({
+        //   ...tableActions,
+        //   isMen: id.value,
+        // });
       } else if (key === "isShowContent") {
         if (setServerCurrentPage) {
           setServerCurrentPage(0);
@@ -1081,6 +1081,14 @@ const Index = forwardRef(
         type: {
           value: 0,
           label: "Type",
+        },
+        isTrending: {
+          value: null,
+          label: "Trending Type",
+        },
+        isMen: {
+          value: null,
+          label: "Is Men",
         },
         commentaryStatus: {
           value: 0,
@@ -2383,16 +2391,34 @@ const Index = forwardRef(
                                 styles={{
                                   control: (provided) => ({ ...provided, width: 140 }),
                                 }}
-                                value={isTrendingOptions.find((option) => option.value === trendingStatusSwitch) || isTrendingOptions[0]}
+                                value={selectedTableElements?.isTrending}
+                                // value={isTrendingOptions.find((option) => option.value === trendingStatusSwitch) || isTrendingOptions[0]}
                                 // onChange={(e) => setIsSquadSelectedOption(e?.value === "Select" ? null : e?.value)}
+                                // onChange={(e) => {
+                                //   handleTableActions(
+                                //     "isTrending",
+                                //     e?.value === "Select" ? null : e?.value
+                                //   );
+                                // }}
                                 onChange={(e) => {
-                                  handleTableActions(
-                                    "isTrending",
-                                    e?.value === "Select" ? null : e?.value
-                                  );
+                                  if (
+                                    e?.value !==
+                                    selectedTableElements?.isTrending?.value
+                                  ) {
+                                    handleTableActions("isTrending", e);
+                                    setSelectedTableElements({
+                                      ...selectedTableElements,
+                                      isTrending: e,
+                                    });
+                                  }
                                 }}
-                                options={isTrendingOptions}
-                                placeholder="Is Trending"
+                                placeholder="Trending"
+                                options={[
+                                  { value: null, label: "Select Trending" },
+                                  { value: true, label: "Trending" },
+                                  { value: false, label: "Non Trending" },
+                                ]}
+                                // placeholder="Is Trending"
                                 classNamePrefix="filter-dropdown"
                               />
                             </div>
@@ -2414,16 +2440,33 @@ const Index = forwardRef(
                                 styles={{
                                   control: (provided) => ({ ...provided, width: 140 }),
                                 }}
-                                value={isMenOptions.find((option) => option.value === menSwitch) || isMenOptions[0]}
+                                // value={isMenOptions.find((option) => option.value === menSwitch) || isMenOptions[0]}
                                 // onChange={(e) => setIsSquadSelectedOption(e?.value === "Select" ? null : e?.value)}
+                                // onChange={(e) => {
+                                //   handleTableActions(
+                                //     "isMen",
+                                //     e?.value === "Select" ? null : e?.value
+                                //   );
+                                // }}
+                                value={selectedTableElements?.isMen}
                                 onChange={(e) => {
-                                  handleTableActions(
-                                    "isMen",
-                                    e?.value === "Select" ? null : e?.value
-                                  );
+                                  if (
+                                    e?.value !==
+                                    selectedTableElements?.isMen?.value
+                                  ) {
+                                    handleTableActions("isMen", e);
+                                    setSelectedTableElements({
+                                      ...selectedTableElements,
+                                      isMen: e,
+                                    });
+                                  }
                                 }}
-                                options={isMenOptions}
-                                placeholder="Is Men"
+                                options={[
+                                  { value: null, label: "Select Men" },
+                                  { value: true, label: "Men" },
+                                  { value: false, label: "Women" },
+                                ]}
+                                placeholder="Men"
                                 classNamePrefix="filter-dropdown"
                               />
                             </div>

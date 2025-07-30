@@ -134,7 +134,7 @@ const MatchCard = ({ matchData }) => {
       {result && status === 2 && (
         <div className="text-center mb-3">
           <Card
-            className="team-card bg-light-success border border-success rounded p-2"
+            className="team-card border border-success rounded p-2"
             bodyStyle={{ padding: "0px 10px" }} // Reduce internal padding
           >
             <TrophyOutlined className="fs-4 text-success me-2" />
