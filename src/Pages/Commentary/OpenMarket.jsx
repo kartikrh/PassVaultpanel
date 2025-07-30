@@ -136,8 +136,11 @@ export const OpenMarket = () => {
         console.log("player.batRun:", player.batRun);
         console.log("player.batBall:", player.batBall);
 
-        const SR = player.batRun / player.batBall;
+        let SR = player.batRun / player.batBall;
         console.log("Strike Rate (SR) = player.batRun / player.batBall =", SR);
+        
+        SR = SR > 1.1 ? 1.1 : SR < 0.9 ? 0.9 : SR
+        console.log("Strike Rate (SR) after =", SR);
 
         const oversRatio = oversCompleted / maxOvers;
         console.log("Overs Ratio = oversCompleted / maxOvers =", oversRatio);
