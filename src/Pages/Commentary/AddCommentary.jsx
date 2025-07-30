@@ -868,7 +868,7 @@ function AddCommentary() {
                                     </ul>
                                     {activeTab === 2 && savedFormState.eventName && (
                                         <div className="mb-1 p-2 bg-light border">
-                                            <h6 className="mb-0 font-medium">Event Name: {savedFormState.eventName}</h6>
+                                            <h6 className="mb-0 font-medium event-Name">Event Name: {savedFormState.eventName}</h6>
                                         </div>
                                     )}
                                     <TabContent activeTab={activeTab} className="twitter-bs-wizard-tab-content">
