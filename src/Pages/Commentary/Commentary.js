@@ -329,6 +329,16 @@ const Commentary = (props) => {
             "isTeamStatusUpdate": true,
             "isEndInnings": true
         }
+        if (!objToSave?.commentaryPartnership?.batter1Id && !objToSave?.commentaryPartnership?.batter2Id) {
+            // handleCommentaryConsole(_currentOver, currentOver, objToSave, currentPartnership);
+            dispatch(
+                updateToastData({
+                    title: 'Partnership issue',
+                    data: 'batter1 or batter2 is null',
+                    type: ERROR,
+                })
+            );
+        }
         // console.log("Called from : 2")
         // console.log("onInningsChange", objToSave)
         dispatch(addCommentaryScreenData(objToSave))
@@ -409,7 +419,7 @@ const Commentary = (props) => {
     const callWicketToDB = (currentBallByBallID) => {
         const newCurrentBall = currentBall
         newCurrentBall["commentaryBallByBallId"] = currentBallByBallID
-        const updatedPartnership = generatePartnership({ commentaryDetails, currentPartnership: _currentPartnership || currentPartnership, teams: _teams || teams })
+        const updatedPartnership = generatePartnership({ commentaryDetails, currentPartnership: isEmpty(_currentPartnership) ? currentPartnership : _currentPartnership, teams: _teams || teams })
         const updatedBallByBall = generateBall({
             currentBall: newCurrentBall, commentaryDetails,
             currentOver: _currentOver || currentOver, onPitchPlayers: _onPitchPlayers || onPitchPlayers, teams: _teams || teams, currentPartnership
@@ -438,6 +448,16 @@ const Commentary = (props) => {
         }
         // console.log("Called from : 4")
         // console.log("callWicketToDB", objToSave)
+        if (!objToSave?.commentaryPartnership?.batter1Id && !objToSave?.commentaryPartnership?.batter2Id) {
+            // handleCommentaryConsole(_currentOver, currentOver, objToSave, currentPartnership);
+            dispatch(
+                updateToastData({
+                    title: 'Partnership issue',
+                    data: 'batter1 or batter2 is null',
+                    type: ERROR,
+                })
+            );
+        }
         setIsSaving(true);
         Promise.resolve(dispatch(addCommentaryScreenData(objToSave)))
             .finally(() => {
@@ -2125,6 +2145,10 @@ const Commentary = (props) => {
                     currentOver: _currentOver || currentOver, onPitchPlayers: _onPitchPlayers || onPitchPlayers, teams: _teams || teams,
                     currentPartnership
                 })
+                const generatePartnershipData = generatePartnership({
+                        commentaryDetails, currentBall: {},
+                        currentPartnership: isEmpty(_currentPartnership) ? currentPartnership : _currentPartnership, teams: _teams
+                })
                 objToSave = {
                     ...objToSave,
                     "commentaryId": commentaryDetails.commentaryId,
@@ -2135,10 +2159,7 @@ const Commentary = (props) => {
                         "teamScore": `${_teams[BATTING_TEAM]?.teamScore || 0}/${_teams[BATTING_TEAM]?.teamWicket || 0}`
                     },
                     "commentaryPlayers": [].concat(playerUpdateList, Object.values(_onPitchPlayers)).filter(x => x),
-                    "commentaryPartnership": generatePartnership({
-                        commentaryDetails, currentBall: {},
-                        currentPartnership: _currentPartnership || currentPartnership, teams: _teams
-                    }),
+                    "commentaryPartnership": generatePartnershipData,
                     "commentaryDetails": {
                         ...commentaryDetails,
                         "displayStatus": generateDisplayStatus({ currentBall: generatedBallByBall }),
