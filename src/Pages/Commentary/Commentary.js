@@ -2052,7 +2052,7 @@ const Commentary = (props) => {
                     batsmanAverage: player?.batsmanAverage,
                 }));
 
-                const partnershipData = _currentPartnership || currentPartnership;
+                const partnershipData = isEmpty(_currentPartnership) ? currentPartnership : _currentPartnership;
 
                 const currPartnership = {
                     commentaryBallByBallId: partnershipData?.commentaryBallByBallId,

@@ -6,7 +6,7 @@ import CommentaryAction from "./CommentaryModels/CommentaryAction"
 import CommentaryRightPanel from "./Helpers/CommentaryRightPanel"
 import Switch from "react-switch";
 import PlayerImage from "../../components/Common/Reusables/PlayerImage"
-import _ from "lodash"
+import _, { isEmpty } from "lodash"
 
 export const CommentaryScreen = ({
     refId, teamDetails, onPitchPlayers, _onPitchPlayers, updateRuns, changePlayer, changeOver, updateExtras, onWicketClick,
@@ -194,8 +194,8 @@ export const CommentaryScreen = ({
             {
                 run: run,
                 ball: ball,
-                batter: _onPitchPlayers?.[ON_STRIKE] || onPitchPlayers[ON_STRIKE],
-                bowler: _onPitchPlayers?.[CURRENT_BOWLER] || onPitchPlayers[CURRENT_BOWLER],
+                batter: isEmpty(_onPitchPlayers?.[ON_STRIKE]) ? onPitchPlayers[ON_STRIKE] : _onPitchPlayers?.[ON_STRIKE],
+                bowler: isEmpty(_onPitchPlayers?.[CURRENT_BOWLER]) ? onPitchPlayers[CURRENT_BOWLER] : _onPitchPlayers?.[CURRENT_BOWLER],
                 isBoundary
             }
         )
@@ -345,7 +345,7 @@ export const CommentaryScreen = ({
                                 : onPitchPlayers[CURRENT_BOWLER]?.playerName.split('')[0]}
                         </span>
                         {onPitchPlayers[CURRENT_BOWLER]?.playerName} &nbsp;
-                        <span>{onPitchPlayers[CURRENT_BOWLER]?.bowlerOver || 0}-{onPitchPlayers[CURRENT_BOWLER]?.bowlerMaidenOver || 0}
+                        <span>{parseFloat(onPitchPlayers[CURRENT_BOWLER]?.bowlerOver || 0).toFixed(1) || 0}-{onPitchPlayers[CURRENT_BOWLER]?.bowlerMaidenOver || 0}
                             -{onPitchPlayers[CURRENT_BOWLER]?.bowlerRun || 0}-{onPitchPlayers[CURRENT_BOWLER]?.bowlerTotalWicket || 0}</span>
                         <button onClick={changeBowler} className=" text-right change-button">C</button>
                     </Col>
