@@ -648,11 +648,13 @@ function AddCommentary() {
         });
 
         // Filter Tab 3 data (Extra Details)
-        ExtraInfoFields.forEach(field => {
-            if (field.name && dataToSave3.hasOwnProperty(field.name)) {
-                filteredDataToSave3[field.name] = dataToSave3[field.name];
-            }
-        });
+        if (dataToSave3 && typeof dataToSave3 === "object") {
+            ExtraInfoFields.forEach(field => {
+                if (field.name && dataToSave3.hasOwnProperty(field.name)) {
+                    filteredDataToSave3[field.name] = dataToSave3[field.name];
+                }
+            });
+        }
         
         // Filter Tab 4 data (Weather Details)
         WeatherDetailsFields.forEach(field => {
