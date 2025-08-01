@@ -53,6 +53,8 @@ const MatchTypePredictor = () => {
   const dispatch = useDispatch();
   let navigate = useNavigate();
   const [id, setId] = useState(+sessionStorage.getItem('matchTypePredictorId') || "0");
+  const [predictorData, setPredictorData] = useState([]);
+
   useEffect(() => {
     if (id !== "0") {
       fetchData(id);
@@ -62,6 +64,8 @@ const MatchTypePredictor = () => {
   useEffect(() => {
     const generateOversAndBallsData = async () => {
       try {
+        if (!initialEditData) return;
+
         const oversAndBallsData = [];
 
         const ballsPerOver = initialEditData?.ballsPerOver;
@@ -77,30 +81,17 @@ const MatchTypePredictor = () => {
             });
           }
         }
-        const response = await axiosInstance.post(
-          "/admin/matchTypePredictor/getByMatchTypeId",
-          { matchTypeId: id }
-        );
-        const predictorData = response?.result?.predictorData || [];
 
         const updatedData = oversAndBallsData.map((item) => {
-          const predictorItem = predictorData.find(
-            (predictor) => predictor.order === item.order
-          );
-          if (predictorItem) {
-            return {
-              ...item,
-              runPerBall:
-                predictorItem.runPerBall === 0
-                  ? null
-                  : predictorItem.runPerBall,
-            };
-          }
-          return item;
+          const predictorItem = predictorData.find(p => p.order === item.order);
+          return {
+            ...item,
+            runPerBall: predictorItem?.runPerBall === 0 ? null : predictorItem?.runPerBall ?? null,
+          };
         });
         setData(updatedData);
       } catch (error) {
-        console.error("Error fetching predictor data:", error);
+        console.error("Error generating overs and balls data:", error);
         dispatch(
           updateToastData({
             data: error?.message,
@@ -111,10 +102,8 @@ const MatchTypePredictor = () => {
       }
     };
 
-    if(initialEditData){
-      generateOversAndBallsData();
-    }
-  }, [initialEditData?.oversPerInings]);
+    generateOversAndBallsData();
+  }, [initialEditData?.oversPerInings, predictorData]);
 
   useEffect(() => {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW) && !isEmpty(permissionObj)) {
@@ -137,26 +126,30 @@ const MatchTypePredictor = () => {
   }, [isSaved]);
   
   const fetchData = async (id) => {
-    await axiosInstance
-      .post("/admin/matchType/byId", { matchTypeId: id })
-      .then((response) => {
-        const newData = {...response?.result, oversPerInings: response?.result?.isLimitedOvers ? response?.result?.oversPerInings : response?.result?.maxOversInFirstInings, balls: 6 }
-        setInitialEditData(newData);
-        if (response?.result?.isLimitedOvers) {
-          setDisabledFields({ generate: true });
-        } else {
-          setDisabledFields({ generate: false });
-        }
-      })
-      .catch((error) => {
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
+    try {
+      const response = await axiosInstance.post("/admin/matchTypePredictor/getByMatchTypeId", {
+        matchTypeId: id,
       });
+
+      const result = response?.result || {};
+      const newData = {
+        ...result,
+        oversPerInings: result?.isLimitedOvers
+          ? result?.oversPerInings
+          : result?.maxOversInFirstInings,
+        balls: 6,
+      };
+      setInitialEditData(newData);
+      setPredictorData(result?.predictorData || []);
+
+      setDisabledFields({ generate: result?.isLimitedOvers });
+    } catch (error) {
+      dispatch(updateToastData({
+        data: error?.message,
+        title: error?.title,
+        type: ERROR,
+      }));
+    }
   };
   const handleSaveClick = async (saveAction) => {
     try {
@@ -276,25 +269,15 @@ const MatchTypePredictor = () => {
           });
         }
       }
-      const response = await axiosInstance.post(
-        "/admin/matchTypePredictor/getByMatchTypeId",
-        { matchTypeId: id }
-      );
-      const predictorData = response?.result?.predictorData || [];
 
       const updatedData = oversAndBallsData.map((item) => {
-        const predictorItem = predictorData.find(
-          (predictor) => predictor.order === item.order
-        );
-        if (predictorItem) {
-          return {
-            ...item,
-            runPerBall:
-              predictorItem.runPerBall === 0 ? null : predictorItem.runPerBall,
-          };
-        }
-        return item;
+        const predictorItem = predictorData.find(p => p.order === item.order);
+        return {
+          ...item,
+          runPerBall: predictorItem?.runPerBall === 0 ? null : predictorItem?.runPerBall ?? null,
+        };
       });
+
       setData(updatedData);
     } catch (error) {
       console.error("Error fetching predictor data:", error);

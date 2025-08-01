@@ -255,7 +255,7 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
             const batter = getPlayerDetails(element.batterId)?.playerName
             return (
                 <Row className={`d-flex w-100 ${isWicket ? "cursor-pointer" : "cursor-default"}`}>
-                    <Col xs={2} md={2} lg={2}>{element.overCount}</Col>
+                    <Col xs={2} md={2} lg={2}>{parseFloat(element.overCount).toFixed(1)}</Col>
                     <Col xs={1} md={1} lg={1}
                         onClick={() => {
                             if (!isWicket) return;

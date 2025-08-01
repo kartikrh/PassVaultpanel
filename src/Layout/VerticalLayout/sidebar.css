@@ -236,11 +236,17 @@ body.horizontal-layout .commentary-content {
 .horizontal-menu-item.active .horizontal-menu-link,
 .horizontal-menu-link.active {
   color: #0bb197;
-  background-color: #fbfbfb;
+  background-color: #f8f9fa;
 }
 .horizontal-dropdown-item.active {
   color: #0bb197 !important;
   background-color:#f4f4f4 !important;
+}
+/* Parent menu item when it has active child */
+.horizontal-menu-item.has-active-child .horizontal-menu-link,
+.horizontal-menu-item.has-active-child .horizontal-menu-link .mdi,
+.horizontal-menu-item.has-active-child .horizontal-menu-link .dropdown-arrow {
+  color: #0bb197 !important;
 }
 
 /* Dark Theme Support */
@@ -384,10 +390,12 @@ body[data-theme="dark"] .horizontal-dropdown-item.active {
   color: #0bb197 !important;
   background-color: #3f3f3f !important;
 }
-/* Parent menu item when it has active child */
-.horizontal-menu-item.has-active-child .horizontal-menu-link,
-.horizontal-menu-item.has-active-child .horizontal-menu-link .mdi,
-.horizontal-menu-item.has-active-child .horizontal-menu-link .dropdown-arrow {
+body[data-theme="dark"] .horizontal-menu-link:hover .mdi,
+body[data-theme="dark"] .horizontal-menu-link:focus .mdi {
+  color: #0bb197 !important;
+} 
+/* Keep icons colored when dropdown is open in dark theme */
+body[data-theme="dark"] .horizontal-menu-item.active .horizontal-menu-link i,
+body[data-theme="dark"] .horizontal-menu-item.active .horizontal-menu-link .dropdown-arrow {
   color: #0bb197 !important;
 }
- 
