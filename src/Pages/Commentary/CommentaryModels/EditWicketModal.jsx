@@ -68,9 +68,9 @@ const EditWicketDetails = ({ onClose, ballId, playersList }) => {
             const updateData = {
                 ...wicketData,
                 fieldPlayerId: fielder1.value,
-                fieldPlayer2Id: fielder2?.value,
+                fieldPlayer2Id: fielder2?.value || null,
                 fieldPlayerName: fielder1.label,
-                fieldPlayer2Name: fielder2?.label
+                fieldPlayer2Name: fielder2?.label || null,
             };
 
             const response = await axiosInstance.post(
