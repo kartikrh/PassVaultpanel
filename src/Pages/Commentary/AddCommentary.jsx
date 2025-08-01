@@ -157,7 +157,7 @@ function AddCommentary() {
         const filteredData = Object.fromEntries(
             Object.entries(newFormData).filter(([key]) => allowedFields.includes(key))
         );
-        updateSavedFormState(filteredData);
+        updateSavedFormState(prev => ({ ...prev, ...filteredData }));;
         setCompetitionId(newFormData["competitionId"]);
         const requiredFields = ["competitionId", "eventTypeId", "matchTypeId", "eventName", "eventDate"];
         const isValid = requiredFields.every(
@@ -295,7 +295,7 @@ function AddCommentary() {
         const filteredData = Object.fromEntries(
             Object.entries(newFormData).filter(([key]) => allowedFields.includes(key))
         );
-        updateSavedFormState(filteredData);
+        updateSavedFormState(prev => ({ ...prev, ...filteredData }));;
         
         // if both data are not same then do API call and fetch data
         if (newFormData["team1Id"] !== savedFormState["team1Id"]) {
@@ -362,7 +362,7 @@ function AddCommentary() {
         const filteredData = Object.fromEntries(
             Object.entries(newFormData).filter(([key]) => allowedFields.includes(key))
         );
-        updateSavedFormState(filteredData);
+        updateSavedFormState(prev => ({ ...prev, ...filteredData }));;
     }
     const handleFormEDataChange = (newFormData) => {
         // setSavedFormState({...savedFormState, ...newFormData});
@@ -370,7 +370,7 @@ function AddCommentary() {
         const filteredData = Object.fromEntries(
             Object.entries(newFormData).filter(([key]) => allowedFields.includes(key))
         );
-        updateSavedFormState(filteredData);
+        updateSavedFormState(prev => ({ ...prev, ...filteredData }));;
     }
 
     const handleFormCDataChange = (newFormData) => {
@@ -379,7 +379,7 @@ function AddCommentary() {
         const filteredData = Object.fromEntries(
             Object.entries(newFormData).filter(([key]) => allowedFields.includes(key))
         );
-        updateSavedFormState(filteredData);
+        updateSavedFormState(prev => ({ ...prev, ...filteredData }));;
         if (newFormData["countryId"] && newFormData["countryId"] !== "0") {
             setIsApiLoading(true);
             axiosInstance.post('/admin/list/venueList', { countryId: (newFormData["countryId"]) })
