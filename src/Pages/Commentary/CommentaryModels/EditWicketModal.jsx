@@ -31,7 +31,7 @@ const EditWicketDetails = ({ onClose, ballId, playersList }) => {
     }
 
     // Validation logic
-    const isFormValid = fielder1 && fielder2;
+    const isFormValid = fielder1;
 
     useEffect(() => {
         const fetchData = async () => {
@@ -59,8 +59,8 @@ const EditWicketDetails = ({ onClose, ballId, playersList }) => {
     }, [ballId])
 
     const handleSave = async () => {
-        if (!fielder1 || !fielder2) {
-            return; // Both fielders are required
+        if (!fielder1) {
+            return; // 1st fielder is required
         }
 
         setIsSaving(true);
@@ -68,9 +68,9 @@ const EditWicketDetails = ({ onClose, ballId, playersList }) => {
             const updateData = {
                 ...wicketData,
                 fieldPlayerId: fielder1.value,
-                fieldPlayer2Id: fielder2.value,
+                fieldPlayer2Id: fielder2?.value,
                 fieldPlayerName: fielder1.label,
-                fieldPlayer2Name: fielder2.label
+                fieldPlayer2Name: fielder2?.label
             };
 
             const response = await axiosInstance.post(
@@ -213,7 +213,7 @@ const EditWicketDetails = ({ onClose, ballId, playersList }) => {
                                     <div className="form-group mb-3">
                                         <Label className="form-label fw-bold">
                                             <i className="fas fa-user me-1"></i>
-                                            Fielder 2: <span className="text-danger">*</span>
+                                            Fielder 2:
                                             <small className="text-muted ms-2">({fielderList?.length || 0} players available)</small>
                                         </Label>
                                         <Select
@@ -239,10 +239,10 @@ const EditWicketDetails = ({ onClose, ballId, playersList }) => {
                             </Row>
 
                             {/* Validation Message */}
-                            {!isFormValid && (fielder1 || fielder2) && (
+                            {!isFormValid && (fielder1) && (
                                 <div className="alert alert-warning mt-3">
                                     <i className="fas fa-exclamation-triangle me-2"></i>
-                                    Both fielders are required to save the wicket details.
+                                    Fielder one is required to save the wicket details.
                                 </div>
                             )}
 
