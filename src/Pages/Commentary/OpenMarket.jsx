@@ -1160,17 +1160,6 @@ export const OpenMarket = () => {
         saveData({ dataToSave: dataToSend })
     }
 
-    // const handleSingleAction = (record, key, value) => {
-    //     const updatedRecord = { ...record, [key]: value };
-    //     setData(prevData =>
-    //         prevData.map(market =>
-    //         market.marketId === record.marketId ? updatedRecord : market
-    //         )
-    //     );
-    //     setHasUnsavedChanges(true);
-    // };
-
-
     const saveData = async ({ dataToSave, action }) => {
         for (const item of dataToSave) {
             const rawValue = item.predefinedValue;
@@ -1736,8 +1725,7 @@ export const OpenMarket = () => {
                     size="sm"
                     className="btn"
                     onClick={() => {
-                        // handleSingleAction(record, "isSendData", !record.isSendData);
-                        handleValueChange(record, "isSendData", !record.isSendData);
+                        handleSingleAction(record, "isSendData", !record.isSendData);
                     }}
                 >
                     <i className={`bx ${record.isSendData ? "bx-check" : "bx-block"}`}></i>
