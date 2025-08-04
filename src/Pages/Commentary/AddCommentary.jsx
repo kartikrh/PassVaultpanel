@@ -122,6 +122,7 @@ function AddCommentary() {
                 "addSystemPlayer": true,
                 // "drsCount": true,
                 "isVirtual": true,
+                "isPredictMarket": true,
             })
         }
     }, [id]);
@@ -822,6 +823,7 @@ function AddCommentary() {
                                         <NavItem className={classnames({ active: activeTab === 2 })}>
                                             <NavLink
                                                 data-toggle="tab"
+                                                disabled={!isFormAValid}
                                                 className={classnames({ active: activeTab === 2 })}
                                                 onClick={() => {
                                                     setactiveTab(2);
@@ -834,6 +836,7 @@ function AddCommentary() {
                                         <NavItem className={classnames({ active: activeTab === 3 })}>
                                             <NavLink
                                                 data-toggle="tab"
+                                                disabled={!isFormAValid}
                                                 className={classnames({ active: activeTab === 3 })}
                                                 onClick={() => {
                                                     setactiveTab(3);
@@ -846,6 +849,7 @@ function AddCommentary() {
                                         <NavItem className={classnames({ active: activeTab === 4 })}>
                                             <NavLink
                                                 data-toggle="tab"
+                                                disabled={!isFormAValid}
                                                 className={classnames({ active: activeTab === 4 })}
                                                 onClick={() => {
                                                     setactiveTab(4);
@@ -858,6 +862,7 @@ function AddCommentary() {
                                         <NavItem className={classnames({ active: activeTab === 5 })}>
                                             <NavLink
                                                 data-toggle="tab"
+                                                disabled={!isFormAValid}
                                                 className={classnames({ active: activeTab === 5 })}
                                                 onClick={() => {
                                                     setactiveTab(5);
