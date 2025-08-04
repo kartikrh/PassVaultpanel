@@ -345,6 +345,15 @@ export const MarketTemplateFileds = [
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
+        name: "matchTypeIds",
+        label: "Match Type",
+        type: MULTI_SELECT,
+        options: [],
+        showSelectAll: true,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
+    },
+    {
         name: "isAutoCancel",
         label: "Auto Cancel",
         type: SWITCH,
@@ -416,13 +425,5 @@ export const MarketTemplateFileds = [
     //     labelColspan: { xs: 12, md: 2, lg: 2 },
     //     fieldColspan: { xs: 12, md: 4, lg: 4 }
     // },
-    {
-        name: "matchTypeIds",
-        label: "Match Type",
-        type: MULTI_SELECT,
-        options: [],
-        showSelectAll: true,
-        labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 4, lg: 4 },
-    },
+    
 ];
