@@ -50,6 +50,7 @@ import { loadInit } from "../../config";
 import { ChangePythonType } from "../../components/Model/ChangePythonType";
 import { ChangeCompititionModel } from "../../components/Model/ChangeCompititionModel";
 import { ChangeScoringModel } from "../../components/Model/ChangeScoringModel";
+import PredictMarketPasswordModal from "../../components/Model/PredictMarketPasswordModal";
 
 const Index = () => {
   const pageName = TAB_COMMENTARY;
@@ -107,6 +108,9 @@ const Index = () => {
   const [loadModelVisable, setLoadModelVisable] = useState(false);
   const [loadSingleDataModelVisible, setLoadSingleDataModelVisible] =
     useState(false);
+  const [predictPasswordModelVisible, setPredictPasswordModelVisible] =
+    useState(false);
+  const [predictRecord,setPredictRecord] = useState({})
   const [selectedCommentaryId, setSelectedCommentaryId] = useState(null);
   const [suspendModelVisable, setSuspendModelVisable] = useState(false);
   const [closeModelVisible, setCloseModelVisible] = useState(false);
@@ -1260,6 +1264,35 @@ const Index = () => {
       setIsLoading(false);
     }
   };
+  const handlePredictMarketPassword = async ( password) => {
+    setIsLoading(true);
+    try {
+      const response = await axiosInstance.post(`/admin/commentary/validatePass`, {
+        password,
+      });
+
+      // setLoadDataModelVisable(false); // This will be handled by the wrapper function
+      dispatch(
+        updateToastData({
+          data: response?.message,
+          title: response?.title,
+          type: SUCCESS,
+        })
+      );
+      return response
+    } catch (error) {
+      dispatch(
+        updateToastData({
+          data: error?.message,
+          title: error?.title,
+          type: ERROR,
+        })
+      );
+      return error
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleLoadSingleCommentaryDataWithModal = async (password) => {
     if (selectedCommentaryId) {
@@ -1267,6 +1300,22 @@ const Index = () => {
       setLoadSingleDataModelVisible(false);
       setSelectedCommentaryId(null);
     }
+  };
+  const handlePredictMarketPasswordModal = async (password) => {
+    // if (selectedCommentaryId) {
+      const response  = await handlePredictMarketPassword(password);
+
+      if(response.success === true){
+        updatePredictMarket(
+          "isPredictMarket",
+          predictRecord,
+          predictRecord?.isPredictMarket
+        );
+        setPredictPasswordModelVisible(false)
+      }
+    //   setLoadSingleDataModelVisible(false);
+    //   setSelectedCommentaryId(null);
+    // }
   };
 
   const openScorecardIframe = (record) => {
@@ -1730,11 +1779,16 @@ const Index = () => {
               size="sm"
               className="btn"
               onClick={() => {
-                updatePredictMarket(
-                  "isPredictMarket",
-                  record,
-                  record?.isPredictMarket
-                );
+                if (record?.isPredictMarket) {
+                  setPredictPasswordModelVisible(true);
+                  setPredictRecord(record)
+                }else{
+                  updatePredictMarket(
+                    "isPredictMarket",
+                    record,
+                    record?.isPredictMarket
+                  );
+                }
               }}
             >
               <i
@@ -2952,6 +3006,14 @@ const Index = () => {
               setLoadDataModelVisable={setLoadSingleDataModelVisible}
               handleLoadData={handleLoadSingleCommentaryDataWithModal}
               moduleName={"Single Commentary"}
+            />
+          )}
+          {predictPasswordModelVisible && (
+            <PredictMarketPasswordModal
+              predictMarketPasswordModalVisable={predictPasswordModelVisible}
+              setPredictMarketPasswordModalVisable={setPredictPasswordModelVisible}
+              handleLoadData={handlePredictMarketPasswordModal}
+              // moduleName={"Single Commentary"}
             />
           )}
           {isGenerateModalOpen && (

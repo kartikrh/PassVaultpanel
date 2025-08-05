@@ -111,6 +111,15 @@ export const MatchTypeFields = [
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
   {
+    name: "templateIds",
+    label: "Market Template",
+    type: MULTI_SELECT,
+    options: [],
+    showSelectAll: true,
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 4, lg: 4 },
+  },
+  {
     name: "isActive",
     label: "Active",
     defaultValue: false,
@@ -435,13 +444,5 @@ export const MatchTypeFields = [
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
-  {
-    name: "templateIds",
-    label: "Market Template",
-    type: MULTI_SELECT,
-    options: [],
-    showSelectAll: true,
-    labelColspan: { xs: 12, md: 2, lg: 2 },
-    fieldColspan: { xs: 12, md: 4, lg: 4 },
-  },
+  
 ];
