@@ -158,7 +158,7 @@ function AddCommentary() {
         const filteredData = Object.fromEntries(
             Object.entries(newFormData).filter(([key]) => allowedFields.includes(key))
         );
-        updateSavedFormState(filteredData);;
+        updateSavedFormState(filteredData);
         setCompetitionId(newFormData["competitionId"]);
         const requiredFields = ["competitionId", "eventTypeId", "matchTypeId", "eventName", "eventDate"];
         const isValid = requiredFields.every(
@@ -419,7 +419,8 @@ function AddCommentary() {
                     team1Players: formatMultiSelectDataPlayers(response?.result?.team1Players),
                     team2Players: formatMultiSelectDataPlayers(response?.result?.team2Players),
                     eventDate: convertDateLocalToUTC(response?.result?.eventDate),
-                    addSystemPlayer: +response?.result?.systemPlayerCount > 0
+                    addSystemPlayer: +response?.result?.systemPlayerCount > 0,
+                    delay : String(response?.result?.delay)
                 }
                 // Fetch Competition Options based on EventTypeId
                 await axiosInstance.post('/admin/commentary/competitionListByEventTypeId', { eventTypeId: updateScreenData["eventTypeId"] })
@@ -649,13 +650,13 @@ function AddCommentary() {
         });
 
         // Filter Tab 3 data (Extra Details)
-        if (dataToSave3 && typeof dataToSave3 === "object") {
+        // if (dataToSave3 && typeof dataToSave3 === "object") {
             ExtraInfoFields.forEach(field => {
                 if (field.name && dataToSave3.hasOwnProperty(field.name)) {
                     filteredDataToSave3[field.name] = dataToSave3[field.name];
                 }
             });
-        }
+        // }
         
         // Filter Tab 4 data (Weather Details)
         WeatherDetailsFields.forEach(field => {
