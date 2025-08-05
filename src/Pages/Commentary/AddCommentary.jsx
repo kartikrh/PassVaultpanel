@@ -239,9 +239,9 @@ function AddCommentary() {
                 if (selectedCompetition) {
                     const { matchTypeId, drsCount, isVirtual, pythonId, countryId } = selectedCompetition;
                     finalizeRef1.current.updateFormFromParent({ matchTypeId });
-                    finalizeRef1.current.updateFormFromParent({ isVirtual });
-                    finalizeRef3.current.updateFormFromParent({ pythonId });
                     finalizeRef2.current.updateFormFromParent({ drsCount });
+                    finalizeRef3.current.updateFormFromParent({ isVirtual });
+                    finalizeRef3.current.updateFormFromParent({ pythonId });
                     finalizeRef4.current.updateFormFromParent({ countryId });
                 }
             } else {
@@ -722,7 +722,9 @@ function AddCommentary() {
             if (value === "" || value === undefined) {
                 value = null;
             }
-            if (type === SELECT) {
+            if (type === SELECT && (value === "0" || !value) && ["team1Captain", "team2Captain", "team1Kipper", "team2Kipper"].includes(name)) {
+                completeData[name] = null;
+            } else if (type === SELECT) {
                 completeData[name] = value ?? 0;
             } else if (type === SWITCH) {
                 completeData[name] = value ?? false;

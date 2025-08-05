@@ -274,9 +274,12 @@ export const CreateEventMarket = () => {
             }
             return templateRunners;
         };
-
+        let sortedTemplates = [...templates];
+        const type23Templates = sortedTemplates?.filter(t => t?.marketTypeCategoryId === 23)?.sort((a, b) => a?.over - b?.over);
+        const otherTemplates = sortedTemplates?.filter(t => t?.marketTypeCategoryId !== 23);
+        sortedTemplates = [...type23Templates, ...otherTemplates]; 
         // Process templates first to ensure all markets are generated
-        templates.forEach(template => {
+        sortedTemplates.forEach(template => {
             if (template.isPerEvent) {
                 if (template.marketTypeCategoryId === 37) {
                     processTopBowlerRunsMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
