@@ -713,7 +713,7 @@ export const CreateEventMarket = () => {
                 let marketName = ""
                 if (market.isNameInBall) {
                     const endBall = currentOver * ballsPerOver
-                    const startBall = endBall - ballsPerOver
+                    const startBall = endBall - ballsPerOver + 1
                     marketName = `${market?.templateName.replace("{x}", endBall).replace("{y}", startBall)} - ${team.shortName}`;
                 } else {
                     marketName = `${market?.templateName.replace("{x}", currentOver)} - ${team.shortName}`;
