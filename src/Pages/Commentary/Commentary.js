@@ -278,8 +278,9 @@ const Commentary = (props) => {
         setWinnerAnnouncement(WINNING_MESSAGE)
     }
     const retiringHurtPartnership = () => {
+        const currentPartnershipData = (isEmpty(_currentPartnership) ? currentPartnership : _currentPartnership);
         const partnershipDetails = {
-            ...currentPartnership,
+            ...currentPartnershipData,
             "isActive": false,
         }
         const updatedPartnership = generatePartnership({ commentaryDetails, currentPartnership: partnershipDetails, teams })
@@ -311,8 +312,9 @@ const Commentary = (props) => {
             }
             setRedirectOnScreenChange(true)
         }
+        const currentPartnershipData = (isEmpty(_currentPartnership) ? currentPartnership : _currentPartnership);
         const partnershipDetails = {
-            ...currentPartnership,
+            ...currentPartnershipData,
             "isActive": false,
         }
         const updatedPartnership = generatePartnership({ commentaryDetails, currentPartnership: partnershipDetails, teams })
