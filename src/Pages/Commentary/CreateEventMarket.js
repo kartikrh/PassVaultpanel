@@ -298,7 +298,7 @@ export const CreateEventMarket = () => {
             } else if (template.marketTypeCategoryId === 29) {
                 processPlayerBoundaryMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
             } else if (template.marketTypeCategoryId === 26) {
-                processFancyLDOMarkets(generateMarketFromTemplate(template, teams, commentary), teams, matchType.maxOversInFirstInings, processedMarketsObj);
+                processFancyLDOMarkets(generateMarketFromTemplate(template, teams, commentary), teams, matchType, processedMarketsObj);
             } else if (template.marketTypeCategoryId === 30) {
                 processPlayerBallMarkets(generateMarketFromTemplate(template, teams, commentary), teams, processedMarketsObj);
             } else if (template.marketTypeCategoryId === 23 || template.marketTypeCategoryId === 26 || template.marketTypeCategoryId === 27) {
@@ -983,7 +983,7 @@ export const CreateEventMarket = () => {
         }
     };
 
-    const processFancyLDOMarkets = (market, teams, maxOvers, processedMarketsObj) => {
+    const processFancyLDOMarkets = (market, teams, matchType, processedMarketsObj) => {
         const startOver = parseInt(market.over) || 2;
         const diff = startOver;
         const autoclose = parseFloat(market.beforeAutoClose) || 6;
@@ -996,11 +996,11 @@ export const CreateEventMarket = () => {
         const matchTypeId = market.matchTypeID || 2;
 
         teams.forEach(team => {
-            const templateName = market.templateName + " - " + team.shortName;
             let nextopen = 0.0;
             let nextcreate = 0.0;
             let noOfMarketsCreated = 0;
             let nextaddmarket = 0;
+            const maxOvers = matchType.maxOversInFirstInings
 
             for (let currentOver = startOver; currentOver <= maxOvers; currentOver++) {
                 if (!notincludedover.includes(currentOver)) {
@@ -1025,7 +1025,15 @@ export const CreateEventMarket = () => {
                         }
                     }
 
-                    const marketName = templateName.replace("{x}", currentOver);
+                    let marketName = ""
+                    const ballsPerOver = matchType.ballsPerOver
+                    console.log(market)
+                    if (market.isNameInBall) {
+                        const endBall = currentOver * ballsPerOver
+                        marketName = `${market?.templateName.replace("{x}", endBall)} - ${team.shortName}`;
+                    } else {
+                        marketName = `${market?.templateName.replace("{x}", currentOver)} - ${team.shortName}`;
+                    }
                     const specialMarket = {
                         ...market,
                         over: currentOver.toString(),
@@ -1090,7 +1098,14 @@ export const CreateEventMarket = () => {
                 }
 
                 // Create market for current over
-                const marketName = market.templateName.replace("{x}", currentOver) + " - " + team.shortName;
+                let marketName = ""
+                const ballsPerOver = matchType.ballsPerOver
+                if (market.isNameInBall) {
+                    const endBall = currentOver * ballsPerOver
+                    marketName = `${market?.templateName.replace("{x}", endBall)} - ${team.shortName}`;
+                } else {
+                    marketName = `${market?.templateName.replace("{x}", currentOver)} - ${team.shortName}`;
+                }
                 const specialMarket = {
                     ...market,
                     over: currentOver.toString(),
