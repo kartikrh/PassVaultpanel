@@ -963,13 +963,14 @@ export const CreateEventMarket = () => {
         });
     };
 
-    const ballsToOvers = (value, matchTypeId) => {
+    const ballsToOvers = (value, matchTypeId, matchType) => {
         const LD_OVER_BALLS = {
             "2": 6,
             "4": 6,
             "24": 5
         };
-        const ballsPerOver = LD_OVER_BALLS[`${matchTypeId}`] || 6;
+        const balls = matchType.ballsPerOver
+        const ballsPerOver = balls || LD_OVER_BALLS[`${matchTypeId}`] || 6;
         // Guard against invalid inputs
         if (typeof value !== 'number' || isNaN(value)) {
             return 0.0;
@@ -1004,14 +1005,14 @@ export const CreateEventMarket = () => {
 
             for (let currentOver = startOver; currentOver <= maxOvers; currentOver++) {
                 if (!notincludedover.includes(currentOver)) {
-                    const updatedBeforeAutoClose = ballsToOvers((currentOver * 6 - autoclose), matchTypeId);
-                    const updatedBeforeAutoSuspend = ballsToOvers((currentOver * 6 - autosuspend), matchTypeId);
+                    const updatedBeforeAutoClose = ballsToOvers((currentOver * 6 - autoclose), matchTypeId, matchType);
+                    const updatedBeforeAutoSuspend = ballsToOvers((currentOver * 6 - autosuspend), matchTypeId, matchType);
 
                     let updatedCreate, updatedAutoOpen;
 
                     if (howManyOpenMarkets === 1) {
-                        updatedCreate = ballsToOvers(((currentOver - diff) * 6 + autocreate - 6), matchTypeId);
-                        updatedAutoOpen = ballsToOvers(((currentOver - diff) * 6 + autoopen - 6), matchTypeId);
+                        updatedCreate = ballsToOvers(((currentOver - diff) * 6 + autocreate - 6), matchTypeId, matchType);
+                        updatedAutoOpen = ballsToOvers(((currentOver - diff) * 6 + autoopen - 6), matchTypeId, matchType);
                     } else {
                         updatedCreate = nextcreate;
                         updatedAutoOpen = nextopen;
@@ -1056,6 +1057,7 @@ export const CreateEventMarket = () => {
         const maxOvers = market.maxOvers || matchType?.maxOversInFirstInings || 5;
         const startOver = parseInt(market.over) || 2;
         const diff = startOver;
+        console.log("------------------------>", parseFloat(market.beforeAutoClose) || 6)
         const autoclose = parseFloat(market.beforeAutoClose) || 6;
         const autosuspend = parseFloat(market.beforeAutoSuspend) || 6;
         const autocreate = parseFloat(market.create) || 6;
@@ -1073,17 +1075,17 @@ export const CreateEventMarket = () => {
 
             for (let currentOver = startOver; currentOver <= maxOvers; currentOver++) {
                 if (notincludedover.includes(currentOver)) continue;
-
+                console.log("------------------------>", ballsToOvers((currentOver * 6 - autoclose), matchTypeId, matchType))
                 // Calculate updated values based on current over
                 const updatedValues = {
-                    beforeAutoClose: ballsToOvers((currentOver * 6 - autoclose), matchTypeId),
-                    beforeAutoSuspend: ballsToOvers((currentOver * 6 - autosuspend), matchTypeId)
+                    beforeAutoClose: ballsToOvers((currentOver * 6 - autoclose), matchTypeId, matchType),
+                    beforeAutoSuspend: ballsToOvers((currentOver * 6 - autosuspend), matchTypeId, matchType)
                 };
 
                 // Determine create and autoOpen values based on howManyOpenMarkets
                 if (howManyOpenMarkets === 1) {
-                    updatedValues.create = ballsToOvers(((currentOver - diff) * 6 + autocreate - 6), matchTypeId);
-                    updatedValues.autoOpen = ballsToOvers(((currentOver - diff) * 6 + autoopen - 6), matchTypeId);
+                    updatedValues.create = ballsToOvers(((currentOver - diff) * 6 + autocreate - 6), matchTypeId, matchType);
+                    updatedValues.autoOpen = ballsToOvers(((currentOver - diff) * 6 + autoopen - 6), matchTypeId, matchType);
                 } else {
                     updatedValues.create = nextcreate;
                     updatedValues.autoOpen = nextopen;
