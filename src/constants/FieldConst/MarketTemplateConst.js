@@ -345,21 +345,31 @@ export const MarketTemplateFileds = [
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
-        name: "matchTypeIds",
-        label: "Match Type",
-        type: MULTI_SELECT,
-        options: [],
-        showSelectAll: true,
-        labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 4, lg: 4 },
-    },
-    {
         name: "isAutoCancel",
         label: "Auto Cancel",
         type: SWITCH,
         defaultValue: false,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
+    },
+    {
+        // name: "isAutoCantrcel",
+        // label: "Auto Canctel",
+        //  dependsOnField: "dfsfsdf",
+        // dependsOnValue: true,
+        // type: SWITCH,
+        // defaultValue: false,
+        labelColspan: { xs: 0, md: 2, lg: 2 },
+        fieldColspan: { xs: 0, md: 6, lg: 6 }
+    },
+    {
+        name: "matchTypeIds",
+        label: "Match Type",
+        type: MULTI_SELECT,
+        options: [],
+        showSelectAll: true,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 10, lg: 10 },
     },
     {
         name: "isDefaultBetAllowed",
