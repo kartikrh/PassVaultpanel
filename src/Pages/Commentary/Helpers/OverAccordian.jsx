@@ -223,7 +223,7 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
     };
 
     const generateBallfromArray = (ballArray = []) => {
-        console.log(ballArray)
+        // console.log(ballArray)
         return ballArray?.map((element, index) => {
             const previousValue = ballArray[index - 1]
             const nextValue = ballArray[index + 1]

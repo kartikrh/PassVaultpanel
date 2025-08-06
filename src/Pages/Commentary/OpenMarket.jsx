@@ -1266,8 +1266,11 @@ export const OpenMarket = () => {
             return null
         }).filter(x => x)
 
+        const type23Markets = updatedDatalist?.filter(item => item?.marketTypeCategoryId === 23)?.sort((a,b)=>a?.over - b?.over);
+        const otherMarkets = updatedDatalist?.filter(item => item?.marketTypeCategoryId !== 23);
+
         // updatedDatalist = _.orderBy(updatedDatalist, ['marketName'], ['asc']);
-        updatedDatalist = _.orderBy(updatedDatalist, [
+        const sortedOtherMarkets = _.orderBy(otherMarkets, [
             item => {
                 // Check if the marketName contains a numeric value
                 const match = item.marketName.match(/(\d+)/);
@@ -1275,6 +1278,7 @@ export const OpenMarket = () => {
             },
             item => item.marketName  // Then sort alphabetically by marketName
         ], ['asc', 'asc']);
+        updatedDatalist = [...sortedOtherMarkets, ...type23Markets];
         return { data: updatedDatalist, lineRatio: highestLineRatio * 5 }
     }
 
@@ -1400,13 +1404,16 @@ export const OpenMarket = () => {
                 }));
 
                 // Sort the data
-                const sortedData = _.orderBy(finalDataToSet, [
+                const type23Markets = finalDataToSet?.filter(item => item?.marketTypeCategoryId === 23)?.sort((a,b)=>a?.over - b?.over);
+                const otherMarkets = finalDataToSet?.filter(item => item?.marketTypeCategoryId !== 23);
+                const sortedOtherMarkets = _.orderBy(otherMarkets, [
                     item => {
                         const match = item.marketName.match(/(\d+)/);
                         return match ? parseInt(match[1], 10) : 0;
                     },
                     item => item.marketName
                 ], ['asc', 'asc']);
+                const sortedData = [...sortedOtherMarkets, ...type23Markets]
 
                 return sortedData;
             });
@@ -2029,13 +2036,16 @@ export const OpenMarket = () => {
                 ...newOriginalData
             }));
 
-            return _.orderBy(finalData, [
+            const type23Markets = finalData?.filter(item => item?.marketTypeCategoryId === 23)?.sort((a,b)=>a?.over - b?.over);
+            const otherMarkets = finalData?.filter(item => item?.marketTypeCategoryId !== 23);
+            const sortedOtherMarkets = _.orderBy(otherMarkets, [
                 item => {
                     const match = item.marketName.match(/(\d+)/);
                     return match ? parseInt(match[1], 10) : 0;
                 },
                 'marketName'
             ], ['asc', 'asc']);
+            return [...sortedOtherMarkets, ...type23Markets]
         });
     };
 
