@@ -1454,7 +1454,8 @@ const Index = () => {
       ),
       key: "eventDate",
       sort: true,
-      style: { width: "10%" },
+      sticky: true,
+      style: { width: "10%", left: 0 },
     },
     {
       title: "Event Id",
@@ -1513,45 +1514,46 @@ const Index = () => {
       ),
       key: "eventRefId",
       sort: true,
-      style: { width: "10%" },
+      sticky: true,
+      style: { width: "10%", left: 150 },
     },
-    {
-      title: "Competition",
-      dataIndex: "competition",
-      key: "competition",
-      sort: true,
-      render: (text, record) => (
-        <div className="d-flex align-items-center gap-1">
-          <span
-            style={{ cursor: record.isPredictMarket && "pointer" }}
-            // onClick={() => {
-            //   if (record.isPredictMarket) {
-            //     handleOddsViewClick(record.commentaryId);
-            //   }
-            // }}
-          >
-            {text}
-          </span>
-          <span
-            style={{ cursor: "pointer" }}
-            onClick={() => {
-              setCompititionModelVisible(true);
-              setSelectedCompititon(record);
-            }}
-          >
-            {" "}
-            <Tooltip
-              title="Edit Competition"
-              color={"#e8e8ea"}
-              overlayInnerStyle={{ color: "#000" }}
-            >
-              {<a className="bx bx-edit-alt"></a>}
-            </Tooltip>
-          </span>
-        </div>
-      ),
-      style: { width: "10%" },
-    },
+    // {
+    //   title: "Competition",
+    //   dataIndex: "competition",
+    //   key: "competition",
+    //   sort: true,
+    //   render: (text, record) => (
+    //     <div className="d-flex align-items-center gap-1">
+    //       <span
+    //         style={{ cursor: record.isPredictMarket && "pointer" }}
+    //         // onClick={() => {
+    //         //   if (record.isPredictMarket) {
+    //         //     handleOddsViewClick(record.commentaryId);
+    //         //   }
+    //         // }}
+    //       >
+    //         {text}
+    //       </span>
+    //       <span
+    //         style={{ cursor: "pointer" }}
+    //         onClick={() => {
+    //           setCompititionModelVisible(true);
+    //           setSelectedCompititon(record);
+    //         }}
+    //       >
+    //         {" "}
+    //         <Tooltip
+    //           title="Edit Competition"
+    //           color={"#e8e8ea"}
+    //           overlayInnerStyle={{ color: "#000" }}
+    //         >
+    //           {<a className="bx bx-edit-alt"></a>}
+    //         </Tooltip>
+    //       </span>
+    //     </div>
+    //   ),
+    //   style: { width: "10%" },
+    // },
     {
       title: "Event",
       dataIndex: "eventName",
@@ -1565,15 +1567,33 @@ const Index = () => {
               }
             }}
           >
-            {text}
+            {text}{record?.eventNo ? `(${record.eventNo})` : ""}
           </span>
-          <span className="point-font">{record?.eventNo}</span>
+          {/* <span className="point-font">{record?.eventNo}</span> */}
+          <span style={{ fontSize: "12px", cursor: "pointer" }}>
+            {record.competition}
+            <Tooltip
+              title="Edit Competition"
+              color={"#e8e8ea"}
+              overlayInnerStyle={{ color: "#000" }}
+            >
+              <a
+                className="bx bx-edit-alt"
+                style={{ marginLeft: 5 }}
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent triggering the upper click
+                  setCompititionModelVisible(true);
+                  setSelectedCompititon(record);
+                }}
+              ></a>
+            </Tooltip>
+          </span>
         </div>
       ),
       key: "eventName",
       sort: true,
       sticky: true,
-      style: { width: "10%" },
+      style: { width: "10%", left: 300},
     },
     {
       title: "Match Type",

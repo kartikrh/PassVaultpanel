@@ -3681,8 +3681,9 @@ const Index = forwardRef(
                               style={{
                                 ...column.style,
                                 zIndex: column?.sticky && 100,
-                                left: column?.sticky && 0,
-                              }}
+                                left: column.sticky ? column.style.left : undefined, 
+                                position: "sticky",
+                              }}//left: column?.sticky && 0
                               className={column.className}
                             >
                               <div
