@@ -24,7 +24,7 @@ const TeamPlayerCard = ({ commentaryId, teamDetails, inningPlayers, fetchData, c
 
     useEffect(() => {
         if (inningPlayers && teamDetails?.teamPlayers) {
-            const teamPlayers = inningPlayers.filter((item) => item?.playerId !== null && item?.playerName !== null);
+            const teamPlayers = inningPlayers.filter((item) => item?.playerId !== null);
             setCommentaryTeamPlayers(teamPlayers);
             const selectedIds = teamPlayers.map(player => player.playerId)
             const dropdownValues = teamDetails?.teamPlayers.filter(player => !selectedIds.includes(player.playerId));
@@ -39,7 +39,7 @@ const TeamPlayerCard = ({ commentaryId, teamDetails, inningPlayers, fetchData, c
             await axiosInstance
                 .post("/admin/commentary/addTeamPlayer", { commentaryId, teamId: teamDetails?.teamId, playerId: selectedPlayer?.value, currentInnings: currentInnings })
                 .then((response) => {
-                    setCommentaryTeamPlayers(prev => [...prev, { teamId: teamDetails?.teamId, playerId: selectedPlayer?.value, playerName: nonCommentaryTeamPlayers[playerIndex].playerName }])
+                    setCommentaryTeamPlayers(prev => [...prev, { teamId: teamDetails?.teamId, playerId: selectedPlayer?.value, playerName: nonCommentaryTeamPlayers[playerIndex]?.playerName }])
                     setNonCommentaryTeamPlayers(prev => [...prev.slice(0, playerIndex), ...prev.slice(playerIndex + 1)])
                     setSelectedPlayer(undefined);
                     fetchData(commentaryId);
@@ -62,7 +62,7 @@ const TeamPlayerCard = ({ commentaryId, teamDetails, inningPlayers, fetchData, c
                 .then((response) => {
                     // commentaryId, teamId: teamDetails?.teamId, playerId: playerId
                     setIsLoading(false);
-                    setNonCommentaryTeamPlayers(prev => [...prev, { teamId: teamDetails?.teamId, playerId: playerId, playerName: commentaryTeamPlayers[playerIndex].playerName }])
+                    setNonCommentaryTeamPlayers(prev => [...prev, { teamId: teamDetails?.teamId, playerId: playerId, playerName: commentaryTeamPlayers[playerIndex]?.playerName }])
                     setCommentaryTeamPlayers(prev => [...prev.slice(0, playerIndex), ...prev.slice(playerIndex + 1)])
                 })
                 .catch((error) => {
@@ -228,7 +228,7 @@ const TeamPlayerCard = ({ commentaryId, teamDetails, inningPlayers, fetchData, c
         if (typeComparison !== 0) return typeComparison;
 
         // If playerType is the same, compare by playerName alphabetically
-        return a.playerName.localeCompare(b.playerName);
+        return (a?.playerName || "").localeCompare(b?.playerName || "");
     });
 
     return (
