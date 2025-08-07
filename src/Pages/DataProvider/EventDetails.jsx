@@ -58,7 +58,7 @@ const EventDetails = () => {
     (item) => item.key === loadInit.SCORECARD_FRAME_URL
   )?.value;
   if (scorecardFrameUrl) {
-    scorecardFrameUrl = scorecardFrameUrl.replace("{eventId}", eventId);
+    scorecardFrameUrl = scorecardFrameUrl.replace("{commentaryId}", eventDetails?.commentaryId);
   }
   const navigate = useNavigate();
   const dispatch = useDispatch();

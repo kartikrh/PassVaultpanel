@@ -83,13 +83,13 @@ function CommentaryMaster() {
   let navigate = useNavigate();
   const location = useLocation();
   const loadInitData = useSelector((state) => state.loadInit.loadInitData);
-  let scorecardFrameUrl = loadInitData.find(item => item.key === loadInit.SCORECARD_FRAME_URL)?.value;
-  if (scorecardFrameUrl) {
-    scorecardFrameUrl = scorecardFrameUrl.replace("{eventId}", commentaryData?.commentaryDetails?.eid);
-  }
-  // const commentaryId = location.state?.commentaryId || "0";
   const commentaryId = +localStorage.getItem("commentaryMasterId") || "0";
   const commentaryList = localStorage.getItem("commentary");
+  let scorecardFrameUrl = loadInitData.find(item => item.key === loadInit.SCORECARD_FRAME_URL)?.value;
+  if (scorecardFrameUrl) {
+    scorecardFrameUrl = scorecardFrameUrl.replace("{commentaryId}", commentaryId);
+  }
+  // const commentaryId = location.state?.commentaryId || "0";
   // const scoreCardUrl =
   //   process.env.REACT_APP_SCORECARD_URL || "https://deployed.live";
   const socket = createSocket();
