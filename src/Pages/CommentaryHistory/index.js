@@ -1030,8 +1030,8 @@ const Index = () => {
     )?.value;
       if (baseUrl) {
         scorecardFrameUrl = baseUrl.replace(
-          "{eventId}",
-          record.eventRefId
+          "{commentaryId}",
+          record?.commentaryId
         );
         window.open(scorecardFrameUrl, "_blank", "width=600,height=400");
         // console.log("url: ",scorecardFrameUrl);
