@@ -135,9 +135,10 @@ const DataproviderPage = () => {
     }, [groupedEvents]);
 
     const handleRowClick = (details) => {
+        const eventDetails = eventData.find((item) => item?.eventRefId === details?.eventId);
         const url = new URL(window.location.origin + "/dataproviderMarkets");
         sessionStorage.setItem('dataproviderEventId', "" + details?.eventId);
-        sessionStorage.setItem('dataproviderEventDetails', "" + JSON.stringify(details));
+        sessionStorage.setItem('dataproviderEventDetails', "" + JSON.stringify({...details, commentaryId: eventDetails?.commentaryId}));
         window.open(url.href, '_blank');
         sessionStorage.removeItem("dataproviderEventId");
         sessionStorage.removeItem("dataproviderEventDetails");
