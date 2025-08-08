@@ -488,6 +488,10 @@ export default function ImportEntityEvent() {
   const handleReset = () => {
     setSelectedFilter(getDefaultFilter(selectedLevel.level));
     setSelectedFormateOption(0)
+    setDateRange({
+      startDate: `${today.toISOString().split("T")[0]}T00:00:00`,
+      endDate: `${oneMonthLater.toISOString().split("T")[0]}T23:59:00`,
+    })
     setDateType({ label: "Local Timezone", value: 'IST: +5:30' })
     setIsSquadSelectedOption(true)
     setCurrentPage(0);
@@ -644,6 +648,7 @@ export default function ImportEntityEvent() {
   ];
 
   const handleReload = () => {
+    
     fetchData();
   };
   
@@ -744,8 +749,8 @@ export default function ImportEntityEvent() {
             onBreadCrumbsClick={handleBreadcrumbClick}
             // breadCrumbs={navigationHistory}
             handleCustomReset={handleReset}
-            setDateRange={setDateRange}
-            dateRange={dateRange}
+            // setDateRange={setDateRange}
+            // dateRange={dateRange}
             handleReload={handleReload}
             renderCustomFilter={() => (
               <div className="d-flex align-items-center flex-wrap gap-2">

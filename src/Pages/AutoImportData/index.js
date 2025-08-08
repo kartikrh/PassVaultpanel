@@ -39,10 +39,6 @@ const Index = () => {
   const [commentary, setCommentary] = useState([]);
   const [eventTypeId, setEventTypeId] = useState(null);
   const [competitionId, setCompetitionId] = useState(null);
-  const [resModelVisible, setResModelVisible] = useState(false);
-  const [resBodyData, setResBodyData] = useState({});
-  const [reqModelVisible, setReqModelVisible] = useState(false);
-  const [reqBodyData, setReqBodyData] = useState(null);
   const [isSearch, setIsSearch] = useState(true);
   const [dateType, setDateType] = useState({ label: "Local Timezone", value: 1 });
   const [dateRange, setDateRange] = useState({
@@ -62,14 +58,9 @@ const Index = () => {
     competition: null,
     commentary: null,
   });
-  const commentaryId = +sessionStorage.getItem('commentaryLogsId') || 0;
-  const commentaryDetails = JSON.parse(sessionStorage.getItem('commentaryLogsDetails') || "{}");
 
   const navigate = useNavigate();
 
-  const handleEdit = (id) => {
-    navigate("/addAutoImport", { state: { id: id } });
-  };
 
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
@@ -79,18 +70,8 @@ const Index = () => {
       ...data,
       page: currentPage == 0 ? 1 : currentPage,
       limit: pageSize,
-      eventTypeId: data?.eventTypeId || 0,
-      competitionId: data?.eventTypeId !== eventTypeId ? 0 : data?.competitionId || 0,
-      commentaryId: (data?.eventTypeId !== eventTypeId || data?.competitionId !== competitionId) ? 0 : data?.commentaryId || 0,
-    }
-    if(commentaryId !== 0) {
-      payload = {
-        ...(data || tableActions),
-        page: currentPage == 0 ? 1 : currentPage,
-        limit: pageSize,
-        commentaryId: commentaryId
-      };
-    }
+      }
+    
     if (isSearch) {
       payload = {
         ...payload,
@@ -115,106 +96,9 @@ const Index = () => {
       .catch((error) => {
         setIsLoading(false);
       });
-    if (data?.eventTypeId && latestValueFromTable) {
-      fetchCompetitionData(data?.eventTypeId);
-    }
-    if(data?.competitionId && latestValueFromTable) {
-      fetchCommentaryData(data?.competitionId);
-    }
+    
   };
-  useEffect(() => {
-      if (commentaryId !== 0) {
-        setEventTypeId(commentaryDetails.eventTypeId)
-      }
-  }, [])
 
-  useEffect(() => {
-    if(!eventTypeId) {
-        setCompetitions([]);
-        setCommentary([]);
-      }
-    }, [eventTypeId]);
-
-const handle = async (pType, record, cState) => {
-    setIsLoading(true);
-    await axiosInstance
-      .post(`/admin/commentary/changeIsTest`, {
-        commentaryId: record?.commentaryId,
-        [pType]: cState ? false : true,
-      })
-      .then((response) => {
-        fetchData();
-        dispatch(
-          updateToastData({
-            data: response?.message,
-            title: response?.title,
-            type: SUCCESS,
-          })
-        );
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
-      });
-  };
-  
-  useEffect(()=>{
-    if(commentaryId !== 0 && commentaryDetails?.eventTypeId && commentaryDetails?.competitionId){
-      setIsSearch(false)
-      fetchCompetitionData(commentaryDetails?.eventTypeId);
-      fetchCommentaryData(commentaryDetails?.competitionId);
-    } else {
-      setIsSearch(true)
-    }
-  },[commentaryId, commentaryDetails?.eventTypeId, commentaryDetails?.competitionId])
-
-  useEffect(() => {
-    if (commentaryDetails?.eventTypeId && commentaryDetails?.competitionId && commentaryDetails?.commentaryId) {
-      const event = eventTypes.find(e => e.eventTypeId === commentaryDetails.eventTypeId)
-      const competition = competitions.find(c => c.competitionId === commentaryDetails.competitionId)
-      const commentaryData = commentary.find(c => c.commentaryId === commentaryDetails.commentaryId)
-      setSelectedTableElements({
-        eventType: {value: event?.eventTypeId, label: event?.eventType},
-        competition: {value: competition?.competitionId, label: competition?.competition},
-        commentary: {value: commentaryData?.commentaryId, label: commentaryData && commentaryData?.eventName && commentaryData?.eventDate  ? `${commentaryData.eventName} (${convertDateUTCToLocal2(commentaryData.eventDate, "index")})` : ""},
-      });
-    }
-  }, [commentaryDetails.eventTypeId, commentaryDetails.competitionId, commentaryDetails.commentaryId, eventTypes, competitions, commentary]);
-
-  const fetchEventTypeData = async () => {
-    await axiosInstance
-      .post(`/admin/log/eventTypeList`, { isActive: true })
-      .then((response) => {
-        setEventTypes(response.result);
-      })
-      .catch((error) => { });
-  };
-  const fetchCompetitionData = async (value) => {
-    await axiosInstance
-      .post(`/admin/log/competitionListByEventTypeId`, {
-        eventTypeId: value,
-      })
-      .then((response) => {
-        setCompetitions(response.result);
-      })
-      .catch((error) => { });
-  };
-  const fetchCommentaryData = async (value) => {
-    await axiosInstance
-      .post(`/admin/log/getComByCompetition`, {
-        competitionId: value,
-      })
-      .then((response) => {
-        setCommentary(response.result);
-      })
-      .catch((error) => { });
-  };
   const handleDelete = async (e) => {
     setIsLoading(true);
     await axiosInstance
@@ -460,14 +344,21 @@ const handle = async (pType, record, cState) => {
     fetchData();
   },[isSearch, currentPage, pageSize, permissionObj]);
 
-  useEffect(() => {
-    fetchEventTypeData();
-  }, []);
+
 
   const handleReset = (value) => {
-    fetchData();
-    fetchEventTypeData();
+    setDateRange({
+      startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
+      endDate: `${new Date().toISOString().split("T")[0]}T23:59:00`,
+    })
+    setIsSearch(true)
   };
+
+  useEffect(() => {
+    if (isSearch) {
+      fetchData();
+    }
+  }, [isSearch, dateRange]);
 
   const handleReload = (value) => {
     fetchData();

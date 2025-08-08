@@ -116,8 +116,8 @@ const Index = () => {
     if (isSearch) {
       payload = {
         ...payload,
-        startDate: convertDateLocalToUTC(dateRange?.startDate, "index"),
-        endDate: convertDateLocalToUTC(dateRange?.endDate, "index"),
+        startDate: convertDateLocalToUTC(latestValueFromTable ? latestValueFromTable?.startDate : dateRange?.startDate, "index"),
+        endDate: convertDateLocalToUTC(latestValueFromTable ? latestValueFromTable?.endDate : dateRange?.endDate, "index"),
       };
     }
     await axiosInstance
@@ -686,7 +686,20 @@ const Index = () => {
       });
   };
   const handleReset = (value) => {
-    fetchData(value);
+    const newDateRange = {
+    startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
+    endDate: `${new Date(Date.now() + 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split("T")[0]}T23:59:00`,
+    };
+
+    setDateRange(newDateRange);
+    setIsSearch(true)
+    fetchData({
+      ...value,
+      startDate: convertDateLocalToUTC(newDateRange.startDate, "index"),
+      endDate: convertDateLocalToUTC(newDateRange.endDate, "index"),
+    });
     fetchEventTypeData();
   };
 
