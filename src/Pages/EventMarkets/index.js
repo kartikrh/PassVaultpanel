@@ -804,7 +804,7 @@ const Index = () => {
         return (
           <div className="d-flex flex-column align-items-center gap-1">
             <div>{resultText}</div>
-            {record.status !== 4 && (
+            {(record.status !== 4 && record.status !== 5 && record.status !== 6) && (
               <Tooltip
                 title={"Close Market"}
                 color={"#e8e8ea"}
