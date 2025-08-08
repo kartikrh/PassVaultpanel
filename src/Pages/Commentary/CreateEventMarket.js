@@ -1057,7 +1057,6 @@ export const CreateEventMarket = () => {
         const maxOvers = market.maxOvers || matchType?.maxOversInFirstInings || 5;
         const startOver = parseInt(market.over) || 2;
         const diff = startOver;
-        console.log("------------------------>", parseFloat(market.beforeAutoClose) || 6)
         const autoclose = parseFloat(market.beforeAutoClose) || 6;
         const autosuspend = parseFloat(market.beforeAutoSuspend) || 6;
         const autocreate = parseFloat(market.create) || 6;
@@ -1075,7 +1074,6 @@ export const CreateEventMarket = () => {
 
             for (let currentOver = startOver; currentOver <= maxOvers; currentOver++) {
                 if (notincludedover.includes(currentOver)) continue;
-                console.log("------------------------>", ballsToOvers((currentOver * 6 - autoclose), matchTypeId, matchType))
                 // Calculate updated values based on current over
                 const updatedValues = {
                     beforeAutoClose: ballsToOvers((currentOver * 6 - autoclose), matchTypeId, matchType),
