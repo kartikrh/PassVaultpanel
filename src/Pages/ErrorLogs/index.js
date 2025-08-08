@@ -254,6 +254,7 @@ const Index = () => {
   },[isSearch, currentPage, pageSize, permissionObj]);
 
   const handleReload = (value) => {
+    setIsSearch(true)
     fetchData();
   };
 

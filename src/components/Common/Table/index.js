@@ -1149,7 +1149,7 @@ const Index = forwardRef(
         });
       }
       setStatusSwitch(true);
-      setIsSearch && setIsSearch(false);
+      // setIsSearch && setIsSearch(false);
       if (tableElement?.rateSourceListSelect) {
         triggerResetWithState({
           isActive: true,
