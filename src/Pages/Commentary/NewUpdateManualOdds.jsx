@@ -3062,6 +3062,8 @@ export const NewUpdateManualOdds = () => {
                                                 } else { // manual
                                                     setIsLive(false);
                                                     setDirectLineEnabled(false);
+                                                    socket.off(MARKET_RUNNER_DATA);
+                                                    socket.off(INNINGS_RUN_DATA);
                                                 }
                                             }}
                                         > {rateSourceRefID.length ?
