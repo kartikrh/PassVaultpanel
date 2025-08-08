@@ -2673,12 +2673,12 @@ const Index = () => {
     const updatedColumn = [...columns];
 
     if (data.some((record) => record?.commentaryStatus === 4 || record?.commentaryStatus === 10)) {
-      updatedColumn.splice(6, 0, AwardColumn);
-      updatedColumn.splice(7, 0, resultColumn);
+      updatedColumn.splice(7, 0, AwardColumn);
+      updatedColumn.splice(8, 0, resultColumn);
     }
 
     if (data.some((record) => record?.commentaryStatus === 4)) {
-      updatedColumn.splice(8, 0, eventSnapColumn);
+      updatedColumn.splice(9, 0, eventSnapColumn);
     }
     return updatedColumn;
   };
