@@ -104,7 +104,7 @@ export const CreateEventMarket = () => {
             if (typeComparison !== 0) return typeComparison;
 
             // If playerType is the same, compare playerName alphabetically
-            return a.playerName.localeCompare(b.playerName);
+            return (a?.playerName || "").localeCompare(b?.playerName || "");
         });
     }
 
@@ -116,7 +116,7 @@ export const CreateEventMarket = () => {
             if (typeComparison !== 0) return typeComparison;
 
             // If playerType is the same, compare playerName alphabetically
-            return a.playerName.localeCompare(b.playerName);
+            return (a?.playerName || "").localeCompare(b?.playerName || "");
         });
     }
 
@@ -776,7 +776,7 @@ export const CreateEventMarket = () => {
             sortbasedOnthePlayerTypeAndPlayerName(team.players);
             // team.players.sort((a, b) => a?.playerName.localeCompare(b?.playerName));
             team.players.forEach(player => {
-                const specialMarketName = `${player.playerName} Runs`;
+                const specialMarketName = `${player?.playerName} Runs`;
                 const specialMarket = {
                     ...market,
                     playerId: player.commentaryPlayerId,
@@ -864,7 +864,7 @@ export const CreateEventMarket = () => {
             // team.players.sort((a, b) => a?.playerName.localeCompare(b?.playerName));
             sortbasedOnthePlayerTypeAndPlayerName(team.players);
             team.players.forEach(player => {
-                const specialMarketName = `${player.playerName} Boundaries`;
+                const specialMarketName = `${player?.playerName} Boundaries`;
                 const specialMarket = {
                     ...market,
                     playerId: player.commentaryPlayerId,
@@ -919,7 +919,7 @@ export const CreateEventMarket = () => {
             // team.players.sort((a, b) => a?.playerName.localeCompare(b?.playerName));
             sortbasedOnthePlayerTypeAndPlayerName(team.players);
             team.players.forEach(player => {
-                const specialMarketName = market.marketName.replace("{player}", player.playerName);
+                const specialMarketName = market.marketName.replace("{player}", player?.playerName);
                 const specialMarket = {
                     ...market,
                     playerId: player.commentaryPlayerId,
