@@ -878,7 +878,8 @@ const Index = () => {
       ),
       key: "eventDate",
       sort: true,
-      style: { width: "10%" },
+      sticky: true,
+      style: { width: "10%", left: 0},
     },
     {
       title: "Event Id",
@@ -908,28 +909,30 @@ const Index = () => {
       ),
       key: "eventRefId",
       sort: true,
-      style: { width: "10%" },
+      sticky: true,
+      style: { width: 100, left: 150 },
     },
-    {
-      title: "Competition",
-      dataIndex: "competition",
-      key: "competition",
-      sort: true,
-      style: { width: "10%" },
-    },
+    // {
+    //   title: "Competition",
+    //   dataIndex: "competition",
+    //   key: "competition",
+    //   sort: true,
+    //   style: { width: "10%" },
+    // },
     {
       title: "Event",
       dataIndex: "eventName",
       render: (text, record) => (
         <div className="d-flex flex-column">
-          <span>{text}</span>
-          <span className="point-font">{record?.eventNo}</span>
+          <span>{text}{record?.eventNo ? `(${record.eventNo})` : ""}</span>
+          {/* <span className="point-font">{record?.eventNo}</span> */}
+          <span style={{ fontSize: "12px"}}>{record.competition}</span>
         </div>
       ),
       key: "eventName",
       sort: true,
       sticky: true,
-      style: { width: "10%" },
+      style: { width: 100, left: 250 },
     },
     {
       title: "Match Type",

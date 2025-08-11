@@ -1529,7 +1529,7 @@ const Index = () => {
       key: "eventRefId",
       sort: true,
       sticky: true,
-      style: { width: "10%", left: 150 },
+      style: { width: 100, left: 150 },
     },
     // {
     //   title: "Competition",
@@ -1607,7 +1607,7 @@ const Index = () => {
       key: "eventName",
       sort: true,
       sticky: true,
-      style: { width: "10%", left: 300},
+      style: { width: 100, left: 250 },
     },
     {
       title: "Match Type",

@@ -3678,12 +3678,17 @@ const Index = forwardRef(
                         <tr>
                           {columns.map((column) => (
                             <th
+                            // style={{
+                            //     ...column.style,
+                            //     zIndex: column?.sticky && 100,
+                            //     left: column?.sticky && 0,
+                            //   }}
                               style={{
                                 ...column.style,
-                                zIndex: column?.sticky && 100,
-                                left: column.sticky ? column.style.left : undefined, 
-                                position: "sticky",
-                              }}//left: column?.sticky && 0
+                                zIndex: column?.sticky ? 100 : undefined,
+                                left: column?.sticky ? column.style?.left ?? 0 : undefined,
+                                position: column?.sticky ? "sticky" : undefined,
+                              }}
                               className={column.className}
                             >
                               <div
