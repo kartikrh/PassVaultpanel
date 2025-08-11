@@ -151,7 +151,6 @@ const Index = () => {
   );
 
   const fetchData = async (latestValueFromTable) => {
-    console.log("latestValueFromTable", latestValueFromTable)
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
     let payload = {
