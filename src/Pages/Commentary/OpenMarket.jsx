@@ -66,7 +66,7 @@ export const OpenMarket = () => {
     const lineRatioForMarketCategoryId = 23
     let scorecardFrameUrl = loadInitData.find(item => item.key === loadInit.SCORECARD_FRAME_URL)?.value;
     if (scorecardFrameUrl) {
-        scorecardFrameUrl = scorecardFrameUrl.replace("{eventId}", commentaryInfo?.eid);
+        scorecardFrameUrl = scorecardFrameUrl.replace("{commentaryId}", commentaryId);
     }
     const [keys, setKeys] = useState(() => {
         const savedKeys = localStorage.getItem("editableKeys");

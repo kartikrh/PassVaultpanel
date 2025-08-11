@@ -116,8 +116,8 @@ const Index = () => {
     if (isSearch) {
       payload = {
         ...payload,
-        startDate: convertDateLocalToUTC(dateRange?.startDate, "index"),
-        endDate: convertDateLocalToUTC(dateRange?.endDate, "index"),
+        startDate: convertDateLocalToUTC(latestValueFromTable ? latestValueFromTable?.startDate : dateRange?.startDate, "index"),
+        endDate: convertDateLocalToUTC(latestValueFromTable ? latestValueFromTable?.endDate : dateRange?.endDate, "index"),
       };
     }
     await axiosInstance
@@ -686,7 +686,20 @@ const Index = () => {
       });
   };
   const handleReset = (value) => {
-    fetchData(value);
+    const newDateRange = {
+    startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
+    endDate: `${new Date(Date.now() + 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split("T")[0]}T23:59:00`,
+    };
+
+    setDateRange(newDateRange);
+    setIsSearch(true)
+    fetchData({
+      ...value,
+      startDate: convertDateLocalToUTC(newDateRange.startDate, "index"),
+      endDate: convertDateLocalToUTC(newDateRange.endDate, "index"),
+    });
     fetchEventTypeData();
   };
 
@@ -726,7 +739,7 @@ const Index = () => {
         (item) => item.key === loadInit.SCORECARD_FRAME_URL
       )?.value;
       if (baseUrl) {
-        scorecardFrameUrl = baseUrl.replace("{eventId}", record.eventRefId);
+        scorecardFrameUrl = baseUrl.replace("{commentaryId}", record?.commentaryId);
         window.open(scorecardFrameUrl, "_blank", "width=600,height=400");
         // console.log("url: ",scorecardFrameUrl);
       }
@@ -865,7 +878,8 @@ const Index = () => {
       ),
       key: "eventDate",
       sort: true,
-      style: { width: "10%" },
+      sticky: true,
+      style: { width: "10%", left: 0},
     },
     {
       title: "Event Id",
@@ -895,28 +909,30 @@ const Index = () => {
       ),
       key: "eventRefId",
       sort: true,
-      style: { width: "10%" },
+      sticky: true,
+      style: { width: 100, left: 150 },
     },
-    {
-      title: "Competition",
-      dataIndex: "competition",
-      key: "competition",
-      sort: true,
-      style: { width: "10%" },
-    },
+    // {
+    //   title: "Competition",
+    //   dataIndex: "competition",
+    //   key: "competition",
+    //   sort: true,
+    //   style: { width: "10%" },
+    // },
     {
       title: "Event",
       dataIndex: "eventName",
       render: (text, record) => (
         <div className="d-flex flex-column">
-          <span>{text}</span>
-          <span className="point-font">{record?.eventNo}</span>
+          <span>{text}{record?.eventNo ? `(${record.eventNo})` : ""}</span>
+          {/* <span className="point-font">{record?.eventNo}</span> */}
+          <span style={{ fontSize: "12px"}}>{record.competition}</span>
         </div>
       ),
       key: "eventName",
       sort: true,
       sticky: true,
-      style: { width: "10%" },
+      style: { width: 100, left: 250 },
     },
     {
       title: "Match Type",
@@ -1539,12 +1555,12 @@ const Index = () => {
     const updatedColumn = [...columns];
 
     if (data.some((record) => record?.commentaryStatus === 4 || record?.commentaryStatus === 10)) {
-      updatedColumn.splice(6, 0, AwardColumn);
-      updatedColumn.splice(7, 0, resultColumn);
+      updatedColumn.splice(7, 0, AwardColumn);
+      updatedColumn.splice(8, 0, resultColumn);
     }
 
     if (data.some((record) => record?.commentaryStatus === 4)) {
-      updatedColumn.splice(8, 0, eventSnapColumn);
+      updatedColumn.splice(9, 0, eventSnapColumn);
     }
     return updatedColumn;
   };

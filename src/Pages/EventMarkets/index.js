@@ -134,8 +134,8 @@ const Index = () => {
     if (isSearch) {
       payload = {
         ...payload,
-        startDate: convertDateLocalToUTC(dateRange?.startDate, "index"),
-        endDate: convertDateLocalToUTC(dateRange?.endDate, "index"),
+        startDate: convertDateLocalToUTC(latestValueFromTable ? latestValueFromTable?.startDate : dateRange?.startDate, "index"),
+        endDate: convertDateLocalToUTC(latestValueFromTable ? latestValueFromTable?.endDate : dateRange?.endDate, "index" )
       };
     }
     if (dataSource?.eventTypeId === null) {
@@ -433,7 +433,18 @@ const Index = () => {
   };
 
   const handleReset = (value) => {
-    fetchData(value);
+    const newDateRange = {
+      startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
+      endDate: `${new Date().toISOString().split("T")[0]}T23:59:00`,
+    };
+
+    setDateRange(newDateRange);
+    setIsSearch(false)
+    fetchData({
+      ...value,
+      startDate: convertDateLocalToUTC(newDateRange.startDate, "index"),
+      endDate: convertDateLocalToUTC(newDateRange.endDate, "index"),
+    });
   };
   const handleEdit = (id) => {
     navigate("/addEventMarket", { state: { userId: id } });
@@ -804,7 +815,7 @@ const Index = () => {
         return (
           <div className="d-flex flex-column align-items-center gap-1">
             <div>{resultText}</div>
-            {record.status !== 4 && (
+            {(record.status !== 4 && record.status !== 5 && record.status !== 6) && (
               <Tooltip
                 title={"Close Market"}
                 color={"#e8e8ea"}

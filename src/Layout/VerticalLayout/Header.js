@@ -255,18 +255,18 @@ const Header = (props) => {
                     >
                       <button
                         className={`btn btn-primary ${
-                          isDarkMode ? "bg-white" : ""
+                          isDarkMode ? "" : "bg-white"
                         } w-100`}
                         onClick={() => {
                           dispatch(changeSidebarTheme("dark"));
                         }}
-                        disabled={isDarkMode}
+                        // disabled={isDarkMode}
                       >
                         {isDarkMode ? (
-                          <MdDarkMode color={isDarkMode ? "black" : ""} />
+                          <MdDarkMode color={isDarkMode ? "" : "black"} />
                         ) : (
                           <MdOutlineDarkMode
-                            color={isDarkMode ? "black" : ""}
+                            color={isDarkMode ? "" : "black"}
                           />
                         )}
                       </button>
@@ -281,17 +281,17 @@ const Header = (props) => {
                     >
                     <button
                       className={`btn btn-primary ${
-                        isDarkMode ? "" : "bg-white"
+                        isDarkMode ? "bg-white" : ""
                       } w-100`}
                       onClick={() => {
                         dispatch(changeSidebarTheme("light"));
                       }}
-                      disabled={!isDarkMode}
+                      // disabled={!isDarkMode}
                     >
                       {isDarkMode ? (
-                        <MdOutlineLightMode color={isDarkMode ? "" : "black"} />
+                        <MdOutlineLightMode color={isDarkMode ? "black" : ""} />
                       ) : (
-                        <MdLightMode color={isDarkMode ? "black" : "black"} />
+                        <MdLightMode color={isDarkMode ? "black" : " "} />
                       )}
                     </button></Tooltip>
                   </Col>

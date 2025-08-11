@@ -104,6 +104,7 @@ import MarketTemplateRunner from "../Pages/MarketTemplate/MarketTemplateRunner.j
 import { OddsView } from "../Pages/Commentary/OddsView.jsx";
 import MarketLogs from "../Pages/EventMarkets/MarketLogs.jsx";
 import MarketDataLogs from "../Pages/EventMarkets/MarketDataLogs.jsx";
+import AutoImportData from "../Pages/AutoImportData";
 import AddVendor from "../Pages/Vendor/AddVendor.js";
 import VendorIpList from "../Pages/Vendor/VendorIpList.js";
 import AddClientSocket from "../Pages/ClientSocket/AddClientSocket.jsx";
@@ -271,6 +272,7 @@ const authProtectedRoutes = [
   { path: "/manualOddsMarkets", component: <ManualOddMarketsPage /> },
   { path: "/addEventMarket", component: <AddEventMarket /> },
   { path: "/marketLogs", component: <MarketLogs /> },
+  { path: "/autoImport", component: <AutoImportData /> },
   { path: "/marketDataLogs", component: <MarketDataLogs /> },
   { path: "/unsettledMarket", component: <UnsettledMarket /> },
   { path: "/setMarketResult", component: <SetMarketResult /> },
