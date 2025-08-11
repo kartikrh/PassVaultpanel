@@ -78,11 +78,17 @@ body[data-theme="dark"] {
         background-color: $dark-body-bg; //used for Over background in Scoring
     }
     .accordion-button.collapsed {
-        background-color: $dark-body-color;
+        background-color: #3a3a3a;
+        color: $dark-body-color; 
+        &:hover {
+            background-color: #555;
+        }
     }
-    .market-category-body .table-hover > tbody > tr:hover > td {
-        color: $sidebar-menu-item-hover-color;
+    .market-category-body table.table-hover tbody tr:hover td {
+        background-color: #555 !important;
+        color: $sidebar-menu-item-hover-color !important;
     }
+
     .overHeadTextColor{
         color: #e5e5e5 !important;
     }
@@ -92,5 +98,8 @@ body[data-theme="dark"] {
     .MuiTableCell-root {
         background-color: $dark-body-bg;
         color: #e5e5e5 !important;
+    }
+    .accordion-button{
+        background-color: #3f3f3f;
     }
 }

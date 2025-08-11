@@ -34,6 +34,7 @@ import { useNavigate } from "react-router-dom";
 const EventDetails = () => {
   const pageName = TAB_DATA_PROVIDER;
   const [eventInfo, setEventInfo] = useState([]);
+  const [eventInfoDetails, setEventInfoDetails] = useState({});
   const [marketsGrouped, setMarketsGrouped] = useState({});
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState([]);
@@ -58,7 +59,7 @@ const EventDetails = () => {
     (item) => item.key === loadInit.SCORECARD_FRAME_URL
   )?.value;
   if (scorecardFrameUrl) {
-    scorecardFrameUrl = scorecardFrameUrl.replace("{eventId}", eventId);
+    scorecardFrameUrl = scorecardFrameUrl.replace("{commentaryId}", eventInfoDetails?.id);
   }
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -144,6 +145,7 @@ const EventDetails = () => {
           const filteredMarkets = data?.result?.markets.filter(
             (market) => ![4, 5, 6].includes(market?.status)
           );
+          setEventInfoDetails(data?.result);
           setEventInfo(filteredMarkets);
         } else {
           console.log("Failed to fetch data");

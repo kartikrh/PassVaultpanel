@@ -33,6 +33,8 @@ export const TAB_AWARDS = "Awards";
 
 export const TAB_BANNER = "Banner";
 export const TAB_BLOCKS = "Blocks";
+export const TAB_AUTO_IMPORT = "Auto Import";
+
 
 export const TAB_CARD_TYPE = "Card Type";
 export const TAB_COUNTRY_CODE = "Country Code";
