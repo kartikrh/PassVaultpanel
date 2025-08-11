@@ -151,6 +151,7 @@ const Index = () => {
   );
 
   const fetchData = async (latestValueFromTable) => {
+    console.log("latestValueFromTable", latestValueFromTable)
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
     let payload = {
@@ -174,8 +175,8 @@ const Index = () => {
     if (isSearch) {
       payload = {
         ...payload,
-        startDate: convertDateLocalToUTC(latestValueFromTable ? latestValueFromTable?.startDate : dateRange?.startDate , "index"),
-        endDate: convertDateLocalToUTC(latestValueFromTable ? latestValueFromTable?.endDate : dateRange?.endDate, "index"),
+        startDate: convertDateLocalToUTC(latestValueFromTable?.startDate ? latestValueFromTable?.startDate : dateRange?.startDate , "index"),
+        endDate: convertDateLocalToUTC(latestValueFromTable?.endDate ? latestValueFromTable?.endDate : dateRange?.endDate, "index"),
       };
     }
     await axiosInstance
