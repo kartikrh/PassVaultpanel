@@ -14,17 +14,24 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 //Import Breadcrumb
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import axiosInstance from "../../Features/axios";
-import { ERROR, MODULE_COMMENTARY, SUCCESS } from "../../components/Common/Const";
+import { ERROR, MODULE_PLAYERS, MODULE_TEAMS, SUCCESS, TAB_PLAYERS, TAB_TEAMS, PERMISSION_EDIT } from "../../components/Common/Const";
 import { updateToastData } from "../../Features/toasterSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { Tooltip } from "antd";
+import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 
 const Dashboard = () => {
+  const playerPage = TAB_PLAYERS
+  const teamPage = TAB_TEAMS
+  const permissionObj = useSelector(state => state.auth?.tabPermissionList);
   const [playersData, setPlayersData] = useState([])
   const [dupPlayersData, setDupPlayersData] = useState([])
   const [teamsData, setteamsData] = useState([])
   const [isLoading, setIsLoading] = useState(false);
   const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
   document.title = "Dashboard ";
+  const navigate = useNavigate();
 
   const dispatch = useDispatch();
 
@@ -62,6 +69,13 @@ const Dashboard = () => {
     // clone: false,
   };
 
+  const handleEdit = (id) => {
+    navigate("/addPlayer", { state: { userId: id } });
+  };
+  const handleTeamEdit = (id) => {
+    navigate("/addTeams", { state: { userId: id } });
+  };
+
   const missingPlayerColumns = [
     {
       title: "Player Name",
@@ -88,12 +102,22 @@ const Dashboard = () => {
       style: { width: "33%" },
     },
     {
-      title: "Set",
+      title: "Set Images",
       dataIndex: "set",
       render: (text, record) => (
-        <span>
-          {text}
-        </span>
+        <Tooltip title={"Set Images"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+          <Button
+            color="primary"
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleEdit(record.playerId);
+            }}
+            disabled={!checkPermission(permissionObj, playerPage, PERMISSION_EDIT)}
+          >
+            Set Image
+          </Button>
+        </Tooltip>
       ),
       key: "set",
       sort: true,
@@ -155,9 +179,19 @@ const Dashboard = () => {
       title: "Set Images",
       dataIndex: "setImages",
       render: (text, record) => (
-        <span>
-          {text}
-        </span>
+        <Tooltip title={"Set Images"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+          <Button
+            color="primary"
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleTeamEdit(record.teamId);
+            }}
+            disabled={!checkPermission(permissionObj, teamPage, PERMISSION_EDIT)}
+          >
+            Set Image
+          </Button>
+        </Tooltip>
       ),
       key: "setImages",
       sort: true,
@@ -168,7 +202,7 @@ const Dashboard = () => {
   const handleLoadData = async (password) => {
       setIsLoading(true);
       await axiosInstance
-        .post(`/loadPanelData`, { module: [MODULE_COMMENTARY], password })
+        .post(`/loadPanelData`, { module: [MODULE_TEAMS, MODULE_PLAYERS], password })
         .then((response) => {
           fetchData();
           setLoadDataModelVisable(false);
