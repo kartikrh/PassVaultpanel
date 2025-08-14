@@ -732,7 +732,12 @@ function AddCommentary() {
                 completeData[name] = value ?? null;
             }
             });
-
+            if (Array.isArray(completeData?.team1Players)) {
+                completeData.team1Players = completeData.team1Players?.filter(id => id != null);
+            }
+            if (Array.isArray(completeData?.team2Players)) {
+                completeData.team2Players = completeData.team2Players?.filter(id => id != null);
+            }
             const extraData = {
                 commentaryId: id,
                 eventDate: convertDateLocalToUTC(dataToSave1.eventDate),
