@@ -673,13 +673,17 @@ const Index = forwardRef(
         });
         setSearchedData(updatedData)
         if (searchTerm.length <= 2) {
-          setTotal(dataSource.length);
-          const sliced = dataSource.slice(
-            (currentPage == 1 ? currentPage - 1 : currentPage == 0 ? currentPage : currentPage - 1) * pageSize,
-            (currentPage == 0 ? 0 : Number((currentPage - 1) * pageSize)) +
-              Number(pageSize)
-          );
-          setFilteredData(sliced);
+          if(tableElement.title !== "Dashboard"){
+            setTotal(dataSource.length);
+            const sliced = dataSource.slice(
+              (currentPage == 1 ? currentPage - 1 : currentPage == 0 ? currentPage : currentPage - 1) * pageSize,
+              (currentPage == 0 ? 0 : Number((currentPage - 1) * pageSize)) +
+                Number(pageSize)
+            );
+            setFilteredData(sliced);
+          }else{
+            setFilteredData(dataSource)
+          }
         } else {
           setTotal(updatedData.length);
           const sliced = updatedData.slice(
@@ -1385,7 +1389,7 @@ const Index = forwardRef(
       <Row>
         <Col lg={12}>
           <Card className="card">
-            {tableElement?.title !== "Auto Events" &&
+            {tableElement?.title !== "Auto Events" && tableElement?.title !== "Dashboard" &&
               tableElement?.title !== "Manual Events" &&
               !tableElement.isNonCrud && (
                 <CardHeader className="p-0 p-md-2">
@@ -3300,7 +3304,7 @@ const Index = forwardRef(
                     </Col>
                     <Col className="col-sm">
                       <div className="d-flex justify-content-sm-end align-items-end flex-sm-row flex-column">
-                        {tableElement.title !== "Import Events" && (
+                        {tableElement.title !== "Import Events" && tableElement.title !== "Dashboard"  && (
                           <div className="me-1 d-flex">
                             <CSVLink
                               data={generateSimplifiedData().csvData}
@@ -3469,7 +3473,7 @@ const Index = forwardRef(
                     </Col>
                     <Col className="col-sm">
                       <div className="d-flex justify-content-sm-end align-items-end flex-sm-row flex-column">
-                        {tableElement.title !== "Import Events" && (
+                        {tableElement.title !== "Import Events" && tableElement.title !== "Dashboard" && (
                           <div className="me-1 d-flex">
                             <CSVLink
                               data={generateSimplifiedData().csvData}
@@ -3538,7 +3542,45 @@ const Index = forwardRef(
                       </div>
                     </Col>
                   </Row>
-                ) : null}
+                ) : <Row>
+                  <Col className="col-sm-auto">
+                     
+                        <span>
+                          {`Showing the 
+                            ${dataSource?.length}
+                           entries`}
+                        </span>
+                      <div className="d-flex align-items-center justify-content-end"></div>
+                    </Col>
+                    <Col className="col-sm">
+                      <div className="d-flex justify-content-sm-end align-items-end flex-sm-row flex-column">
+                        
+                        <div className="position-relative">
+                          <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Search Min. 2 characters"
+                            value={searchTerm}
+                            onChange={(e) => {
+                              setSearchTerm(e.target.value);
+                            }}
+                          />
+                          {isSearching && (
+                            <span
+                              className="position-absolute"
+                              style={{
+                                right: "10px",
+                                top: "50%",
+                                transform: "translateY(-50%)",
+                              }}
+                            >
+                              <i className="fas fa-spinner fa-spin"></i>
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </Col>
+                </Row>}
 
                 <div
                   className="table-responsive table-responsive2 table-card mt-3 mb-1"
@@ -3833,8 +3875,8 @@ const Index = forwardRef(
                 {!isEmpty(data) ? (
                   <Row>
                     <Col>{tableElement?.compToRender}</Col>
-                    <Col className="d-flex justify-content-end">
-                      {tableElement?.isServerPagination ? (
+                    <Col className={tableElement.title === "Dashboard" ? "" : "d-flex justify-content-end"}>
+                      {tableElement?.isServerPagination && tableElement.title != "Dashboard" ? (
                         <Pagination
                           total={serverTotal}
                           pageSize={serverPageSize}
@@ -3845,7 +3887,7 @@ const Index = forwardRef(
                           isServerSide={true}
                           customPageSizeOptions={customPageSizeOptions} //for custom pageSizeOptions like in team import
                         />
-                      ) : isPagination ? (
+                      ) : isPagination && tableElement.title != "Dashboard" ? (
                         <Pagination
                           total={total}
                           pageSize={pageSize}
