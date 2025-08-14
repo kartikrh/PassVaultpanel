@@ -2148,8 +2148,8 @@ const Commentary = (props) => {
                     currentPartnership
                 })
                 const generatePartnershipData = generatePartnership({
-                    commentaryDetails, currentBall: {},
-                    currentPartnership: isEmpty(_currentPartnership) ? currentPartnership : _currentPartnership, teams: _teams
+                        commentaryDetails, currentBall: {},
+                        currentPartnership: isEmpty(_currentPartnership) ? currentPartnership : _currentPartnership, teams: _teams
                 })
                 objToSave = {
                     ...objToSave,
@@ -2369,13 +2369,11 @@ const Commentary = (props) => {
         if (matchTypeDetails?.isAutoChangeStriker
             && !changePlayerList
             && (ballCountForStrike > matchTypeDetails?.autoChangeStrikerAfterBall)
-            && !isMatchCompleted
-            && !isSaving
-            && !isCommentaryBallLoading) {
+            && !isMatchCompleted) {
             changeStrike()
             setBallCountForStrike(1)
         }
-    }, [ballCountForStrike, changePlayerList, isSaving, isCommentaryBallLoading])
+    }, [ballCountForStrike, changePlayerList])
     useEffect(() => {
         if (currentOver.overId) {
             let getCurrentOverToBallStatus = getBallsForAllOver(ballHistory, wicketHistory)
