@@ -240,6 +240,13 @@ const Index = () => {
       style: { width: "10%" },
     },
     {
+      title: "Ref Id",
+      dataIndex: "refId",
+      key: "refId",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
       title: "Import",
       dataIndex: "isImported",
       key: "isImported",
