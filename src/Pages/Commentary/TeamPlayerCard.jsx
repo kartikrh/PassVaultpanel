@@ -13,7 +13,7 @@ import bat from '../../../src/assets/images/cricket-icons/cricket-bat.png';
 import allrounder from '../../../src/assets/images/cricket-icons/cricket.png';
 import keeper from '../../../src/assets/images/cricket-icons/game.png';
 
-const TeamPlayerCard = ({ commentaryId, teamDetails, inningPlayers, fetchData, currentInnings }) => {
+const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, fetchData, currentInnings }) => {
     const [commentaryTeamPlayers, setCommentaryTeamPlayers] = useState([]);
     const [nonCommentaryTeamPlayers, setNonCommentaryTeamPlayers] = useState([]);
     const [selectedPlayer, setSelectedPlayer] = useState(undefined);
@@ -112,7 +112,12 @@ const TeamPlayerCard = ({ commentaryId, teamDetails, inningPlayers, fetchData, c
                     commentaryTeamPlayers.find((item) => +item.commentaryPlayerId === +commentaryPlayerId)?.isInPlayingEleven || false
                 return { commentaryId, teamId: teamDetails?.teamId, playerId, batsmanAverage, batsmanStrikeRate, boundary, playerBallFaced, isInPlayingEleven, commentaryPlayerId: +commentaryPlayerId, currentInnings: +currentInnings };
             });
-            await axiosInstance.post("/admin/commentary/updateTeamPlayer", playerDataArray);
+            const payload = {
+                commentaryId,
+                eventRefId,
+                playerDataArray,
+            }
+            await axiosInstance.post("/admin/commentary/updateTeamPlayer", payload);
             fetchData(commentaryId);
             setIsLoading(false);
             setEditedPlayers({});
