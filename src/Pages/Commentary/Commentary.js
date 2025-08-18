@@ -2370,12 +2370,11 @@ const Commentary = (props) => {
             && !changePlayerList
             && (ballCountForStrike > matchTypeDetails?.autoChangeStrikerAfterBall)
             && !isMatchCompleted
-            && !isSaving
             && !isCommentaryBallLoading) {
             changeStrike()
             setBallCountForStrike(1)
         }
-    }, [ballCountForStrike, changePlayerList, isSaving, isCommentaryBallLoading])
+    }, [ballCountForStrike, changePlayerList, isCommentaryBallLoading])
     useEffect(() => {
         if (currentOver.overId) {
             let getCurrentOverToBallStatus = getBallsForAllOver(ballHistory, wicketHistory)
