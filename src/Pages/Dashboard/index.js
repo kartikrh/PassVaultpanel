@@ -14,7 +14,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 //Import Breadcrumb
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import axiosInstance from "../../Features/axios";
-import { ERROR, MODULE_PLAYERS, MODULE_TEAMS, SUCCESS, TAB_PLAYERS, TAB_TEAMS, PERMISSION_EDIT } from "../../components/Common/Const";
+import { ERROR, MODULE_PLAYERS, MODULE_TEAMS, SUCCESS, TAB_PLAYERS, TAB_TEAMS, PERMISSION_EDIT, PERMISSION_VIEW } from "../../components/Common/Const";
 import { updateToastData } from "../../Features/toasterSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -30,10 +30,15 @@ const Dashboard = () => {
   const [teamsData, setteamsData] = useState([])
   const [isLoading, setIsLoading] = useState(false);
   const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
+  const [dataFetch, setDataFetch] = useState(false);
   document.title = "Dashboard ";
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
+
+  const handlePlayerList = async (playerName) => {
+    navigate("/Players", { state: { playerName: playerName } });
+  }
 
   const fetchData = async () => {
     setIsLoading(true)
@@ -43,8 +48,6 @@ const Dashboard = () => {
         axiosInstance.post(`/admin/dashboard/dupPlayers`),
       ]);
 
-      // Store results in state
-      console.log(res2.result.playersData)
       setPlayersData(res1.result.players);
       setteamsData(res1.result.teams);
       setDupPlayersData(res2.result.playersData);
@@ -56,8 +59,10 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    if(dataFetch){
+      fetchData();
+    }
+  }, [dataFetch]);
 
   const tableElement = {
     title: "Dashboard",
@@ -87,7 +92,7 @@ const Dashboard = () => {
       ),
       key: "playerName",
       sort: true,
-      style: { width: "33%" },
+      style: { width: "10%" },
     },
     {
       title: "Short Name",
@@ -99,7 +104,7 @@ const Dashboard = () => {
       ),
       key: "displayName",
       sort: true,
-      style: { width: "33%" },
+      style: { width: "10%" },
     },
     {
       title: "Set Images",
@@ -121,7 +126,7 @@ const Dashboard = () => {
       ),
       key: "set",
       sort: true,
-      style: { width: "33%" },
+      style: { width: "10%" },
     },
   ]
   const dupPlayerColumns = [
@@ -147,19 +152,41 @@ const Dashboard = () => {
       ),
       key: "displayname",
       sort: true,
-      style: { width: "33%" },
+      style: { width: "10%" },
     },
     {
-      title: "Remove",
-      dataIndex: "Remove",
+      title: "Total",
+      dataIndex: "total",
       render: (text, record) => (
         <span>
           {text}
         </span>
       ),
+      key: "total",
+      sort: true,
+      style: { width: "10%", textAlign: "center" },
+    },
+    {
+      title: "Remove",
+      dataIndex: "Remove",
+      render: (text, record) => (
+        <Tooltip title={"Remove"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+          <Button
+            color="danger"
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handlePlayerList(record.playername);
+            }}
+            disabled={!checkPermission(permissionObj, playerPage, PERMISSION_VIEW)}
+          >
+            Remove
+          </Button>
+        </Tooltip>
+      ),
       key: "Remove",
       sort: true,
-      style: { width: "33%" },
+      style: { width: "10%" },
     },
   ]
   const teamColumns = [
@@ -173,7 +200,7 @@ const Dashboard = () => {
       ),
       key: "teamName",
       sort: true,
-      style: { width: "50%" },
+      style: { width: "10%" },
     },
     {
       title: "Set Images",
@@ -195,42 +222,19 @@ const Dashboard = () => {
       ),
       key: "setImages",
       sort: true,
-      style: { width: "50%" },
+      style: { width: "10%", textAlign: "center" },
     },
   ]
 
   const handleLoadData = async (password) => {
-      setIsLoading(true);
-      await axiosInstance
-        .post(`/loadPanelData`, { module: [MODULE_TEAMS, MODULE_PLAYERS], password })
-        .then((response) => {
-          fetchData();
-          setLoadDataModelVisable(false);
-          dispatch(
-            updateToastData({
-              data: response?.message,
-              title: response?.title,
-              type: SUCCESS,
-            })
-          );
-        })
-        .catch((error) => {
-          setIsLoading(false);
-          dispatch(
-            updateToastData({
-              data: error?.message,
-              title: error?.title,
-              type: ERROR,
-            })
-          );
-        });
-    };
+    setDataFetch(true)
+  };
 
   return (
     <React.Fragment>
       <div className="page-content">
         <Container fluid={true}>
-          <Breadcrumbs title="ScoreCard" breadcrumbItem="Dashboard" />
+          <Breadcrumbs title="ScoreCard" breadcrumbItem="Dashboard" isDashboard= {true} handleLoadData={handleLoadData}/>
           {isLoading && <SpinnerModel />}
           {/* User Panel Charts */}
           {/* <UsePanel /> */}
@@ -253,7 +257,7 @@ const Dashboard = () => {
 
           {/* Latest Transaction Table */}
           {/* <LatestTransation /> */}
-          <Row className='d-flex justify-content-end'>
+          {/* <Row className='d-flex justify-content-end'>
             <Button
               color="warning"
               onClick={() => {
@@ -264,8 +268,8 @@ const Dashboard = () => {
               <i className="ri-refresh-line"></i>
               Load Data
             </Button>
-          </Row>
-          <Row>
+          </Row> */}
+          {dataFetch && <Row>
             <Col xs="12" lg="6" >
               <Card style={{ maxHeight: "510px", padding: '0px' }}>
                 <CardHeader>
@@ -296,17 +300,17 @@ const Dashboard = () => {
                 </CardBody>
               </Card>
             </Col>
-          </Row>
+          </Row>}
         </Container>
       </div>
-      {loadDataModelVisable && (
+      {/* {loadDataModelVisable && (
         <LoadDataModal
           loadDataModelVisable={loadDataModelVisable}
           setLoadDataModelVisable={setLoadDataModelVisable}
           handleLoadData={handleLoadData}
           moduleName={"Commentary"}
         />
-      )}
+      )} */}
     </React.Fragment>
   );
 };

@@ -228,6 +228,7 @@ const PlayerCommentary = () => {
                                     ) : null}
                                     <TeamPlayerCard
                                       commentaryId={commentaryId}
+                                      eventRefId={commentaryDetails?.eventRefId}
                                       teamDetails={teamDetails}
                                       inningPlayers={inningPlayers}
                                       currentInnings={currentInnings}

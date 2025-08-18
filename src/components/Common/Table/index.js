@@ -149,6 +149,7 @@ const Index = forwardRef(
       handleCustomReset,
       pythonApis,
       customPageSizeOptions,
+      playerSearch
     },
     ref
   ) => {
@@ -160,12 +161,12 @@ const Index = forwardRef(
         isActive: true,
       }
     );
-    const [total, setTotal] = useState(dataSource.length);
+    const [total, setTotal] = useState(dataSource?.length);
     const [pageSize, setPageSize] = useState(globalPageSize || 10);
     const [currentPage, setCurrentPage] = useState(0);
     const [filteredData, setFilteredData] = useState([]);
     const [searchedData, setSearchedData] = useState([]);
-    const [searchTerm, setSearchTerm] = useState("");
+    const [searchTerm, setSearchTerm] = useState(playerSearch || "");
     const [sortOrder, setSortOrder] = useState({
       sortOrder: "",
       key: "",
@@ -192,7 +193,7 @@ const Index = forwardRef(
       setData(filteredData);
     }, [filteredData]);
     useEffect(() => {
-      if (dataSource) setSearchTerm("");
+      if (dataSource) setSearchTerm(playerSearch || "");
     }, [dataSource]);
     useEffect(() => {
       if (data.length == 0 && filteredData.length == 0) {
@@ -993,6 +994,7 @@ const Index = forwardRef(
         setData(sliced);
       } else if (isPagination) {
         if(searchTerm.length > 2){
+          handleSearchFilter()
           dataSource = searchedData
         }
         const possibleNoOfPages = Math.ceil(dataSource?.length / pageSize);
@@ -3546,7 +3548,7 @@ const Index = forwardRef(
                   <Col className="col-sm-auto">
                      
                         <span>
-                          {`Showing the 
+                          {`Showing 
                             ${dataSource?.length}
                            entries`}
                         </span>
@@ -3554,7 +3556,6 @@ const Index = forwardRef(
                     </Col>
                     <Col className="col-sm">
                       <div className="d-flex justify-content-sm-end align-items-end flex-sm-row flex-column">
-                        
                         <div className="position-relative">
                           <input
                             type="text"
