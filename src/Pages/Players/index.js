@@ -7,7 +7,7 @@ import { Container } from "reactstrap";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { isEqual, isEmpty } from "lodash";
 import { TAB_PLAYERS, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, ERROR, MODULE_PLAYERS, } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
@@ -36,6 +36,8 @@ const Index = () => {
   const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
   const [generateModalData, setGenerateModalData] = useState(null);
   const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
+  const location = useLocation();
+  const [playerSearch, setPlayerSearch] = useState(location.state?.playerName || '');
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -601,6 +603,7 @@ const Index = () => {
             handlePlayerHistoryModalPopUp={handlePlayerHistoryModalPopUp}
             teams={teams}
             manualExcel={downloadExcelColumn}
+            playerSearch = {playerSearch}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
