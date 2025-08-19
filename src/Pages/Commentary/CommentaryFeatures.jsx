@@ -7,7 +7,7 @@ import { ERROR, PERMISSION_VIEW, TAB_COMMENTARY, WARNING } from "../../component
 import SpinnerModel from "../../components/Model/SpinnerModel/index.js";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods.js"
 import { clearLoadingAndError, deleteCommentaryFeatures, saveCommentaryFeatures } from "../../Features/Tabs/commentarySlice.js"
-import { TabContent, TabPane, Nav, NavItem, NavLink, Card, Button, Row, Col, Container, CardBody } from 'reactstrap';
+import { TabContent, TabPane, Nav, NavItem, NavLink, Card, Button, Row, Col, Container, CardBody, ButtonGroup } from 'reactstrap';
 import { BALL_FEATURE, OVER_FEATURE, PARTNERSHIP_FEATURE, PLAYER_FEATURE, TEAM_FEATURE, WICKET_FEATURE } from "./CommentartConst.js"
 import Breadcrumbs from "../../components/Common/Breadcrumb.js"
 import { BallFeature } from "./CommentaryFeatures/BallsFeature.jsx"
@@ -17,13 +17,18 @@ import { PartnershipFeature } from "./CommentaryFeatures/PartnershipFeature.jsx"
 import { WicketFeature } from "./CommentaryFeatures/WicketFeature.jsx"
 import _, { isEmpty } from "lodash"
 import { PlayerFeature } from "./CommentaryFeatures/PlayerFeature.jsx"
+import { OverBallByBallFeature } from "./CommentaryFeatures/OverBallByBallFeature.jsx"
+import { CommentaryDetailsFeature } from "./CommentaryFeatures/CommentaryDetailsFeature.jsx"
+import "./CommentaryCss.css";
 
 const navigateTo = "/commentary"
 export const CommentaryFeatures = () => {
     const pageName = TAB_COMMENTARY
     const [activeTab, setActiveTab] = useState(TEAM_FEATURE);
-    const [commentaryData, setCommentaryData] = useState(undefined);
+    const [commentaryData, setCommentaryData] = useState(undefined);                                                                                                                                    
     const [isDataLoading, setIsDataLoading] = useState(false)
+    const [isToggleLoading, setIsToggleLoading] = useState(false)
+    const [commentaryDetailsData, setCommentaryDetailsData] = useState({})
     const [teamsData, setTeamsData] = useState({})
     const [ballByBallData, setBallByBallData] = useState({})
     const [deleteBallByBall, setDeleteBallByBall] = useState([])
@@ -34,6 +39,21 @@ export const CommentaryFeatures = () => {
     const [partnershipData, setPartnershipData] = useState({})
     const [playerData, setPlayerData] = useState({})
     const [deletePartnership, setDeletePartnership] = useState([])
+    const [selectedInnings, setSelectedInnings] = useState(1)
+    const [selectedBattingTeamId, setSelectedBattingTeamId] = useState(undefined)
+    const [battingTeam, setBattingTeam] = useState({})
+    const [bowlingTeam, setBowlingTeam] = useState({})
+    const [battingTeamPlayers, setBattingTeamPlayers] = useState([])
+    const [bowlingTeamPlayers, setBowlingTeamPlayers] = useState([])
+    const [selectedItems, setSelectedItems] = useState({
+        details: {},
+        teams: {},
+        players: {},
+        partnerships: {},
+        wickets: {},
+        overs: {},
+        balls: {}
+    });
     const permissionObj = useSelector(state => state.auth?.tabPermissionList);
     const { isLoading, isRedirect } = useSelector(state => state.tabsData.commentary);
     const location = useLocation();
@@ -65,12 +85,13 @@ export const CommentaryFeatures = () => {
         let commentaryDataToUpdate = {}
         await axiosInstance.post('/admin/commentary/detailsById', { commentaryId })
             .then(async (response) => {
-                commentaryDataToUpdate = response?.result
+                commentaryDataToUpdate = response?.result;
                 const updatedBallByBall = _.orderBy(commentaryDataToUpdate.commentaryBallByBall, ["commentaryBallByBallId"], ["desc"])
                 const updatedOverHistory = _.orderBy(commentaryDataToUpdate.commentaryOvers, ["overId"], ["desc"])
                 commentaryDataToUpdate["commentaryBallByBall"] = updatedBallByBall || []
                 commentaryDataToUpdate["commentaryOvers"] = updatedOverHistory || []
                 setCommentaryData(commentaryDataToUpdate)
+                setSelectedInnings(commentaryDataToUpdate?.commentaryDetails?.currentInnings);
                 setIsDataLoading(false)
                 // if (response?.result?.callPrediction?.predictioncallSuccess === false) {
                 //     const predictionMessage = response?.result?.callPrediction?.predictionMessage;
@@ -95,6 +116,7 @@ export const CommentaryFeatures = () => {
     const handleSaveClick = () => {
         const objToSave = { commentaryId: commentaryId }
         const deleteObjToSave = { commentaryId: commentaryId }
+        if (!isEmpty(commentaryDetailsData)) objToSave["commentaryDetails"] = commentaryDetailsData;
         if (!isEmpty(teamsData)) objToSave["commentaryTeams"] = Object.values(teamsData)
         if (!isEmpty(playerData)) objToSave["commentaryPlayers"] = Object.values(playerData)
         if (!isEmpty(ballByBallData)) objToSave["commentaryBallByBall"] = Object.values(ballByBallData)
@@ -115,31 +137,206 @@ export const CommentaryFeatures = () => {
             handleBackClick()
         }
     };
+
+    // const handleSaveClick = () => {
+    //     const objToSave = { commentaryId: commentaryId };
+    //     const deleteObjToSave = { commentaryId: commentaryId };
+    //     // Existing updated records
+    //     if (!isEmpty(commentaryDetailsData)) objToSave["commentaryDetails"] = Object.values(commentaryDetailsData);
+    //     if (!isEmpty(teamsData)) objToSave["commentaryTeams"] = Object.values(teamsData);
+    //     if (!isEmpty(playerData)) objToSave["commentaryPlayers"] = Object.values(playerData);
+    //     if (!isEmpty(ballByBallData)) objToSave["commentaryBallByBall"] = Object.values(ballByBallData);
+    //     if (!isEmpty(overData)) objToSave["commentaryOvers"] = Object.values(overData);
+    //     if (!isEmpty(wicketData)) objToSave["commentaryWickets"] = Object.values(wicketData);
+    //     if (!isEmpty(partnershipData)) objToSave["commentaryPartnership"] = Object.values(partnershipData);
+
+    //     // Existing deletes
+    //     if (!isEmpty(deleteBallByBall)) deleteObjToSave["deleteBallByBall"] = Object.values(deleteBallByBall);
+    //     if (!isEmpty(deleteOver)) deleteObjToSave["deleteOvers"] = Object.values(deleteOver);
+    //     if (!isEmpty(deleteWicket)) deleteObjToSave["deleteWickets"] = Object.values(deleteWicket);
+    //     if (!isEmpty(deletePartnership)) deleteObjToSave["deletePartnership"] = Object.values(deletePartnership);
+    //     // ✅ New: collect selected records from each updatedData set
+    //     const selectedDetails = Object.values(commentaryDetailsData).filter(t => t.isSelected);
+    //     const selectedTeams = Object.values(teamsData).filter(t => t.isSelected);
+    //     const selectedPlayers = Object.values(playerData).filter(p => p.isSelected);
+    //     const selectedBalls = Object.values(ballByBallData).filter(b => b.isSelected);
+    //     const selectedOvers = Object.values(overData).filter(o => o.isSelected);
+    //     const selectedWickets = Object.values(wicketData).filter(w => w.isSelected);
+    //     const selectedPartnerships = Object.values(partnershipData).filter(p => p.isSelected);
+    //     if (
+    //         selectedDetails.length ||
+    //         selectedTeams.length ||
+    //         selectedPlayers.length ||
+    //         selectedBalls.length ||
+    //         selectedOvers.length ||
+    //         selectedWickets.length ||
+    //         selectedPartnerships.length
+    //     ) {
+    //         objToSave["selectedRecords"] = {
+    //             commentaryDetails: selectedDetails,
+    //             teams: selectedTeams,
+    //             players: selectedPlayers,
+    //             balls: selectedBalls,
+    //             overs: selectedOvers,
+    //             wickets: selectedWickets,
+    //             partnerships: selectedPartnerships
+    //         };
+    //     }
+    //     // Dispatch save / delete
+    //     if (!isEmpty(objToSave)) {
+    //         dispatch(saveCommentaryFeatures(objToSave));
+    //     }
+    //     if (!isEmpty(deleteObjToSave)) {
+    //         dispatch(deleteCommentaryFeatures(deleteObjToSave));
+    //     }
+    //     if (isEmpty(objToSave) && isEmpty(deleteObjToSave)) {
+    //         handleBackClick();
+    //     }
+    // };
+
+
+    useEffect(() => {
+        // setIsToggleLoading(true);
+        const battingTeamData = commentaryData?.commentaryTeams?.filter((item)=> item.currentInnings == selectedInnings)?.find((item)=> item?.teamStatus == 1);
+        setBattingTeam(battingTeamData)
+        setSelectedBattingTeamId(battingTeamData?.teamId)
+        const bowlingTeamData = commentaryData?.commentaryTeams?.filter((item)=> item.currentInnings == selectedInnings)?.find((item)=> item?.teamStatus == 2);
+        setBowlingTeam(bowlingTeamData)
+        // setTimeout(() => setIsToggleLoading(false), 2000);
+    },[commentaryData, selectedInnings])
+
+    useEffect(() => {
+        setIsToggleLoading(true);
+        const battingTeamPlayersData = commentaryData?.commentaryPlayers?.filter((players)=> players.currentInnings == selectedInnings && players.teamId == selectedBattingTeamId);
+        setBattingTeamPlayers(battingTeamPlayersData)
+        const bowlingTeamPlayersData = commentaryData?.commentaryPlayers?.filter((players)=> players.currentInnings == selectedInnings && players.teamId != selectedBattingTeamId);
+        setBowlingTeamPlayers(bowlingTeamPlayersData)
+        setTimeout(() => setIsToggleLoading(false), 2000);
+    },[commentaryData, selectedInnings, selectedBattingTeamId])
+
     return <>
         <React.Fragment>
             <div className="page-content">
                 <Container fluid={true}>
-                    <Row>
-                        <Card>
-                            <CardBody>
+                    <Row className="p-0">
+                        <Card className="p-0">
+                            <CardBody className="p-2">
+                                {(isDataLoading || isToggleLoading || isLoading) && <SpinnerModel />}
                                 <Row>
-                                    <Col xs={6} md={8} lg={9} className="mt-3 mt-lg-4 mt-md-4">
+                                    {/* <Col xs={6} md={8} lg={9} className="mt-3 mt-lg-4 mt-md-4">
                                         <Breadcrumbs title="ScoreCard" breadcrumbItem="Update Commentary Features" page="updatecp" />
+                                    </Col> */}
+                                    {!isEmpty(commentaryData?.commentaryDetails) && <Col xs={5} md={5} lg={5}>
+                                        <div className='match-details-breadcrumbs'>{`${commentaryData?.commentaryDetails.ety}/ ${commentaryData?.commentaryDetails.com}/ ${commentaryData?.commentaryDetails.en}`}</div>
+                                        <div>{`Ref: ${commentaryData?.commentaryDetails.eid} [ ${commentaryData?.commentaryDetails.ed + " " + commentaryData?.commentaryDetails.et} ]`}</div>
+                                    </Col>}
+                                    <Col xs={2} md={2} lg={2}>
+                                            <ButtonGroup className="me-3">
+                                                <Button color={selectedInnings === 1 ? "primary" : "secondary"} onClick={() => setSelectedInnings(1)}>Inning 1</Button>
+                                                <Button color={selectedInnings === 2 ? "primary" : "secondary"} disabled={commentaryData?.commentaryDetails?.currentInnings === 1} onClick={() => setSelectedInnings(2)}>Inning 2</Button>
+                                            </ButtonGroup>
                                     </Col>
-                                    <Col xs={6} md={4} lg={3} className="mt-3 mt-lg-2 mt-md-2">
+                                    {battingTeam || bowlingTeam ? <Col xs={2} md={2} lg={2}>
+                                            <ButtonGroup>
+                                                <Button color={selectedBattingTeamId == battingTeam?.teamId ? "primary" : "secondary"} onClick={() => setSelectedBattingTeamId(battingTeam?.teamId)}>{battingTeam?.teamName}</Button>
+                                                <Button color={selectedBattingTeamId == bowlingTeam?.teamId ? "primary" : "secondary"} onClick={() => setSelectedBattingTeamId(bowlingTeam?.teamId)}>{bowlingTeam?.teamName}</Button>
+                                            </ButtonGroup>
+                                    </Col> : null}
+                                    <Col xs={3} md={3} lg={3}>
                                         <Button color='primary' className="table-header-button" onClick={handleSaveClick}>Save</Button>
                                         <Button color='danger' className="table-header-button" onClick={handleBackClick}>Exit</Button>
                                     </Col>
                                 </Row>
-                                <Row>
+                                {/* <Row>
                                     {!isEmpty(commentaryData?.commentaryDetails) && <Col className='mb-3'>
                                         <div className='match-details-breadcrumbs'>{`${commentaryData?.commentaryDetails.ety}/ ${commentaryData?.commentaryDetails.com}/ ${commentaryData?.commentaryDetails.en}`}</div>
                                         <div>{`Ref: ${commentaryData?.commentaryDetails.eid} [ ${commentaryData?.commentaryDetails.ed + " " + commentaryData?.commentaryDetails.et} ]`}</div>
                                     </Col>}
+                                </Row> */}
+                                <Row className="mt-2">
+                                    {/* <Col xs={12}>
+                                        <ButtonGroup className="me-3">
+                                            <Button color={selectedInnings === 1 ? "primary" : "secondary"} onClick={() => setSelectedInnings(1)}>Inning 1</Button>
+                                            <Button color={selectedInnings === 2 ? "primary" : "secondary"} disabled={commentaryData?.commentaryDetails?.currentInnings === 1} onClick={() => setSelectedInnings(2)}>Inning 2</Button>
+                                        </ButtonGroup>
+                                    </Col>
+                                    {battingTeam || bowlingTeam ? <Col xs={12} className="my-2">
+                                        <ButtonGroup>
+                                            <Button color={selectedBattingTeamId == battingTeam?.teamId ? "primary" : "secondary"} onClick={() => setSelectedBattingTeamId(battingTeam?.teamId)}>{battingTeam?.teamName}</Button>
+                                            <Button color={selectedBattingTeamId == bowlingTeam?.teamId ? "primary" : "secondary"} onClick={() => setSelectedBattingTeamId(bowlingTeam?.teamId)}>{bowlingTeam?.teamName}</Button>
+                                        </ButtonGroup>
+                                    </Col> : null} */}
+
+                                    <Col lg={12}>
+                                        <CommentaryDetailsFeature
+                                            commentaryDetailsInfo={commentaryData?.commentaryDetails || {}}
+                                            updatedData={commentaryDetailsData|| {}}
+                                            handleValueChange={updatedData => setCommentaryDetailsData({ ...updatedData })}
+                                            selectedItems={selectedItems}
+                                            setSelectedItems={setSelectedItems}
+                                        />
+                                       <TeamFeature
+                                            teamlist={commentaryData?.commentaryTeams?.filter((item)=> item?.currentInnings === selectedInnings)  || []}
+                                            updatedData={teamsData|| {}}
+                                            handleValueChange={updatedData => setTeamsData({ ...updatedData })}
+                                            selectedItems={selectedItems}
+                                            setSelectedItems={setSelectedItems}
+                                        />
+                                        <PlayerFeature
+                                            playerList={battingTeamPlayers?.filter((item)=> item?.onStrike !== null && item?.isPlay !== null) || []}
+                                            updatedData={playerData || {}}
+                                            handleValueChange={updatedData => setPlayerData({ ...updatedData })}
+                                            title="Player Batting"
+                                            selectedItems={selectedItems}
+                                            setSelectedItems={setSelectedItems}
+                                            playerData={battingTeamPlayers}
+                                        />
+                                        <PlayerFeature
+                                            playerList={bowlingTeamPlayers?.filter((item)=> item?.bowlerOrder !== null) || []}
+                                            updatedData={playerData || {}}
+                                            handleValueChange={updatedData => setPlayerData({ ...updatedData })}
+                                            title="Bowler Listing"
+                                            selectedItems={selectedItems}
+                                            setSelectedItems={setSelectedItems}
+                                            playerData={battingTeamPlayers}
+                                        />
+                                        <PartnershipFeature
+                                            partnershipList={commentaryData?.commentaryPartnership?.filter((item)=> item?.currentInnings == selectedInnings && item?.teamId === selectedBattingTeamId) || []}
+                                            updatedData={partnershipData || {}}
+                                            handleValueChange={updatedData => setPartnershipData({ ...updatedData })}
+                                            deletedList={deletePartnership}
+                                            handleDeleteChange={(partnershipId) => setDeletePartnership([].concat(deletePartnership, [partnershipId]))}
+                                            selectedItems={selectedItems}
+                                            setSelectedItems={setSelectedItems}
+                                            playerList={battingTeamPlayers}
+                                        />
+                                        <WicketFeature
+                                            wicketList={commentaryData?.commentaryWicket?.filter((item)=> item?.currentInnings == selectedInnings && item?.teamId === selectedBattingTeamId) || []}
+                                            updatedData={wicketData || {}}
+                                            handleValueChange={updatedData => setWicketData({ ...updatedData })}
+                                            deletedList={deleteWicket}
+                                            handleDeleteChange={(wicketId) => setDeleteWicket([].concat(deleteWicket, [wicketId]))}
+                                            selectedItems={selectedItems}
+                                            setSelectedItems={setSelectedItems}
+                                            playerList={battingTeamPlayers}
+                                        />
+                                        <OverBallByBallFeature
+                                            overList={commentaryData?.commentaryOvers?.filter((item)=> item.currentInnings == selectedInnings && item?.teamId !== selectedBattingTeamId) || []}
+                                            ballList={commentaryData?.commentaryBallByBall?.filter((item)=> item.currentInnings == selectedInnings && item?.teamId == selectedBattingTeamId) || []}
+                                            updatedData={overData || {}}
+                                            handleValueChange={updatedData => setOverData({ ...updatedData })}
+                                            deletedList={deleteOver}
+                                            handleDeleteChange={(overId) => setDeleteOver([].concat(deleteOver, [overId]))}
+                                            ballByBallData={ballByBallData}
+                                            setBallByBallData={setBallByBallData}
+                                            deleteBallByBall={deleteBallByBall}
+                                            setDeleteBallByBall={setDeleteBallByBall}
+                                            selectedItems={selectedItems}
+                                            setSelectedItems={setSelectedItems}
+                                        />
+                                    </Col>
                                 </Row>
-                                <Row>
-                                    {(isDataLoading || isLoading) && <SpinnerModel />}
-                                    <Nav tabs>
+                                    {/* <Nav tabs>
                                         <NavItem>
                                             <NavLink role="button"
                                                 onClick={() => { setActiveTab(TEAM_FEATURE) }}
@@ -207,7 +404,6 @@ export const CommentaryFeatures = () => {
                                                 handleValueChange={updatedData => setBallByBallData({ ...updatedData })}
                                                 deletedList={deleteBallByBall}
                                                 handleDeleteChange={(ballId) => {
-                                                    // console.log(ballId)
                                                     setDeleteBallByBall([].concat(deleteBallByBall, [ballId]))
                                                 }}
                                             />
@@ -237,8 +433,7 @@ export const CommentaryFeatures = () => {
                                                 handleValueChange={updatedData => setPlayerData({ ...updatedData })}
                                             />
                                         </TabPane>
-                                    </TabContent>
-                                </Row>
+                                    </TabContent> */}
                             </CardBody>
                         </Card>
                     </Row>
