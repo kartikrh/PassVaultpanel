@@ -45,6 +45,10 @@ export const CommentaryFeatures = () => {
     const [bowlingTeam, setBowlingTeam] = useState({})
     const [battingTeamPlayers, setBattingTeamPlayers] = useState([])
     const [bowlingTeamPlayers, setBowlingTeamPlayers] = useState([])
+    const [eventTypeList, setEventTypeList] = useState([]);
+    const [matchTypeList, setMatchTypeList] = useState([]);
+    const [competitionList, setCompetitionList] = useState([]);
+    const [pythonList, setPythonList] = useState([]);
     const [selectedItems, setSelectedItems] = useState({
         details: {},
         teams: {},
@@ -71,14 +75,6 @@ export const CommentaryFeatures = () => {
             dispatch(clearLoadingAndError())
         }
     }, [permissionObj]);
-
-    useEffect(() => {
-        if (commentaryId !== "0") fetchData(commentaryId);
-    }, [commentaryId]);
-
-    useEffect(() => {
-        if (!isLoading && isRedirect) navigate(navigateTo);
-    }, [isRedirect]);
 
     const fetchData = async () => {
         setIsDataLoading(true)
@@ -108,7 +104,60 @@ export const CommentaryFeatures = () => {
                 dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
                 setIsDataLoading(false)
             });
+        setIsDataLoading(true)
+        axiosInstance.post('/admin/commentary/eventTypeList', {})
+            .then((response) => {
+                setEventTypeList(response?.result || []);
+                setIsDataLoading(false);
+            }).catch((error) => {
+                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+                setIsDataLoading(false);
+            });
+        setIsDataLoading(true);
+        axiosInstance.post('/admin/commentary/matchTypeList')
+            .then((response) => {
+                setMatchTypeList(response?.result || []);
+                setIsDataLoading(false);
+            }).catch((error) => {
+                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+                setIsDataLoading(false);
+            });
+        setIsDataLoading(true)
+        axiosInstance.post('/admin/commentary/pythonAPIs')
+            .then((response) => {
+                setPythonList(response?.result || []);
+                setIsDataLoading(false);
+            }).catch((error) => {
+                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+                setIsDataLoading(false);
+            });
     };
+    const fetchCompetition = async (eventTypeId) => {
+        setIsDataLoading(true);
+        axiosInstance.post('/admin/commentary/competitionListByEventTypeId', { eventTypeId })
+            .then((response) => {
+                setCompetitionList(response?.result || []);
+                setIsDataLoading(false);
+            }).catch((error) => {
+                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+                setIsDataLoading(false);
+            });
+    };
+
+    useEffect(() => {
+        if (commentaryId !== "0") fetchData(commentaryId);
+    }, [commentaryId]);
+
+    useEffect(() => {
+        if(commentaryData?.commentaryDetails?.eventTypeId) {
+            fetchCompetition(commentaryData?.commentaryDetails?.eventTypeId)
+        }
+    }, [commentaryData?.commentaryDetails?.eventTypeId]);
+
+    useEffect(() => {
+        if (!isLoading && isRedirect) navigate(navigateTo);
+    }, [isRedirect]);
+
     const handleBackClick = () => {
         navigate(navigateTo);
     };
@@ -274,6 +323,11 @@ export const CommentaryFeatures = () => {
                                             handleValueChange={updatedData => setCommentaryDetailsData({ ...updatedData })}
                                             selectedItems={selectedItems}
                                             setSelectedItems={setSelectedItems}
+                                            teamlist={commentaryData?.commentaryTeams?.filter((item)=> item?.currentInnings === selectedInnings)  || []}
+                                            eventTypeList={eventTypeList}
+                                            matchTypeList={matchTypeList}
+                                            competitionList={competitionList}
+                                            pythonList={pythonList}
                                         />
                                        <TeamFeature
                                             teamlist={commentaryData?.commentaryTeams?.filter((item)=> item?.currentInnings === selectedInnings)  || []}

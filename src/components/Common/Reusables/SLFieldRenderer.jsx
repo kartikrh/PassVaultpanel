@@ -1,7 +1,7 @@
 // SLFieldRenderer.jsx
 import React from "react";
 import { Input } from "reactstrap";
-import { COUNTER, SELECT, TEXT, SWITCH } from "../Const";
+import { COUNTER, SELECT, TEXT, SWITCH, DATE_TIME_PICKER } from "../Const";
 import Select from "react-select";
 import "./CustomCss.css";
 
@@ -63,6 +63,18 @@ export const SLFieldRenderer = ({ field, value, onChange }) => {
                         }}
                     />
                 </div>
+            )}
+            {field.type === DATE_TIME_PICKER && (
+                <Input
+                    className="form-control small-text-fields"
+                    style={field?.customStyle}
+                    type="datetime-local"
+                    id={field.name}
+                    name={field.name}
+                    disabled={field.isDisable}
+                    value={value ?? field.defaultValue ?? ""}
+                    onChange={(e) => onChange(field, e.target.value)}
+                />
             )}
         </React.Fragment>
     );
