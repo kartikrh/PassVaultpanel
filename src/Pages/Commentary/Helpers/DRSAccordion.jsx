@@ -78,7 +78,7 @@ const DRSAccordion = ({ teamDetails = [], commentaryDetails, fetchData }) => {
         if (!currentTeamExists) {
           setExpanded(`${sortedTeams[0].commentaryTeamId}`);
         }
-        // If the current team still exists, keep it expanded (do nothing)
+        // If the current team still exists, keep it expanded
       }
     }
   }, [sortedTeams, expanded]);
@@ -86,11 +86,14 @@ const DRSAccordion = ({ teamDetails = [], commentaryDetails, fetchData }) => {
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
 
-    // auto-hide the DRS log if the parent accordion is collapsed
-    if (!isExpanded) {
+    if (isExpanded) {
+      // When opening a new team accordion, close all log accordions
+      setLogExpanded({});
+    } else {
+      // When closing the current team accordion, close its log accordion
       setLogExpanded((prev) => {
         const newState = { ...prev };
-        delete newState[panel]; // Remove logExpanded for the collapsing team
+        delete newState[panel];
         return newState;
       });
     }
