@@ -5,7 +5,7 @@ import { useState } from "react";
 import { SLFieldRenderer } from "../../../components/Common/Reusables/SLFieldRenderer";
 import { SELECT, SWITCH } from "../../../components/Common/Const";
 
-export const TeamFeature = ({ teamlist, handleValueChange, updatedData, selectedItems, setSelectedItems }) => {
+export const TeamFeature = ({ teamlist, handleValueChange, updatedData, selectedItems, setSelectedItems, battingPlayers, bowlingPlayers }) => {
     const [open, setOpen] = useState("");
 
     const toggle = (id) => {
@@ -34,15 +34,16 @@ export const TeamFeature = ({ teamlist, handleValueChange, updatedData, selected
                         <tr>
                             <th></th>
                             <th>Team</th>
-                            {TEAM_FEATURE_FIELDS.map((field, idx) => (
+                            {TEAM_FEATURE_FIELDS(battingPlayers).map((field, idx) => (
                                 <th key={idx}>{field.placeholder || field.name}</th>
                             ))}
                         </tr>
                     </thead>
                     <tbody>
-                        {teamlist.length === 0 && <tr><td colSpan={TEAM_FEATURE_FIELDS.length + 2} className="text-center">No team data to show</td></tr>}
+                        {teamlist.length === 0 && <tr><td colSpan={TEAM_FEATURE_FIELDS(battingPlayers).length + 2} className="text-center">No team data to show</td></tr>}
                         {teamlist?.map((teamInfo, index) => {
                             const currentValues = updatedData[teamInfo.commentaryTeamId] || teamInfo;
+                            const teamPlayers = teamInfo?.teamStatus == 1 ? battingPlayers : bowlingPlayers;
                             return (
                             <tr key={`${teamInfo.commentaryTeamId}-${index}`}>
                                 <td>
@@ -63,7 +64,7 @@ export const TeamFeature = ({ teamlist, handleValueChange, updatedData, selected
                                 <td>
                                     <strong>{`${teamInfo.teamName} [${teamInfo?.currentInnings} Innings] : `}</strong>
                                 </td>
-                                {TEAM_FEATURE_FIELDS.map((field, idx) => {
+                                {TEAM_FEATURE_FIELDS(teamPlayers).map((field, idx) => {
                                     const fieldValue = currentValues[field.name];
                                     let displayValue = fieldValue;
 

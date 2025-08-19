@@ -5,7 +5,7 @@ import { useState } from "react";
 import { SLFieldRenderer } from "../../../components/Common/Reusables/SLFieldRenderer";
 import { SELECT, SWITCH } from "../../../components/Common/Const";
 
-export const WicketFeature = ({ wicketList, handleValueChange, updatedData, deletedList, handleDeleteChange, selectedItems, setSelectedItems, playerList }) => {
+export const WicketFeature = ({ wicketList, handleValueChange, updatedData, deletedList, handleDeleteChange, selectedItems, setSelectedItems, battingPlayers, bowlingPlayers, overList }) => {
     const [open, setOpen] = useState("");
         
     const toggle = (id) => {
@@ -23,6 +23,8 @@ export const WicketFeature = ({ wicketList, handleValueChange, updatedData, dele
         handleValueChange(dataToSend)
     }
 
+    const WICKET_FIELD = WICKET_FEATURE_FIELD(battingPlayers, bowlingPlayers, overList);
+
     return <Accordion open={open} toggle={toggle}>
         <AccordionItem>
             <AccordionHeader targetId="wicket-accordion" className="accordion-header-custom">
@@ -34,13 +36,13 @@ export const WicketFeature = ({ wicketList, handleValueChange, updatedData, dele
                     <thead>
                         <tr>
                             <th></th>
-                            {WICKET_FEATURE_FIELD(playerList).map((field, idx) => (
+                            {WICKET_FIELD.map((field, idx) => (
                                 <th key={idx}>{field.placeholder || field.name}</th>
                             ))}
                         </tr>
                     </thead>
                     <tbody>
-                        {wicketList.length === 0 && <tr><td colSpan={WICKET_FEATURE_FIELD(playerList).length + 1} className="text-center">No wicket data to show</td></tr>}
+                        {wicketList.length === 0 && <tr><td colSpan={WICKET_FIELD.length + 1} className="text-center">No wicket data to show</td></tr>}
                         {wicketList?.sort((a,b)=> b?.commentaryWicketId - a?.commentaryWicketId)?.map((wicketInfo, index) => {
                             const currentValues = updatedData[wicketInfo.commentaryWicketId] || wicketInfo;
                             return (
@@ -60,7 +62,7 @@ export const WicketFeature = ({ wicketList, handleValueChange, updatedData, dele
                                         }}
                                     />
                                 </td>
-                                {WICKET_FEATURE_FIELD(playerList).map((field, idx) => {
+                                {WICKET_FIELD.map((field, idx) => {
                                     const fieldValue = currentValues[field.name];
                                     let displayValue = fieldValue;
 
@@ -113,7 +115,7 @@ export const WicketFeature = ({ wicketList, handleValueChange, updatedData, dele
                                     <FieldRenderer
                                         // key={`${wicketInfo.commentaryWicketId}-${index}`}
                                         index={`${wicketInfo.commentaryWicketId}-${index}`}
-                                        fields={WICKET_FEATURE_FIELD(playerList)}
+                                        fields={WICKET_FIELD}
                                         value={updatedData[wicketInfo.commentaryWicketId] || wicketInfo}
                                         onChange={(field, value) => onValueChange(wicketInfo, field.name, value)}
                                     />

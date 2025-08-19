@@ -6,7 +6,7 @@ import { useState } from "react"
 import { SLFieldRenderer } from "../../../components/Common/Reusables/SLFieldRenderer"
 import { SELECT, SWITCH } from "../../../components/Common/Const"
 
-export const OverBallByBallFeature = ({ overList, ballList, handleValueChange, updatedData, deletedList, handleDeleteChange, ballByBallData, setBallByBallData, deleteBallByBall, setDeleteBallByBall, selectedItems, setSelectedItems }) => {
+export const OverBallByBallFeature = ({ overList, ballList, handleValueChange, updatedData, deletedList, handleDeleteChange, ballByBallData, setBallByBallData, deleteBallByBall, setDeleteBallByBall, selectedItems, setSelectedItems, battingPlayers, bowlingPlayers, teamlist }) => {
     const [open, setOpen] = useState("");
     const [expandedOvers, setExpandedOvers] = useState([]);        
     const toggle = (id) => {
@@ -29,6 +29,8 @@ export const OverBallByBallFeature = ({ overList, ballList, handleValueChange, u
             .sort((a, b) => b.overCount - a.overCount); // latest ball first
     };
 
+    const OVER_FIELD = OVER_FEATURE_FIELD(bowlingPlayers, teamlist);
+
     return <Accordion open={open} toggle={toggle}>
         <AccordionItem>
             <AccordionHeader targetId="Over-accordion" className="accordion-header-custom">
@@ -41,13 +43,13 @@ export const OverBallByBallFeature = ({ overList, ballList, handleValueChange, u
                         <tr>
                             <th></th>
                             <th>Over</th>
-                            {OVER_FEATURE_FIELD.map((field, idx) => (
+                            {OVER_FIELD.map((field, idx) => (
                                 <th key={idx}>{field.placeholder || field.name}</th>
                             ))}
                         </tr>
                     </thead>
                     <tbody>
-                        {overList.length === 0 && <tr><td colSpan={OVER_FEATURE_FIELD.length + 2} className="text-center">No over data to show</td></tr>}
+                        {overList.length === 0 && <tr><td colSpan={OVER_FIELD.length + 2} className="text-center">No over data to show</td></tr>}
                         {overList?.map((overInfo, index) => {
                             if (deletedList.includes(overInfo.overId)) return null;
                             const balls = getBallsForOver(overInfo.overId);
@@ -83,7 +85,7 @@ export const OverBallByBallFeature = ({ overList, ballList, handleValueChange, u
                                     <td>
                                         <strong>{+overInfo.over + 1} over</strong>
                                     </td>
-                                    {OVER_FEATURE_FIELD.map((field, idx) => {
+                                    {OVER_FIELD.map((field, idx) => {
                                         const fieldValue = currentValues[field.name];
                                         let displayValue = fieldValue;
     
@@ -110,7 +112,7 @@ export const OverBallByBallFeature = ({ overList, ballList, handleValueChange, u
                                     )})}
                                 </tr>
                                 {isExpanded ? <tr>
-                                    <td colSpan={OVER_FEATURE_FIELD.length + 2} className="px-2 py-0">
+                                    <td colSpan={OVER_FIELD.length + 2} className="px-2 py-0">
                                         <BallFeature
                                             ballList={balls.filter((item)=>item?.ballType !== 0) || []}
                                             updatedData={ballByBallData || {}}
@@ -121,6 +123,7 @@ export const OverBallByBallFeature = ({ overList, ballList, handleValueChange, u
                                             }}
                                             selectedItems={selectedItems}
                                             setSelectedItems={setSelectedItems}
+                                            battingPlayers={battingPlayers}
                                         />
                                     </td> 
                                 </tr> : null}
@@ -159,7 +162,7 @@ export const OverBallByBallFeature = ({ overList, ballList, handleValueChange, u
                                             <FieldRenderer
                                                 // key={`${overInfo.overId}-${index}`}
                                                 index={`${overInfo.overId}-${index}`}
-                                                fields={OVER_FEATURE_FIELD}
+                                                fields={OVER_FIELD}
                                                 value={updatedData[overInfo.overId] || overInfo}
                                                 onChange={(field, value) => onValueChange(overInfo, field.name, value)}
                                             />
@@ -203,7 +206,7 @@ export const OverBallByBallFeature = ({ overList, ballList, handleValueChange, u
                         //             <FieldRenderer
                         //                 key={index}
                         //                 index={index}
-                        //                 fields={OVER_FEATURE_FIELD}
+                        //                 fields={OVER_FIELD}
                         //                 value={updatedData[overInfo.overId] || overInfo}
                         //                 onChange={(field, value) => onValueChange(overInfo, field.name, value)}
                         //             />

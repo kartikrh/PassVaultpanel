@@ -4,7 +4,7 @@ import { BALL_FEATURE_FIELDS } from "../../../constants/FieldConst/CommentaryCon
 import { SLFieldRenderer } from "../../../components/Common/Reusables/SLFieldRenderer"
 import { SELECT, SWITCH } from "../../../components/Common/Const"
 
-export const BallFeature = ({ ballList, handleValueChange, updatedData, deletedList, handleDeleteChange, selectedItems, setSelectedItems }) => {
+export const BallFeature = ({ ballList, handleValueChange, updatedData, deletedList, handleDeleteChange, selectedItems, setSelectedItems, battingPlayers }) => {
 
     const onValueChange = (ballInfo, key, value) => {
         const dataToSend = updatedData
@@ -14,19 +14,21 @@ export const BallFeature = ({ ballList, handleValueChange, updatedData, deletedL
         handleValueChange(dataToSend)
     }
 
+    const BALL_FIELDS = BALL_FEATURE_FIELDS(battingPlayers);
+
     return <>
             <Table className="p-0 mb-0" hover responsive>
                 <thead>
                     <tr>
                         <th></th>
                         <th>Over Count</th>
-                        {BALL_FEATURE_FIELDS.map((field, idx) => (
+                        {BALL_FIELDS.map((field, idx) => (
                             <th key={idx}>{field.placeholder || field.name}</th>
                         ))}
                     </tr>
                 </thead>
                 <tbody>
-                    {ballList.length === 0 && <tr><td colSpan={BALL_FEATURE_FIELDS.length + 2} className="text-center">No balls data to show</td></tr>}
+                    {ballList.length === 0 && <tr><td colSpan={BALL_FIELDS.length + 2} className="text-center">No balls data to show</td></tr>}
                     {ballList?.map((ballInfo, index) => {
                         const currentValues = updatedData[ballInfo.commentaryBallByBallId] || ballInfo;
                         return (
@@ -49,7 +51,7 @@ export const BallFeature = ({ ballList, handleValueChange, updatedData, deletedL
                             <td>
                                 <strong>{`${+(ballInfo?.overCount || 0)}`}</strong>
                             </td>
-                            {BALL_FEATURE_FIELDS.map((field, idx) => {
+                            {BALL_FIELDS.map((field, idx) => {
                                 const fieldValue = currentValues[field.name];
                                 let displayValue = fieldValue;
 
@@ -105,7 +107,7 @@ export const BallFeature = ({ ballList, handleValueChange, updatedData, deletedL
                                 <FieldRenderer
                                     // key={`${ballInfo.commentaryBallByBallId}-${index}`}
                                     index={`${ballInfo.commentaryBallByBallId}-${index}`}
-                                    fields={BALL_FEATURE_FIELDS}
+                                    fields={BALL_FIELDS}
                                     value={updatedData[ballInfo.commentaryBallByBallId] || ballInfo}
                                     onChange={(field, value) => onValueChange(ballInfo, field.name, value)}
                                 />
