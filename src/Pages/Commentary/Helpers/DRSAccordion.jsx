@@ -29,7 +29,7 @@ import { ERROR, SUCCESS } from "../../../components/Common/Const.js";
 import { isEmpty } from "lodash";
 
 const DRSAccordion = ({ teamDetails = [], commentaryDetails, fetchData }) => {
-  console.log(teamDetails);
+  // console.log(teamDetails);
   const dispatch = useDispatch();
   const [expanded, setExpanded] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -69,7 +69,7 @@ const DRSAccordion = ({ teamDetails = [], commentaryDetails, fetchData }) => {
       if (expanded === null) {
         setExpanded(`${sortedTeams[0].commentaryTeamId}`);
       } else {
-        // Check if the currently expanded team still exists in the updated data
+        // if the currently expanded team still exists in the updated data
         const currentTeamExists = sortedTeams.some(
           team => `${team.commentaryTeamId}` === expanded
         );
@@ -109,14 +109,13 @@ const DRSAccordion = ({ teamDetails = [], commentaryDetails, fetchData }) => {
       teamId: drsItem.teamId,
     };
 
-    console.log("Taking DRS with payload:", payload);
+    // console.log("Taking DRS with payload:", payload);
 
     try {
       const response = await axiosInstance.post(
         "/admin/commentary/takeDrs",
         payload
       );
-      console.log("DRS taken successfully");
       dispatch(
         updateToastData({
           data: response?.message,
@@ -145,7 +144,7 @@ const DRSAccordion = ({ teamDetails = [], commentaryDetails, fetchData }) => {
   };
 
   const fetchDRSLogs = async (drsItem, logKey) => {
-    console.log("--------------------------------------", logKey);
+    // console.log("Log Key:", logKey);
     setLoadingLogs((prev) => ({ ...prev, [logKey]: true }));
 
     try {
@@ -156,7 +155,7 @@ const DRSAccordion = ({ teamDetails = [], commentaryDetails, fetchData }) => {
           commentaryId: commentaryDetails?.commentaryId || drsItem.commentaryId,
         }
       );
-      console.log("Log data:", response?.result);
+      // console.log("Log data:", response?.result);
       if (response?.result) {
         setDrsLogs((prev) => ({
           ...prev,
@@ -179,7 +178,7 @@ const DRSAccordion = ({ teamDetails = [], commentaryDetails, fetchData }) => {
       setLoadingLogs((prev) => ({ ...prev, [logKey]: false }));
     }
   };
-  console.log(drsLogs);
+  // console.log(drsLogs);
   const handleLogAction = async (drsItem) => {
     const logKey = `${drsItem.commentaryTeamId}`;
     const isCurrentlyExpanded = logExpanded[logKey];
@@ -224,14 +223,14 @@ const DRSAccordion = ({ teamDetails = [], commentaryDetails, fetchData }) => {
       isCount: modalData.isCount,
     };
 
-    console.log("Updating DRS with payload:", payload);
+    // console.log("Updating DRS with payload:", payload);
 
     try {
       const response = await axiosInstance.post(
         "/admin/commentary/upDrs",
         payload
       );
-      console.log("DRS updated successfully");
+      // console.log("DRS updated successfully");
       dispatch(
         updateToastData({
           data: response?.message,
@@ -243,8 +242,6 @@ const DRSAccordion = ({ teamDetails = [], commentaryDetails, fetchData }) => {
 
       const updatedDataFromApi = await fetchData();
       setTeamsData(updatedDataFromApi.commentaryTeams || []);
-
-      console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", selectedDRSLog);
 
       const logKey = `${selectedDRSLog.commentaryTeamId}`;
       const drsItem = {
@@ -270,7 +267,7 @@ const DRSAccordion = ({ teamDetails = [], commentaryDetails, fetchData }) => {
   };
 
   const handleDelete = async (log) => {
-    console.log("Drs Id:", log.id);
+    // console.log("Drs Id:", log.id);
     setIsLoading(true);
 
     try {
@@ -496,6 +493,7 @@ const DRSAccordion = ({ teamDetails = [], commentaryDetails, fetchData }) => {
                           variant="contained"
                           size="small"
                           onClick={() => handleUpdateDRSClick(log)}
+                          disabled={log.result === true || log.result === false}
                           sx={{
                             width: 32,
                             height: 32,
