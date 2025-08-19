@@ -5,7 +5,7 @@ import { useState } from "react";
 import { SLFieldRenderer } from "../../../components/Common/Reusables/SLFieldRenderer";
 import { SELECT, SWITCH } from "../../../components/Common/Const";
 
-export const PlayerFeature = ({ playerList, handleValueChange, updatedData, title, selectedItems, setSelectedItems, playerData }) => {
+export const PlayerFeature = ({ playerList, handleValueChange, updatedData, title, selectedItems, setSelectedItems, battingPlayers, bowlingPlayers }) => {
     const [open, setOpen] = useState("");
     
     const toggle = (id) => {
@@ -22,7 +22,7 @@ export const PlayerFeature = ({ playerList, handleValueChange, updatedData, titl
         dataToSend[playerInfo.commentaryPlayerId] = updatedPlayerData
         handleValueChange(dataToSend)
     }
-    const PLAYER_FEATURE_FIELD = title === "Player Batting" ? BATTING_PLAYER_FEATURE_FIELD(playerData) : BOWLING_PLAYER_FEATURE_FIELD;
+    const PLAYER_FIELD = title === "Player Batting" ? BATTING_PLAYER_FEATURE_FIELD(battingPlayers, bowlingPlayers) : BOWLING_PLAYER_FEATURE_FIELD;
 
     return <Accordion open={open} toggle={toggle}>
         <AccordionItem>
@@ -35,13 +35,13 @@ export const PlayerFeature = ({ playerList, handleValueChange, updatedData, titl
                     <thead>
                         <tr>
                             <th></th>
-                            {PLAYER_FEATURE_FIELD.map((field, idx) => (
+                            {PLAYER_FIELD.map((field, idx) => (
                                 <th key={idx}>{field.placeholder || field.name}</th>
                             ))}
                         </tr>
                     </thead>
                     <tbody>
-                        {playerList?.length === 0 && <tr><td colSpan={PLAYER_FEATURE_FIELD.length + 1} className="text-center">No Players data to show</td></tr>}
+                        {playerList?.length === 0 && <tr><td colSpan={PLAYER_FIELD.length + 1} className="text-center">No Players data to show</td></tr>}
                         {playerList?.sort((a,b)=> b?.displayOrder - a?.displayOrder)?.map((playerInfo, index) => {
                             const currentValues = updatedData[playerInfo.commentaryPlayerId] || playerInfo;
                             return (
@@ -61,7 +61,7 @@ export const PlayerFeature = ({ playerList, handleValueChange, updatedData, titl
                                         }}
                                     />
                                 </td>
-                                {PLAYER_FEATURE_FIELD.map((field, idx) => {
+                                {PLAYER_FIELD.map((field, idx) => {
                                     const fieldValue = currentValues[field.name];
                                     let displayValue = fieldValue;
 
@@ -115,7 +115,7 @@ export const PlayerFeature = ({ playerList, handleValueChange, updatedData, titl
                                     <FieldRenderer
                                         // key={`${playerInfo.commentaryPlayerId}-${index}`}
                                         index={`${playerInfo.commentaryPlayerId}-${index}`}
-                                        fields={PLAYER_FEATURE_FIELD}
+                                        fields={PLAYER_FIELD}
                                         value={updatedData[playerInfo.commentaryPlayerId] || playerInfo}
                                         onChange={(field, value) => onValueChange(playerInfo, field.name, value)}
                                     />

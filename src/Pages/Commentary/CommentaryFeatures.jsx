@@ -281,6 +281,8 @@ export const CommentaryFeatures = () => {
                                             handleValueChange={updatedData => setTeamsData({ ...updatedData })}
                                             selectedItems={selectedItems}
                                             setSelectedItems={setSelectedItems}
+                                            battingPlayers={battingTeamPlayers}
+                                            bowlingPlayers={bowlingTeamPlayers}
                                         />
                                         <PlayerFeature
                                             playerList={battingTeamPlayers?.filter((item)=> item?.onStrike !== null && item?.isPlay !== null) || []}
@@ -289,7 +291,7 @@ export const CommentaryFeatures = () => {
                                             title="Player Batting"
                                             selectedItems={selectedItems}
                                             setSelectedItems={setSelectedItems}
-                                            playerData={battingTeamPlayers}
+                                            battingPlayers={battingTeamPlayers}
                                         />
                                         <PlayerFeature
                                             playerList={bowlingTeamPlayers?.filter((item)=> item?.bowlerOrder !== null) || []}
@@ -298,7 +300,8 @@ export const CommentaryFeatures = () => {
                                             title="Bowler Listing"
                                             selectedItems={selectedItems}
                                             setSelectedItems={setSelectedItems}
-                                            playerData={battingTeamPlayers}
+                                            battingPlayers={battingTeamPlayers}
+                                            bowlingPlayers={bowlingTeamPlayers}
                                         />
                                         <PartnershipFeature
                                             partnershipList={commentaryData?.commentaryPartnership?.filter((item)=> item?.currentInnings == selectedInnings && item?.teamId === selectedBattingTeamId) || []}
@@ -308,7 +311,8 @@ export const CommentaryFeatures = () => {
                                             handleDeleteChange={(partnershipId) => setDeletePartnership([].concat(deletePartnership, [partnershipId]))}
                                             selectedItems={selectedItems}
                                             setSelectedItems={setSelectedItems}
-                                            playerList={battingTeamPlayers}
+                                            battingPlayers={battingTeamPlayers}
+                                            ballList={commentaryData?.commentaryBallByBall?.filter((item)=> item.currentInnings == selectedInnings && item?.teamId == selectedBattingTeamId) || []}
                                         />
                                         <WicketFeature
                                             wicketList={commentaryData?.commentaryWicket?.filter((item)=> item?.currentInnings == selectedInnings && item?.teamId === selectedBattingTeamId) || []}
@@ -318,7 +322,9 @@ export const CommentaryFeatures = () => {
                                             handleDeleteChange={(wicketId) => setDeleteWicket([].concat(deleteWicket, [wicketId]))}
                                             selectedItems={selectedItems}
                                             setSelectedItems={setSelectedItems}
-                                            playerList={battingTeamPlayers}
+                                            battingPlayers={battingTeamPlayers}
+                                            bowlingPlayers={bowlingTeamPlayers}
+                                            overList={commentaryData?.commentaryOvers?.filter((item)=> item.currentInnings == selectedInnings && item?.teamId !== selectedBattingTeamId) || []}
                                         />
                                         <OverBallByBallFeature
                                             overList={commentaryData?.commentaryOvers?.filter((item)=> item.currentInnings == selectedInnings && item?.teamId !== selectedBattingTeamId) || []}
@@ -333,6 +339,9 @@ export const CommentaryFeatures = () => {
                                             setDeleteBallByBall={setDeleteBallByBall}
                                             selectedItems={selectedItems}
                                             setSelectedItems={setSelectedItems}
+                                            battingPlayers={battingTeamPlayers}
+                                            bowlingPlayers={bowlingTeamPlayers}
+                                            teamlist={commentaryData?.commentaryTeams?.filter((item)=> item?.currentInnings === selectedInnings)  || []}
                                         />
                                     </Col>
                                 </Row>

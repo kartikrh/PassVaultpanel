@@ -5,7 +5,7 @@ import { useState } from "react";
 import { SLFieldRenderer } from "../../../components/Common/Reusables/SLFieldRenderer";
 import { SELECT, SWITCH } from "../../../components/Common/Const";
 
-export const PartnershipFeature = ({ partnershipList, handleValueChange, updatedData, deletedList, handleDeleteChange, selectedItems, setSelectedItems, playerList }) => {
+export const PartnershipFeature = ({ partnershipList, handleValueChange, updatedData, deletedList, handleDeleteChange, selectedItems, setSelectedItems, battingPlayers, ballList }) => {
     const [open, setOpen] = useState("");
         
     const toggle = (id) => {
@@ -22,6 +22,7 @@ export const PartnershipFeature = ({ partnershipList, handleValueChange, updated
         dataToSend[partnershipInfo.commentaryPartnershipId] = updatedPartnershipData
         handleValueChange(dataToSend)
     }
+    const PARTNERSHIP_FIELD = PARTNERSHIP_FEATURE_FIELD(battingPlayers, ballList);
 
     return <Accordion open={open} toggle={toggle}>
         <AccordionItem>
@@ -34,13 +35,13 @@ export const PartnershipFeature = ({ partnershipList, handleValueChange, updated
                     <thead>
                         <tr>
                             <th></th>
-                            {PARTNERSHIP_FEATURE_FIELD(playerList).map((field, idx) => (
+                            {PARTNERSHIP_FIELD.map((field, idx) => (
                                 <th key={idx}>{field.placeholder || field.name}</th>
                             ))}
                         </tr>
                     </thead>
                     <tbody>
-                        {partnershipList.length === 0 && <tr><td colSpan={PARTNERSHIP_FEATURE_FIELD(playerList).length + 1} className="text-center">No partnership data to show</td></tr>}
+                        {partnershipList.length === 0 && <tr><td colSpan={PARTNERSHIP_FIELD.length + 1} className="text-center">No partnership data to show</td></tr>}
                         {partnershipList?.sort((a,b)=>b?.order - a?.order)?.map((partnershipInfo, index) => {
                             const currentValues = updatedData[partnershipInfo.commentaryPartnershipId] || partnershipInfo;
                             return (
@@ -60,7 +61,7 @@ export const PartnershipFeature = ({ partnershipList, handleValueChange, updated
                                         }}
                                     />
                                 </td>
-                                {PARTNERSHIP_FEATURE_FIELD(playerList).map((field, idx) => {
+                                {PARTNERSHIP_FIELD.map((field, idx) => {
                                     const fieldValue = currentValues[field.name];
                                     let displayValue = fieldValue;
 
@@ -113,7 +114,7 @@ export const PartnershipFeature = ({ partnershipList, handleValueChange, updated
                                     <FieldRenderer
                                         // key={`${partnershipInfo.commentaryPartnershipId}-${index}`}
                                         index={`${partnershipInfo.commentaryPartnershipId}-${index}`}
-                                        fields={PARTNERSHIP_FEATURE_FIELD(playerList)}
+                                        fields={PARTNERSHIP_FIELD}
                                         value={updatedData[partnershipInfo.commentaryPartnershipId] || partnershipInfo}
                                         onChange={(field, value) => onValueChange(partnershipInfo, field.name, value)}
                                     />
