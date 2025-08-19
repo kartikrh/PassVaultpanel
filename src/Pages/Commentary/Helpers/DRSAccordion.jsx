@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Accordion,
   AccordionSummary,
@@ -26,6 +26,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import axiosInstance from "../../../Features/axios";
 import { updateToastData } from "../../../Features/toasterSlice";
 import { ERROR, SUCCESS } from "../../../components/Common/Const.js";
+import { isEmpty } from "lodash";
 
 const DRSAccordion = ({ teamDetails = [], commentaryDetails, fetchData }) => {
   console.log(teamDetails);
@@ -42,23 +43,45 @@ const DRSAccordion = ({ teamDetails = [], commentaryDetails, fetchData }) => {
   const [loadingLogs, setLoadingLogs] = useState({});
   const [submittingDRS, setSubmittingDRS] = useState(false);
   const [logExpanded, setLogExpanded] = useState({});
+  const [teamsData, setTeamsData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!isEmpty(teamDetails)) {
+      setTeamsData(teamDetails);
+    }
+  }, [teamDetails]);
 
   // Group teams by batting order (higher order first)
   const sortedTeams = React.useMemo(() => {
-    if (!teamDetails || !Array.isArray(teamDetails)) return [];
+    if (!teamsData || !Array.isArray(teamsData)) return [];
 
     // Sort by teamBattingOrder (higher order first)
-    return teamDetails.sort(
+    return teamsData.sort(
       (a, b) => (b.teamBattingOrder || 0) - (a.teamBattingOrder || 0)
     );
-  }, [teamDetails]);
+  }, [teamsData]);
 
   // Set default expanded team
   React.useEffect(() => {
     if (sortedTeams.length > 0) {
-      setExpanded(`${sortedTeams[0].teamId}_${sortedTeams[0].currentInnings}`);
+      // Only set default if no team is currently expanded
+      if (expanded === null) {
+        setExpanded(`${sortedTeams[0].commentaryTeamId}`);
+      } else {
+        // Check if the currently expanded team still exists in the updated data
+        const currentTeamExists = sortedTeams.some(
+          team => `${team.commentaryTeamId}` === expanded
+        );
+        
+        // If the current team no longer exists, fall back to the first team
+        if (!currentTeamExists) {
+          setExpanded(`${sortedTeams[0].commentaryTeamId}`);
+        }
+        // If the current team still exists, keep it expanded (do nothing)
+      }
     }
-  }, [sortedTeams]);
+  }, [sortedTeams, expanded]);
 
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
@@ -100,7 +123,7 @@ const DRSAccordion = ({ teamDetails = [], commentaryDetails, fetchData }) => {
       );
 
       // Refresh the logs if they are currently expanded
-      const logKey = `${drsItem.teamId}_${drsItem.currentInnings}`;
+      const logKey = `${drsItem.commentaryTeamId}`;
       if (logExpanded[logKey]) {
         await fetchDRSLogs(drsItem, logKey);
       }
@@ -119,6 +142,7 @@ const DRSAccordion = ({ teamDetails = [], commentaryDetails, fetchData }) => {
   };
 
   const fetchDRSLogs = async (drsItem, logKey) => {
+    console.log("--------------------------------------", logKey);
     setLoadingLogs((prev) => ({ ...prev, [logKey]: true }));
 
     try {
@@ -152,9 +176,9 @@ const DRSAccordion = ({ teamDetails = [], commentaryDetails, fetchData }) => {
       setLoadingLogs((prev) => ({ ...prev, [logKey]: false }));
     }
   };
-
+  console.log(drsLogs);
   const handleLogAction = async (drsItem) => {
-    const logKey = `${drsItem.teamId}_${drsItem.currentInnings}`;
+    const logKey = `${drsItem.commentaryTeamId}`;
     const isCurrentlyExpanded = logExpanded[logKey];
     setLogExpanded((prev) => ({
       ...prev,
@@ -187,8 +211,8 @@ const DRSAccordion = ({ teamDetails = [], commentaryDetails, fetchData }) => {
 
   const handleUpdateDrs = async () => {
     if (!selectedDRSLog) return;
-
-    setSubmittingDRS(true);
+    setIsLoading(true);
+    // setSubmittingDRS(true);
 
     const payload = {
       id: selectedDRSLog.id,
@@ -212,10 +236,14 @@ const DRSAccordion = ({ teamDetails = [], commentaryDetails, fetchData }) => {
           type: SUCCESS,
         })
       );
+      handleModalClose();
 
-      await fetchData();
+      const updatedDataFromApi = await fetchData();
+      setTeamsData(updatedDataFromApi.commentaryTeams || []);
 
-      const logKey = `${selectedDRSLog.teamId}_${selectedDRSLog.currentInnings}`;
+      console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", selectedDRSLog);
+
+      const logKey = `${selectedDRSLog.commentaryTeamId}`;
       const drsItem = {
         teamId: selectedDRSLog.teamId,
         currentInnings: selectedDRSLog.currentInnings,
@@ -223,8 +251,6 @@ const DRSAccordion = ({ teamDetails = [], commentaryDetails, fetchData }) => {
         commentaryId: selectedDRSLog.commentaryId,
       };
       await fetchDRSLogs(drsItem, logKey);
-
-      handleModalClose();
     } catch (error) {
       console.error("Failed to update DRS", error);
       dispatch(
@@ -235,12 +261,14 @@ const DRSAccordion = ({ teamDetails = [], commentaryDetails, fetchData }) => {
         })
       );
     } finally {
-      setSubmittingDRS(false);
+      // setSubmittingDRS(false);
+      setIsLoading(false);
     }
   };
 
   const handleDelete = async (log) => {
     console.log("Drs Id:", log.id);
+    setIsLoading(true);
 
     try {
       const response = await axiosInstance.post("/admin/commentary/dltDrs", {
@@ -255,9 +283,10 @@ const DRSAccordion = ({ teamDetails = [], commentaryDetails, fetchData }) => {
         })
       );
 
-      await fetchData();
+      const updatedDataFromApi = await fetchData();
+      setTeamsData(updatedDataFromApi.commentaryTeams || []);
 
-      const logKey = `${log.teamId}_${log.currentInnings}`;
+      const logKey = `${log.commentaryTeamId}`;
       const drsItem = {
         teamId: log.teamId,
         currentInnings: log.currentInnings,
@@ -273,6 +302,8 @@ const DRSAccordion = ({ teamDetails = [], commentaryDetails, fetchData }) => {
           type: ERROR,
         })
       );
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -367,9 +398,7 @@ const DRSAccordion = ({ teamDetails = [], commentaryDetails, fetchData }) => {
                     fontSize: "0.75rem",
                   }}
                 >
-                  {logExpanded[`${drsItem.teamId}_${drsItem.currentInnings}`]
-                    ? "Hide"
-                    : "Log"}
+                  {logExpanded[`${drsItem.commentaryTeamId}`] ? "Hide" : "Log"}
                 </Button>
               </TableCell>
             </TableRow>
@@ -380,7 +409,7 @@ const DRSAccordion = ({ teamDetails = [], commentaryDetails, fetchData }) => {
   };
 
   const renderLogContent = (team) => {
-    const logKey = `${team.teamId}_${team.currentInnings}`;
+    const logKey = `${team.commentaryTeamId}`;
     const logs = drsLogs[logKey] || [];
     const isLoading = loadingLogs[logKey];
 
@@ -504,14 +533,14 @@ const DRSAccordion = ({ teamDetails = [], commentaryDetails, fetchData }) => {
   return (
     <Box sx={{ width: "100%" }}>
       {sortedTeams.map((team, index) => (
-        <Box key={`${team.teamId}_${team.currentInnings}`}>
+        <Box key={`${team.commentaryTeamId}`}>
           <Accordion
             expanded={
               sortedTeams.length > 1
-                ? expanded === `${team.teamId}_${team.currentInnings}`
+                ? expanded === `${team.commentaryTeamId}`
                 : true
             }
-            onChange={handleChange(`${team.teamId}_${team.currentInnings}`)}
+            onChange={handleChange(`${team.commentaryTeamId}`)}
             sx={{
               "&:before": { display: "none" },
               boxShadow: "none",
@@ -555,7 +584,7 @@ const DRSAccordion = ({ teamDetails = [], commentaryDetails, fetchData }) => {
           </Accordion>
 
           {/* DRS Logs Accordion - appears below the team accordion */}
-          {logExpanded[`${team.teamId}_${team.currentInnings}`] && (
+          {logExpanded[`${team.commentaryTeamId}`] && (
             <Accordion
               expanded={true}
               sx={{

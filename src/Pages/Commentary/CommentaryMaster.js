@@ -276,6 +276,7 @@ function CommentaryMaster() {
         );
         setIsDataLoading(false);
       });
+      return commentaryDataToUpdate;
   };
   useEffect(() => {
     if (
