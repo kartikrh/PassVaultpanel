@@ -103,6 +103,7 @@ export const EXTRAS_WICKET_TYPE = [
 
 export const BOWLER_CHANGE_DISPLAY_STATUS = "Ball"
 export const TEAM = "TEAM"
+export const DETAILS = "DETAILS"
 export const PLAYER = "PLAYER"
 export const PARTNERSHIP = "PARTNERSHIP"
 
