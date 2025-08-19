@@ -939,7 +939,7 @@ export const SHORT_COMMENTARY_BOWLING_PLAYER = [
     },
 ]
 
-export const BALL_FEATURE_FIELDS = (battingPlayers) => [
+export const BALL_FEATURE_FIELDS = (battingPlayers = []) => [
     {
         name: "batStrikeId",
         placeholder: "Strike",
@@ -1069,17 +1069,25 @@ export const BALL_FEATURE_FIELDS = (battingPlayers) => [
     },
 ]
 
-export const COMMENTARY_DETAILS_FIELDS = [
+export const COMMENTARY_DETAILS_FIELDS = (teamlist = [], eventTypeList = [], matchTypeList = [], competitionList = [], pythonList = []) => [
     {
         name: "eventDate",
-        placeholder: "Date", //DATE
+        placeholder: "Date",
+        type: DATE_TIME_PICKER,
+        formName: DETAILS,
+        className: "no-spinners",
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
+    },
+    {
+        name: "eventRefId",
+        placeholder: "Event Ref Id",
         formName: DETAILS,
         type: TEXT,
         className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
-        name: "eventRefId",
+        name: "eventId",
         placeholder: "Event Id",
         formName: DETAILS,
         type: TEXT,
@@ -1094,45 +1102,63 @@ export const COMMENTARY_DETAILS_FIELDS = [
         className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
-     {
-        name: "eventType",
+    {
+        name: "eventTypeId",
         placeholder: "Event Type",
         formName: DETAILS,
-        type: TEXT,
+        type: SELECT,
+        options: eventTypeList?.map(p => ({
+            value: p?.eventTypeId,
+            label: p?.eventType,
+        })),
         className: "no-spinners",
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
+        fieldColspan: { xs: 4, md: 3, lg: 3 },
     },
     {
-        name: "matchType",
+        name: "matchTypeId",
         placeholder: "Match Type",
         formName: DETAILS,
-        type: TEXT,
+        type: SELECT,
+        options: matchTypeList?.map(p => ({
+            value: p?.matchTypeId,
+            label: p?.matchType,
+        })),
         className: "no-spinners",
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
+        fieldColspan: { xs: 4, md: 3, lg: 3 },
     },
     {
-        name: "competition",
+        name: "competitionId",
         placeholder: "Competition",
         formName: DETAILS,
-        type: TEXT,
+        type: SELECT,
+        options: competitionList?.map(p => ({
+            value: p?.competitionId,
+            label: p?.competition,
+        })),
         className: "no-spinners",
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
+        fieldColspan: { xs: 4, md: 3, lg: 3 },
     },
     {
-        name: "team1Name",
-        placeholder: "Team 1",
+        name: "team1Id",
+        placeholder: "Team1",
         formName: DETAILS,
-        type: TEXT,
-        className: "no-spinners",
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
+        type: SELECT,
+        options: teamlist?.map(p => ({
+            value: p?.teamId,
+            label: p?.teamName
+        })),
+        fieldColspan: { xs: 4, md: 3, lg: 3 },
     },
     {
-        name: "team2Name",
-        placeholder: "Team 2",
+        name: "team2Id",
+        placeholder: "Team2",
         formName: DETAILS,
-        type: TEXT,
-        className: "no-spinners",
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
+        type: SELECT,
+        options: teamlist?.map(p => ({
+            value: p?.teamId,
+            label: p?.teamName
+        })),
+        fieldColspan: { xs: 4, md: 3, lg: 3 },
     },
     {
         name: "pitchAge",
@@ -1159,12 +1185,44 @@ export const COMMENTARY_DETAILS_FIELDS = [
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
-        name: "developerName",
+        name: "pythonId",
         placeholder: "Developer",
         formName: DETAILS,
-        type: TEXT,
+        type: SELECT,
+        options: pythonList?.map(p => ({
+            value: p?.id,
+            label: p?.developerName,
+        })),
         className: "no-spinners",
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
+        fieldColspan: { xs: 4, md: 3, lg: 3 },
+    },
+    {  
+        name: "scoringType",
+        placeholder: "Scoring Type",
+        formName: DETAILS,
+        type: SELECT,
+        options: [
+            { label: "Select Score Type", value: "0" },
+            { label: "manual", value: 1 },
+            { label: "Entity", value: 2 },
+        ],
+        fieldColspan: { xs: 4, md: 3, lg: 3 },
+    },
+    {
+        name: "commentaryStatus",
+        placeholder: "Status",
+        formName: DETAILS,
+        type: SELECT,
+        options: [
+            { label: "Select Status", value: "0" },
+            { label: "Open", value: 1 },
+            { label: "Toss", value: 2 },
+            { label: "InProgress", value: 3 },
+            { label: "Completed", value: 4 },
+            { label: "Innings Break", value: 5 },
+            { label: "Cancel", value: 10 },
+        ],
+        fieldColspan: { xs: 4, md: 3, lg: 3 },
     },
     {
         name: "currentInnings",
@@ -1206,9 +1264,33 @@ export const COMMENTARY_DETAILS_FIELDS = [
         className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
+    {
+        name: "tpId",
+        placeholder: "TpId",
+        formName: DETAILS,
+        type: COUNTER,
+        className: "no-spinners",
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
+    },
+    {
+        name: "isActive",
+        placeholder: "Active",
+        formName: DETAILS,
+        type: SWITCH,
+        className: "no-spinners",
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
+    },
+    {
+        name: "isVirtual",
+        placeholder: "Virtual",
+        formName: DETAILS,
+        type: SWITCH,
+        className: "no-spinners",
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
+    },
 ]
 
-export const TEAM_FEATURE_FIELDS = (teamPlayers) => [
+export const TEAM_FEATURE_FIELDS = (teamPlayers = []) => [
     {
         name: "teamScore",
         placeholder: "Score",
@@ -1386,7 +1468,7 @@ export const TEAM_FEATURE_FIELDS = (teamPlayers) => [
     }
 ]
 
-export const OVER_FEATURE_FIELD = (bowlingPlayers, teamlist) => [
+export const OVER_FEATURE_FIELD = (bowlingPlayers = [], teamlist = []) => [
     {
         name: "bowlerId",
         placeholder: "Bowler",

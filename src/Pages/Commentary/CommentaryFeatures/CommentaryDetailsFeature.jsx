@@ -6,7 +6,7 @@ import { isEmpty } from "lodash";
 import { SLFieldRenderer } from "../../../components/Common/Reusables/SLFieldRenderer";
 import { SELECT, SWITCH } from "../../../components/Common/Const";
 
-export const CommentaryDetailsFeature = ({ commentaryDetailsInfo, handleValueChange, updatedData, selectedItems, setSelectedItems }) => {
+export const CommentaryDetailsFeature = ({ commentaryDetailsInfo, handleValueChange, updatedData, selectedItems, setSelectedItems, teamlist, eventTypeList, matchTypeList, competitionList, pythonList}) => {
     const [open, setOpen] = useState("");
 
     const toggle = (id) => {
@@ -32,6 +32,7 @@ export const CommentaryDetailsFeature = ({ commentaryDetailsInfo, handleValueCha
         handleValueChange(updatedDetails);
     };
     const currentValues = isEmpty(updatedData) ? commentaryDetailsInfo : updatedData;
+    const COMMENTARY_FIELDS = COMMENTARY_DETAILS_FIELDS(teamlist, eventTypeList, matchTypeList, competitionList, pythonList);
     
     return <Accordion open={open} toggle={toggle}>
         <AccordionItem>
@@ -43,7 +44,7 @@ export const CommentaryDetailsFeature = ({ commentaryDetailsInfo, handleValueCha
                     <thead>
                         <tr>
                             <th></th>
-                            {COMMENTARY_DETAILS_FIELDS.map((field, idx) => (
+                            {COMMENTARY_FIELDS.map((field, idx) => (
                                 <th key={idx}>{field.placeholder || field.name}</th>
                             ))}
                         </tr>
@@ -65,7 +66,7 @@ export const CommentaryDetailsFeature = ({ commentaryDetailsInfo, handleValueCha
                                     }}
                                 />
                             </td>
-                            {COMMENTARY_DETAILS_FIELDS.map((field, idx) => {
+                            {COMMENTARY_FIELDS.map((field, idx) => {
                                 const fieldValue = currentValues[field.name];
                                 let displayValue = fieldValue;
 
@@ -114,7 +115,7 @@ export const CommentaryDetailsFeature = ({ commentaryDetailsInfo, handleValueCha
                             <FieldRenderer
                                 // key={`${commentaryDetailsInfo.commentaryId}-${index}`}
                                 index={`${commentaryDetailsInfo.commentaryId}`}
-                                fields={COMMENTARY_DETAILS_FIELDS}
+                                fields={COMMENTARY_FIELDS}
                                 value={isEmpty(updatedData) ? commentaryDetailsInfo : updatedData}
                                 onChange={(field, value) => onValueChange(commentaryDetailsInfo, field.name, value)}
                             />
