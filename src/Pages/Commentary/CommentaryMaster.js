@@ -83,8 +83,8 @@ function CommentaryMaster() {
   let navigate = useNavigate();
   const location = useLocation();
   const loadInitData = useSelector((state) => state.loadInit.loadInitData);
-  const commentaryId = +localStorage.getItem("commentaryMasterId") || "0";
-  const commentaryList = localStorage.getItem("commentary");
+  const commentaryId = +sessionStorage.getItem("commentaryMasterId") || "0";
+  const commentaryList = sessionStorage.getItem("commentary");
   let scorecardFrameUrl = loadInitData.find(item => item.key === loadInit.SCORECARD_FRAME_URL)?.value;
   if (scorecardFrameUrl) {
     scorecardFrameUrl = scorecardFrameUrl.replace("{commentaryId}", commentaryId);
