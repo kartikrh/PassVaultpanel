@@ -39,6 +39,9 @@ body[data-theme="dark"] {
     .footer {
       background-color: $dark-footer-bg;
     }
+    .dashboard-headers{
+    color: $dark-font-color;
+    }
   }
 
 // Horizontal Boxed Layout
