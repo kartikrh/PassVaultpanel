@@ -44,7 +44,7 @@ export const SLFieldRenderer = ({ field, value, onChange }) => {
                     value={field.options.find((option) => value === option.value) || null}
                     options={field.options}
                     onChange={(selectedOption) =>
-                        onChange(field, selectedOption?.value)
+                        onChange(field, selectedOption?.value, selectedOption?.label)
                     }
                     closeMenuOnSelect={!field.isMulti}
                     required={field.isRequired}

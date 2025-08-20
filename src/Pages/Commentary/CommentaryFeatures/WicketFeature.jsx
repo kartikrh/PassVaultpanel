@@ -15,10 +15,22 @@ export const WicketFeature = ({ wicketList, handleValueChange, updatedData, dele
             setOpen(id); // expand
         }
     };
-    const onValueChange = (wicketInfo, key, value) => {
+    const onValueChange = (wicketInfo, key, value, label) => {
         const dataToSend = updatedData
         const updatedWicketData = updatedData[wicketInfo.commentaryWicketId] || wicketInfo
         updatedWicketData[key] = value
+        if (key === "batterId") {
+            updatedWicketData["batterName"] = label;
+        }
+        if (key === "bowlerId") {
+            updatedWicketData["bowlerName"] = label;
+        }
+        if (key === "fieldPlayerId") {
+            updatedWicketData["fieldPlayerName"] = label;
+        }
+        if (key === "fieldPlayer2Id") {
+            updatedWicketData["fieldPlayer2Name"] = label;
+        }
         dataToSend[wicketInfo.commentaryWicketId] = updatedWicketData
         handleValueChange(dataToSend)
     }
@@ -80,7 +92,7 @@ export const WicketFeature = ({ wicketList, handleValueChange, updatedData, dele
                                             <SLFieldRenderer
                                                 field={field}
                                                 value={fieldValue ?? ""}
-                                                onChange={(field, value) => onValueChange(wicketInfo, field.name, value)}
+                                                onChange={(field, value, label) => onValueChange(wicketInfo, field.name, value, label)}
                                             />
                                         ) : (
                                             displayValue || 0

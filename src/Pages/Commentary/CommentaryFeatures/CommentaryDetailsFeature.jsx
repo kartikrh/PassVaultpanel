@@ -23,11 +23,16 @@ export const CommentaryDetailsFeature = ({ commentaryDetailsInfo, handleValueCha
     //     handleValueChange(dataToSend)
     // }
 
-    const onValueChange = (commentaryDetailsInfo, key, value) => {
+    const onValueChange = (commentaryDetailsInfo, key, value, label) => {
+        const extraFields = {};
+        if (key === "winnerId") {
+            extraFields["winnerName"] = label;
+        }
         const updatedDetails = {
             ...commentaryDetailsInfo,
             ...updatedData,
             [key]: value,
+            ...extraFields,
         };
         handleValueChange(updatedDetails);
     };
@@ -84,7 +89,7 @@ export const CommentaryDetailsFeature = ({ commentaryDetailsInfo, handleValueCha
                                         <SLFieldRenderer
                                             field={field}
                                             value={fieldValue ?? ""}
-                                            onChange={(field, value) => onValueChange(commentaryDetailsInfo, field.name, value)}
+                                            onChange={(field, value, label) => onValueChange(commentaryDetailsInfo, field.name, value, label)}
                                         />
                                     ) : (
                                         displayValue || ""
