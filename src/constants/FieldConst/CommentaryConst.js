@@ -952,7 +952,16 @@ export const BALL_FEATURE_FIELDS = (battingPlayers = []) => [
         fieldColspan: { xs: 4, md: 3, lg: 3 },
     },
     {
+        name: "currentOverBalls",
+        placeholder: "B-Count",
+        formName: BALL,
+        type: COUNTER,
+        className: "no-spinners",
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
+    },
+    {
         name: "ballType",
+        placeholder: "B-Type",
         type: SELECT,
         formName: BALL,
         defaultValue: 0,
@@ -961,43 +970,11 @@ export const BALL_FEATURE_FIELDS = (battingPlayers = []) => [
     },
     {
         name: "teamScore",
-        placeholder: "Team Score",
+        placeholder: "Score",
         formName: BALL,
         type: COUNTER,
         className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 2 },
-    },
-    {
-        name: "teamWicket",
-        placeholder: "Team Wicket",
-        formName: BALL,
-        type: COUNTER,
-        className: "no-spinners",
-        fieldColspan: { xs: 3, md: 2, lg: 2 },
-    },
-    {
-        name: "autoStrikeBallCount",
-        placeholder: "Auto Strike",
-        formName: BALL,
-        type: COUNTER,
-        className: "no-spinners",
-        fieldColspan: { xs: 3, md: 2, lg: 2 },
-    },
-    {
-        name: "overCount",
-        placeholder: "O-Count",
-        formName: BALL,
-        type: COUNTER,
-        className: "no-spinners",
-        fieldColspan: { xs: 3, md: 2, lg: 2 },
-    },
-    {
-        name: "currentOverBalls",
-        placeholder: "O-Ball",
-        formName: BALL,
-        type: COUNTER,
-        className: "no-spinners",
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
         name: "ballRun",
@@ -1008,6 +985,22 @@ export const BALL_FEATURE_FIELDS = (battingPlayers = []) => [
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
+        name: "ballFour",
+        placeholder: "4",
+        formName: BALL,
+        type: COUNTER,
+        className: "no-spinners",
+        fieldColspan: { xs: 3, md: 1, lg: 1 },
+    },
+    {
+        name: "ballSix",
+        placeholder: "6",
+        formName: BALL,
+        type: COUNTER,
+        className: "no-spinners",
+        fieldColspan: { xs: 3, md: 1, lg: 1 },
+    },
+    {
         name: "ballExtraRun",
         placeholder: "Extra",
         formName: BALL,
@@ -1016,38 +1009,10 @@ export const BALL_FEATURE_FIELDS = (battingPlayers = []) => [
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
-        name: "ballFour",
-        placeholder: "Four",
+        name: "teamWicket",
+        placeholder: "Wicket",
         formName: BALL,
         type: COUNTER,
-        className: "no-spinners",
-        fieldColspan: { xs: 3, md: 1, lg: 1 },
-    },
-    {
-        name: "ballSix",
-        placeholder: "Six",
-        formName: BALL,
-        type: COUNTER,
-        className: "no-spinners",
-        fieldColspan: { xs: 3, md: 1, lg: 1 },
-    },
-    {
-        name: "ballIsDot",
-        formName: BALL,
-        type: SWITCH,
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-    {
-        name: "isDelete",
-        formName: BALL,
-        type: SWITCH,
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-    {
-        name: "ballIsCount",
-        placeholder: "Ball Count",
-        formName: BALL,
-        type: SWITCH,
         className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 2 },
     },
@@ -1067,166 +1032,51 @@ export const BALL_FEATURE_FIELDS = (battingPlayers = []) => [
         className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 2 },
     },
+    {
+        name: "ballIsDot",
+        placeholder: "B-Dot",
+        formName: BALL,
+        type: SWITCH,
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
+    },
+    {
+        name: "ballIsCount",
+        placeholder: "B-Count",
+        formName: BALL,
+        type: SWITCH,
+        className: "no-spinners",
+        fieldColspan: { xs: 3, md: 2, lg: 2 },
+    },
 ]
 
-export const COMMENTARY_DETAILS_FIELDS = (teamlist = [], eventTypeList = [], matchTypeList = [], competitionList = [], pythonList = []) => [
+export const COMMENTARY_DETAILS_FIELDS = (teamlist = []) => [
+    // {
+    //     name: "tossWonBy",
+    //     placeholder: "Toss Won",
+    //     formName: DETAILS,
+    //     type: SELECT,
+    //     options: teamlist?.map(p => ({
+    //         value: p?.teamId,
+    //         label: p?.teamName
+    //     })),
+    //     className: "no-spinners",
+    //     fieldColspan: { xs: 3, md: 2, lg: 2 },
+    // },
+    // {
+    //     name: "choseTo",
+    //     placeholder: "Chose To",
+    //     type: SELECT,
+    //     formName: TEAM,
+    //     options: [
+    //         { label: "Batting", value: 1 },
+    //         { label: "Bowling", value: 2 },
+    //     ],
+    //     className: "no-spinners",
+    //     fieldColspan: { xs: 3, md: 2, lg: 2 },
+    // },
     {
-        name: "eventDate",
-        placeholder: "Date",
-        type: DATE_TIME_PICKER,
-        formName: DETAILS,
-        className: "no-spinners",
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-    {
-        name: "eventRefId",
-        placeholder: "Event Ref Id",
-        formName: DETAILS,
-        type: TEXT,
-        className: "no-spinners",
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-    {
-        name: "eventId",
-        placeholder: "Event Id",
-        formName: DETAILS,
-        type: TEXT,
-        className: "no-spinners",
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-    {
-        name: "eventName",
-        placeholder: "Event Name",
-        formName: DETAILS,
-        type: TEXT,
-        className: "no-spinners",
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-    {
-        name: "eventTypeId",
-        placeholder: "Event Type",
-        formName: DETAILS,
-        type: SELECT,
-        options: eventTypeList?.map(p => ({
-            value: p?.eventTypeId,
-            label: p?.eventType,
-        })),
-        className: "no-spinners",
-        fieldColspan: { xs: 4, md: 3, lg: 3 },
-    },
-    {
-        name: "matchTypeId",
-        placeholder: "Match Type",
-        formName: DETAILS,
-        type: SELECT,
-        options: matchTypeList?.map(p => ({
-            value: p?.matchTypeId,
-            label: p?.matchType,
-        })),
-        className: "no-spinners",
-        fieldColspan: { xs: 4, md: 3, lg: 3 },
-    },
-    {
-        name: "competitionId",
-        placeholder: "Competition",
-        formName: DETAILS,
-        type: SELECT,
-        options: competitionList?.map(p => ({
-            value: p?.competitionId,
-            label: p?.competition,
-        })),
-        className: "no-spinners",
-        fieldColspan: { xs: 4, md: 3, lg: 3 },
-    },
-    {
-        name: "team1Id",
-        placeholder: "Team1",
-        formName: DETAILS,
-        type: SELECT,
-        options: teamlist?.map(p => ({
-            value: p?.teamId,
-            label: p?.teamName
-        })),
-        fieldColspan: { xs: 4, md: 3, lg: 3 },
-    },
-    {
-        name: "team2Id",
-        placeholder: "Team2",
-        formName: DETAILS,
-        type: SELECT,
-        options: teamlist?.map(p => ({
-            value: p?.teamId,
-            label: p?.teamName
-        })),
-        fieldColspan: { xs: 4, md: 3, lg: 3 },
-    },
-    {
-        name: "pitchAge",
-        placeholder: "Day",
-        formName: DETAILS,
-        type: TEXT,
-        className: "no-spinners",
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-    {
-        name: "delay",
-        placeholder: "Delay",
-        formName: DETAILS,
-        type: TEXT,
-        className: "no-spinners",
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-    {
-        name: "pythonURI",
-        placeholder: "Python URI",
-        formName: DETAILS,
-        type: TEXT,
-        className: "no-spinners",
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-    {
-        name: "pythonId",
-        placeholder: "Developer",
-        formName: DETAILS,
-        type: SELECT,
-        options: pythonList?.map(p => ({
-            value: p?.id,
-            label: p?.developerName,
-        })),
-        className: "no-spinners",
-        fieldColspan: { xs: 4, md: 3, lg: 3 },
-    },
-    {  
-        name: "scoringType",
-        placeholder: "Scoring Type",
-        formName: DETAILS,
-        type: SELECT,
-        options: [
-            { label: "Select Score Type", value: "0" },
-            { label: "manual", value: 1 },
-            { label: "Entity", value: 2 },
-        ],
-        fieldColspan: { xs: 4, md: 3, lg: 3 },
-    },
-    {
-        name: "commentaryStatus",
-        placeholder: "Status",
-        formName: DETAILS,
-        type: SELECT,
-        options: [
-            { label: "Select Status", value: "0" },
-            { label: "Open", value: 1 },
-            { label: "Toss", value: 2 },
-            { label: "InProgress", value: 3 },
-            { label: "Completed", value: 4 },
-            { label: "Innings Break", value: 5 },
-            { label: "Cancel", value: 10 },
-        ],
-        fieldColspan: { xs: 4, md: 3, lg: 3 },
-    },
-    {
-        name: "currentInnings",
-        placeholder: "Current Innings",
+        name: "rmk",
+        placeholder: "Rmk",
         formName: DETAILS,
         type: TEXT,
         className: "no-spinners",
@@ -1241,12 +1091,16 @@ export const COMMENTARY_DETAILS_FIELDS = (teamlist = [], eventTypeList = [], mat
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
-        name: "winnerName",
+        name: "winnerId",
         placeholder: "Winner",
         formName: DETAILS,
-        type: TEXT,
+        type: SELECT,
+        options: teamlist?.map(p => ({
+            value: p?.teamId,
+            label: p?.teamName
+        })),
         className: "no-spinners",
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
+        fieldColspan: { xs: 3, md: 2, lg: 2 },
     },
     {
         name: "winRmk",
@@ -1256,41 +1110,29 @@ export const COMMENTARY_DETAILS_FIELDS = (teamlist = [], eventTypeList = [], mat
         className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
+]
+
+export const TEAM_FEATURE_FIELDS = [
     {
-        name: "tossRmk",
-        placeholder: "Toss Rmk",
-        formName: DETAILS,
-        type: TEXT,
-        className: "no-spinners",
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
+        name: "teamStatus",
+        placeholder: "Status",
+        type: SELECT,
+        defaultValue: 1,
+        formName: TEAM,
+        options: [
+            { label: "Batting", value: 1 },
+            { label: "Bowling", value: 2 },
+        ],
+        fieldColspan: { xs: 3, md: 2, lg: 2 },
     },
     {
-        name: "tpId",
-        placeholder: "TpId",
-        formName: DETAILS,
+        name: "teamBattingOrder",
+        placeholder: "Batting Order",
+        formName: TEAM,
         type: COUNTER,
         className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
-    {
-        name: "isActive",
-        placeholder: "Active",
-        formName: DETAILS,
-        type: SWITCH,
-        className: "no-spinners",
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-    {
-        name: "isVirtual",
-        placeholder: "Virtual",
-        formName: DETAILS,
-        type: SWITCH,
-        className: "no-spinners",
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-]
-
-export const TEAM_FEATURE_FIELDS = (teamPlayers = []) => [
     {
         name: "teamScore",
         placeholder: "Score",
@@ -1299,61 +1141,17 @@ export const TEAM_FEATURE_FIELDS = (teamPlayers = []) => [
         className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
-    {
-        name: "teamCaptain",
-        placeholder: "Captain",
-        formName: TEAM,
-        type: SELECT,
-        options: teamPlayers?.map(p => ({
-            value: p?.playerId,
-            label: p?.playerName
-        })),
-        fieldColspan: { xs: 4, md: 3, lg: 3 },
-    },
-    {
-        name: "teamKipper",
-        placeholder: "Kipper",
-        formName: TEAM,
-        type: SELECT,
-        options: teamPlayers?.map(p => ({
-            value: p?.playerId,
-            label: p?.playerName
-        })),
-        fieldColspan: { xs: 4, md: 3, lg: 3 },
-    },
-    {
-        name: "commentaryPlayerTeamCaptain",
-        placeholder: "comm Team Captain",
-        formName: TEAM,
-        type: SELECT,
-        options: teamPlayers?.map(p => ({
-            value: p?.commentaryPlayerId,
-            label: p?.playerName
-        })),
-        fieldColspan: { xs: 4, md: 3, lg: 3 },
-    },
-    {
-        name: "commentaryPlayerTeamKipper",
-        placeholder: "comm Team Kipper",
-        formName: TEAM,
-        type: SELECT,
-        options: teamPlayers?.map(p => ({
-            value: p?.commentaryPlayerId,
-            label: p?.playerName
-        })),
-        fieldColspan: { xs: 4, md: 3, lg: 3 },
-    },
-    {
-        name: "teamWicket",
-        placeholder: "Wicket",
+     {
+        name: "teamOver",
+        placeholder: "Over",
         formName: TEAM,
         type: COUNTER,
         className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
-        name: "teamOver",
-        placeholder: "Over",
+        name: "teamWicket",
+        placeholder: "Wicket",
         formName: TEAM,
         type: COUNTER,
         className: "no-spinners",
@@ -1368,8 +1166,16 @@ export const TEAM_FEATURE_FIELDS = (teamPlayers = []) => [
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
+        name: "teamNoBallRuns",
+        placeholder: "No Ball",
+        formName: TEAM,
+        type: COUNTER,
+        className: "no-spinners",
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
+    },
+    {
         name: "teamByRuns",
-        placeholder: "By",
+        placeholder: "Bye",
         formName: TEAM,
         type: COUNTER,
         className: "no-spinners",
@@ -1384,8 +1190,8 @@ export const TEAM_FEATURE_FIELDS = (teamPlayers = []) => [
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
-        name: "teamNoBallRuns",
-        placeholder: "No Ball",
+        name: "teamPenaltyRuns",
+        placeholder: "Penalty",
         formName: TEAM,
         type: COUNTER,
         className: "no-spinners",
@@ -1416,22 +1222,6 @@ export const TEAM_FEATURE_FIELDS = (teamPlayers = []) => [
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
-        name: "teamPenaltyRuns",
-        placeholder: "Penalty Runs",
-        formName: TEAM,
-        type: COUNTER,
-        className: "no-spinners",
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-    {
-        name: "teamBattingOrder",
-        placeholder: "Batting Order",
-        formName: TEAM,
-        type: COUNTER,
-        className: "no-spinners",
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-    {
         name: "drsCount",
         placeholder: "Drs Count",
         formName: TEAM,
@@ -1439,14 +1229,14 @@ export const TEAM_FEATURE_FIELDS = (teamPlayers = []) => [
         className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
-    {
-        name: "tpId",
-        placeholder: "TpId",
-        formName: TEAM,
-        type: COUNTER,
-        className: "no-spinners",
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
+    // {
+    //     name: "tpId",
+    //     placeholder: "TpId",
+    //     formName: TEAM,
+    //     type: COUNTER,
+    //     className: "no-spinners",
+    //     fieldColspan: { xs: 3, md: 2, lg: 1 },
+    // },
     {
         name: "isBattingComplete",
         placeholder: "Batting Complete",
@@ -1454,18 +1244,6 @@ export const TEAM_FEATURE_FIELDS = (teamPlayers = []) => [
         type: SWITCH,
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
-    {
-        name: "teamStatus",
-        placeholder: "Status",
-        type: SELECT,
-        defaultValue: 1,
-        formName: TEAM,
-        options: [
-            { label: "Batting", value: 1 },
-            { label: "Bowling", value: 2 },
-        ],
-        fieldColspan: { xs: 3, md: 2, lg: 2 },
-    }
 ]
 
 export const OVER_FEATURE_FIELD = (bowlingPlayers = [], teamlist = []) => [
@@ -1493,10 +1271,17 @@ export const OVER_FEATURE_FIELD = (bowlingPlayers = [], teamlist = []) => [
     },
     {
         name: "ballCount",
-        placeholder: "Ball Count",
+        placeholder: "B-Count",
         formName: OVER,
         type: COUNTER,
         className: "no-spinners",
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
+    },
+    {
+        name: "teamScore",
+        placeholder: "Score",
+        formName: OVER,
+        type: TEXT,
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
@@ -1509,7 +1294,7 @@ export const OVER_FEATURE_FIELD = (bowlingPlayers = [], teamlist = []) => [
     },
     {
         name: "totalFour",
-        placeholder: "Fours",
+        placeholder: "4s",
         formName: OVER,
         type: COUNTER,
         className: "no-spinners",
@@ -1517,7 +1302,7 @@ export const OVER_FEATURE_FIELD = (bowlingPlayers = [], teamlist = []) => [
     },
     {
         name: "totalSix",
-        placeholder: "Sixes",
+        placeholder: "6s",
         formName: OVER,
         type: COUNTER,
         className: "no-spinners",
@@ -1525,7 +1310,7 @@ export const OVER_FEATURE_FIELD = (bowlingPlayers = [], teamlist = []) => [
     },
     {
         name: "totalWideBall",
-        placeholder: "WD Balls",
+        placeholder: "WD Ball",
         formName: OVER,
         type: COUNTER,
         className: "no-spinners",
@@ -1541,7 +1326,7 @@ export const OVER_FEATURE_FIELD = (bowlingPlayers = [], teamlist = []) => [
     },
     {
         name: "totalNoball",
-        placeholder: "NB Balls",
+        placeholder: "NB Ball",
         formName: OVER,
         type: COUNTER,
         className: "no-spinners",
@@ -1549,7 +1334,7 @@ export const OVER_FEATURE_FIELD = (bowlingPlayers = [], teamlist = []) => [
     },
     {
         name: "totalNoBallRun",
-        placeholder: "NN Runs",
+        placeholder: "No Runs",
         formName: OVER,
         type: COUNTER,
         className: "no-spinners",
@@ -1571,9 +1356,16 @@ export const OVER_FEATURE_FIELD = (bowlingPlayers = [], teamlist = []) => [
         className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
+     {
+        name: "totalPanelty",
+        placeholder: "Penalty",
+        formName: OVER,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
+    },
     {
         name: "totalWicket",
-        placeholder: "WK",
+        placeholder: "Wicket",
         formName: OVER,
         type: COUNTER,
         className: "no-spinners",
@@ -1585,20 +1377,6 @@ export const OVER_FEATURE_FIELD = (bowlingPlayers = [], teamlist = []) => [
         formName: OVER,
         type: COUNTER,
         className: "no-spinners",
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-    {
-        name: "teamScore",
-        placeholder: "Team Score",
-        formName: OVER,
-        type: TEXT,
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-    {
-        name: "totalPanelty",
-        placeholder: "Total Panelty",
-        formName: OVER,
-        type: COUNTER,
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
@@ -1619,6 +1397,31 @@ export const OVER_FEATURE_FIELD = (bowlingPlayers = [], teamlist = []) => [
 
 export const WICKET_FEATURE_FIELD = (battingPlayers = [], bowlingPlayers = [], overList = []) => [
     {
+        name: "overId",
+        placeholder: "Over",
+        formName: WICKET,
+        type: SELECT,
+        options: overList?.map(p => ({
+            value: p?.overId,
+            label: p?.over + 1
+        })),
+        fieldColspan: { xs: 4, md: 3, lg: 3 },
+    },
+    {
+        name: "overCount",
+        placeholder: "O-Count",
+        formName: WICKET,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 2, lg: 4 },
+    },
+    {
+        name: "ballCount",
+        placeholder: "B-Count",
+        formName: WICKET,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 2, lg: 4 },
+    },
+    {
         name: "batterId",
         placeholder: "Batter",
         formName: WICKET,
@@ -1630,15 +1433,41 @@ export const WICKET_FEATURE_FIELD = (battingPlayers = [], bowlingPlayers = [], o
         fieldColspan: { xs: 4, md: 3, lg: 3 },
     },
     {
-        name: "overId",
-        placeholder: "Over",
+        name: "playerRun",
+        placeholder: "Runs",
+        formName: WICKET,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 2, lg: 4 },
+    },
+    {
+        name: "playerBalls",
+        placeholder: "Balls",
+        formName: WICKET,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 2, lg: 4 },
+    },
+    {
+        name: "teamScore",
+        placeholder: "Score",
+        formName: WICKET,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 2, lg: 4 },
+    },
+    {
+        name: "wicketCount",
+        placeholder: "Wicket",
+        formName: WICKET,
+        type: COUNTER,
+        fieldColspan: { xs: 3, md: 2, lg: 4 },
+    },
+    {
+        name: "wicketType",
+        placeholder: "Wicket Type",
         formName: WICKET,
         type: SELECT,
-        options: overList?.map(p => ({
-            value: p?.overId,
-            label: p?.over + 1
-        })),
-        fieldColspan: { xs: 4, md: 3, lg: 3 },
+        defaultValue: 1,
+        options: WICKET_TYPE_LIST,
+        fieldColspan: { xs: 3, md: 4, lg: 3 },
     },
     {
         name: "bowlerId",
@@ -1664,7 +1493,7 @@ export const WICKET_FEATURE_FIELD = (battingPlayers = [], bowlingPlayers = [], o
     },
     {
         name: "fieldPlayer2Id",
-        placeholder: "Field Player 2",
+        placeholder: "Field Player2",
         formName: WICKET,
         type: SELECT,
         options: bowlingPlayers?.map(p => ({
@@ -1673,85 +1502,9 @@ export const WICKET_FEATURE_FIELD = (battingPlayers = [], bowlingPlayers = [], o
         })),
         fieldColspan: { xs: 4, md: 3, lg: 3 },
     },
-    {
-        name: "wicketType",
-        placeholder: "Wicket Type",
-        formName: WICKET,
-        type: SELECT,
-        defaultValue: 1,
-        options: WICKET_TYPE_LIST,
-        fieldColspan: { xs: 3, md: 4, lg: 3 },
-    },
-    {
-        name: "bowlerName",
-        placeholder: "Bowler",
-        formName: WICKET,
-        type: TEXT,
-        fieldColspan: { xs: 3, md: 2, lg: 4 },
-    },
-    {
-        name: "overCount",
-        placeholder: "Over Count",
-        formName: WICKET,
-        type: COUNTER,
-        fieldColspan: { xs: 3, md: 2, lg: 4 },
-    },
-    {
-        name: "ballCount",
-        placeholder: "Ball Count",
-        formName: WICKET,
-        type: COUNTER,
-        fieldColspan: { xs: 3, md: 2, lg: 4 },
-    },
-    {
-        name: "playerRun",
-        placeholder: "Player Run",
-        formName: WICKET,
-        type: COUNTER,
-        fieldColspan: { xs: 3, md: 2, lg: 4 },
-    },
-    {
-        name: "teamScore",
-        placeholder: "Team Score",
-        formName: WICKET,
-        type: COUNTER,
-        fieldColspan: { xs: 3, md: 2, lg: 4 },
-    },
-    {
-        name: "playerBalls",
-        placeholder: "Player Balls",
-        formName: WICKET,
-        type: COUNTER,
-        fieldColspan: { xs: 3, md: 2, lg: 4 },
-    },
-    {
-        name: "wicketCount",
-        placeholder: "Wicket Count",
-        formName: WICKET,
-        type: COUNTER,
-        fieldColspan: { xs: 3, md: 2, lg: 4 },
-    },
-    {
-        name: "currentInnings",
-        placeholder: "Innings",
-        formName: WICKET,
-        type: COUNTER,
-        fieldColspan: { xs: 3, md: 2, lg: 4 },
-    },
 ]
 
 export const PARTNERSHIP_FEATURE_FIELD = (battingPlayers = [], ballList = []) => [
-    {
-        name: "batter1Id",
-        placeholder: "Batter 1",
-        formName: PARTNERSHIP,
-        type: SELECT,
-        options: battingPlayers?.map(p => ({
-            value: p?.commentaryPlayerId,
-            label: p?.playerName
-        })),
-        fieldColspan: { xs: 4, md: 3, lg: 3 },
-    },
     {
         name: "commentaryBallByBallId",
         placeholder: "BallByBall",
@@ -1760,6 +1513,25 @@ export const PARTNERSHIP_FEATURE_FIELD = (battingPlayers = [], ballList = []) =>
         options: ballList?.map(p => ({
             value: p?.commentaryBallByBallId,
             label: parseFloat(p?.overCount || 0).toFixed(1)
+        })),
+        fieldColspan: { xs: 4, md: 3, lg: 3 },
+    },
+    {
+        name: "order",
+        placeholder: "Order",
+        formName: PARTNERSHIP,
+        type: COUNTER,
+        className: "no-spinners",
+        fieldColspan: { xs: 3, md: 2, lg: 2 },
+    },
+    {
+        name: "batter1Id",
+        placeholder: "Batter 1",
+        formName: PARTNERSHIP,
+        type: SELECT,
+        options: battingPlayers?.map(p => ({
+            value: p?.commentaryPlayerId,
+            label: p?.playerName
         })),
         fieldColspan: { xs: 4, md: 3, lg: 3 },
     },
@@ -1870,17 +1642,9 @@ export const PARTNERSHIP_FEATURE_FIELD = (battingPlayers = [], ballList = []) =>
         className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 2 },
     },
-    {
-        name: "order",
-        placeholder: "Order",
-        formName: PARTNERSHIP,
-        type: COUNTER,
-        className: "no-spinners",
-        fieldColspan: { xs: 3, md: 2, lg: 2 },
-    },
 ]
 
-export const BATTING_PLAYER_FEATURE_FIELD = (battingPlayers = [], bowlingPlayers = []) =>[
+export const BATTING_PLAYER_FEATURE_FIELD = (bowlingPlayers = []) =>[
     {
         name: "playerName",
         placeholder: "Name",
@@ -1888,6 +1652,14 @@ export const BATTING_PLAYER_FEATURE_FIELD = (battingPlayers = [], bowlingPlayers
         type: TEXT,
         isDisable: true,
         fieldColspan: { xs: 4, md: 3, lg: 2 },
+    },
+    {
+        name: "batterOrder",
+        placeholder: "Order",
+        formName: PLAYER,
+        type: COUNTER,
+        className: "no-spinners",
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
         name: "batRun",
@@ -1922,14 +1694,6 @@ export const BATTING_PLAYER_FEATURE_FIELD = (battingPlayers = [], bowlingPlayers
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
-        name: "batStatus",
-        placeholder: "Status",
-        formName: PLAYER,
-        type: COUNTER,
-        className: "no-spinners",
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-    {
         name: "batDotBall",
         placeholder: "Dot Ball",
         formName: PLAYER,
@@ -1946,10 +1710,27 @@ export const BATTING_PLAYER_FEATURE_FIELD = (battingPlayers = [], bowlingPlayers
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
+        name: "batsmanAverage",
+        placeholder: "Average",
+        formName: PLAYER,
+        type: COUNTER,
+        className: "no-spinners",
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
+    },
+    {
+        name: "batsmanStrikeRate",
+        placeholder: "Strike Rate",
+        formName: PLAYER,
+        type: COUNTER,
+        className: "no-spinners",
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
+    },
+    {
         name: "wicketType",
         placeholder: "Wicket Type",
         formName: PLAYER,
-        type: COUNTER,
+        type: SELECT,
+        options: WICKET_TYPE_LIST,
         className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
@@ -1992,30 +1773,6 @@ export const BATTING_PLAYER_FEATURE_FIELD = (battingPlayers = [], bowlingPlayers
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
     {
-        name: "batsmanAverage",
-        placeholder: "Average",
-        formName: PLAYER,
-        type: COUNTER,
-        className: "no-spinners",
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-    {
-        name: "batsmanStrikeRate",
-        placeholder: "Strike Rate",
-        formName: PLAYER,
-        type: COUNTER,
-        className: "no-spinners",
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-    {
-        name: "batterOrder",
-        placeholder: "B-Order",
-        formName: PLAYER,
-        type: COUNTER,
-        className: "no-spinners",
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-    {
         name: "isPlay",
         placeholder: "Play",
         formName: PLAYER,
@@ -2041,8 +1798,16 @@ export const BOWLING_PLAYER_FEATURE_FIELD = [
         fieldColspan: { xs: 4, md: 3, lg: 2 },
     },
     {
+        name: "bowlerOrder",
+        placeholder: "Order",
+        formName: PLAYER,
+        type: COUNTER,
+        className: "no-spinners",
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
+    },
+    {
         name: "bowlerOver",
-        placeholder: "Overs",
+        placeholder: "Over",
         formName: PLAYER,
         type: COUNTER,
         className: "no-spinners",
@@ -2050,7 +1815,7 @@ export const BOWLING_PLAYER_FEATURE_FIELD = [
     },
     {
         name: "bowlerCurrentBall",
-        placeholder: "Current Ball",
+        placeholder: "Ball",
         formName: PLAYER,
         type: COUNTER,
         className: "no-spinners",
@@ -2058,7 +1823,7 @@ export const BOWLING_PLAYER_FEATURE_FIELD = [
     },
     {
         name: "bowlerRun",
-        placeholder: "Bowler Run",
+        placeholder: "Run",
         formName: PLAYER,
         type: COUNTER,
         className: "no-spinners",
@@ -2066,7 +1831,7 @@ export const BOWLING_PLAYER_FEATURE_FIELD = [
     },
     {
         name: "bowlerMaidenOver",
-        placeholder: "Maiden Over",
+        placeholder: "Maiden",
         formName: PLAYER,
         type: COUNTER,
         className: "no-spinners",
@@ -2074,7 +1839,15 @@ export const BOWLING_PLAYER_FEATURE_FIELD = [
     },
     {
         name: "bowlerTotalBall",
-        placeholder: "Total Ball",
+        placeholder: "T-Ball",
+        formName: PLAYER,
+        type: COUNTER,
+        className: "no-spinners",
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
+    },
+    {
+        name: "bowlerTotalWicket",
+        placeholder: "Wicket",
         formName: PLAYER,
         type: COUNTER,
         className: "no-spinners",
@@ -2083,6 +1856,22 @@ export const BOWLING_PLAYER_FEATURE_FIELD = [
     {
         name: "bowlerDotBall",
         placeholder: "Dot Ball",
+        formName: PLAYER,
+        type: COUNTER,
+        className: "no-spinners",
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
+    },
+    {
+        name: "bowlerEconomy",
+        placeholder: "Eco",
+        formName: PLAYER,
+        type: COUNTER,
+        className: "no-spinners",
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
+    },
+    {
+        name: "bowlerAverage",
+        placeholder: "Avg",
         formName: PLAYER,
         type: COUNTER,
         className: "no-spinners",
@@ -2130,7 +1919,7 @@ export const BOWLING_PLAYER_FEATURE_FIELD = [
     },
     {
         name: "bowlerLegByeBall",
-        placeholder: "Leg Bye",
+        placeholder: "L-Bye",
         formName: PLAYER,
         type: COUNTER,
         className: "no-spinners",
@@ -2138,7 +1927,7 @@ export const BOWLING_PLAYER_FEATURE_FIELD = [
     },
     {
         name: "bowlerWideBallRun",
-        placeholder: "Wide Ball Run",
+        placeholder: "Wide Run",
         formName: PLAYER,
         type: COUNTER,
         className: "no-spinners",
@@ -2146,7 +1935,7 @@ export const BOWLING_PLAYER_FEATURE_FIELD = [
     },
     {
         name: "bowlerNoBallRun",
-        placeholder: "No Ball Run",
+        placeholder: "No Run",
         formName: PLAYER,
         type: COUNTER,
         className: "no-spinners",
@@ -2154,7 +1943,7 @@ export const BOWLING_PLAYER_FEATURE_FIELD = [
     },
     {
         name: "bowlerByeBallRun",
-        placeholder: "Bye Ball Run",
+        placeholder: "Bye Run",
         formName: PLAYER,
         type: COUNTER,
         className: "no-spinners",
@@ -2162,23 +1951,7 @@ export const BOWLING_PLAYER_FEATURE_FIELD = [
     },
     {
         name: "bowlerLegByeBallRun",
-        placeholder: "Leg Bye Ball Run",
-        formName: PLAYER,
-        type: COUNTER,
-        className: "no-spinners",
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-    {
-        name: "bowlerEconomy",
-        placeholder: "Economy",
-        formName: PLAYER,
-        type: COUNTER,
-        className: "no-spinners",
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-    {
-        name: "bowlerOnStrike",
-        placeholder: "On Strike",
+        placeholder: "L-Bye Run",
         formName: PLAYER,
         type: COUNTER,
         className: "no-spinners",
@@ -2186,31 +1959,7 @@ export const BOWLING_PLAYER_FEATURE_FIELD = [
     },
     {
         name: "bowlerPeneltyRun",
-        placeholder: "Penelty Run",
-        formName: PLAYER,
-        type: COUNTER,
-        className: "no-spinners",
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-    {
-        name: "bowlerAverage",
-        placeholder: "Average",
-        formName: PLAYER,
-        type: COUNTER,
-        className: "no-spinners",
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-    {
-        name: "bowlerTotalWicket",
-        placeholder: "Wickets",
-        formName: PLAYER,
-        type: COUNTER,
-        className: "no-spinners",
-        fieldColspan: { xs: 3, md: 2, lg: 1 },
-    },
-    {
-        name: "bowlerOrder",
-        placeholder: "Bo-Order",
+        placeholder: "Penalty",
         formName: PLAYER,
         type: COUNTER,
         className: "no-spinners",

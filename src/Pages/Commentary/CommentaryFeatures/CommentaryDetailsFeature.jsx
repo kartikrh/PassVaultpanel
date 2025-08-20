@@ -6,7 +6,7 @@ import { isEmpty } from "lodash";
 import { SLFieldRenderer } from "../../../components/Common/Reusables/SLFieldRenderer";
 import { SELECT, SWITCH } from "../../../components/Common/Const";
 
-export const CommentaryDetailsFeature = ({ commentaryDetailsInfo, handleValueChange, updatedData, selectedItems, setSelectedItems, teamlist, eventTypeList, matchTypeList, competitionList, pythonList}) => {
+export const CommentaryDetailsFeature = ({ commentaryDetailsInfo, handleValueChange, updatedData, selectedItems, setSelectedItems, teamlist}) => {
     const [open, setOpen] = useState("");
 
     const toggle = (id) => {
@@ -32,7 +32,7 @@ export const CommentaryDetailsFeature = ({ commentaryDetailsInfo, handleValueCha
         handleValueChange(updatedDetails);
     };
     const currentValues = isEmpty(updatedData) ? commentaryDetailsInfo : updatedData;
-    const COMMENTARY_FIELDS = COMMENTARY_DETAILS_FIELDS(teamlist, eventTypeList, matchTypeList, competitionList, pythonList);
+    const COMMENTARY_FIELDS = COMMENTARY_DETAILS_FIELDS(teamlist);
     
     return <Accordion open={open} toggle={toggle}>
         <AccordionItem>
@@ -87,7 +87,7 @@ export const CommentaryDetailsFeature = ({ commentaryDetailsInfo, handleValueCha
                                             onChange={(field, value) => onValueChange(commentaryDetailsInfo, field.name, value)}
                                         />
                                     ) : (
-                                        displayValue || 0
+                                        displayValue || ""
                                     )}
                                 </td>
                             )})}
