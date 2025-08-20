@@ -61,7 +61,7 @@ export const TeamFeature = ({ teamlist, handleValueChange, updatedData, selected
                                     />
                                 </td>
                                 <td>
-                                    <strong>{`${teamInfo.teamName} [${teamInfo?.currentInnings} Innings] : `}</strong>
+                                    <strong>{teamInfo.teamName}</strong>
                                 </td>
                                 {TEAM_FEATURE_FIELDS.map((field, idx) => {
                                     const fieldValue = currentValues[field.name];
