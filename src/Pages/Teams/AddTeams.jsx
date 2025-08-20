@@ -53,6 +53,7 @@ function AddTeams() {
   let navigate = useNavigate();
   const location = useLocation();
   const [teamId, setTeamId] = useState(location.state?.userId || "0");
+  document.title = 'Teams'
 
   useEffect(() => {
     if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {

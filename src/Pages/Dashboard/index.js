@@ -273,7 +273,7 @@ const Dashboard = () => {
             <Col xs="12" lg="6" >
               <Card style={{ maxHeight: "510px", padding: '0px' }}>
                 <CardHeader>
-                    <h6>Missing Player Images</h6>
+                    <h6 className="dashboard-headers">Missing Player Images</h6>
                 </CardHeader>
                 <CardBody style={{ maxHeight: "510px", overflowY: "auto",  }}>
                     <Table setStickHeader={true} isPagination={false} columns={missingPlayerColumns} dataSource={playersData}  tableElement={tableElement}/>
@@ -283,7 +283,7 @@ const Dashboard = () => {
             <Col xs="12" lg="6">
             <Card style={{ maxHeight: "510px", padding: '0px' }}>
                 <CardHeader>
-                    <h6>Duplicate Player</h6>
+                    <h6 className="dashboard-headers">Duplicate Player</h6>
                 </CardHeader>
                 <CardBody style={{ maxHeight: "510px", overflowY: "auto", }}>
                     <Table isPagination={false} setStickHeader={true} columns={dupPlayerColumns} dataSource={dupPlayersData}  tableElement={tableElement}/>
@@ -293,7 +293,7 @@ const Dashboard = () => {
             <Col xs="12" lg="6">
                 <Card style={{ maxHeight: "510px", padding: '0px' }}>
                 <CardHeader>
-                    <h6>Missing Team Images</h6>                
+                    <h6 className="dashboard-headers">Missing Team Images</h6>                
                 </CardHeader>
                 <CardBody style={{ maxHeight: "510px", overflowY: "auto",  }}>
                     <Table setStickHeader={true} isPagination={false} columns={teamColumns} dataSource={teamsData}  tableElement={tableElement}/>

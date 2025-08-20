@@ -26,6 +26,7 @@ const TournamentTeamPoints = () => {
   const [tournamentData, setTournamentData] = useState([]);
   const [teamList, setTeamList] = useState([]);
   const [selectedTeamId, setSelectedTeamId] = useState(null);
+  const [groupName, setGroupName] = useState('');
   const [playersModelVisible, setPlayersModelVisible] = useState(false);
   const [deleteTeamModelVisable, setDeleteTeamModelVisable] = useState(false);
   const [deleteTeamRecord, setDeleteTeamRecord] = useState({});
@@ -132,6 +133,7 @@ const TournamentTeamPoints = () => {
           teamId: selectedTeamId,
           competitionId: competitionId,
           isActive: true,
+          groupName: groupName
         }
       );
       fetchTournament(competitionId);
@@ -566,6 +568,16 @@ const TournamentTeamPoints = () => {
     label: team.teamName,
   }));
 
+  const grouped = tournamentData.reduce((acc, item) => {
+    const group = item.groupName || "Unknown"; // handle null case
+    if (!acc[group]) {
+      acc[group] = [];
+    }
+    acc[group].push(item);
+    return acc;
+  }, {});
+
+
   return (
     <React.Fragment>
       <div className="page-content">
@@ -594,6 +606,17 @@ const TournamentTeamPoints = () => {
                   </Col>
                 </Row>
                 <Row className="mb-3">
+                  <Col md={3}>
+                    <Input
+                      className="form-control"
+                      type="text"
+                      id={groupName}
+                      name={groupName}
+                      value={groupName}
+                      onChange={(e) => setGroupName(e.target.value)}
+                      placeholder="Group Name"
+                    />
+                  </Col>
                   <Col md={3}>
                     <Select
                       value={teamOptions.find(
@@ -626,7 +649,7 @@ const TournamentTeamPoints = () => {
                     </Button>
                   </Col>
                 </Row>
-                <Table responsive>
+                {/* <Table responsive>
                   <thead className="table-light">
                     <tr>
                       {columns.map((column, index) => (
@@ -664,7 +687,52 @@ const TournamentTeamPoints = () => {
                         </React.Fragment>
                       ))}
                   </tbody>
-                </Table>
+                </Table> */}
+                {Object.entries(
+                  tournamentData.reduce((acc, item) => {
+                    const group = item.groupName || "Unknown";
+                    if (!acc[group]) {
+                      acc[group] = [];
+                    }
+                    acc[group].push(item);
+                    return acc;
+                  }, {})
+                )
+                  // sort groups alphabetically
+                  .sort(([a], [b]) => a.localeCompare(b))
+                  .map(([groupName, groupItems]) => (
+                    <div key={groupName} className="mb-4">
+                      {/* Group Header */}
+                      <h5 className="mb-2">{groupName}</h5>
+
+                      <Table responsive>
+                        <thead>
+                          <tr>
+                            {columns.map((column, index) => (
+                              <th className="px-2 py-2" key={index} style={column.style}>
+                                {column.title}
+                              </th>
+                            ))}
+                          </tr>
+                        </thead>
+
+                        <tbody>
+                          {groupItems.map((item, index) => (
+                            <tr key={item.id || index}>
+                              {columns.map((column, colIndex) => (
+                                <td className="p-2" key={colIndex} style={column.style}>
+                                  {column.render
+                                    ? column.render(item[column.dataIndex], item, index)
+                                    : item[column.dataIndex]}
+                                </td>
+                              ))}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </Table>
+                    </div>
+                  ))}
+
               </CardBody>
             </Card>
             {playersModelVisible && (
