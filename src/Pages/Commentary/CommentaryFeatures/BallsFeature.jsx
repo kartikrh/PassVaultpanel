@@ -17,7 +17,7 @@ export const BallFeature = ({ ballList, handleValueChange, updatedData, deletedL
     const BALL_FIELDS = BALL_FEATURE_FIELDS(battingPlayers);
 
     return <>
-            <Table className="p-0 mb-0" hover responsive>
+            <Table className="p-0 mb-0 table-dark" hover responsive>
                 <thead>
                     <tr>
                         <th></th>

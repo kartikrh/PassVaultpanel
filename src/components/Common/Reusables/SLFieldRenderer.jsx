@@ -35,8 +35,9 @@ export const SLFieldRenderer = ({ field, value, onChange }) => {
                 />
             )}
             {field.type === SELECT && (
+              <div className="s-update-select">
                 <Select
-                    classNamePrefix="small-text-fields select2-selection"
+                    classNamePrefix="select2-selection"
                     style={field?.customStyle}
                     id={field.name}
                     name={field.name}
@@ -48,7 +49,35 @@ export const SLFieldRenderer = ({ field, value, onChange }) => {
                     closeMenuOnSelect={!field.isMulti}
                     required={field.isRequired}
                     isMulti={field.isMulti}
+                    menuPortalTarget={document.body}
+                    styles={{
+                        control: (base, state) => ({
+                            ...base,
+                            minHeight: "27.6px",
+                            fontSize: "12px",
+                            padding: "0 2px",
+                        }),
+                        valueContainer: (base) => ({
+                            ...base,
+                            padding: "0 4px",
+                            height: "26px",
+                        }),
+                        indicatorsContainer: (base) => ({
+                            ...base,
+                            height: "26px",
+                        }),
+                        dropdownIndicator: (base) => ({
+                            ...base,
+                            padding: "2px",
+                        }),
+                        clearIndicator: (base) => ({
+                            ...base,
+                            padding: "2px",
+                        }),
+                        menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                    }}
                 />
+              </div>
             )}
             {field.type === SWITCH && (
                 <div className="form-check form-switch form-switch-lg mb-1">

@@ -220,3 +220,7 @@
 .whitespace-nowrap {
     white-space: nowrap !important;
 }
+
+.s-update-select {
+  min-width: 150px !important;
+}
