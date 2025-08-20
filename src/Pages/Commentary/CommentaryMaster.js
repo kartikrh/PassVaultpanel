@@ -229,7 +229,7 @@ function CommentaryMaster() {
   
 
   useEffect(() => {
-    if (isCommentaryDataUpdated && currentScreen !== 3) {
+    if (isCommentaryDataUpdated && currentScreen !== 3 && currentScreen !== 4) {
       dispatch(updateSavedState(undefined));
       setCurrentScreen(nextScreen);
       setCommentaryData(nextData);
