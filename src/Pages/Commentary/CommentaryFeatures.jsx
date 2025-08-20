@@ -61,7 +61,11 @@ export const CommentaryFeatures = () => {
     const commentaryId = +localStorage.getItem('updateCommentaryId') || "0";
     const dispatch = useDispatch();
     let navigate = useNavigate();
-
+    if(commentaryData?.commentaryDetails){
+       document.title = `S-Update [ ${commentaryData.commentaryDetails?.ed + " " + commentaryData.commentaryDetails?.et} ] ${commentaryData.commentaryDetails?.en}`;
+    } else {
+       document.title = "S-Update";
+    }
     useEffect(() => {
         if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW) && !isEmpty(permissionObj)) {
             navigate("/dashboard")
@@ -197,13 +201,11 @@ export const CommentaryFeatures = () => {
 
 
     useEffect(() => {
-        // setIsToggleLoading(true);
         const battingTeamData = commentaryData?.commentaryTeams?.filter((item)=> item.currentInnings == selectedInnings)?.find((item)=> item?.teamStatus == 1);
         setBattingTeam(battingTeamData)
         setSelectedBattingTeamId(battingTeamData?.teamId)
         const bowlingTeamData = commentaryData?.commentaryTeams?.filter((item)=> item.currentInnings == selectedInnings)?.find((item)=> item?.teamStatus == 2);
         setBowlingTeam(bowlingTeamData)
-        // setTimeout(() => setIsToggleLoading(false), 2000);
     },[commentaryData, selectedInnings])
 
     useEffect(() => {
