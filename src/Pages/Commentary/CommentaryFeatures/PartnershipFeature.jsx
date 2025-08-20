@@ -15,10 +15,16 @@ export const PartnershipFeature = ({ partnershipList, handleValueChange, updated
             setOpen(id); // expand
         }
     };
-    const onValueChange = (partnershipInfo, key, value) => {
+    const onValueChange = (partnershipInfo, key, value, label) => {
         const dataToSend = updatedData
         const updatedPartnershipData = updatedData[partnershipInfo.commentaryPartnershipId] || partnershipInfo
         updatedPartnershipData[key] = value
+        if (key === "batter1Id") {
+            updatedPartnershipData["batter1Name"] = label;
+        }
+        if (key === "batter2Id") {
+            updatedPartnershipData["batter2Name"] = label;
+        }
         dataToSend[partnershipInfo.commentaryPartnershipId] = updatedPartnershipData
         handleValueChange(dataToSend)
     }
@@ -79,7 +85,7 @@ export const PartnershipFeature = ({ partnershipList, handleValueChange, updated
                                             <SLFieldRenderer
                                                 field={field}
                                                 value={fieldValue ?? ""}
-                                                onChange={(field, value) => onValueChange(partnershipInfo, field.name, value)}
+                                                onChange={(field, value, label) => onValueChange(partnershipInfo, field.name, value, label)}
                                             />
                                         ) : (
                                             displayValue || 0
