@@ -81,6 +81,7 @@ export const BallFeature = ({ ballList, handleValueChange, updatedData, deletedL
                         {BALL_FIELDS.map((field, idx) => (
                             <th key={idx}>{field.placeholder || field.name}</th>
                         ))}
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -132,6 +133,11 @@ export const BallFeature = ({ ballList, handleValueChange, updatedData, deletedL
                                     )}
                                 </td>
                             )})}
+                            <td>
+                                <Button color="danger" className={"delete-item-button"} onClick={() => handleDeleteChange(ballInfo.commentaryBallByBallId)}>
+                                    <i className="bi bi-trash"></i>
+                                </Button>
+                            </td>
                         </tr>
                     )})}
                 </tbody>

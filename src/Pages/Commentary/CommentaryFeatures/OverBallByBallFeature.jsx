@@ -46,6 +46,7 @@ export const OverBallByBallFeature = ({ overList, ballList, handleValueChange, u
                             {OVER_FIELD.map((field, idx) => (
                                 <th key={idx}>{field.placeholder || field.name}</th>
                             ))}
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -110,6 +111,11 @@ export const OverBallByBallFeature = ({ overList, ballList, handleValueChange, u
                                             )}
                                         </td>
                                     )})}
+                                    <td>
+                                        <Button color="danger" className={"delete-item-button"} onClick={() => handleDeleteChange(overInfo.overId)}>
+                                            <i className="bi bi-trash"></i>
+                                        </Button>
+                                    </td>
                                 </tr>
                                 {isExpanded ? <tr>
                                     <td colSpan={OVER_FIELD.length + 2} className="px-2 py-0">
