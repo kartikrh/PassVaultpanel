@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button, Card, CardBody, CardHeader, Col, Row, Table } from "reactstrap"
 import { FieldRenderer } from "../../../components/Common/Reusables/FieldRenderer"
 import { BALL_FEATURE_FIELDS } from "../../../constants/FieldConst/CommentaryConst"
@@ -5,14 +6,44 @@ import { SLFieldRenderer } from "../../../components/Common/Reusables/SLFieldRen
 import { SELECT, SWITCH } from "../../../components/Common/Const"
 
 export const BallFeature = ({ ballList, handleValueChange, updatedData, deletedList, handleDeleteChange, selectedItems, setSelectedItems, battingPlayers }) => {
-
+    const [pendingAdd, setPendingAdd] = useState(false);
     const onValueChange = (ballInfo, key, value) => {
         const dataToSend = updatedData
         const updatedBallData = updatedData[ballInfo.commentaryBallByBallId] || ballInfo
         updatedBallData[key] = value
         dataToSend[ballInfo.commentaryBallByBallId] = updatedBallData
+        if (key === "ballType") {
+            setPendingAdd(true);
+        }
         handleValueChange(dataToSend)
     }
+
+    const handleAddRow = () => {
+        const newBall = {
+            commentaryBallByBallId: 0,
+            overCount: "",
+            batStrikeId: "",
+            ballType: "",
+            teamScore: "",
+            ballRun: "",
+            ballFour: "",
+            ballSix: "",
+            ballExtraRun: "",
+            teamWicket: "",
+            ballIsWicket: false,
+            ballIsBoundry: false,
+            ballIsDot: false,
+            ballIsCount: false,
+        };
+
+        const dataToSend = {
+            ...updatedData,
+            0: newBall,
+        };
+
+        handleValueChange(dataToSend);
+        setPendingAdd(false);
+    };
 
     const BALL_FIELDS = BALL_FEATURE_FIELDS(battingPlayers);
 
@@ -20,7 +51,13 @@ export const BallFeature = ({ ballList, handleValueChange, updatedData, deletedL
             <Table className="p-0 mb-0 table-dark" hover responsive>
                 <thead>
                     <tr>
-                        <th></th>
+                        <th>
+                            {pendingAdd ? (
+                                <Button color="success" size="sm" onClick={handleAddRow}>
+                                    +
+                                </Button>
+                            ) : null}
+                        </th>
                         <th>Over Count</th>
                         {BALL_FIELDS.map((field, idx) => (
                             <th key={idx}>{field.placeholder || field.name}</th>
@@ -29,7 +66,7 @@ export const BallFeature = ({ ballList, handleValueChange, updatedData, deletedL
                 </thead>
                 <tbody>
                     {ballList.length === 0 && <tr><td colSpan={BALL_FIELDS.length + 2} className="text-center">No balls data to show</td></tr>}
-                    {ballList?.map((ballInfo, index) => {
+                    {[...ballList, ...(updatedData[0] ? [updatedData[0]] : [])]?.map((ballInfo, index) => {
                         const currentValues = updatedData[ballInfo.commentaryBallByBallId] || ballInfo;
                         return (
                         <tr key={`${ballInfo.commentaryBallByBallId}-${index}`}>
