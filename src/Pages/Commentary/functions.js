@@ -280,7 +280,8 @@ export const getBallsForAllOver = (ballHistory = [], wicketHistory = []) => {
             bowlerId: ball?.bowlerId,
             fieldPlayerId: ball?.fieldPlayerId,
             ballId: ball.commentaryBallByBallId,
-            wicketId: findWicketIdFromBallId(ball.commentaryBallByBallId)?.commentaryWicketId
+            wicketId: findWicketIdFromBallId(ball.commentaryBallByBallId)?.commentaryWicketId,
+            createdDate: ball?.createdDate,
           }
         ]);
       }

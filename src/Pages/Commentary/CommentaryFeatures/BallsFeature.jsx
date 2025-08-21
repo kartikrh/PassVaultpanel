@@ -4,45 +4,64 @@ import { FieldRenderer } from "../../../components/Common/Reusables/FieldRendere
 import { BALL_FEATURE_FIELDS } from "../../../constants/FieldConst/CommentaryConst"
 import { SLFieldRenderer } from "../../../components/Common/Reusables/SLFieldRenderer"
 import { SELECT, SWITCH } from "../../../components/Common/Const"
+import { isEmpty } from "lodash";
 
 export const BallFeature = ({ ballList, handleValueChange, updatedData, deletedList, handleDeleteChange, selectedItems, setSelectedItems, battingPlayers }) => {
-    const [pendingAdd, setPendingAdd] = useState(false);
+    const [newBall, setNewBall] = useState(null);
     const onValueChange = (ballInfo, key, value) => {
         const dataToSend = updatedData
         const updatedBallData = updatedData[ballInfo.commentaryBallByBallId] || ballInfo
         updatedBallData[key] = value
         dataToSend[ballInfo.commentaryBallByBallId] = updatedBallData
         if (key === "ballType") {
-            setPendingAdd(true);
+            setNewBall(updatedBallData);
         }
         handleValueChange(dataToSend)
     }
 
     const handleAddRow = () => {
-        const newBall = {
+        const newBallData = {
             commentaryBallByBallId: 0,
-            overCount: "",
-            batStrikeId: "",
-            ballType: "",
+            commentaryId: newBall?.commentaryId,
+            teamId: newBall?.teamId,
+            overId: newBall?.overId,
+            commentaryPartnershipId: newBall?.commentaryPartnershipId,
+            currentInnings: newBall?.currentInnings,
+            overCount: newBall?.overCount,
+            currentOverBalls: 0,
+            bowlerId: 0,
+            batStrikeId: 0,
+            batNonStrikeId: 0,
+            ballType: 0,
             teamScore: "",
-            ballRun: "",
-            ballFour: "",
-            ballSix: "",
-            ballExtraRun: "",
-            teamWicket: "",
+            ballRun: 0,
+            ballFour: 0,
+            ballSix: 0,
+            ballExtraRun: 0,
+            ballWicketType: 1,
+            ballPlayerId: 0,
+            ballBowlerId: 0,
+            ballFielderId1: 0,
+            ballFielderId2: 0,
+            teamWicket: 0,
             ballIsWicket: false,
             ballIsBoundry: false,
+            overIsMaiden: false,
+            nextBatStrikeId: 0,
+            nextBatNonStrikeId: 0,
             ballIsDot: false,
             ballIsCount: false,
+            isDelete: false,
+            autoStrikeBallCount: 0
         };
 
         const dataToSend = {
             ...updatedData,
-            0: newBall,
+            0: newBallData,
         };
 
         handleValueChange(dataToSend);
-        setPendingAdd(false);
+        setNewBall(null);
     };
 
     const BALL_FIELDS = BALL_FEATURE_FIELDS(battingPlayers);
@@ -52,7 +71,7 @@ export const BallFeature = ({ ballList, handleValueChange, updatedData, deletedL
                 <thead>
                     <tr>
                         <th>
-                            {pendingAdd ? (
+                            {!isEmpty(newBall) ? (
                                 <Button color="success" size="sm" onClick={handleAddRow}>
                                     +
                                 </Button>

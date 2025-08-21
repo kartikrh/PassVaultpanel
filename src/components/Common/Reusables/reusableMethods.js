@@ -111,6 +111,18 @@ export const convertDateUTCToLocal = (UTCDate, page, format) => {
   return "";
 }
 
+export const convertTimeUTCToLocal = (UTCDate, page, format) => {
+  if (UTCDate) {
+    if (page === "index") {
+      return moment(UTCDate).local().format("h:mm:ss a");
+    }
+    if (format) return moment(UTCDate).local().format(format);
+    return moment(UTCDate).local().format("HH:mm:ss");
+  }
+  return "";
+};
+
+
 export const convertDateUTCToLocal2 = (UTCDate, page, format) => {
   if (UTCDate) {
     if (page === 'index') {
