@@ -972,7 +972,7 @@ export const BALL_FEATURE_FIELDS = (battingPlayers = []) => [
         name: "teamScore",
         placeholder: "Score",
         formName: BALL,
-        type: COUNTER,
+        type: TEXT,
         className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 2 },
     },
