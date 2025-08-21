@@ -1,3 +1,4 @@
+import React from "react";
 import { Col, Input } from "reactstrap"
 import { COUNTER, SELECT, TEXT, SWITCH } from "../Const"
 import Select from "react-select";
@@ -5,9 +6,9 @@ import "./CustomCss.css"
 
 export const FieldRenderer = ({ fields, value, onChange, index }) => {
     return fields.map((field, index) => {
-        return <>
+        return <React.Fragment key={`${field.name}-${index}`}>
             <Col
-                key={index}
+                // key={index}
                 xs={field.labelColspan?.xs || 3}
                 md={field.labelColspan?.md || 2}
                 lg={field.labelColspan?.lg || 2}
@@ -21,8 +22,8 @@ export const FieldRenderer = ({ fields, value, onChange, index }) => {
                 </div>
             </Col>
             <Col
-                className={`mb-4`}
-                key={index}
+                className={`mb-2`}
+                // key={index}
                 xs={field.fieldColspan?.xs || 9}
                 md={field.fieldColspan?.md || 4}
                 lg={field.fieldColspan?.lg || 4}
@@ -64,7 +65,7 @@ export const FieldRenderer = ({ fields, value, onChange, index }) => {
                     />
                 )}
                 {field.type === SWITCH && (
-                    <div className="form-check form-switch form-switch-lg mb-3">
+                    <div className="form-check form-switch form-switch-lg mb-1">
                         <input
                             className="form-check-input"
                             style={field?.customStyle}
@@ -79,6 +80,6 @@ export const FieldRenderer = ({ fields, value, onChange, index }) => {
                     </div>
                 )}
             </Col>
-        </>
+        </React.Fragment>
     })
 }

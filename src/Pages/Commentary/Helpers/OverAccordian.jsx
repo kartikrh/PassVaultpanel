@@ -15,6 +15,7 @@ import PlayerImage from '../../../components/Common/Reusables/PlayerImage';
 import { BATTING_TEAM } from '../CommentartConst';
 import { Col, Row } from 'reactstrap';
 import EditWicketDetails from '../CommentaryModels/EditWicketModal';
+import { convertTimeUTCToLocal } from '../../../components/Common/Reusables/reusableMethods';
 
 // Styled components remain the same
 // const BallBox = styled(Box)(({ theme, balltype }) => ({
@@ -264,8 +265,11 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                         className={` d-flex justify-content-center align-items-center ${ballColor}`}>
                         {displayValue}
                     </Col>
-                    <Col xs={9} md={9} lg={9} className="px-4">
+                    <Col xs={5} md={5} lg={5} className="px-4">
                         {`To ${batter}`}
+                    </Col>
+                    <Col xs={4} md={4} lg={4} className="px-4">
+                        {convertTimeUTCToLocal(element?.createdDate, "index")}
                     </Col>
                 </Row>
             )

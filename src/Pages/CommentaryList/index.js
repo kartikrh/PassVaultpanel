@@ -263,8 +263,8 @@ const Index = () => {
   };
   const handleDetailsClick = (id) => {
     // navigate("/commentaryMaster", { state: { commentaryId: id } });
-    localStorage.setItem("commentaryMasterId", "" + id);
-    localStorage.setItem("commentary", "commentaryList");
+    sessionStorage.setItem("commentaryMasterId", "" + id);
+    sessionStorage.setItem("commentary", "commentaryList");
     const url = new URL(window.location.origin + "/commentaryMaster");
     window.open(url.href, "_blank");
   };

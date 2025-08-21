@@ -61,7 +61,7 @@ function AddPlayer() {
   const canAdd = isPermissionLoaded && checkPermission(permissionObj, pageName, PERMISSION_ADD);
   const canEdit = isPermissionLoaded && checkPermission(permissionObj, pageName, PERMISSION_EDIT);
   const canSaveOrClose = canAdd || canEdit;
-
+  document.title = 'Players'
 
   useEffect(() => {
     if (isPermissionLoaded && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {

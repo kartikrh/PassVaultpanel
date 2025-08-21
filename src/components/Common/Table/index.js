@@ -662,11 +662,20 @@ const Index = forwardRef(
           setTotal(updatedData.length);
         }
       } else {
+        // const updatedData = dataSource.filter((val) => {
+        //   // console.log("val", val)
+        //   const found = Object.values(val).some((value) => {
+        //     if (typeof value === "string" || value instanceof String) {
+        //       return value.toLowerCase().includes(searchTerm.toLowerCase());
+        //     }
+        //     return false;
+        //   });
+        //   return found === true;
+        // });
         const updatedData = dataSource.filter((val) => {
-          // console.log("val", val)
           const found = Object.values(val).some((value) => {
-            if (typeof value === "string" || value instanceof String) {
-              return value.toLowerCase().includes(searchTerm.toLowerCase());
+            if (typeof value === "string" || value instanceof String || typeof value === "number") {
+              return value.toString().toLowerCase().includes(searchTerm.toLowerCase());
             }
             return false;
           });

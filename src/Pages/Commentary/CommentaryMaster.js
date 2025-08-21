@@ -83,8 +83,8 @@ function CommentaryMaster() {
   let navigate = useNavigate();
   const location = useLocation();
   const loadInitData = useSelector((state) => state.loadInit.loadInitData);
-  const commentaryId = +localStorage.getItem("commentaryMasterId") || "0";
-  const commentaryList = localStorage.getItem("commentary");
+  const commentaryId = +sessionStorage.getItem("commentaryMasterId") || "0";
+  const commentaryList = sessionStorage.getItem("commentary");
   let scorecardFrameUrl = loadInitData.find(item => item.key === loadInit.SCORECARD_FRAME_URL)?.value;
   if (scorecardFrameUrl) {
     scorecardFrameUrl = scorecardFrameUrl.replace("{commentaryId}", commentaryId);
@@ -229,7 +229,7 @@ function CommentaryMaster() {
   
 
   useEffect(() => {
-    if (isCommentaryDataUpdated && currentScreen !== 3) {
+    if (isCommentaryDataUpdated && currentScreen !== 3 && currentScreen !== 4) {
       dispatch(updateSavedState(undefined));
       setCurrentScreen(nextScreen);
       setCommentaryData(nextData);
@@ -276,6 +276,7 @@ function CommentaryMaster() {
         );
         setIsDataLoading(false);
       });
+      return commentaryDataToUpdate;
   };
   useEffect(() => {
     if (
