@@ -51,6 +51,7 @@ export const WicketFeature = ({ wicketList, handleValueChange, updatedData, dele
                             {WICKET_FIELD.map((field, idx) => (
                                 <th key={idx}>{field.placeholder || field.name}</th>
                             ))}
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -99,6 +100,11 @@ export const WicketFeature = ({ wicketList, handleValueChange, updatedData, dele
                                         )}
                                     </td>
                                 )})}
+                                <td>
+                                    <Button color="danger" className={"delete-item-button"} onClick={() => handleDeleteChange(wicketInfo.commentaryWicketId)}>
+                                        <i className="bi bi-trash"></i>
+                                    </Button>
+                                </td>
                             </tr>
                         )})}
                     </tbody>

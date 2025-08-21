@@ -44,6 +44,7 @@ export const PartnershipFeature = ({ partnershipList, handleValueChange, updated
                             {PARTNERSHIP_FIELD.map((field, idx) => (
                                 <th key={idx}>{field.placeholder || field.name}</th>
                             ))}
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -92,6 +93,11 @@ export const PartnershipFeature = ({ partnershipList, handleValueChange, updated
                                         )}
                                     </td>
                                 )})}
+                                <td>
+                                    <Button color="danger" className={"delete-item-button"} onClick={() => handleDeleteChange(partnershipInfo.commentaryPartnershipId)}>
+                                        <i className="bi bi-trash"></i>
+                                    </Button>
+                                </td>
                             </tr>
                         )})}
                     </tbody>
