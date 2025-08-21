@@ -48,7 +48,7 @@ export const PartnershipFeature = ({ partnershipList, handleValueChange, updated
                         </tr>
                     </thead>
                     <tbody>
-                        {partnershipList.length === 0 && <tr><td colSpan={PARTNERSHIP_FIELD.length + 1} className="text-center">No partnership data to show</td></tr>}
+                        {partnershipList.length === 0 && <tr><td colSpan={PARTNERSHIP_FIELD.length + 2} className="text-center">No partnership data to show</td></tr>}
                         {partnershipList?.sort((a,b)=>b?.order - a?.order)?.map((partnershipInfo, index) => {
                             const currentValues = updatedData[partnershipInfo.commentaryPartnershipId] || partnershipInfo;
                             return (

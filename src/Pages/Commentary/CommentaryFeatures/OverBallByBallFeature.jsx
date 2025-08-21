@@ -50,7 +50,7 @@ export const OverBallByBallFeature = ({ overList, ballList, handleValueChange, u
                         </tr>
                     </thead>
                     <tbody>
-                        {overList.length === 0 && <tr><td colSpan={OVER_FIELD.length + 2} className="text-center">No over data to show</td></tr>}
+                        {overList.length === 0 && <tr><td colSpan={OVER_FIELD.length + 3} className="text-center">No over data to show</td></tr>}
                         {overList?.map((overInfo, index) => {
                             if (deletedList.includes(overInfo.overId)) return null;
                             const balls = getBallsForOver(overInfo.overId);
@@ -118,7 +118,7 @@ export const OverBallByBallFeature = ({ overList, ballList, handleValueChange, u
                                     </td>
                                 </tr>
                                 {isExpanded ? <tr>
-                                    <td colSpan={OVER_FIELD.length + 2} className="px-2 py-0">
+                                    <td colSpan={OVER_FIELD.length + 3} className="px-2 py-0">
                                         <BallFeature
                                             ballList={balls.filter((item)=>item?.ballType !== 0) || []}
                                             updatedData={ballByBallData || {}}

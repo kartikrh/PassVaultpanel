@@ -55,7 +55,7 @@ export const WicketFeature = ({ wicketList, handleValueChange, updatedData, dele
                         </tr>
                     </thead>
                     <tbody>
-                        {wicketList.length === 0 && <tr><td colSpan={WICKET_FIELD.length + 1} className="text-center">No wicket data to show</td></tr>}
+                        {wicketList.length === 0 && <tr><td colSpan={WICKET_FIELD.length + 2} className="text-center">No wicket data to show</td></tr>}
                         {wicketList?.sort((a,b)=> b?.commentaryWicketId - a?.commentaryWicketId)?.map((wicketInfo, index) => {
                             const currentValues = updatedData[wicketInfo.commentaryWicketId] || wicketInfo;
                             return (
