@@ -1207,9 +1207,20 @@ const Commentary = (props) => {
         players[BOWLING_TEAM]?.forEach((player) => {
             if (isEqual(player.commentaryPlayerId, newPlayerId)) newBowler = player
         })
+        const currentBowlerRemainingOver = +(currentBowler.bowlerOver || 0) - +(currentOver.ballCount / 10)
+        let currentBowlerOrder = currentBowler.bowlerOrder
+        let newBowlerOrder = newBowler.bowlerOrder
+        const newOrder = fetchNextPlayerOrder(CURRENT_BOWLER, players[BOWLING_TEAM])
+        if (!newBowlerOrder) {
+            newBowlerOrder = newOrder
+        }
+        if (!currentBowlerRemainingOver || +currentBowlerRemainingOver === 0 ) {
+            currentBowlerOrder = null
+        }
+
         const updatedPerviousBowler = {
             ...currentBowler,
-            "bowlerOver": +(currentBowler.bowlerOver || 0) - +(currentOver.ballCount / 10),
+            "bowlerOver": currentBowlerRemainingOver,
             "bowlerTotalBall": +currentBowler.bowlerTotalBall - +currentOver.ballCount,
             "bowlerRun": +currentBowler.bowlerRun - getBowlerOnlyRuns(currentOver),
             "bowlerEconomy": getEconomyRate(+currentBowler.bowlerRun - getBowlerOnlyRuns(currentOver), +currentBowler.bowlerTotalBall - +currentOver.ballCount, matchTypeDetails.ballsPerOver),
@@ -1223,8 +1234,7 @@ const Commentary = (props) => {
             "bowlerByeBallRun": +currentBowler.bowlerByeBallRun - +currentOver.totalByesRun,
             "bowlerLegByeBallRun": +currentBowler.bowlerLegByeBallRun - +currentOver.totalLegByesRun,
             "bowlerTotalWicket": +currentBowler.bowlerTotalWicket - getBowlerRelatedWickets(currentOver?.overId, ballHistory),
-            "bowlerOrder": newBowler?.bowlerOrder,
-            "batterOrder": newBowler?.batterOrder,
+            "bowlerOrder": currentBowlerOrder,
             "isPlay": null
         }
         const updatedNewBowler = {
@@ -1243,8 +1253,7 @@ const Commentary = (props) => {
             "bowlerByeBallRun": +(newBowler.bowlerByeBallRun || 0) + +(currentOver.totalByesRun || 0),
             "bowlerLegByeBallRun": +(newBowler.bowlerLegByeBallRun || 0) + +(currentOver.totalLegByesRun || 0),
             "bowlerTotalWicket": +(newBowler.bowlerTotalWicket || 0) + getBowlerRelatedWickets(currentOver?.overId, ballHistory),
-            "bowlerOrder": currentBowler?.bowlerOrder,
-            "batterOrder": currentBowler?.batterOrder,
+            "bowlerOrder": newBowlerOrder,
             "isPlay": true
         }
         const UpdatedOver = {
