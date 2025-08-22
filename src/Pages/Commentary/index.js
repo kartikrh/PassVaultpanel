@@ -58,10 +58,10 @@ const Index = () => {
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   document.title = "Commentary";
   const [selectedTableElements, setSelectedTableElements] = useState({
-      eventType: null,
-      competition: null,
-      scoringType: null,
-      tpId: null
+    eventType: null,
+    competition: null,
+    scoringType: null,
+    tpId: null
   });
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
@@ -110,7 +110,7 @@ const Index = () => {
     useState(false);
   const [predictPasswordModelVisible, setPredictPasswordModelVisible] =
     useState(false);
-  const [predictRecord,setPredictRecord] = useState({})
+  const [predictRecord, setPredictRecord] = useState({})
   const [selectedCommentaryId, setSelectedCommentaryId] = useState(null);
   const [suspendModelVisable, setSuspendModelVisable] = useState(false);
   const [closeModelVisible, setCloseModelVisible] = useState(false);
@@ -162,8 +162,8 @@ const Index = () => {
         latestValueFromTable?.eventTypeId == eventTypeId
           ? latestValueFromTable?.competitionId
           : tableActions?.eventTypeId == eventTypeId
-          ? tableActions?.competitionId
-          : 0,
+            ? tableActions?.competitionId
+            : 0,
     };
     if (!isEmpty(userRefData)) {
       if (userRefData.eventTypeId && userRefData.eventTypeId !== 0)
@@ -174,7 +174,7 @@ const Index = () => {
     if (isSearch) {
       payload = {
         ...payload,
-        startDate: convertDateLocalToUTC(latestValueFromTable?.startDate ? latestValueFromTable?.startDate : dateRange?.startDate , "index"),
+        startDate: convertDateLocalToUTC(latestValueFromTable?.startDate ? latestValueFromTable?.startDate : dateRange?.startDate, "index"),
         endDate: convertDateLocalToUTC(latestValueFromTable?.endDate ? latestValueFromTable?.endDate : dateRange?.endDate, "index"),
       };
     }
@@ -214,7 +214,7 @@ const Index = () => {
       .then((response) => {
         setEventTypes(response.result);
       })
-      .catch((error) => {});
+      .catch((error) => { });
   };
   const fetchPythonAPIData = async () => {
     await axiosInstance
@@ -232,7 +232,7 @@ const Index = () => {
       .then((response) => {
         setCompetitions(response.result);
       })
-      .catch((error) => {});
+      .catch((error) => { });
   };
   const handleSingleCheck = (e) => {
     let updateSingleCheck = [];
@@ -624,7 +624,7 @@ const Index = () => {
     window.open(url.href, "_blank");
   };
   const handleMarketEventActionClick = (id) => {
-    localStorage.setItem("openMarketCommentaryId", "" + id);
+    sessionStorage.setItem("openMarketCommentaryId", "" + id);
     const url = new URL(window.location.origin + "/openMarket");
     // url.searchParams.append("commentaryId", id);
     window.open(url.href, "_blank");
@@ -670,12 +670,12 @@ const Index = () => {
     window.open(url.href, "_blank");
   };
   const handleTraderClick = (details) => {
-      const url = new URL(window.location.origin + "/dataproviderMarkets");
-      sessionStorage.setItem('dataproviderEventId', "" + details?.eventRefId);
-      sessionStorage.setItem('dataproviderEventDetails', "" + JSON.stringify(details));
-      window.open(url.href, '_blank');
-      sessionStorage.removeItem("dataproviderEventId");
-      sessionStorage.removeItem("dataproviderEventDetails");
+    const url = new URL(window.location.origin + "/dataproviderMarkets");
+    sessionStorage.setItem('dataproviderEventId', "" + details?.eventRefId);
+    sessionStorage.setItem('dataproviderEventDetails', "" + JSON.stringify(details));
+    window.open(url.href, '_blank');
+    sessionStorage.removeItem("dataproviderEventId");
+    sessionStorage.removeItem("dataproviderEventDetails");
   };
 
   const handleClone = async () => {
@@ -951,7 +951,7 @@ const Index = () => {
         "scoringType": selectedTableElements?.scoringType?.value ? selectedTableElements?.scoringType?.value : null,
         // "competitionId": selectedTableElements?.competition?.value,
         "commentaryId": selectedCompititon?.commentaryId,
-        "tpId" : selectedTableElements?.scoringType?.value == 2 ? selectedTableElements?.tpId : null
+        "tpId": selectedTableElements?.scoringType?.value == 2 ? selectedTableElements?.tpId : null
       })
       .then((response) => {
         fetchData();
@@ -1231,8 +1231,8 @@ const Index = () => {
   };
   const handleReset = (value) => {
     const newDateRange = {
-    startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
-    endDate: `${new Date(Date.now() + 24 * 60 * 60 * 1000)
+      startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
+      endDate: `${new Date(Date.now() + 24 * 60 * 60 * 1000)
         .toISOString()
         .split("T")[0]}T23:59:00`,
     };
@@ -1277,7 +1277,7 @@ const Index = () => {
       setIsLoading(false);
     }
   };
-  const handlePredictMarketPassword = async ( password) => {
+  const handlePredictMarketPassword = async (password) => {
     setIsLoading(true);
     try {
       const response = await axiosInstance.post(`/admin/commentary/validatePass`, {
@@ -1316,16 +1316,16 @@ const Index = () => {
   };
   const handlePredictMarketPasswordModal = async (password) => {
     // if (selectedCommentaryId) {
-      const response  = await handlePredictMarketPassword(password);
+    const response = await handlePredictMarketPassword(password);
 
-      if(response.success === true){
-        updatePredictMarket(
-          "isPredictMarket",
-          predictRecord,
-          predictRecord?.isPredictMarket
-        );
-        setPredictPasswordModelVisible(false)
-      }
+    if (response.success === true) {
+      updatePredictMarket(
+        "isPredictMarket",
+        predictRecord,
+        predictRecord?.isPredictMarket
+      );
+      setPredictPasswordModelVisible(false)
+    }
     //   setLoadSingleDataModelVisible(false);
     //   setSelectedCommentaryId(null);
     // }
@@ -1333,9 +1333,9 @@ const Index = () => {
 
   const openScorecardIframe = (record) => {
     if (record && loadInitData) {
-    const baseUrl = loadInitData.find(
-      (item) => item.key === loadInit.SCORECARD_FRAME_URL
-    )?.value;
+      const baseUrl = loadInitData.find(
+        (item) => item.key === loadInit.SCORECARD_FRAME_URL
+      )?.value;
       if (baseUrl) {
         scorecardFrameUrl = baseUrl.replace(
           "{commentaryId}",
@@ -1499,11 +1499,11 @@ const Index = () => {
         <div className="d-flex align-items-center gap-1">
           <span
             style={{ cursor: record.isPredictMarket && "pointer" }}
-            // onClick={() => {
-            //   if (record.isPredictMarket) {
-            //     handleOddsViewClick(record.commentaryId);
-            //   }
-            // }}
+          // onClick={() => {
+          //   if (record.isPredictMarket) {
+          //     handleOddsViewClick(record.commentaryId);
+          //   }
+          // }}
           >
             {text}
           </span>
@@ -1702,7 +1702,7 @@ const Index = () => {
             color={"#e8e8ea"}
             overlayInnerStyle={{ color: "#000" }}
           >
-          <a className="bx bx-edit-alt"></a>
+            <a className="bx bx-edit-alt"></a>
           </Tooltip>
         </span>
       ),
@@ -1815,7 +1815,7 @@ const Index = () => {
                 if (record?.isPredictMarket) {
                   setPredictPasswordModelVisible(true);
                   setPredictRecord(record)
-                }else{
+                } else {
                   updatePredictMarket(
                     "isPredictMarket",
                     record,
@@ -1825,9 +1825,8 @@ const Index = () => {
               }}
             >
               <i
-                className={`bx ${
-                  record?.isPredictMarket ? "bx-check" : "bx-block"
-                }`}
+                className={`bx ${record?.isPredictMarket ? "bx-check" : "bx-block"
+                  }`}
               ></i>
             </Button>
           </Tooltip>
@@ -2444,9 +2443,8 @@ const Index = () => {
             }}
           >
             <i
-              className={`bx ${
-                record?.isCountInPoint ? "bx-check" : "bx-block"
-              }`}
+              className={`bx ${record?.isCountInPoint ? "bx-check" : "bx-block"
+                }`}
             ></i>
           </Button>
         </Tooltip>
@@ -2475,9 +2473,8 @@ const Index = () => {
             }}
           >
             <i
-              className={`bx ${
-                record.isTeamPredictionOn ? "bx-check" : "bx-block"
-              }`}
+              className={`bx ${record.isTeamPredictionOn ? "bx-check" : "bx-block"
+                }`}
             ></i>
           </Button>
         </Tooltip>
@@ -2556,40 +2553,40 @@ const Index = () => {
       sort: true,
       render: (text, record) => (
         <div className="">
-        <div className="d-flex align-items-center gap-2">
-          <span
-            style={{ cursor: record.isPredictMarket && "pointer" }}
+          <div className="d-flex align-items-center gap-2">
+            <span
+              style={{ cursor: record.isPredictMarket && "pointer" }}
             // onClick={() => {
             //   if (record.isPredictMarket) {
             //     handleOddsViewClick(record.commentaryId);
             //   }
             // }}
-          >
-            {text == 1 ? "Manual" : text == 2 ? "Entity" : ""}
-          </span>
-          <span
-            style={{ cursor: "pointer" }}
-            onClick={() => {
-              setScoringModelVisible(true);
-              setSelectedCompititon(record);
-            }}
-          >
-            {" "}
-            <Tooltip
-              title="Edit Scoring type"
-              color={"#e8e8ea"}
-              overlayInnerStyle={{ color: "#000" }}
             >
-              {<a className="bx bx-edit-alt"></a>}
-            </Tooltip>
-          </span>
-        </div>
-        <div>
-          {record?.tpId}
-        </div>
+              {text == 1 ? "Manual" : text == 2 ? "Entity" : ""}
+            </span>
+            <span
+              style={{ cursor: "pointer" }}
+              onClick={() => {
+                setScoringModelVisible(true);
+                setSelectedCompititon(record);
+              }}
+            >
+              {" "}
+              <Tooltip
+                title="Edit Scoring type"
+                color={"#e8e8ea"}
+                overlayInnerStyle={{ color: "#000" }}
+              >
+                {<a className="bx bx-edit-alt"></a>}
+              </Tooltip>
+            </span>
+          </div>
+          <div>
+            {record?.tpId}
+          </div>
         </div>
       ),
-      style: { width: "10%"},
+      style: { width: "10%" },
     },
   ];
 
@@ -3046,7 +3043,7 @@ const Index = () => {
               predictMarketPasswordModalVisable={predictPasswordModelVisible}
               setPredictMarketPasswordModalVisable={setPredictPasswordModelVisible}
               handleLoadData={handlePredictMarketPasswordModal}
-              // moduleName={"Single Commentary"}
+            // moduleName={"Single Commentary"}
             />
           )}
           {isGenerateModalOpen && (
@@ -3059,11 +3056,11 @@ const Index = () => {
           )}
           {updateDayModelVisible && (
             <UpdateDayModel
-            updateDayModelVisible={updateDayModelVisible}
-            setUpdateDayModelVisible={setUpdateDayModelVisible}
-            handleUpdateDay={handleUpdateDay}
-            selectedCommentaryDay={selectedCommentaryDay}
-            setSelectedCommentaryDay={setSelectedCommentaryDay}
+              updateDayModelVisible={updateDayModelVisible}
+              setUpdateDayModelVisible={setUpdateDayModelVisible}
+              handleUpdateDay={handleUpdateDay}
+              selectedCommentaryDay={selectedCommentaryDay}
+              setSelectedCommentaryDay={setSelectedCommentaryDay}
             />
           )}
           {/* Scorecard Modal */}

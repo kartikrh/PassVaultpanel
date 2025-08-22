@@ -54,13 +54,13 @@ export const OpenMarket = () => {
     const [input, setInput] = useState("");
     const [ballStatus, setBallStatus] = useState(null);
     const [teamsData, setTeamsData] = useState([]);
-    const commentaryId = +localStorage.getItem('openMarketCommentaryId') || "0";
+    const commentaryId = +sessionStorage.getItem('openMarketCommentaryId') || "0";
     const intervalIdRef = useRef(null);
     const socketRef = useRef(null);
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const marketTypeObj = useSelector((state) => state.marketType?.marketTypeList);
-    
+
     // const socket = createSocket();
     const statusListToInclude = [1, 2, 3]
     const lineRatioForMarketCategoryId = 23
@@ -138,7 +138,7 @@ export const OpenMarket = () => {
 
         let SR = player.batRun / player.batBall;
         console.log("Strike Rate (SR) = player.batRun / player.batBall =", SR);
-        
+
         SR = SR > 1.1 ? 1.1 : SR < 0.9 ? 0.9 : SR
         console.log("Strike Rate (SR) after =", SR);
 
@@ -161,8 +161,8 @@ export const OpenMarket = () => {
         console.log("Re-calculated Predefined Value = (newPlayerLine - player.batRun) / (decay * SR^0.15) =", predefinedValue);
         return predefinedValue;
     }
-    function calculateFOWPredictedValue( partnershipRuns, oversCompleted, maxOvers, newPlayerLine, isSocket) {
-        console.log("INPUTS:",partnershipRuns, oversCompleted, maxOvers, newPlayerLine, isSocket);
+    function calculateFOWPredictedValue(partnershipRuns, oversCompleted, maxOvers, newPlayerLine, isSocket) {
+        console.log("INPUTS:", partnershipRuns, oversCompleted, maxOvers, newPlayerLine, isSocket);
 
         const oversRatio = oversCompleted / maxOvers;
         console.log("Overs Ratio = oversCompleted / maxOvers =", oversRatio);
@@ -624,7 +624,7 @@ export const OpenMarket = () => {
     };
 
     const handleValueChange = (record, key, value) => {
-      // console.log("record", record, key, value)
+        // console.log("record", record, key, value)
         setHasUnsavedChanges(true);
         setData(prevData => {
             let updatedData = [...prevData];
@@ -776,7 +776,7 @@ export const OpenMarket = () => {
                         const lineDifference = parseFloat(value) - (originalData.line || 0);
                         if (record.marketTypeId === 2 && record.marketTypeCategoryId == 12 && (typeof newPredifinedValue === "number" && Number.isFinite(newPredifinedValue))) {
                             updatedMarket.predefinedValue = newPredifinedValue.toFixed(2)
-                        } else if(record.marketTypeCategoryId == 31 && newCalculation) {
+                        } else if (record.marketTypeCategoryId == 31 && newCalculation) {
                             if (!isEmpty(socketUpdateBallData)) {
                                 const overStr = socketUpdateBallData?.over?.toString();
                                 let overs = "0", balls = "0";
@@ -1170,9 +1170,9 @@ export const OpenMarket = () => {
                 !(typeof +rawValue === "number" && Number.isFinite(+rawValue))
             ) {
                 dispatch(updateToastData({
-                data: "PredefinedValue is not correct",
-                title: "PredefinedValue",
-                type: ERROR,
+                    data: "PredefinedValue is not correct",
+                    title: "PredefinedValue",
+                    type: ERROR,
                 }));
                 return;
             }
@@ -1266,7 +1266,7 @@ export const OpenMarket = () => {
             return null
         }).filter(x => x)
 
-        const type23Markets = updatedDatalist?.filter(item => item?.marketTypeCategoryId === 23)?.sort((a,b)=>a?.over - b?.over);
+        const type23Markets = updatedDatalist?.filter(item => item?.marketTypeCategoryId === 23)?.sort((a, b) => a?.over - b?.over);
         const otherMarkets = updatedDatalist?.filter(item => item?.marketTypeCategoryId !== 23);
 
         // updatedDatalist = _.orderBy(updatedDatalist, ['marketName'], ['asc']);
@@ -1404,7 +1404,7 @@ export const OpenMarket = () => {
                 }));
 
                 // Sort the data
-                const type23Markets = finalDataToSet?.filter(item => item?.marketTypeCategoryId === 23)?.sort((a,b)=>a?.over - b?.over);
+                const type23Markets = finalDataToSet?.filter(item => item?.marketTypeCategoryId === 23)?.sort((a, b) => a?.over - b?.over);
                 const otherMarkets = finalDataToSet?.filter(item => item?.marketTypeCategoryId !== 23);
                 const sortedOtherMarkets = _.orderBy(otherMarkets, [
                     item => {
@@ -2036,7 +2036,7 @@ export const OpenMarket = () => {
                 ...newOriginalData
             }));
 
-            const type23Markets = finalData?.filter(item => item?.marketTypeCategoryId === 23)?.sort((a,b)=>a?.over - b?.over);
+            const type23Markets = finalData?.filter(item => item?.marketTypeCategoryId === 23)?.sort((a, b) => a?.over - b?.over);
             const otherMarkets = finalData?.filter(item => item?.marketTypeCategoryId !== 23);
             const sortedOtherMarkets = _.orderBy(otherMarkets, [
                 item => {
@@ -2357,18 +2357,18 @@ export const OpenMarket = () => {
                                                     }}
                                                     checked={playersMarketShow}
                                                 />
-                                                    <Switch
-                                                        width={80}
-                                                        uncheckedIcon={<OffsymbolNewCalculation />}
-                                                        checkedIcon={<OnSymbolNewCalculation />}
-                                                        className="mx-2"
-                                                        onColor="#02a499"
-                                                        // onChange={() => {
-                                                        //     setNewCalculation(!newCalculation);
-                                                        // }}
-                                                        disabled
-                                                        checked={newCalculation}
-                                                    />
+                                                <Switch
+                                                    width={80}
+                                                    uncheckedIcon={<OffsymbolNewCalculation />}
+                                                    checkedIcon={<OnSymbolNewCalculation />}
+                                                    className="mx-2"
+                                                    onColor="#02a499"
+                                                    // onChange={() => {
+                                                    //     setNewCalculation(!newCalculation);
+                                                    // }}
+                                                    disabled
+                                                    checked={newCalculation}
+                                                />
                                             </Col>
                                         </>
                                     )}
