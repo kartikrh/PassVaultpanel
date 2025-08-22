@@ -451,8 +451,8 @@ const Index = () => {
   };
   const handleDetailsClick = (id) => {
     // navigate("/commentaryMaster", { state: { commentaryId: id } });
-    localStorage.setItem("commentaryMasterId", "" + id);
-    localStorage.setItem("commentary", "commentary");
+    sessionStorage.setItem("commentaryMasterId", "" + id);
+    sessionStorage.setItem("commentary", "commentary");
     const url = new URL(window.location.origin + "/commentaryMaster");
     window.open(url.href, "_blank");
   };

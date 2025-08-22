@@ -1,52 +1,148 @@
-import { Button, Card, CardBody, CardHeader, Col, Row } from "reactstrap"
+import { Accordion, AccordionBody, AccordionHeader, AccordionItem, Button, Card, CardBody, CardHeader, Col, Row, Table } from "reactstrap"
 import { FieldRenderer } from "../../../components/Common/Reusables/FieldRenderer"
 import { PARTNERSHIP_FEATURE_FIELD } from "../../../constants/FieldConst/CommentaryConst"
+import { useState } from "react";
+import { SLFieldRenderer } from "../../../components/Common/Reusables/SLFieldRenderer";
+import { SELECT, SWITCH } from "../../../components/Common/Const";
 
-export const PartnershipFeature = ({ partnershipList, handleValueChange, updatedData, deletedList, handleDeleteChange }) => {
-    const onValueChange = (partnershipInfo, key, value) => {
+export const PartnershipFeature = ({ partnershipList, handleValueChange, updatedData, deletedList, handleDeleteChange, selectedItems, setSelectedItems, battingPlayers, ballList }) => {
+    const [open, setOpen] = useState("");
+        
+    const toggle = (id) => {
+        if (open === id) {
+            setOpen(""); // collapse
+        } else {
+            setOpen(id); // expand
+        }
+    };
+    const onValueChange = (partnershipInfo, key, value, label) => {
         const dataToSend = updatedData
         const updatedPartnershipData = updatedData[partnershipInfo.commentaryPartnershipId] || partnershipInfo
         updatedPartnershipData[key] = value
+        if (key === "batter1Id") {
+            updatedPartnershipData["batter1Name"] = label;
+        }
+        if (key === "batter2Id") {
+            updatedPartnershipData["batter2Name"] = label;
+        }
         dataToSend[partnershipInfo.commentaryPartnershipId] = updatedPartnershipData
         handleValueChange(dataToSend)
     }
+    const PARTNERSHIP_FIELD = PARTNERSHIP_FEATURE_FIELD(battingPlayers, ballList);
 
-    return <Card>
-        <CardHeader className="feature-card-header">
-            Partnerships
-            <div className="section-info">[Runs - Ball - 4s - 6s - Wide - No-Ball - Extras]</div>
-        </CardHeader>
-        <CardBody>
-            <Row>
-                {partnershipList.length === 0 && <div className="text-center">No partnership data to show</div>}
-                {partnershipList?.map((partnershipInfo, index) => {
+    return <Accordion open={open} toggle={toggle}>
+        <AccordionItem>
+            <AccordionHeader targetId="partnership-accordion" className="accordion-header-custom">
+                Partnerships
+                {/* <div className="section-info">[Runs - Ball - 4s - 6s - Wide - No-Ball - Extras]</div> */}
+            </AccordionHeader>
+            <AccordionBody accordionId="partnership-accordion" className="accordion-body-custom">
+                <Table className="p-0 mb-0" hover responsive>
+                    <thead>
+                        <tr>
+                            <th></th>
+                            {PARTNERSHIP_FIELD.map((field, idx) => (
+                                <th key={idx}>{field.placeholder || field.name}</th>
+                            ))}
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {partnershipList.length === 0 && <tr><td colSpan={PARTNERSHIP_FIELD.length + 2} className="text-center">No partnership data to show</td></tr>}
+                        {partnershipList?.sort((a,b)=>b?.order - a?.order)?.map((partnershipInfo, index) => {
+                            const currentValues = updatedData[partnershipInfo.commentaryPartnershipId] || partnershipInfo;
+                            return (
+                            <tr key={`${partnershipInfo.commentaryPartnershipId}-${index}`}>
+                                <td>
+                                    <input
+                                        type="checkbox"
+                                        checked={!!selectedItems.partnerships[partnershipInfo.commentaryPartnershipId]}
+                                        onChange={(e) => {
+                                        const updated = { ...selectedItems };
+                                        if (e.target.checked) {
+                                            updated.partnerships[partnershipInfo.commentaryPartnershipId] = partnershipInfo;
+                                        } else {
+                                            delete updated.partnerships[partnershipInfo.commentaryPartnershipId];
+                                        }
+                                        setSelectedItems(updated);
+                                        }}
+                                    />
+                                </td>
+                                {PARTNERSHIP_FIELD.map((field, idx) => {
+                                    const fieldValue = currentValues[field.name];
+                                    let displayValue = fieldValue;
 
-                    const renderPartnership = <Row>
-                        <hr />
-                        <Col xs={12} md={4} lg={4}>
-                            <div className="header-section">{`${partnershipInfo.batter1Name} and ${partnershipInfo.batter2Name} : `}</div>
-                        </Col>
-                        <Col xs={12} md={8} lg={8}>
-                            <Row>
-                                <FieldRenderer
-                                    key={index}
-                                    index={index}
-                                    fields={PARTNERSHIP_FEATURE_FIELD}
-                                    value={updatedData[partnershipInfo.commentaryPartnershipId] || partnershipInfo}
-                                    onChange={(field, value) => onValueChange(partnershipInfo, field.name, value)}
-                                />
-                                <Col xs={4} md={1} lg={2}>
+                                    if (field.type === SELECT) {
+                                        const option = field.options?.find(opt => opt.value == fieldValue);
+                                        displayValue = option ? option.label : "-";
+                                    }
+
+                                    if (field.type === SWITCH) {
+                                        displayValue = fieldValue === true ? "True" : "False";
+                                    }
+                                    return (
+                                    <td key={idx}>
+                                        {selectedItems.partnerships[partnershipInfo.commentaryPartnershipId] ? (
+                                            <SLFieldRenderer
+                                                field={field}
+                                                value={fieldValue ?? ""}
+                                                onChange={(field, value, label) => onValueChange(partnershipInfo, field.name, value, label)}
+                                            />
+                                        ) : (
+                                            displayValue || 0
+                                        )}
+                                    </td>
+                                )})}
+                                <td>
                                     <Button color="danger" className={"delete-item-button"} onClick={() => handleDeleteChange(partnershipInfo.commentaryPartnershipId)}>
-                                        <i class="bi bi-trash"></i>
+                                        <i className="bi bi-trash"></i>
                                     </Button>
-                                </Col>
-                            </Row>
-                        </Col>
-                    </Row>
-                    if (deletedList.includes(partnershipInfo.commentaryPartnershipId)) return <></>
-                    else return renderPartnership
-                })}
-            </Row>
-        </CardBody>
-    </Card>
+                                </td>
+                            </tr>
+                        )})}
+                    </tbody>
+                </Table>
+                {/* <Row>
+                    {partnershipList.length === 0 && <div className="text-center">No partnership data to show</div>}
+                    {partnershipList?.sort((a,b)=>b?.order - a?.order)?.map((partnershipInfo, index) => {
+                        const renderPartnership = <Row key={`${partnershipInfo.commentaryPartnershipId}-${index}`}>
+                            <Col xs={1} md={1} lg={1}>
+                                <input
+                                    type="checkbox"
+                                    checked={!!selectedItems.partnerships[partnershipInfo.commentaryPartnershipId]}
+                                    onChange={(e) => {
+                                    const updated = { ...selectedItems };
+                                    if (e.target.checked) {
+                                        updated.partnerships[partnershipInfo.commentaryPartnershipId] = partnershipInfo;
+                                    } else {
+                                        delete updated.partnerships[partnershipInfo.commentaryPartnershipId];
+                                    }
+                                    setSelectedItems(updated);
+                                    }}
+                                />
+                            </Col>
+                            <Col xs={11} md={11} lg={11}>
+                                <Row>
+                                    <FieldRenderer
+                                        // key={`${partnershipInfo.commentaryPartnershipId}-${index}`}
+                                        index={`${partnershipInfo.commentaryPartnershipId}-${index}`}
+                                        fields={PARTNERSHIP_FIELD}
+                                        value={updatedData[partnershipInfo.commentaryPartnershipId] || partnershipInfo}
+                                        onChange={(field, value) => onValueChange(partnershipInfo, field.name, value)}
+                                    />
+                                    <Col xs={4} md={1} lg={2}>
+                                        <Button color="danger" className={"delete-item-button"} onClick={() => handleDeleteChange(partnershipInfo.commentaryPartnershipId)}>
+                                            <i className="bi bi-trash"></i>
+                                        </Button>
+                                    </Col>
+                                </Row>
+                            </Col>
+                        </Row>
+                        if (deletedList.includes(partnershipInfo.commentaryPartnershipId)) return <></>
+                        else return renderPartnership
+                    })}
+                </Row> */}
+            </AccordionBody>
+        </AccordionItem>
+    </Accordion>
 }
