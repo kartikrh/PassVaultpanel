@@ -26,7 +26,7 @@ const TournamentTeamPoints = () => {
   const [tournamentData, setTournamentData] = useState([]);
   const [teamList, setTeamList] = useState([]);
   const [selectedTeamId, setSelectedTeamId] = useState(null);
-  const [groupName, setGroupName] = useState('');
+  const [groupDetails, setGroupDetails] = useState({ id : 1, name: ""});
   const [playersModelVisible, setPlayersModelVisible] = useState(false);
   const [deleteTeamModelVisable, setDeleteTeamModelVisable] = useState(false);
   const [deleteTeamRecord, setDeleteTeamRecord] = useState({});
@@ -125,6 +125,16 @@ const TournamentTeamPoints = () => {
   };
 
   const handleSave = async () => {
+    if (!groupDetails?.id || !selectedTeamId) {
+      dispatch(
+        updateToastData({
+          data: "Group Id and Team are required",
+          title: "Validation Error",
+          type: ERROR,
+        })
+      );
+      return;
+    }
     try {
       const response = await axiosInstance.post(
         "/admin/tournamentTeamPoints/save",
@@ -133,7 +143,8 @@ const TournamentTeamPoints = () => {
           teamId: selectedTeamId,
           competitionId: competitionId,
           isActive: true,
-          groupName: groupName
+          groupId: groupDetails?.id,
+          groupName: groupDetails?.name,
         }
       );
       fetchTournament(competitionId);
@@ -568,16 +579,6 @@ const TournamentTeamPoints = () => {
     label: team.teamName,
   }));
 
-  const grouped = tournamentData.reduce((acc, item) => {
-    const group = item.groupName || "Unknown"; // handle null case
-    if (!acc[group]) {
-      acc[group] = [];
-    }
-    acc[group].push(item);
-    return acc;
-  }, {});
-
-
   return (
     <React.Fragment>
       <div className="page-content">
@@ -606,18 +607,30 @@ const TournamentTeamPoints = () => {
                   </Col>
                 </Row>
                 <Row className="mb-3">
-                  <Col md={3}>
+                  <Col md={1}>
+                    <Input
+                      className="form-control"
+                      type="number"
+                      id={groupDetails?.id}
+                      name={groupDetails?.id}
+                      value={groupDetails?.id}
+                      onChange={(e) => setGroupDetails({ ...groupDetails, id:e.target.value})}
+                      placeholder="Group Id"
+                      required
+                    />
+                  </Col>
+                  <Col md={1}>
                     <Input
                       className="form-control"
                       type="text"
-                      id={groupName}
-                      name={groupName}
-                      value={groupName}
-                      onChange={(e) => setGroupName(e.target.value)}
+                      id={groupDetails?.name}
+                      name={groupDetails?.name}
+                      value={groupDetails?.name}
+                      onChange={(e) => setGroupDetails({ ...groupDetails, name:e.target.value})}
                       placeholder="Group Name"
                     />
                   </Col>
-                  <Col md={3}>
+                  <Col md={2}>
                     <Select
                       value={teamOptions.find(
                         (option) => option.value === selectedTeamId
@@ -690,7 +703,7 @@ const TournamentTeamPoints = () => {
                 </Table> */}
                 {Object.entries(
                   tournamentData.reduce((acc, item) => {
-                    const group = item.groupName || "Unknown";
+                    const group = item.groupId || "";
                     if (!acc[group]) {
                       acc[group] = [];
                     }
@@ -700,19 +713,20 @@ const TournamentTeamPoints = () => {
                 )
                   // sort groups alphabetically
                   .sort(([a], [b]) => a.localeCompare(b))
-                  .map(([groupName, groupItems]) => (
-                    <div key={groupName} className="mb-4">
-                      {/* Group Header */}
-                      <h5 className="mb-2">{groupName}</h5>
-
+                  .map(([groupId, groupItems]) => (
+                    <div key={groupId} className="mb-4">
                       <Table responsive>
                         <thead>
                           <tr>
-                            {columns.map((column, index) => (
-                              <th className="px-2 py-2" key={index} style={column.style}>
-                                {column.title}
-                              </th>
-                            ))}
+                            {columns.map((column, index) => {
+                              const groupRecord = groupItems?.find(item => item?.groupName);
+                              return (
+                                <th className="px-2 py-2" key={index} style={column.style}>
+                                  {column?.dataIndex === "teamId"
+                                    ? `${groupRecord?.groupName || ""} Team ${groupId && `[${groupId}]`}`
+                                    : column.title}
+                                </th>
+                            )})}
                           </tr>
                         </thead>
 
