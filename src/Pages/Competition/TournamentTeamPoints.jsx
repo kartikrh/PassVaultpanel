@@ -750,7 +750,7 @@ const TournamentTeamPoints = () => {
                         </thead>
 
                         <tbody>
-                          {groupItems.map((item, index) => (
+                          {groupItems.sort((a,b)=>a.id - b.id).map((item, index) => (
                             <tr key={item.id || index}>
                               {columns.map((column, colIndex) => (
                                 <td className="p-2" key={colIndex} style={column.style}>
