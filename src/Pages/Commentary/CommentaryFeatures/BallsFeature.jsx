@@ -81,10 +81,11 @@ export const BallFeature = ({ ballList, handleValueChange, updatedData, deletedL
                         {BALL_FIELDS.map((field, idx) => (
                             <th key={idx}>{field.placeholder || field.name}</th>
                         ))}
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                    {ballList.length === 0 && <tr><td colSpan={BALL_FIELDS.length + 2} className="text-center">No balls data to show</td></tr>}
+                    {ballList.length === 0 && <tr><td colSpan={BALL_FIELDS.length + 3} className="text-center">No balls data to show</td></tr>}
                     {[...ballList, ...(updatedData[0] ? [updatedData[0]] : [])]?.map((ballInfo, index) => {
                         const currentValues = updatedData[ballInfo.commentaryBallByBallId] || ballInfo;
                         return (
@@ -132,6 +133,11 @@ export const BallFeature = ({ ballList, handleValueChange, updatedData, deletedL
                                     )}
                                 </td>
                             )})}
+                            <td>
+                                <Button color="danger" className={"delete-item-button"} onClick={() => handleDeleteChange(ballInfo.commentaryBallByBallId)}>
+                                    <i className="bi bi-trash"></i>
+                                </Button>
+                            </td>
                         </tr>
                     )})}
                 </tbody>

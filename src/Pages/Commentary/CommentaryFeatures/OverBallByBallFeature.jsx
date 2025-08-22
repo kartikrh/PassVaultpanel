@@ -46,10 +46,11 @@ export const OverBallByBallFeature = ({ overList, ballList, handleValueChange, u
                             {OVER_FIELD.map((field, idx) => (
                                 <th key={idx}>{field.placeholder || field.name}</th>
                             ))}
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
-                        {overList.length === 0 && <tr><td colSpan={OVER_FIELD.length + 2} className="text-center">No over data to show</td></tr>}
+                        {overList.length === 0 && <tr><td colSpan={OVER_FIELD.length + 3} className="text-center">No over data to show</td></tr>}
                         {overList?.map((overInfo, index) => {
                             if (deletedList.includes(overInfo.overId)) return null;
                             const balls = getBallsForOver(overInfo.overId);
@@ -110,9 +111,14 @@ export const OverBallByBallFeature = ({ overList, ballList, handleValueChange, u
                                             )}
                                         </td>
                                     )})}
+                                    <td>
+                                        <Button color="danger" className={"delete-item-button"} onClick={() => handleDeleteChange(overInfo.overId)}>
+                                            <i className="bi bi-trash"></i>
+                                        </Button>
+                                    </td>
                                 </tr>
                                 {isExpanded ? <tr>
-                                    <td colSpan={OVER_FIELD.length + 2} className="px-2 py-0">
+                                    <td colSpan={OVER_FIELD.length + 3} className="px-2 py-0">
                                         <BallFeature
                                             ballList={balls.filter((item)=>item?.ballType !== 0) || []}
                                             updatedData={ballByBallData || {}}

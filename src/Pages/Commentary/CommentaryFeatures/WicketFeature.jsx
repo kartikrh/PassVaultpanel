@@ -51,10 +51,11 @@ export const WicketFeature = ({ wicketList, handleValueChange, updatedData, dele
                             {WICKET_FIELD.map((field, idx) => (
                                 <th key={idx}>{field.placeholder || field.name}</th>
                             ))}
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
-                        {wicketList.length === 0 && <tr><td colSpan={WICKET_FIELD.length + 1} className="text-center">No wicket data to show</td></tr>}
+                        {wicketList.length === 0 && <tr><td colSpan={WICKET_FIELD.length + 2} className="text-center">No wicket data to show</td></tr>}
                         {wicketList?.sort((a,b)=> b?.commentaryWicketId - a?.commentaryWicketId)?.map((wicketInfo, index) => {
                             const currentValues = updatedData[wicketInfo.commentaryWicketId] || wicketInfo;
                             return (
@@ -99,6 +100,11 @@ export const WicketFeature = ({ wicketList, handleValueChange, updatedData, dele
                                         )}
                                     </td>
                                 )})}
+                                <td>
+                                    <Button color="danger" className={"delete-item-button"} onClick={() => handleDeleteChange(wicketInfo.commentaryWicketId)}>
+                                        <i className="bi bi-trash"></i>
+                                    </Button>
+                                </td>
                             </tr>
                         )})}
                     </tbody>
