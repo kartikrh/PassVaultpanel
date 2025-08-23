@@ -955,7 +955,7 @@ const Index = () => {
     importExport: false,
     teamsList: false,
     isDateRange: true,
-    isCloseAllMarket: true,
+    // isCloseAllMarket: true,
     isCloseMarket: true,
     marketTypeSelect: true,
     categorySelect: true,
