@@ -8,6 +8,7 @@ import { ERROR } from '../../components/Common/Const';
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import "./CommentaryCss.css";
 import { isEmpty } from 'lodash';
+import { Avatar } from "antd";
 import ball from '../../../src/assets/images/cricket-icons/cricket-ball.png';
 import bat from '../../../src/assets/images/cricket-icons/cricket-bat.png';
 import allrounder from '../../../src/assets/images/cricket-icons/cricket.png';
@@ -58,7 +59,7 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
             const commentaryPlayerId = commentaryTeamPlayers[playerIndex].commentaryPlayerId;
             setIsLoading(true);
             await axiosInstance
-                .post("/admin/commentary/deleteTeamPlayer", {commentaryId, commentaryPlayerId })
+                .post("/admin/commentary/deleteTeamPlayer", { commentaryId, commentaryPlayerId })
                 .then((response) => {
                     // commentaryId, teamId: teamDetails?.teamId, playerId: playerId
                     setIsLoading(false);
@@ -279,12 +280,13 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                     <div class="col-12 ps-4">
                         <div className="row">
                             <div className="col-1"></div>
+                            <div className="col-1"></div>
                             <div className="col-2">Player</div>
                             <div className="col-2">Avg</div>
                             {/* <div className="col-1">SR</div> */}
                             <div className="col-2">BDRY</div>
                             <div className="col-2">PBF</div>
-                            <div className="col-2">Delete</div>
+                            <div className="col-1">Delete</div>
                             <div className="col-1">XI</div>
                         </div>
                     </div>
@@ -294,6 +296,17 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                         <div class="col-12">
                             <div className="row">
                                 <div className="col-1">{imageRender(player?.playerType)}</div>
+                                <div className="col-1">{player?.jerseyPlayerImage ? (
+                                    <img
+                                        src={player.jerseyPlayerImage}
+                                        alt={player.name || "Player"}
+                                        className="avatar-xs"
+                                    />
+                                ) : (
+                                    <Avatar src="#" alt="ET">
+                                        Image
+                                    </Avatar>
+                                )}</div>
                                 <div className="col-2 playerNameScroll">{player?.playerName}</div>
                                 <div className="col-2">
                                     <input
@@ -327,7 +340,7 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                                 <div className="col-2">
                                     <input
                                         type="number"
-                                        style={{ width: "50px"}}
+                                        style={{ width: "50px" }}
                                         value={
                                             editedPlayers[player.commentaryPlayerId]?.boundary == null ? +player.boundary : editedPlayers[player.commentaryPlayerId]?.boundary !== "" ? +editedPlayers[player.commentaryPlayerId]?.boundary : ""
                                         }
@@ -358,7 +371,7 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                                         }
                                     />
                                 </div>
-                                <div class="col-2">
+                                <div class="col-1">
                                     <Button
                                         color="soft-danger"
                                         onClick={(e) => handleDeletePlayer(player.playerId)}
@@ -386,7 +399,7 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                                         />
                                     </div>
                                 </div>
-                               
+
                             </div>
                         </div>
                     </div>)
