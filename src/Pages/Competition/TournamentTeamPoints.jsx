@@ -327,6 +327,25 @@ const TournamentTeamPoints = () => {
       style: { width: "20%" },
     },
     {
+      title: "Position",
+      dataIndex: "position",
+      render: (text, record) => (
+        <>
+          <Input
+            className="form-control small-text-fields"
+            type="text"
+            value={text != null ? text : ""}
+            onChange={(e) =>
+              handleValueChange(record.id, "position", e.target.value)
+            }
+          />
+          <span className="text-danger">{record?.error?.position}</span>
+        </>
+      ),
+      key: "position",
+      style: { width: "10%" },
+    },
+    {
       title: "Matches",
       dataIndex: "totalMatches",
       render: (text, record) => (
@@ -457,25 +476,6 @@ const TournamentTeamPoints = () => {
         </>
       ),
       key: "netRunRate",
-      style: { width: "10%" },
-    },
-    {
-      title: "Position",
-      dataIndex: "position",
-      render: (text, record) => (
-        <>
-          <Input
-            className="form-control small-text-fields"
-            type="text"
-            value={text != null ? text : ""}
-            onChange={(e) =>
-              handleValueChange(record.id, "position", e.target.value)
-            }
-          />
-          <span className="text-danger">{record?.error?.position}</span>
-        </>
-      ),
-      key: "position",
       style: { width: "10%" },
     },
     {
