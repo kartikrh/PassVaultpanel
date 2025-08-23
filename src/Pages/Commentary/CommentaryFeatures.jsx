@@ -81,6 +81,15 @@ export const CommentaryFeatures = () => {
                 commentaryDataToUpdate["commentaryOvers"] = updatedOverHistory || []
                 setCommentaryData(commentaryDataToUpdate)
                 setSelectedInnings(commentaryDataToUpdate?.commentaryDetails?.currentInnings);
+                setSelectedItems({
+                    details: {},
+                    teams: {},
+                    players: {},
+                    partnerships: {},
+                    wickets: {},
+                    overs: {},
+                    balls: {}
+                });
                 setIsDataLoading(false)
             }).catch((error) => {
                 dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
@@ -92,17 +101,17 @@ export const CommentaryFeatures = () => {
         if (commentaryId !== "0") fetchData(commentaryId);
     }, [commentaryId]);
 
-    useEffect(() => {
-        if (!isLoading && isRedirect) navigate(navigateTo);
-    }, [isRedirect]);
+    // useEffect(() => {
+    //     if (!isLoading && isRedirect) navigate(navigateTo);
+    // }, [isRedirect]);
 
     const handleBackClick = () => {
         navigate(navigateTo);
     };
 
     const handleSaveClick = () => {
-        const objToSave = { commentaryId: commentaryId }
-        const deleteObjToSave = { commentaryId: commentaryId }
+        const objToSave = {}
+        const deleteObjToSave = {}
         if (!isEmpty(commentaryDetailsData)) objToSave["commentaryDetails"] = commentaryDetailsData;
         if (!isEmpty(teamsData)) objToSave["commentaryTeams"] = Object.values(teamsData)
         if (!isEmpty(playerData)) objToSave["commentaryPlayers"] = Object.values(playerData)
@@ -114,15 +123,18 @@ export const CommentaryFeatures = () => {
         if (!isEmpty(deleteWicket)) deleteObjToSave["deleteWickets"] = Object.values(deleteWicket)
         if (!isEmpty(partnershipData)) objToSave["commentaryPartnership"] = Object.values(partnershipData)
         if (!isEmpty(deletePartnership)) deleteObjToSave["deletePartnership"] = Object.values(deletePartnership)
-        if (!isEmpty(objToSave)) {
-            dispatch(saveCommentaryFeatures(objToSave))
+        if (!isEmpty(objToSave) || !isEmpty(deleteObjToSave)) {
+            if (!isEmpty(objToSave)) {
+                dispatch(saveCommentaryFeatures({ ...objToSave, commentaryId }))
+            }
+            if (!isEmpty(deleteObjToSave)) {
+                dispatch(deleteCommentaryFeatures({ ...deleteObjToSave, commentaryId }))
+            }
+            fetchData(commentaryId)
         }
-        if (!isEmpty(deleteObjToSave)) {
-            dispatch(deleteCommentaryFeatures(deleteObjToSave))
-        }
-        if (isEmpty(objToSave) && isEmpty(deleteObjToSave)) {
-            handleBackClick()
-        }
+        // if (isEmpty(objToSave) && isEmpty(deleteObjToSave)) {
+        //     handleBackClick()
+        // }
     };
 
     useEffect(() => {
