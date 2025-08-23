@@ -254,6 +254,22 @@ const Index = () => {
         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
       });
   };
+  const handleisDefaultSetResult = async (pType, record, cState) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/marketTemplate/isDefaultSetResult`, {
+        marketTemplateId: record.marketTemplateId,
+        [pType]: cState ? false : true,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+      });
+  };
   const handleIsShowInAdvanceMarket = async (pType, record, cState) => {
     setIsLoading(true);
     await axiosInstance
@@ -532,6 +548,25 @@ const Index = () => {
           }}
         >
           <i className={`bx ${record.defaultIsSendData ? "bx-check" : "bx-block"}`}></i>
+        </Button>
+      </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Default Set Result",
+      key: "isDefaultSetResult",
+      render: (text, record) => (
+      <Tooltip title={"Default Set Result"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+        <Button
+          color={`${record.isDefaultSetResult ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handleisDefaultSetResult("isDefaultSetResult", record, record.isDefaultSetResult);
+          }}
+        >
+          <i className={`bx ${record.isDefaultSetResult ? "bx-check" : "bx-block"}`}></i>
         </Button>
       </Tooltip>
       ),
