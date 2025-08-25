@@ -53,6 +53,9 @@ const TossScreen = ({ data, next, save, isPredictToggle }) => {
         rmk: `${winnerTeam?.shortName} opt to ${
           values.choseTo == 1 ? "Bat" : "Bowl"
         }`,
+        tossRmk: `${winnerTeam?.shortName} opt to ${
+          values.choseTo == 1 ? "Bat" : "Bowl"
+        }`,
         displayStatus: `${winnerTeam?.shortName} opt to ${
           values.choseTo == 1 ? "Bat" : "Bowl"
         }`,
