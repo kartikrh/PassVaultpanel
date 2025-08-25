@@ -435,6 +435,14 @@ export const MarketTemplateFileds = [
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
+    {
+        name: "isDefaultSetResult",
+        label: "Default Set Result",
+        type: SWITCH,
+        defaultValue: false,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
+    },
     // {
     //     name: "matchTypeID",
     //     label: "Match Type",
