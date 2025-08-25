@@ -769,7 +769,7 @@ export default function ImportEntity() {
             open={matchModalVisible}
             onCancel={() => setMatchModalVisible(false)}
             footer={null}
-            width={800}
+            width={850}
             closable={false}
             centered
             styles={{
