@@ -769,20 +769,23 @@ export default function ImportEntity() {
             open={matchModalVisible}
             onCancel={() => setMatchModalVisible(false)}
             footer={null}
-            width={800}
-            style={{
-              top: "3rem",
+            width={850}
+            closable={false}
+            centered
+            styles={{
+              body: {top: "3rem",
               maxHeight: 650,
               overflowY: "auto",
               overflowX: "hidden",
               marginRight: "-16px",
               marginLeft: "-16px",
-              marginTop: "-16px",
+              marginTop: "0px",
               marginBottom: "-16px",
+              scrollBehavior: 'smooth'},
             }}
-            centered
           >
-            <MatchCard matchData={matchData} />
+            <MatchCard matchData={matchData} 
+            onClose={() => setMatchModalVisible(false)} />
           </Modal>
         </Container>
       </div>
