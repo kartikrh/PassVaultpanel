@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { useLocation, useNavigate } from "react-router-dom"
 import axiosInstance from "../../Features/axios.js"
 import { updateToastData } from "../../Features/toasterSlice.js"
-import { ERROR, PERMISSION_VIEW, TAB_COMMENTARY } from "../../components/Common/Const.js"
+import { ERROR, PERMISSION_VIEW, SUCCESS, TAB_COMMENTARY } from "../../components/Common/Const.js"
 import SpinnerModel from "../../components/Model/SpinnerModel/index.js";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods.js"
 import { clearLoadingAndError, deleteCommentaryFeatures, saveCommentaryFeatures } from "../../Features/Tabs/commentarySlice.js"
@@ -90,6 +90,17 @@ export const CommentaryFeatures = () => {
                     overs: {},
                     balls: {}
                 });
+                setCommentaryDetailsData({})
+                setTeamsData({})
+                setBallByBallData({})
+                setDeleteBallByBall([])
+                setOverData({})
+                setDeleteOver([])
+                setWicketData({})
+                setDeleteWicket([])
+                setPartnershipData({})
+                setPlayerData({})
+                setDeletePartnership([])
                 setIsDataLoading(false)
             }).catch((error) => {
                 dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
@@ -109,7 +120,7 @@ export const CommentaryFeatures = () => {
         navigate(navigateTo);
     };
 
-    const handleSaveClick = () => {
+    const handleSaveClick = async () => {
         const objToSave = {}
         const deleteObjToSave = {}
         if (!isEmpty(commentaryDetailsData)) objToSave["commentaryDetails"] = commentaryDetailsData;
@@ -123,15 +134,37 @@ export const CommentaryFeatures = () => {
         if (!isEmpty(deleteWicket)) deleteObjToSave["deleteWickets"] = Object.values(deleteWicket)
         if (!isEmpty(partnershipData)) objToSave["commentaryPartnership"] = Object.values(partnershipData)
         if (!isEmpty(deletePartnership)) deleteObjToSave["deletePartnership"] = Object.values(deletePartnership)
-        if (!isEmpty(objToSave) || !isEmpty(deleteObjToSave)) {
+        try {
+            let success = false;
             if (!isEmpty(objToSave)) {
-                dispatch(saveCommentaryFeatures({ ...objToSave, commentaryId }))
+                const response = await axiosInstance.post("/admin/commentary/saveCommentaryDetails", { ...objToSave, commentaryId });
+                if (response?.result) {
+                    success = true;
+                    dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+                }
             }
             if (!isEmpty(deleteObjToSave)) {
-                dispatch(deleteCommentaryFeatures({ ...deleteObjToSave, commentaryId }))
+                const response = await axiosInstance.post("/admin/commentary/deleteCommentaryDetails", { ...deleteObjToSave, commentaryId });
+                if (response?.result) {
+                    success = true;
+                    dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+                }
             }
-            fetchData(commentaryId)
+            if (success) {
+                fetchData(commentaryId);
+            }
+        } catch (error) {
+            dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
         }
+        // if (!isEmpty(objToSave) || !isEmpty(deleteObjToSave)) {
+        //     if (!isEmpty(objToSave)) {
+        //         dispatch(saveCommentaryFeatures({ ...objToSave, commentaryId }))
+        //     }
+        //     if (!isEmpty(deleteObjToSave)) {
+        //         dispatch(deleteCommentaryFeatures({ ...deleteObjToSave, commentaryId }))
+        //     }
+        //     fetchData(commentaryId)
+        // }
         // if (isEmpty(objToSave) && isEmpty(deleteObjToSave)) {
         //     handleBackClick()
         // }
