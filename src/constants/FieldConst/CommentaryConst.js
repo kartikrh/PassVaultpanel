@@ -1103,6 +1103,14 @@ export const COMMENTARY_DETAILS_FIELDS = (teamlist = []) => [
         fieldColspan: { xs: 3, md: 2, lg: 2 },
     },
     {
+        name: "tossRmk",
+        placeholder: "Toss Rmk",
+        formName: DETAILS,
+        type: TEXT,
+        className: "no-spinners",
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
+    },
+    {
         name: "winRmk",
         placeholder: "Win Rmk",
         formName: DETAILS,
