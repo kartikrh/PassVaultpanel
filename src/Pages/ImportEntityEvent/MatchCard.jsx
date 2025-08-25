@@ -7,7 +7,7 @@ import {
 } from "@ant-design/icons";
 import moment from "moment";
 
-const MatchCard = ({ matchData }) => {
+const MatchCard = ({ matchData, onClose }) => {
   if (!matchData || !matchData.response || !matchData.response.match_info) {
     return null;
   }
@@ -15,10 +15,7 @@ const MatchCard = ({ matchData }) => {
   // Extract match_info from the nested structure
   const {
     title,
-    short_title,
-    subtitle,
-    match_number,
-    format_str,
+    match_id,
     status,
     status_str,
     status_note,
@@ -31,6 +28,8 @@ const MatchCard = ({ matchData }) => {
     result,
     toss,
     umpires,
+    weather,
+    pitch,
   } = matchData.response.match_info;
 
   // Status color mapping
@@ -57,14 +56,38 @@ const MatchCard = ({ matchData }) => {
       <div className="mb-4">
         <Row justify="space-between" align="middle">
           <Col>
-            <h2 className="mt-1 mb-1 text-primary h4">{title}</h2>
+            <h2 className="mt-1 mb-1 text-primary h4">
+              {title} ({match_id})
+            </h2>
           </Col>
           <Col>
-            {status_str && (
-              <Tag color={getStatusColor(status)} className="px-3 py-1 mx-5">
-                {status_str.toUpperCase()}
-              </Tag>
-            )}
+            <div className="d-flex align-items-center" style={{ gap: "8px" }}>
+              {status_str && (
+                <Tag color={getStatusColor(status)} className="px-3 py-1">
+                  {status_str.toUpperCase()}
+                </Tag>
+              )}
+              {onClose && (
+                <button
+                  onClick={onClose}
+                  style={{
+                    background: "transparent",
+                    border: "none",
+                    fontSize: "1.2rem",
+                    cursor: "pointer",
+                    padding: "4px",
+                    display: "flex",
+                    alignItems: "center",
+                    lineHeight: "1",
+                    color: "inherit",
+                    marginRight: "5px"
+                  }}
+                  aria-label="Close"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
           </Col>
         </Row>
       </div>
@@ -81,7 +104,9 @@ const MatchCard = ({ matchData }) => {
             <Avatar size={75} src={teama?.logo_url} className="bg-primary mb-3">
               {teama?.short_name}
             </Avatar>
-            <h3 className="matchCardText my-2 h5">{teama?.name}</h3>
+            <h3 className="matchCardText my-2 h5">
+              {teama?.name} ({teama?.team_id})
+            </h3>
             <p className="m-0 text-muted">({teama?.short_name})</p>
             {teama?.scores_full && (
               <div className="mt-3">
@@ -117,7 +142,9 @@ const MatchCard = ({ matchData }) => {
             >
               {teamb?.short_name}
             </Avatar>
-            <h3 className="matchCardText my-2 h5">{teamb?.name}</h3>
+            <h3 className="matchCardText my-2 h5">
+              {teamb?.name} ({teamb?.team_id})
+            </h3>
             <p className="m-0 text-muted">({teamb?.short_name})</p>
             {teamb?.scores_full && (
               <div className="mt-3">
@@ -146,12 +173,16 @@ const MatchCard = ({ matchData }) => {
         </div>
       )}
 
-      <Divider style={{ marginTop: "-10px", marginBottom: "8px" }} />
+      <Divider style={{ marginTop: "5px", marginBottom: "8px" }} />
 
       {/* Match Details */}
       <Row gutter={[24, 16]}>
         <Col xs={24} md={12}>
-          <Card title={<span className="matchCardText">Match Information: </span>} size="small" className="team-card h-100">
+          <Card
+            title={<span className="matchCardText">Match Information: </span>}
+            size="small"
+            className="team-card h-100"
+          >
             <div className="d-flex align-items-center mb-2 matchCardText">
               <CalendarOutlined className="me-2 text-primary" />
               <span>
@@ -178,8 +209,13 @@ const MatchCard = ({ matchData }) => {
           </Card>
         </Col>
 
+        {/* Competition Details */}
         <Col xs={24} md={12}>
-          <Card title={<span className="matchCardText">Competition Details: </span>} size="small" className="team-card h-100">
+          <Card
+            title={<span className="matchCardText">Competition Details: </span>}
+            size="small"
+            className="team-card h-100"
+          >
             <div className="mb-2 matchCardText">
               <strong>Tournament:</strong> {competition?.title}
             </div>
@@ -197,6 +233,110 @@ const MatchCard = ({ matchData }) => {
                 <strong>Umpires:</strong>
                 <p className="mt-1 mb-0 small text-muted">{umpires}</p>
               </div>
+            )}
+          </Card>
+        </Col>
+      </Row>
+
+      <Divider style={{ marginTop: "5px", marginBottom: "8px" }} />
+
+      {/* Weather Details */}
+      <Row gutter={[24, 16]}>
+        <Col xs={24} md={12}>
+          <Card
+            title={<span className="matchCardText">Weather Details: </span>}
+            size="small"
+            className="team-card h-100"
+          >
+            {weather?.weather ||
+            weather?.weather_desc ||
+            weather?.temp ||
+            weather?.humidity ||
+            weather?.visibility ||
+            weather?.wind_speed ||
+            weather?.clouds ? (
+              <>
+                {weather?.weather && (
+                  <div className="mb-2 matchCardText">
+                    <strong>Weather: </strong> {weather.weather}
+                  </div>
+                )}
+                {weather?.weather_desc && (
+                  <div className="mb-2 matchCardText">
+                    <strong>Weather Description: </strong>{" "}
+                    {weather.weather_desc}
+                  </div>
+                )}
+                {weather?.temp && (
+                  <div className="mb-2 matchCardText">
+                    <strong>Temperature: </strong> {weather.temp}
+                  </div>
+                )}
+                {weather?.humidity && (
+                  <div className="mb-2 matchCardText">
+                    <strong>Humidity: </strong> {weather.humidity}
+                  </div>
+                )}
+                {weather?.visibility && (
+                  <div className="mb-2 matchCardText">
+                    <strong>Visibility: </strong> {weather.visibility}
+                  </div>
+                )}
+                {weather?.wind_speed && (
+                  <div className="mb-2 matchCardText">
+                    <strong>Wind Speed: </strong> {weather.wind_speed}
+                  </div>
+                )}
+                {weather?.clouds && (
+                  <div className="mb-2 matchCardText">
+                    <strong>Clouds: </strong> {weather.clouds}
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="mb-2 matchCardText">No data available</div>
+            )}
+          </Card>
+        </Col>
+
+        {/* Pitch Details */}
+        <Col xs={24} md={12}>
+          <Card
+            title={<span className="matchCardText">Pitch Details: </span>}
+            size="small"
+            className="team-card h-100"
+          >
+            {pitch?.pitch_condition ||
+            pitch?.batting_condition ||
+            pitch?.pace_bowling_condition ||
+            pitch?.spine_bowling_condition ? (
+              <>
+                {pitch?.pitch_condition && (
+                  <div className="mb-2 matchCardText">
+                    <strong>Pitch Condition: </strong> {pitch.pitch_condition}
+                  </div>
+                )}
+                {pitch?.batting_condition && (
+                  <div className="mb-2 matchCardText">
+                    <strong>Batting Condition: </strong>{" "}
+                    {pitch.batting_condition}
+                  </div>
+                )}
+                {pitch?.pace_bowling_condition && (
+                  <div className="mb-2 matchCardText">
+                    <strong>Pace Bowling Condition: </strong>{" "}
+                    {pitch.pace_bowling_condition}
+                  </div>
+                )}
+                {pitch?.spine_bowling_condition && (
+                  <div className="mb-2 matchCardText">
+                    <strong>Spine Bowling Condition: </strong>{" "}
+                    {pitch.spine_bowling_condition}
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="mb-2 matchCardText">No data available</div>
             )}
           </Card>
         </Col>
