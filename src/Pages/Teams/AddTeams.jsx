@@ -166,7 +166,7 @@ function AddTeams() {
 
   return (
     <React.Fragment>
-      <div className="page-content">
+      <div className="page-content mb-5">
         <Container fluid={true}>
           <Row>
             <Col xs={12} md={8} lg={9}>
