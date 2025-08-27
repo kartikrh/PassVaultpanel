@@ -673,7 +673,7 @@ function AddCommentary() {
         const dataToSave3 = finalizeRef3.current.finalizeData()
         const dataToSave4 = finalizeRef4.current.finalizeData()
         const dataToSave5 = finalizeRef5.current.finalizeData()
-        console.log("dataToSave2", dataToSave2);
+
         // Filter each dataToSave to only include fields from their respective tabs
         const filteredDataToSave1 = {};
         const filteredDataToSave2 = {};
