@@ -106,7 +106,32 @@ function AddCommentary() {
     useEffect(() => {
         if (id !== "0") {
             fetchData(id);
-            setDisabledFields({
+            // setDisabledFields({
+            //     // "eventTypeId": true,
+            //     // "competitionId": true,
+            //     // "eventId": true,
+            //     // "team1Id": true,
+            //     // "team2Id": true,
+            //     // "team1Captain": true,
+            //     // "team2Captain": true,
+            //     // "team1Kipper": true,
+            //     // "team2Kipper": true,
+            //     // "team1Players": true,
+            //     // "team2Players": true,
+            //     // "matchTypeId": true,
+            //     "addSystemPlayer": true,
+            //     // "drsCount": true,
+            //     "isVirtual": true,
+            //     "isPredictMarket": true,
+            //     "team1Id": true,
+            //     "team2Id": true,
+            // })
+        }
+    }, [id]);
+
+    useEffect(() => {
+        if (initialEditData) {
+            const disabled = {
                 // "eventTypeId": true,
                 // "competitionId": true,
                 // "eventId": true,
@@ -123,11 +148,16 @@ function AddCommentary() {
                 // "drsCount": true,
                 "isVirtual": true,
                 "isPredictMarket": true,
-                "team1Id": true,
-                "team2Id": true,
-            })
+            };
+
+            if (initialEditData?.commentaryStatus != 1) {
+                disabled["team1Id"] = true;
+                disabled["team2Id"] = true;
+            }
+
+            setDisabledFields(disabled);
         }
-    }, [id]);
+    }, [initialEditData]);
 
     useEffect(() => {
         if (isSaved) {
@@ -303,6 +333,13 @@ function AddCommentary() {
         // if both data are not same then do API call and fetch data
         if (newFormData["team1Id"] !== savedFormState["team1Id"]) {
             if (newFormData["team1Id"] !== "0") {
+                const resetValues = {
+                    team1Captain: null,
+                    team1Kipper: null,
+                    team1Players: []
+                };
+                updateSavedFormState(resetValues);
+                finalizeRef2.current.updateFormFromParent(resetValues);
                 setIsApiLoading(true);
                 axiosInstance.post('/admin/player/byTeamIdv1', { teamId: newFormData["team1Id"], competitionId})
                     .then((response) => {
@@ -331,6 +368,13 @@ function AddCommentary() {
             }
         } else if (newFormData["team2Id"] !== savedFormState["team2Id"]) {
             if (newFormData["team2Id"] !== "0") {
+                const resetValues = {
+                    team2Captain: null,
+                    team2Kipper: null,
+                    team2Players: []
+                };
+                updateSavedFormState(resetValues);
+                finalizeRef2.current.updateFormFromParent(resetValues);
                 setIsApiLoading(true);
                 axiosInstance.post('/admin/player/byTeamIdv1', { teamId: newFormData["team2Id"],  competitionId })
                     .then((response) => {
@@ -629,7 +673,7 @@ function AddCommentary() {
         const dataToSave3 = finalizeRef3.current.finalizeData()
         const dataToSave4 = finalizeRef4.current.finalizeData()
         const dataToSave5 = finalizeRef5.current.finalizeData()
-
+        console.log("dataToSave2", dataToSave2);
         // Filter each dataToSave to only include fields from their respective tabs
         const filteredDataToSave1 = {};
         const filteredDataToSave2 = {};
