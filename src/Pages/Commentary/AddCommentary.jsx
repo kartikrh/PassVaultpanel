@@ -123,6 +123,8 @@ function AddCommentary() {
                 // "drsCount": true,
                 "isVirtual": true,
                 "isPredictMarket": true,
+                "team1Id": true,
+                "team2Id": true,
             })
         }
     }, [id]);
