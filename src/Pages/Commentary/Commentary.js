@@ -87,6 +87,9 @@ const Commentary = (props) => {
     const [superOverText, setSuperOverText] = useState(() => {
         return JSON.parse(localStorage.getItem("superOverText")) || false;
     });
+    const [overTypeOptions, setOverTypeOptions] = useState([])
+    const [selectedOverType, setSelectedOverType] = useState({})
+    const [isDetaultOverType, setIsDefaultOverType] = useState(false)
     const [ballCountForStrike, setBallCountForStrike] = useState(1)
     const [retryModel, setRetryModel] = useState(undefined)
     const [isWonByInnings, setIsWonByInnings] = useState(undefined)
@@ -923,7 +926,7 @@ const Commentary = (props) => {
         if (playerType === CURRENT_BOWLER) {
             if (!currentOver || currentOver.isComplete) {
                 setCurrentOver(overHistory[overHistory.length - 1])
-                objToSave["commentaryOvers"] = generateOver({ commentaryDetails, onPitchPlayers: updatedOnPitchPlyer, teams })
+                objToSave["commentaryOvers"] = generateOver({ commentaryDetails, onPitchPlayers: updatedOnPitchPlyer, teams, selectedOverType })
             }
         }
         setOnPitchPlayers(updatedOnPitchPlyer)
@@ -1013,7 +1016,7 @@ const Commentary = (props) => {
         if (dataFromModal.type === WICKET) setShowWicketModal(true)
         else setExtrasType(undefined)
     }
-    const onPlayerChange = (newPlayerId) => {
+    const onPlayerChange = (newPlayerId, overTypeToChange) => {
         const teamType = playerToChange === CURRENT_BOWLER ? BOWLING_TEAM : BATTING_TEAM
         const updateOrderKey = playerToChange === CURRENT_BOWLER ? "bowlerOrder" : "batterOrder"
         // console.log("onPlayerChange onPitchPlayers", onPitchPlayers)
@@ -1050,7 +1053,10 @@ const Commentary = (props) => {
         setPlayers(playerToUpdate)
         setOnPitchPlayers(updatedOnPitchPlayer)
         setPlayerUpdateList([].concat(allPlayersToUpdate, playerUpdateList || []))
-        if (playerToChange === CURRENT_BOWLER) setIsOverChange(true)
+        if (playerToChange === CURRENT_BOWLER) {
+            setIsOverChange(true)
+            if (overTypeToChange) setSelectedOverType(overTypeToChange)
+        }
         if (isWicketChange) {
             // console.log("isWicketChange currentPartnership", currentPartnership)
             const currentBallDetails = { ...currentBall }
@@ -1214,7 +1220,7 @@ const Commentary = (props) => {
         if (!newBowlerOrder) {
             newBowlerOrder = newOrder
         }
-        if (!currentBowlerRemainingOver || +currentBowlerRemainingOver === 0 ) {
+        if (!currentBowlerRemainingOver || +currentBowlerRemainingOver === 0) {
             currentBowlerOrder = null
         }
 
@@ -1974,12 +1980,25 @@ const Commentary = (props) => {
             // "order": currentPartnership.order + 1 || 1,
             "isActive": true,
         }
+        let selectedOverType = null
+        const overTypeOptionsData = propsData.commentaryData?.overTypes?.map((element) => {
+            if (element.isActive) {
+                const valueSet = {
+                    label: element.overType,
+                    value: element.id
+                }
+                if (element.isDefault) selectedOverType = valueSet
+                return valueSet
+            }
+            else return null
+        }).filter(x => x)
         setTeams(currentInningsTeams)
         setAllIningsTeams(propsData.commentaryData.commentaryTeams)
         setPlayers({ [BATTING_TEAM]: battingTeam, [BOWLING_TEAM]: bowlingTeam })
         setOnPitchPlayers(onPitchPlayers)
         setOverBallByBallDisplay(getBallsForAllOver(ballByBallHistoryData, propsData.commentaryData.commentaryWicket))
         setBallHistory(ballByBallHistoryData)
+        setOverTypeOptions(overTypeOptionsData)
         // try {
         //     axiosInstance.post(`/admin/score/commentaryConsoleFe`, {
         //         ballCount: teams[BATTING_TEAM]?.teamOver, ballHistoryData: { type: "BallByBallLog", history: ballByBallHistoryData }
@@ -1993,6 +2012,7 @@ const Commentary = (props) => {
         setWicketHistory(propsData.commentaryData.commentaryWicket)
         setCurrentPartnership(partnershipFromApi)
         setCurrentOver(currentOverToUpdate)
+        setSelectedOverType(currentOverToUpdate?.overType || selectedOverType)
         setCurrentBall(currentBallToUpdate)
         if (!isEmpty(currentBallToUpdate)) setBallCountForStrike((currentBallToUpdate.autoStrikeBallCount || 0) + 1)
         setIsLastInnings(commentaryDetails.currentInnings >= matchTypeDetails.noOfIningsPerSide)
@@ -2001,7 +2021,7 @@ const Commentary = (props) => {
             apiCallObj["commentaryPartnership"] = generatePartnership({ commentaryDetails, currentPartnership: partnershipDetails, teams: currentInningsTeams })
         if (!currentOverToUpdate && onPitchPlayers[CURRENT_BOWLER]?.commentaryPlayerId) {
             apiCallObj["commentaryOvers"] = generateOver({
-                commentaryDetails, onPitchPlayers, teams: currentInningsTeams
+                commentaryDetails, onPitchPlayers, teams: currentInningsTeams, selectedOverType
             })
         }
         if (!isEmpty(apiCallObj)) {
@@ -2224,7 +2244,7 @@ const Commentary = (props) => {
                 "commentaryId": commentaryDetails.commentaryId,
                 "isCallPredict": props?.isPredictToggle,
                 "commentaryDetails": { ...commentaryDetails, "rmk": isRemainingBallsShow ? generateRemainingRuns(teams[BATTING_TEAM], matchTypeDetails.ballsPerOver, matchTypeDetails) : "" },
-                "commentaryOvers": generateOver({ commentaryDetails, onPitchPlayers, teams }),
+                "commentaryOvers": generateOver({ commentaryDetails, onPitchPlayers, teams, selectedOverType }),
                 "commentaryPlayers": [].concat(Object.values(onPitchPlayers), playerUpdateList).filter(x => x),
                 "commentaryTeams": [teams[BATTING_TEAM]],
             }
@@ -2423,7 +2443,47 @@ const Commentary = (props) => {
     const handleRemainingBallsShowToggle = () => {
         setIsRemainingBallsShow(!isRemainingBallsShow)
     }
-
+    const handleOverTypeChange = async (overTypeValue, overTypeName) => {
+        await axiosInstance
+            .post(`/admin/commentary/overTypeChange`, {
+                commentaryId: commentaryDetails.commentaryId,
+                overId: currentOver.overId,
+                overType: overTypeValue,
+                overTypeName: overTypeName
+            })
+            .then((response) => {
+                setSelectedOverType({
+                    label: overTypeName,
+                    value: overTypeValue
+                })
+                setCurrentOver((prev) => {
+                    return {
+                        ...prev,
+                        overType: overTypeValue,
+                        overTypeName: overTypeName
+                    }
+                })
+                dispatch(
+                    updateToastData({
+                        data: response?.message,
+                        title: response?.title,
+                        type: SUCCESS,
+                    })
+                );
+            })
+            .catch((error) => {
+                dispatch(
+                    updateToastData({
+                        data: error?.message,
+                        title: error?.title,
+                        type: ERROR,
+                    })
+                );
+            });
+    }
+    const handleDefaultOverSwitch = () => {
+        setIsDefaultOverType(!isDetaultOverType)
+    }
     const handleShotTypeToggle = async (value) => {
         await axiosInstance
             .post(`/admin/commentary/upShotType`, {
@@ -2752,6 +2812,11 @@ const Commentary = (props) => {
                 fetchData={props.fetchData}
                 isSaving={isSaving}
                 isAnyPopupOpen={isAnyPopupOpen}
+                overTypeOption={overTypeOptions}
+                overTypeValue={currentOver.overType || selectedOverType?.value}
+                onOverTypeChange={handleOverTypeChange}
+                handleDefaultOverSwitch={handleDefaultOverSwitch}
+                isDefaultOverType={isDetaultOverType}
             />}
         {!props?.isNewUi && !(isCommentaryBallLoading || inningsChangePopup || superOverModal || showRretiredHurt || isPaneltyPopup || props.isDataLoading ||
             winnerAnnouncement || showUpdateInnings || completeMatchModal || superOverModal || showCricketFieldModal) &&
@@ -2768,15 +2833,18 @@ const Commentary = (props) => {
                 playerList={changePlayerList?.filter(
                     (item) => item.currentInnings === commentaryDetails.currentInnings
                 )}
-                selectPlayer={(newPlayerId) => {
+                selectPlayer={(newPlayerId, overType) => {
                     setOverPopUpForBowler(undefined)
                     setIsBowlerrChange(undefined);
                     if (isSwapPlayer) { swapPlayer(newPlayerId) }
                     else if (isChangeBowler.isChange) { onBowlerChange(newPlayerId) }
                     else {
-                        onPlayerChange(newPlayerId)
+                        onPlayerChange(newPlayerId, overType)
                     }
                 }}
+                isOverChangeNonDefault={!isDetaultOverType}
+                overTypeOption={overTypeOptions}
+                overType={selectedOverType}
             />}
         {(!props?.isNewUi && extrasType) && < ExtrasModal
             isOpen={true}

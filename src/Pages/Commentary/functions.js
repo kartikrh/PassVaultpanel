@@ -146,7 +146,7 @@ export const generatePartnership = ({ currentPartnership, commentaryDetails, tea
   return toReturn;
 }
 
-export const generateOver = ({ commentaryDetails, teams, onPitchPlayers }) => {
+export const generateOver = ({ commentaryDetails, teams, onPitchPlayers, selectedOverType }) => {
   return {
     "overId": 0,
     "commentaryId": commentaryDetails.commentaryId,
@@ -154,6 +154,8 @@ export const generateOver = ({ commentaryDetails, teams, onPitchPlayers }) => {
     "bowlerId": onPitchPlayers[CURRENT_BOWLER]?.commentaryPlayerId,
     "currentInnings": commentaryDetails.currentInnings,
     "over": Math.floor(+teams?.[BATTING_TEAM]?.teamOver),
+    "overTypeName": selectedOverType?.label,
+    "overType": selectedOverType?.value,
     "ballCount": 0,
     "totalRun": 0,
     "totalFour": 0,
