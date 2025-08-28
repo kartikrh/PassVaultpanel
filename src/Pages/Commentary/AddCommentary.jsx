@@ -333,13 +333,15 @@ function AddCommentary() {
         // if both data are not same then do API call and fetch data
         if (newFormData["team1Id"] !== savedFormState["team1Id"]) {
             if (newFormData["team1Id"] !== "0") {
-                // const resetValues = {
-                //     team1Captain: null,
-                //     team1Kipper: null,
-                //     team1Players: []
-                // };
-                // updateSavedFormState(resetValues);
-                // finalizeRef2.current.updateFormFromParent(resetValues);
+                if(savedFormState["team1Id"] != 0 && savedFormState["team1Id"]) {
+                    const resetValues = {
+                        team1Captain: null,
+                        team1Kipper: null,
+                        team1Players: []
+                    };
+                    updateSavedFormState(resetValues);
+                    finalizeRef2.current.updateFormFromParent(resetValues);
+                }
                 setIsApiLoading(true);
                 axiosInstance.post('/admin/player/byTeamIdv1', { teamId: newFormData["team1Id"], competitionId})
                     .then((response) => {
@@ -368,13 +370,15 @@ function AddCommentary() {
             }
         } else if (newFormData["team2Id"] !== savedFormState["team2Id"]) {
             if (newFormData["team2Id"] !== "0") {
-                // const resetValues = {
-                //     team2Captain: null,
-                //     team2Kipper: null,
-                //     team2Players: []
-                // };
-                // updateSavedFormState(resetValues);
-                // finalizeRef2.current.updateFormFromParent(resetValues);
+                if(savedFormState["team2Id"] != 0 && savedFormState["team2Id"]) {
+                    const resetValues = {
+                        team2Captain: null,
+                        team2Kipper: null,
+                        team2Players: []
+                    };
+                    updateSavedFormState(resetValues);
+                    finalizeRef2.current.updateFormFromParent(resetValues);
+                }
                 setIsApiLoading(true);
                 axiosInstance.post('/admin/player/byTeamIdv1', { teamId: newFormData["team2Id"],  competitionId })
                     .then((response) => {

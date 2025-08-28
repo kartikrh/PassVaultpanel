@@ -270,26 +270,6 @@ const Dashboard = () => {
             </Button>
           </Row> */}
           {dataFetch && <Row>
-            <Col xs="12" lg="6" >
-              <Card style={{ maxHeight: "510px", padding: '0px' }}>
-                <CardHeader>
-                    <h6 className="dashboard-headers">Missing Player Images</h6>
-                </CardHeader>
-                <CardBody style={{ maxHeight: "510px", overflowY: "auto",  }}>
-                    <Table setStickHeader={true} isPagination={false} columns={missingPlayerColumns} dataSource={playersData}  tableElement={tableElement}/>
-                </CardBody>
-              </Card>
-            </Col>
-            <Col xs="12" lg="6">
-            <Card style={{ maxHeight: "510px", padding: '0px' }}>
-                <CardHeader>
-                    <h6 className="dashboard-headers">Duplicate Player</h6>
-                </CardHeader>
-                <CardBody style={{ maxHeight: "510px", overflowY: "auto", }}>
-                    <Table isPagination={false} setStickHeader={true} columns={dupPlayerColumns} dataSource={dupPlayersData}  tableElement={tableElement}/>
-                </CardBody>
-              </Card>
-            </Col>
             <Col xs="12" lg="6">
                 <Card style={{ maxHeight: "510px", padding: '0px' }}>
                 <CardHeader>
@@ -300,6 +280,28 @@ const Dashboard = () => {
                 </CardBody>
               </Card>
             </Col>
+            <Col xs="12" lg="6">
+              <Card style={{ maxHeight: "510px", padding: '0px' }}>
+                <CardHeader>
+                    <h6 className="dashboard-headers">Duplicate Player</h6>
+                </CardHeader>
+                <CardBody style={{ maxHeight: "510px", overflowY: "auto", }}>
+                    <Table isPagination={false} setStickHeader={true} columns={dupPlayerColumns} dataSource={dupPlayersData}  tableElement={tableElement}/>
+                </CardBody>
+              </Card>
+            </Col>
+            <Col xs="12" lg="6" >
+              <Card style={{ maxHeight: "510px", padding: '0px' }}>
+                <CardHeader>
+                    <h6 className="dashboard-headers">Missing Player Images</h6>
+                </CardHeader>
+                <CardBody style={{ maxHeight: "510px", overflowY: "auto",  }}>
+                    <Table setStickHeader={true} isPagination={false} columns={missingPlayerColumns} dataSource={playersData}  tableElement={tableElement}/>
+                </CardBody>
+              </Card>
+            </Col>
+           
+            
           </Row>}
         </Container>
       </div>
