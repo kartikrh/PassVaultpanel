@@ -36,6 +36,7 @@ export const CommentaryFeatures = () => {
     const [deletePartnership, setDeletePartnership] = useState([])
     const [selectedInnings, setSelectedInnings] = useState(1)
     const [selectedBattingTeamId, setSelectedBattingTeamId] = useState(undefined)
+    const [selectedBowlingTeamId, setSelectedBowlingTeamId] = useState(undefined)
     const [battingTeam, setBattingTeam] = useState({})
     const [bowlingTeam, setBowlingTeam] = useState({})
     const [battingTeamPlayers, setBattingTeamPlayers] = useState([])
@@ -172,20 +173,21 @@ export const CommentaryFeatures = () => {
 
     useEffect(() => {
         const battingTeamData = commentaryData?.commentaryTeams?.filter((item)=> item.currentInnings == selectedInnings)?.find((item)=> item?.teamStatus == 1);
-        setBattingTeam(battingTeamData)
-        setSelectedBattingTeamId(battingTeamData?.teamId)
+        setBattingTeam(battingTeamData);
+        setSelectedBattingTeamId(battingTeamData?.teamId);
         const bowlingTeamData = commentaryData?.commentaryTeams?.filter((item)=> item.currentInnings == selectedInnings)?.find((item)=> item?.teamStatus == 2);
-        setBowlingTeam(bowlingTeamData)
+        setBowlingTeam(bowlingTeamData);
+        setSelectedBowlingTeamId(bowlingTeamData?.teamId);
     },[commentaryData, selectedInnings])
 
     useEffect(() => {
         setIsToggleLoading(true);
         const battingTeamPlayersData = commentaryData?.commentaryPlayers?.filter((players)=> players.currentInnings == selectedInnings && players.teamId == selectedBattingTeamId);
         setBattingTeamPlayers(battingTeamPlayersData)
-        const bowlingTeamPlayersData = commentaryData?.commentaryPlayers?.filter((players)=> players.currentInnings == selectedInnings && players.teamId != selectedBattingTeamId);
+        const bowlingTeamPlayersData = commentaryData?.commentaryPlayers?.filter((players)=> players.currentInnings == selectedInnings && players.teamId == selectedBowlingTeamId);
         setBowlingTeamPlayers(bowlingTeamPlayersData)
         setTimeout(() => setIsToggleLoading(false), 2000);
-    },[commentaryData, selectedInnings, selectedBattingTeamId])
+    },[commentaryData, selectedInnings, selectedBattingTeamId, selectedBowlingTeamId])
 
     return <>
         <React.Fragment>
@@ -208,8 +210,8 @@ export const CommentaryFeatures = () => {
                                     </Col>
                                     {battingTeam || bowlingTeam ? <Col xs={2} md={2} lg={2}>
                                             <ButtonGroup>
-                                                <Button color={selectedBattingTeamId == battingTeam?.teamId ? "primary" : "secondary"} onClick={() => setSelectedBattingTeamId(battingTeam?.teamId)}>{battingTeam?.teamName}</Button>
-                                                <Button color={selectedBattingTeamId == bowlingTeam?.teamId ? "primary" : "secondary"} onClick={() => setSelectedBattingTeamId(bowlingTeam?.teamId)}>{bowlingTeam?.teamName}</Button>
+                                                <Button color={selectedBattingTeamId == battingTeam?.teamId ? "primary" : "secondary"} onClick={() => { setSelectedBattingTeamId(battingTeam?.teamId); setSelectedBowlingTeamId(bowlingTeam?.teamId); }}>{battingTeam?.teamName}</Button>
+                                                <Button color={selectedBattingTeamId == bowlingTeam?.teamId ? "primary" : "secondary"} onClick={() => { setSelectedBattingTeamId(bowlingTeam?.teamId); setSelectedBowlingTeamId(battingTeam?.teamId); }}>{bowlingTeam?.teamName}</Button>
                                             </ButtonGroup>
                                     </Col> : null}
                                     <Col xs={3} md={3} lg={3}>
@@ -235,7 +237,7 @@ export const CommentaryFeatures = () => {
                                             setSelectedItems={setSelectedItems}
                                         />
                                         <PlayerFeature
-                                            playerList={battingTeamPlayers?.filter((item)=> item?.onStrike !== null && item?.isPlay !== null) || []}
+                                            playerList={battingTeamPlayers || []}
                                             updatedData={playerData || {}}
                                             handleValueChange={updatedData => setPlayerData({ ...updatedData })}
                                             title="Player Batting"
@@ -244,7 +246,7 @@ export const CommentaryFeatures = () => {
                                             bowlingPlayers={bowlingTeamPlayers}
                                         />
                                         <PlayerFeature
-                                            playerList={bowlingTeamPlayers?.filter((item)=> item?.bowlerOrder !== null) || []}
+                                            playerList={bowlingTeamPlayers || []}
                                             updatedData={playerData || {}}
                                             handleValueChange={updatedData => setPlayerData({ ...updatedData })}
                                             title="Bowler Listing"
