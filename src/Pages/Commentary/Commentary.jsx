@@ -274,7 +274,7 @@ export const CommentaryScreen = ({
             <Col xs={12} md={12} lg={6}>
                 <Row>
                     <Col className="team-name team-1" xs={6} md={6} lg={6}>
-                        {teamDetails?.[BATTING_TEAM].teamName}
+                        {teamDetails?.[BATTING_TEAM]?.teamName}
                     </Col>
                     <Col className="team-name team-2" xs={6} md={6} lg={6}>
                         {teamDetails?.[BOWLING_TEAM]?.teamName}

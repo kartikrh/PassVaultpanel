@@ -171,7 +171,7 @@ const PartnershipAccordian = ({ partnerships, overBalls, teamDetails, overHistor
         <Box sx={{ width: '100%' }}>
             {sortedKeys.map(key => {
                 const [innings, teamId] = key.split('_');
-                const team = teamId === teamDetails.BATTING_TEAM.teamId.toString()
+                const team = teamId === teamDetails.BATTING_TEAM?.teamId.toString()
                     ? teamDetails.BATTING_TEAM
                     : teamDetails.BOWLING_TEAM;
                 return (
