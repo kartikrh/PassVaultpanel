@@ -6,7 +6,7 @@ import { useState } from "react"
 import { SLFieldRenderer } from "../../../components/Common/Reusables/SLFieldRenderer"
 import { SELECT, SWITCH } from "../../../components/Common/Const"
 
-export const OverBallByBallFeature = ({ overList, ballList, handleValueChange, updatedData, deletedList, handleDeleteChange, ballByBallData, setBallByBallData, deleteBallByBall, setDeleteBallByBall, selectedItems, setSelectedItems, battingPlayers, bowlingPlayers, teamlist }) => {
+export const OverBallByBallFeature = ({ overList, ballList, handleValueChange, updatedData, deletedList, handleDeleteChange, ballByBallData, setBallByBallData, deleteBallByBall, setDeleteBallByBall, selectedItems, setSelectedItems, battingPlayers, bowlingPlayers, teamlist, overTypeList }) => {
     const [open, setOpen] = useState("");
     const [expandedOvers, setExpandedOvers] = useState([]);        
     const toggle = (id) => {
@@ -16,10 +16,13 @@ export const OverBallByBallFeature = ({ overList, ballList, handleValueChange, u
             setOpen(id); // expand
         }
     };
-    const onValueChange = (overInfo, key, value) => {
+    const onValueChange = (overInfo, key, value, label) => {
         const dataToSend = updatedData
         const updatedOverData = updatedData[overInfo.overId] || overInfo
         updatedOverData[key] = value
+        if (key === "overType") {
+            updatedOverData["overTypeName"] = label;
+        }
         dataToSend[overInfo.overId] = updatedOverData
         handleValueChange(dataToSend)
     }
@@ -29,7 +32,7 @@ export const OverBallByBallFeature = ({ overList, ballList, handleValueChange, u
             .sort((a, b) => b.overCount - a.overCount); // latest ball first
     };
 
-    const OVER_FIELD = OVER_FEATURE_FIELD(bowlingPlayers, teamlist);
+    const OVER_FIELD = OVER_FEATURE_FIELD(bowlingPlayers, teamlist, overTypeList);
 
     return <Accordion open={open} toggle={toggle}>
         <AccordionItem>
@@ -104,7 +107,7 @@ export const OverBallByBallFeature = ({ overList, ballList, handleValueChange, u
                                                 <SLFieldRenderer
                                                     field={field}
                                                     value={fieldValue ?? ""}
-                                                    onChange={(field, value) => onValueChange(overInfo, field.name, value)}
+                                                    onChange={(field, value, label) => onValueChange(overInfo, field.name, value, label)}
                                                 />
                                             ) : (
                                                 displayValue || 0

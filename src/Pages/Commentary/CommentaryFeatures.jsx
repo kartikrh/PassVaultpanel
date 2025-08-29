@@ -80,7 +80,7 @@ export const CommentaryFeatures = () => {
                 const updatedOverHistory = _.orderBy(commentaryDataToUpdate.commentaryOvers, ["overId"], ["desc"])
                 commentaryDataToUpdate["commentaryBallByBall"] = updatedBallByBall || []
                 commentaryDataToUpdate["commentaryOvers"] = updatedOverHistory || []
-                setCommentaryData(commentaryDataToUpdate)
+                setCommentaryData(commentaryDataToUpdate);
                 setSelectedInnings(commentaryDataToUpdate?.commentaryDetails?.currentInnings);
                 setSelectedItems({
                     details: {},
@@ -293,6 +293,7 @@ export const CommentaryFeatures = () => {
                                             battingPlayers={battingTeamPlayers}
                                             bowlingPlayers={bowlingTeamPlayers}
                                             teamlist={commentaryData?.commentaryTeams?.filter((item)=> item?.currentInnings === selectedInnings)  || []}
+                                            overTypeList={commentaryData?.overTypes || []}
                                         />
                                     </Col>
                                 </Row>
