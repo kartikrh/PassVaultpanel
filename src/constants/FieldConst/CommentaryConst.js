@@ -1134,6 +1134,14 @@ export const TEAM_FEATURE_FIELDS = [
         fieldColspan: { xs: 3, md: 2, lg: 2 },
     },
     {
+        name: "currentInnings",
+        placeholder: "C Innings",
+        formName: TEAM,
+        type: COUNTER,
+        className: "no-spinners",
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
+    },
+    {
         name: "teamBattingOrder",
         placeholder: "Batting Order",
         formName: TEAM,
