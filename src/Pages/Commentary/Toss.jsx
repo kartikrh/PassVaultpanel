@@ -62,7 +62,6 @@ const Index = ({ data, next, save, isPredictToggle }) => {
       },
       commentaryTeams: UpdatedCurrentInningTeams,
       updateTeamStatus: extractRequiredFieldsForTeamStatus(UpdatedCurrentInningTeams),
-      isTeamStatusUpdate: true,
     }
     save(newData, 2, {
       ...data,

@@ -332,7 +332,6 @@ const Commentary = (props) => {
             "commentaryPartnership": updatedPartnership,
             "commentaryPlayers": setAllPlayerToNull(),
             "updateTeamStatus": extractRequiredFieldsForTeamStatus(teamUpdates),
-            "isTeamStatusUpdate": true,
             "isEndInnings": true
         }
         if (!objToSave?.commentaryPartnership?.batter1Id && !objToSave?.commentaryPartnership?.batter2Id) {
@@ -385,7 +384,6 @@ const Commentary = (props) => {
             "commentaryTeams": updatedInningsTeam,
             "commentaryPlayers": setAllPlayerToNull(),
             "updateTeamStatus": extractRequiredFieldsForTeamStatus(updatedInningsTeam),
-            "isTeamStatusUpdate": true,
             "isEndInnings": true
         }
         // console.log("Called from : 3")
@@ -1773,7 +1771,6 @@ const Commentary = (props) => {
                 { ...onPitchPlayers[CURRENT_BOWLER], isPlay: null, }
             ],
             "updateTeamStatus": extractRequiredFieldsForTeamStatus(teamUpdates),
-            "isTeamStatusUpdate": true,
         }
         setRedirectOnScreenChange(true)
         // console.log("Called from : 17")
