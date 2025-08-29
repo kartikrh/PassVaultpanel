@@ -1901,7 +1901,7 @@ const Commentary = (props) => {
         if (currentInningsTeams?.[BOWLING_TEAM]?.isBattingComplete) setTarget(targetToUpdate)
         propsData.commentaryData.commentaryPlayers.forEach(playerDetails => {
             // if (isEqual(playerDetails.currentInnings, commentaryDetails.currentInnings)) {
-            const isBattingTeam = playerDetails.teamId === currentInningsTeams[BATTING_TEAM].teamId
+            const isBattingTeam = playerDetails?.teamId === currentInningsTeams[BATTING_TEAM]?.teamId
             // If player is from batting team, add them to the batting object list
             if (isBattingTeam) {
                 if (playerDetails.isPlay === true) {
@@ -2387,7 +2387,7 @@ const Commentary = (props) => {
     useEffect(() => {
         if (currentOver.overId) {
             let getCurrentOverToBallStatus = getBallsForAllOver(ballHistory, wicketHistory)
-            const overToCheckFor = currentOver.currentInnings + STRING_SEPERATOR + teams[BATTING_TEAM].teamId + STRING_SEPERATOR + (+currentOver.over + 1)
+            const overToCheckFor = currentOver.currentInnings + STRING_SEPERATOR + teams[BATTING_TEAM]?.teamId + STRING_SEPERATOR + (+currentOver.over + 1)
             if (!getCurrentOverToBallStatus[overToCheckFor]) getCurrentOverToBallStatus = { [overToCheckFor]: [], ...getCurrentOverToBallStatus }
             setOverBallByBallDisplay(getCurrentOverToBallStatus)
         }
