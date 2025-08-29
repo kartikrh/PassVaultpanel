@@ -473,3 +473,14 @@ export const fetchConfig = (data) => {
   const dpApiURL = data.find(config => config.key === loadInit.DP_API_URL)?.value;
   return { dpSocketUrl, dpApiXkey, dpApiURL }
 }
+
+export const extractRequiredFieldsForTeamStatus = (inputList) => {
+  return inputList.map(obj => ({
+    commentaryTeamId: obj.commentaryTeamId,
+    teamStatus: obj.teamStatus,
+    teamBattingOrder: obj.teamBattingOrder,
+    isBattingComplete: obj.isBattingComplete,
+    currentInnings: obj.currentInnings,
+    teamId: obj.teamId
+  }));
+}
