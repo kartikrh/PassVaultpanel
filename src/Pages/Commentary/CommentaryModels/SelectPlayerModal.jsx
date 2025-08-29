@@ -4,7 +4,7 @@ import ball from '../../../../src/assets/images/cricket-icons/cricket-ball.png';
 import bat from '../../../../src/assets/images/cricket-icons/cricket-bat.png';
 import allrounder from '../../../../src/assets/images/cricket-icons/cricket.png';
 import keeper from '../../../../src/assets/images/cricket-icons/game.png';
-import SegmentedSwitch from '../../../components/Common/Reusables/SegmentSwitch.tsx';
+import SegmentedSwitch from '../../../components/Common/Reusables/SegmentSwitch';
 
 const SelectPlayerModal = ({ playerList, toggle, isOpen, selectPlayer, isBowler, overPopUpForBowler, isOverChangeNonDefault, overTypeOption, overType }) => {
     const overChangeNonDefaultSwitch = isOverChangeNonDefault

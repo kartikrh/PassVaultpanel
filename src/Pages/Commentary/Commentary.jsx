@@ -7,7 +7,7 @@ import CommentaryRightPanel from "./Helpers/CommentaryRightPanel"
 import Switch from "react-switch";
 import PlayerImage from "../../components/Common/Reusables/PlayerImage"
 import { isEmpty } from "lodash"
-import SegmentedSwitch from "../../components/Common/Reusables/SegmentSwitch.tsx"
+import SegmentedSwitch from "../../components/Common/Reusables/SegmentSwitch"
 
 export const CommentaryScreen = ({
     refId, teamDetails, onPitchPlayers, _onPitchPlayers, updateRuns, changePlayer, changeOver, updateExtras, onWicketClick,
