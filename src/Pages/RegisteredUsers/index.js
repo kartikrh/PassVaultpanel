@@ -28,6 +28,7 @@ import {
 import { updateToastData } from "../../Features/toasterSlice";
 import { Tooltip } from "antd";
 import LoadDataModal from "../../components/Model/LoadDataModal";
+import { oldSchoolCopy } from "../../Hooks/useCopyToClipboard";
 
 const Index = () => {
   const pageName = TAB_CLIENT;
@@ -48,7 +49,9 @@ const Index = () => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [visiblePasswords, setVisiblePasswords] = useState({});
+  // const [visiblePasswords, setVisiblePasswords] = useState({});
+  const [clipboard, setClipboard] = useState(null);
+  const [decryptedPasswords, setDecryptedPasswords] = useState(null);
 
 
   const fetchData = async (latestValueFromTable) => {
@@ -157,12 +160,45 @@ const Index = () => {
     }
   };
 
-  const togglePasswordVisibility = (recordKey) => {
-    setVisiblePasswords((prev) => ({
-      // Clear all other visible passwords and toggle only the clicked one
-      [recordKey]: !prev[recordKey]
-    }));
-  };
+  const getDecryptedPassword = async (clientId, copy = false) => {
+    await axiosInstance
+      .post(`/admin/client/decryptPassword`, {
+        clientId: clientId,
+      })
+      .then((response) => {
+        const password = response?.result?.password || "";
+        if (copy) {
+          navigator.clipboard.writeText(password)
+            .then(res => setClipboard({ [clientId]: password }))
+            .catch(err => oldSchoolCopy(password))
+            .finally(() => setTimeout(() => setClipboard(null), 2000))
+        } else {
+          setDecryptedPasswords(prev => ({ ...prev, [clientId]: password }));
+        }
+      })
+      .catch((error) => {
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+      });
+  }
+
+  const passwordRecord = (clientId) => (
+    <div className="d-flex align-items-center justify-content-between me-1">
+      <span role="button" onClick={() => getDecryptedPassword(clientId)} >******</span>
+      {clipboard?.[clientId] ? 
+        <Tooltip placement="bottomLeft" open={true} title={"Copied!"} >
+          <i role="button" onClick={() => getDecryptedPassword(clientId, true)} className='bx bxs-copy'></i>
+        </Tooltip> :
+        <i role="button" onClick={() => getDecryptedPassword(clientId, true)} className='bx bxs-copy'></i>
+      }
+    </div>
+  )
+
+  // const togglePasswordVisibility = (recordKey) => {
+  //   setVisiblePasswords((prev) => ({
+  //     // Clear all other visible passwords and toggle only the clicked one
+  //     [recordKey]: !prev[recordKey]
+  //   }));
+  // };
   
   //table columns
   const columns = [
@@ -355,39 +391,52 @@ const Index = () => {
     {
       title: "Password",
       dataIndex: "password",
+      render: (text, record) => (
+        decryptedPasswords?.[record.clientId] ? 
+          <Tooltip title={decryptedPasswords?.[record.clientId]}>{passwordRecord(record.clientId)}</Tooltip> :
+          passwordRecord(record.clientId)
+      ),
       key: "password",
-      render: (text, record) => {
-        const isVisible = visiblePasswords[record.clientId];
-
-        return (
-          <div className="d-flex mx-2 align-items-center">
-            <button
-              type="button"
-              className="btn btn-sm d-flex justify-content-center align-items-center"
-              onClick={() => togglePasswordVisibility(record.clientId)}
-              style={{
-                backgroundColor: "transparent",
-                border: "1px solid transparent",
-                borderRadius: "4px",
-                color: "#343a40",
-                cursor: "pointer",
-                padding: "4px 8px",
-                fontSize: "14px",
-              }}
-            >
-              <i
-                className={`bx ${isVisible ? "bx-hide" : "bx-show"}`}
-                style={{ fontSize: "18px" }}
-              ></i>
-            </button>
-            <span className="me-2">
-              {isVisible ? record.decryptPassword : record.password}
-            </span>
-          </div>
-        );
-      },
-      style: { width: "15%" },
+      sort: true,
+      style: { width: "5%" },
+      printType: "ignore"
     },
+    // {
+    //   title: "Password",
+    //   dataIndex: "password",
+    //   key: "password",
+    //   render: (text, record) => {
+    //     const isVisible = visiblePasswords[record.clientId];
+
+    //     return (
+    //       <div className="d-flex mx-2 align-items-center">
+    //         <button
+    //           type="button"
+    //           className="btn btn-sm d-flex justify-content-center align-items-center"
+    //           onClick={() => togglePasswordVisibility(record.clientId)}
+    //           style={{
+    //             backgroundColor: "transparent",
+    //             border: "1px solid transparent",
+    //             borderRadius: "4px",
+    //             color: "#343a40",
+    //             cursor: "pointer",
+    //             padding: "4px 8px",
+    //             fontSize: "14px",
+    //           }}
+    //         >
+    //           <i
+    //             className={`bx ${isVisible ? "bx-hide" : "bx-show"}`}
+    //             style={{ fontSize: "18px" }}
+    //           ></i>
+    //         </button>
+    //         <span className="me-2">
+    //           {isVisible ? record.decryptPassword : record.password}
+    //         </span>
+    //       </div>
+    //     );
+    //   },
+    //   style: { width: "15%" },
+    // },
     // {
     //   title: "Mobile Verified",
     //   dataIndex: "isMobileVerified",
