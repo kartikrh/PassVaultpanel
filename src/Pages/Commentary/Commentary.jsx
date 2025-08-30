@@ -6,13 +6,14 @@ import CommentaryAction from "./CommentaryModels/CommentaryAction"
 import CommentaryRightPanel from "./Helpers/CommentaryRightPanel"
 import Switch from "react-switch";
 import PlayerImage from "../../components/Common/Reusables/PlayerImage"
-import _, { isEmpty } from "lodash"
+import { isEmpty } from "lodash"
+import SegmentedSwitch from "../../components/Common/Reusables/SegmentSwitch"
 
 export const CommentaryScreen = ({
     refId, teamDetails, onPitchPlayers, _onPitchPlayers, updateRuns, changePlayer, changeOver, updateExtras, onWicketClick,
     onUndoClick, changeStrike, endInnings, isLoading, changeBowler, updateDisplayStatus, showPaneltyRuns,
     overBalls, anyPopup, handleRetiredHurt = {}, target, partnerships, commentaryId, handleWheelShowToggle, handleRemainingBallsShowToggle, isRemainingBallsShow, isWheelShow, overHistory,
-    players, currentOver, currentInnings, isPredict, isPredictToggle, setIsPredictToggle,allteams, fetchData, isSaving, isAnyPopupOpen }) => {
+    players, currentOver, currentInnings, isPredict, isPredictToggle, setIsPredictToggle, allteams, fetchData, isSaving, isAnyPopupOpen, overTypeOption, overTypeValue, onOverTypeChange, handleDefaultOverSwitch, isDefaultOverType }) => {
     const [actionPopup, setActionPopup] = useState(undefined);
     const isDarkTheme = document.body.getAttribute('data-theme') === 'dark';
 
@@ -126,7 +127,42 @@ export const CommentaryScreen = ({
             </div>
         );
     };
-
+    const GenericOffSymbolStatus = ({ text }) => {
+        return (
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100%",
+                    fontSize: 10,
+                    color: "#fff",
+                    // paddingRight: 2,
+                }}
+            >
+                {" "}
+                {text}
+            </div>
+        );
+    };
+    const GenericOnSymbolStatus = ({ text }) => {
+        return (
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100%",
+                    fontSize: 10,
+                    color: "#fff",
+                    // paddingRight: 4,
+                }}
+            >
+                {" "}
+                {text}
+            </div>
+        );
+    };
     const handleKeyPress = (event) => {
         if (isLoading || isSaving || isAnyPopupOpen) return;
         const key = event.key.toLowerCase(); // Convert to lowercase to simplify the switch cases
@@ -238,7 +274,7 @@ export const CommentaryScreen = ({
             <Col xs={12} md={12} lg={6}>
                 <Row>
                     <Col className="team-name team-1" xs={6} md={6} lg={6}>
-                        {teamDetails?.[BATTING_TEAM].teamName}
+                        {teamDetails?.[BATTING_TEAM]?.teamName}
                     </Col>
                     <Col className="team-name team-2" xs={6} md={6} lg={6}>
                         {teamDetails?.[BOWLING_TEAM]?.teamName}
@@ -256,7 +292,7 @@ export const CommentaryScreen = ({
                         <span className="current-team-name">{teamDetails?.[BOWLING_TEAM]?.shortName?.toUpperCase()}&nbsp;</span>
                         {/* <span className="bowling-team-name">{teamDetails?.[BOWLING_TEAM]?.shortName?.toUpperCase()}&nbsp;</span> */}
                         <span className="current-team-score">
-                        {/* <span className="bowling-team-score"> */}
+                            {/* <span className="bowling-team-score"> */}
                             {teamDetails?.[BOWLING_TEAM]?.teamScore || 0}/{teamDetails?.[BOWLING_TEAM]?.teamWicket || 0}
                             &nbsp;({teamDetails?.[BOWLING_TEAM]?.teamOver || 0})
                             &nbsp;</span>
@@ -270,7 +306,7 @@ export const CommentaryScreen = ({
                                     {onPitchPlayers[NON_STRIKE]?.playerimage ?
                                         // <img src={onPitchPlayers[NON_STRIKE]?.playerimage} alt='player image' width={30} />
                                         <PlayerImage
-                                                                            // width="30px"
+                                            // width="30px"
                                             playerImage={onPitchPlayers[NON_STRIKE]?.playerimage}
                                             jerseyImage={teamDetails["BATTING_TEAM"].jersey}
                                         />
@@ -431,49 +467,68 @@ export const CommentaryScreen = ({
                     </Col>
                 </Row>
                 <div className="d-flex justify-content-between">
-                <div className="d-flex align-items-center py-2">
-                    <span>Tracking a Ball</span>
-                    <Switch
-                        width={70}
-                        uncheckedIcon={<OffSymbolStatus />}
-                        checkedIcon={<OnSymbolStatus />}
-                        className="pe-0 mx-2"
-                        onColor="#02a499"
-                        onChange={() => {
-                            handleWheelShowToggle(!isWheelShow);
-                        }}
-                        checked={isWheelShow}
-                    />
-                </div>
-                {isPredict && <div className="py-2">
-                    <Switch
-                        width={70}
-                        uncheckedIcon={<OffSymbolPredict />}
-                        checkedIcon={<OnSymbolPredict />}
-                        className="pe-0 mx-2"
-                        onColor="#02a499"
-                        onChange={() => {
-                            setIsPredictToggle(!isPredictToggle);
-                        }}
-                        checked={isPredictToggle}
-                    />
-                </div>}
-                {currentInnings > 0 && 
                     <div className="d-flex align-items-center py-2">
-                        <span>Remaining balls</span>
+                        <span>Tracking a Ball</span>
                         <Switch
                             width={70}
-                            uncheckedIcon={<OffRemainingStatus />}
-                            checkedIcon={<OnRemainingStatus />}
+                            uncheckedIcon={<OffSymbolStatus />}
+                            checkedIcon={<OnSymbolStatus />}
                             className="pe-0 mx-2"
                             onColor="#02a499"
                             onChange={() => {
-                                handleRemainingBallsShowToggle();
+                                handleWheelShowToggle(!isWheelShow);
                             }}
-                            checked={isRemainingBallsShow}
+                            checked={isWheelShow}
                         />
                     </div>
-                }
+                    {isPredict && <div className="py-2">
+                        <Switch
+                            width={70}
+                            uncheckedIcon={<OffSymbolPredict />}
+                            checkedIcon={<OnSymbolPredict />}
+                            className="pe-0 mx-2"
+                            onColor="#02a499"
+                            onChange={() => {
+                                setIsPredictToggle(!isPredictToggle);
+                            }}
+                            checked={isPredictToggle}
+                        />
+                    </div>}
+                    {currentInnings > 0 &&
+                        <div className="d-flex align-items-center py-2">
+                            <span>Remaining balls</span>
+                            <Switch
+                                width={70}
+                                uncheckedIcon={<OffRemainingStatus />}
+                                checkedIcon={<OnRemainingStatus />}
+                                className="pe-0 mx-2"
+                                onColor="#02a499"
+                                onChange={() => {
+                                    handleRemainingBallsShowToggle();
+                                }}
+                                checked={isRemainingBallsShow}
+                            />
+                        </div>
+                    }
+                </div>
+                <div className="d-flex pb-3">
+                    <div className="d-flex align-items-center py-2">
+                        <span>Over Type: </span>
+                        <Switch
+                            width={70}
+                            uncheckedIcon={<GenericOffSymbolStatus text={"Temp"} />}
+                            checkedIcon={<GenericOnSymbolStatus text={"Default"} />}
+                            className="pe-0 mx-2"
+                            onColor="#02a499"
+                            onChange={handleDefaultOverSwitch}
+                            checked={isDefaultOverType}
+                        />
+                    </div>
+                    <SegmentedSwitch
+                        options={overTypeOption}
+                        selectedValue={overTypeValue}
+                        onSelectionChange={onOverTypeChange}
+                    />
                 </div>
                 <div
                     style={{
@@ -488,9 +543,9 @@ export const CommentaryScreen = ({
                     <div style={{ display: "block", marginBottom: "1rem" }}>Keyboard Shortcuts for Scoring:</div>
                     <div
                         style={{
-                        display: "grid",
-                        gridTemplateColumns: "repeat(3, 1fr)",
-                        gap: "0.75rem 1rem"
+                            display: "grid",
+                            gridTemplateColumns: "repeat(3, 1fr)",
+                            gap: "0.75rem 1rem"
                         }}
                     >
                         <div><kbd>0</kbd> = 0 run</div>

@@ -183,7 +183,8 @@ const EventDetails = () => {
       const markets = data?.data?.markets || [];
 
       setEventInfo((prevOpenMarket) => {
-        const updatedEventInfo = [...prevOpenMarket];
+        const safePrev = Array.isArray(prevOpenMarket) ? prevOpenMarket : [];
+        const updatedEventInfo = [...safePrev];
 
         markets?.forEach((marketData) => {
           const marketIndex = updatedEventInfo.findIndex(
