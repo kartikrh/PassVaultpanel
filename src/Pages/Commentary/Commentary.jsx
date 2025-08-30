@@ -8,6 +8,7 @@ import Switch from "react-switch";
 import PlayerImage from "../../components/Common/Reusables/PlayerImage"
 import { isEmpty } from "lodash"
 import SegmentedSwitch from "../../components/Common/Reusables/SegmentSwitch"
+import { Avatar } from '@mui/material';
 
 export const CommentaryScreen = ({
     refId, teamDetails, onPitchPlayers, _onPitchPlayers, updateRuns, changePlayer, changeOver, updateExtras, onWicketClick,
@@ -303,14 +304,18 @@ export const CommentaryScreen = ({
                         <>
                             <Col className="non-striker-end d-flex align-items-center gap-1" xs={12} md={6} lg={6}>
                                 <span>
-                                    {onPitchPlayers[NON_STRIKE]?.playerimage ?
-                                        // <img src={onPitchPlayers[NON_STRIKE]?.playerimage} alt='player image' width={30} />
-                                        <PlayerImage
-                                            // width="30px"
-                                            playerImage={onPitchPlayers[NON_STRIKE]?.playerimage}
-                                            jerseyImage={teamDetails["BATTING_TEAM"].jersey}
-                                        />
-                                        : onPitchPlayers[NON_STRIKE]?.playerName.split('')[0]}
+                                    {onPitchPlayers[NON_STRIKE]?.jerseyPlayerImage ?
+                                        <img src={onPitchPlayers[NON_STRIKE]?.jerseyPlayerImage} className="avatar-xs"/>
+                                        : <Avatar src="#" alt="ET">
+                                            {onPitchPlayers[NON_STRIKE]?.playerName?.charAt(0)?.toUpperCase() || 'P'}
+                                        </Avatar>
+                                        // <PlayerImage
+                                        //     // width="30px"
+                                        //     playerImage={onPitchPlayers[NON_STRIKE]?.playerimage}
+                                        //     jerseyImage={teamDetails["BATTING_TEAM"].jersey}
+                                        // />
+                                        // : onPitchPlayers[NON_STRIKE]?.playerName.split('')[0]
+                                    }
                                 </span>
                                 <span onClick={() => { changeStrike(onPitchPlayers[NON_STRIKE].commentaryPlayerId) }}>{onPitchPlayers[NON_STRIKE]?.playerName}&nbsp;</span>
                                 <span>{onPitchPlayers[NON_STRIKE]?.batRun || 0}</span>
@@ -319,13 +324,17 @@ export const CommentaryScreen = ({
                             </Col>
                             <Col className="striker-end d-flex align-items-center gap-1" xs={12} md={6} lg={6}>
                                 <span>
-                                    {onPitchPlayers[ON_STRIKE]?.playerimage ?
-                                        // <img src={onPitchPlayers[ON_STRIKE]?.playerimage} alt='player image' width={30} />
-                                        <PlayerImage
-                                            playerImage={onPitchPlayers[ON_STRIKE]?.playerimage}
-                                            jerseyImage={teamDetails["BATTING_TEAM"].jersey}
-                                        />
-                                        : onPitchPlayers[ON_STRIKE]?.playerName.split('')[0]}
+                                    {onPitchPlayers[ON_STRIKE]?.jerseyPlayerImage ?
+                                        <img src={onPitchPlayers[ON_STRIKE]?.jerseyPlayerImage} className="avatar-xs"/>
+                                        : <Avatar src="#" alt="ET">
+                                            {onPitchPlayers[ON_STRIKE]?.playerName?.charAt(0)?.toUpperCase() || 'P'}
+                                        </Avatar>
+                                        // <PlayerImage
+                                        //     playerImage={onPitchPlayers[ON_STRIKE]?.playerimage}
+                                        //     jerseyImage={teamDetails["BATTING_TEAM"].jersey}
+                                        // />
+                                        // : onPitchPlayers[ON_STRIKE]?.playerName.split('')[0]
+                                    }
                                 </span>
                                 <span onClick={() => { changeStrike(onPitchPlayers[ON_STRIKE].commentaryPlayerId) }}>{onPitchPlayers[ON_STRIKE]?.playerName}*&nbsp;</span>
                                 <span>{onPitchPlayers[ON_STRIKE]?.batRun || 0}</span>
@@ -337,13 +346,17 @@ export const CommentaryScreen = ({
                         <>
                             <Col className="striker-end d-flex align-items-center gap-1" xs={12} md={6} lg={6}>
                                 <span >
-                                    {onPitchPlayers[ON_STRIKE]?.playerimage ?
-                                        // <img src={onPitchPlayers[ON_STRIKE]?.playerimage} alt='player image' width={30} />
-                                        <PlayerImage
-                                            playerImage={onPitchPlayers[ON_STRIKE]?.playerimage}
-                                            jerseyImage={teamDetails["BATTING_TEAM"].jersey}
-                                        />
-                                        : onPitchPlayers[ON_STRIKE]?.playerName?.split('')[0]}
+                                    {onPitchPlayers[ON_STRIKE]?.jerseyPlayerImage ?
+                                        <img src={onPitchPlayers[ON_STRIKE]?.jerseyPlayerImage} className="avatar-xs"/>
+                                        : <Avatar src="#" alt="ET">
+                                            {onPitchPlayers[ON_STRIKE]?.playerName?.charAt(0)?.toUpperCase() || 'P'}
+                                        </Avatar>
+                                        // <PlayerImage
+                                        //     playerImage={onPitchPlayers[ON_STRIKE]?.playerimage}
+                                        //     jerseyImage={teamDetails["BATTING_TEAM"].jersey}
+                                        // />
+                                        // : onPitchPlayers[ON_STRIKE]?.playerName?.split('')[0]
+                                    }
                                 </span>
                                 <span onClick={() => { changeStrike(onPitchPlayers[ON_STRIKE].commentaryPlayerId) }}>{onPitchPlayers[ON_STRIKE]?.playerName}*&nbsp;</span>
                                 <span>{onPitchPlayers[ON_STRIKE]?.batRun || 0}</span>
@@ -352,13 +365,17 @@ export const CommentaryScreen = ({
                             </Col>
                             <Col className="non-striker-end d-flex align-items-center gap-1" xs={12} md={6} lg={6}>
                                 <span >
-                                    {onPitchPlayers[NON_STRIKE]?.playerimage ?
-                                        // <img src={onPitchPlayers[NON_STRIKE]?.playerimage} alt='player image' width={30} />
-                                        <PlayerImage
-                                            playerImage={onPitchPlayers[NON_STRIKE]?.playerimage}
-                                            jerseyImage={teamDetails["BATTING_TEAM"].jersey}
-                                        />
-                                        : onPitchPlayers[NON_STRIKE]?.playerName?.split('')[0]}
+                                    {onPitchPlayers[NON_STRIKE]?.jerseyPlayerImage ?
+                                        <img src={onPitchPlayers[NON_STRIKE]?.jerseyPlayerImage} className="avatar-xs"/>
+                                        : <Avatar src="#" alt="ET">
+                                            {onPitchPlayers[NON_STRIKE]?.playerName?.charAt(0)?.toUpperCase() || 'P'}
+                                        </Avatar>
+                                        // <PlayerImage
+                                        //     playerImage={onPitchPlayers[NON_STRIKE]?.playerimage}
+                                        //     jerseyImage={teamDetails["BATTING_TEAM"].jersey}
+                                        // />
+                                        // : onPitchPlayers[NON_STRIKE]?.playerName?.split('')[0]
+                                    }
                                 </span>
                                 <span onClick={() => { changeStrike(onPitchPlayers[NON_STRIKE].commentaryPlayerId) }}>{onPitchPlayers[NON_STRIKE]?.playerName}&nbsp;</span>
                                 <span>{onPitchPlayers[NON_STRIKE]?.batRun || 0}</span>
@@ -372,13 +389,18 @@ export const CommentaryScreen = ({
                 <Row className="Bowler-header">
                     <Col className={"d-flex align-items-center gap-1"} xs={12} md={12} lg={12}>
                         <span >
-                            {onPitchPlayers[CURRENT_BOWLER]?.playerimage ?
-                                // <img src={onPitchPlayers[CURRENT_BOWLER]?.playerimage} alt='player image' width={30} />
-                                <PlayerImage
-                                    playerImage={onPitchPlayers[CURRENT_BOWLER]?.playerimage}
-                                    jerseyImage={teamDetails["BOWLING_TEAM"].jersey}
-                                />
-                                : onPitchPlayers[CURRENT_BOWLER]?.playerName.split('')[0]}
+                            {onPitchPlayers[CURRENT_BOWLER]?.jerseyPlayerImage ?
+                                <img src={onPitchPlayers[CURRENT_BOWLER]?.jerseyPlayerImage} className="avatar-xs" 
+                                /> : 
+                                <Avatar src="#" alt="ET">
+                                    {onPitchPlayers[CURRENT_BOWLER]?.playerName?.charAt(0)?.toUpperCase() || 'B'}
+                                </Avatar>
+                                // <PlayerImage
+                                //     playerImage={onPitchPlayers[CURRENT_BOWLER]?.playerimage}
+                                //     jerseyImage={teamDetails["BOWLING_TEAM"].jersey}
+                                // />
+                                // : onPitchPlayers[CURRENT_BOWLER]?.playerName.split('')[0]
+                            }
                         </span>
                         {onPitchPlayers[CURRENT_BOWLER]?.playerName} &nbsp;
                         <span>{parseFloat(onPitchPlayers[CURRENT_BOWLER]?.bowlerOver || 0).toFixed(1) || 0}-{onPitchPlayers[CURRENT_BOWLER]?.bowlerMaidenOver || 0}
