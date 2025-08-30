@@ -148,6 +148,7 @@ function AddCommentary() {
                 // "drsCount": true,
                 "isVirtual": true,
                 "isPredictMarket": true,
+                "competitionId": true,
             };
 
             if (initialEditData?.commentaryStatus != 1) {
