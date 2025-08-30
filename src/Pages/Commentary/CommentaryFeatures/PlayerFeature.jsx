@@ -48,7 +48,7 @@ export const PlayerFeature = ({ playerList, handleValueChange, updatedData, titl
                             return (
                             <tr key={`${playerInfo.commentaryPlayerId}-${index}`} 
                             style={{
-                                fontWeight: (playerInfo?.batterOrder || playerInfo?.bowlerOrder) ? "bold" : "normal"
+                                fontWeight: (playerInfo?.isPlay) ? "bold" : "normal"
                             }}>
                                 <td>
                                     <input
