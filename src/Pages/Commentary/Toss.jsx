@@ -13,6 +13,7 @@ import { updateToastData } from "../../Features/toasterSlice";
 import { CONNECT_COMMENTARY, ERROR } from "../../components/Common/Const";
 import createSocket from "../../Features/socket";
 import { isEmpty } from "lodash";
+import { extractRequiredFieldsForTeamStatus } from "./functions";
 
 const Index = ({ data, next, save, isPredictToggle }) => {
   document.title = "Toss";
@@ -60,7 +61,7 @@ const Index = ({ data, next, save, isPredictToggle }) => {
         commentaryStatus: "2",
       },
       commentaryTeams: UpdatedCurrentInningTeams,
-      isTeamStatusUpdate: true,
+      updateTeamStatus: extractRequiredFieldsForTeamStatus(UpdatedCurrentInningTeams),
     }
     save(newData, 2, {
       ...data,
@@ -72,7 +73,7 @@ const Index = ({ data, next, save, isPredictToggle }) => {
   useEffect(() => {
     if (!isEmpty(commentaryDetails)) {
       if (socket) {
-        socket.emit(CONNECT_COMMENTARY, { commentaryId: commentaryDetails?.commentaryId, eventRefId : commentaryDetails?.eventRefId });
+        socket.emit(CONNECT_COMMENTARY, { commentaryId: commentaryDetails?.commentaryId, eventRefId: commentaryDetails?.eventRefId });
       }
     }
   }, [commentaryDetails]);
@@ -110,72 +111,72 @@ const Index = ({ data, next, save, isPredictToggle }) => {
             <CardHeader className="toss-card-header p-0">
               <h2>Toss Selection</h2>
             </CardHeader>
-              <div style={{ borderBottom: "solid gray 2px" }}></div>
-              <div className="mt-5">
-                <div className="toss-card-title">
-                  <h4>Toss Won by?</h4>
-                </div>
+            <div style={{ borderBottom: "solid gray 2px" }}></div>
+            <div className="mt-5">
+              <div className="toss-card-title">
+                <h4>Toss Won by?</h4>
+              </div>
+              <Row>
+                {currentInningTeams?.map((val, index) => (
+                  <Col
+                    key={index}
+                    xs={6}
+                    onClick={() => {
+                      handleDetails("tossWonBy", val?.teamId);
+                      setWinnerTeam(val);
+                    }}
+                  >
+                    <CardComponent
+                      title={val.teamName}
+                      selectIcon={"bx bxs-check-circle"}
+                      onClickColor={"#099680"}
+                      bgColor={"#55c6b4"}
+                      check={val.teamId === values?.tossWonBy}
+                    />
+                  </Col>
+                ))}
+              </Row>
+            </div>
+            {values?.tossWonBy !== null && (
+              <div className="mt-2">
+
+                <h5 style={{ color: "unset" }}>Choose To?</h5>
                 <Row>
-                  {currentInningTeams?.map((val, index) => (
-                    <Col
-                      key={index}
-                      xs={6}
-                      onClick={() => {
-                        handleDetails("tossWonBy", val?.teamId);
-                        setWinnerTeam(val);
-                      }}
-                    >
-                      <CardComponent
-                        title={val.teamName}
-                        selectIcon={"bx bxs-check-circle"}
-                        onClickColor={"#099680"}
-                        bgColor={"#55c6b4"}
-                        check={val.teamId === values?.tossWonBy}
-                      />
-                    </Col>
-                  ))}
+                  <Col
+                    // xl="12"
+                    sm="6"
+                    onClick={() => {
+                      handleDetails("choseTo", 1);
+                    }}
+                  >
+                    <CardComponent
+                      title="Batting"
+                      titleIcon="CommentaryIcons/bat1.png"
+                      selectIcon={"bx bxs-check-circle"}
+                      onClickColor={"#FCB92C"}
+                      bgColor={"#ffcd6b"}
+                      check={values?.choseTo === 1}
+                    />
+                  </Col>
+                  <Col
+                    // xl="12"
+                    sm="6"
+                    onClick={() => {
+                      handleDetails("choseTo", 2);
+                    }}
+                  >
+                    <CardComponent
+                      title="Bowling"
+                      titleIcon="CommentaryIcons/ball1.png"
+                      selectIcon={"bx bx-circle"}
+                      onClickColor={"#FCB92C"}
+                      bgColor={"#ffcd6b"}
+                      check={values?.choseTo === 2}
+                    />
+                  </Col>
                 </Row>
               </div>
-              {values?.tossWonBy !== null && (
-                <div className="mt-2">
-                  
-                  <h5 style={{color: "unset"}}>Choose To?</h5>
-                  <Row>
-                    <Col
-                      // xl="12"
-                      sm="6"
-                      onClick={() => {
-                        handleDetails("choseTo", 1);
-                      }}
-                    >
-                      <CardComponent
-                        title="Batting"
-                        titleIcon="CommentaryIcons/bat1.png"
-                        selectIcon={"bx bxs-check-circle"}
-                        onClickColor={"#FCB92C"}
-                        bgColor={"#ffcd6b"}
-                        check={values?.choseTo === 1}
-                      />
-                    </Col>
-                    <Col
-                      // xl="12"
-                      sm="6"
-                      onClick={() => {
-                        handleDetails("choseTo", 2);
-                      }}
-                    >
-                      <CardComponent
-                        title="Bowling"
-                        titleIcon="CommentaryIcons/ball1.png"
-                        selectIcon={"bx bx-circle"}
-                        onClickColor={"#FCB92C"}
-                        bgColor={"#ffcd6b"}
-                        check={values?.choseTo === 2}
-                      />
-                    </Col>
-                  </Row>
-                </div>
-              )}
+            )}
           </Card>
           {values?.choseTo != null && (
             <div className="d-flex align-items-center justify-content-end">

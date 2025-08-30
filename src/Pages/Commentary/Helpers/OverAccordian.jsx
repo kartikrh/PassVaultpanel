@@ -326,10 +326,10 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
             <Box sx={{ width: '100%' }}>
                 {sortedKeys.map(key => {
                     const [innings, teamId] = key.split('_');
-                    const team = teamId === teamDetails.BATTING_TEAM.teamId.toString()
+                    const team = teamId === teamDetails.BATTING_TEAM?.teamId.toString()
                         ? teamDetails.BATTING_TEAM
                         : teamDetails.BOWLING_TEAM;
-                    const jersy = teamId === teamDetails.BATTING_TEAM.teamId.toString()
+                    const jersy = teamId === teamDetails.BATTING_TEAM?.teamId.toString()
                         ? teamDetails.BOWLING_TEAM
                         : teamDetails.BATTING_TEAM
                     return !isEmpty(groupedOvers[key]) && (
@@ -404,7 +404,7 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                                                                 <PlayerImage
                                                                     // width="30px"
                                                                     playerImage={bowler?.playerimage}
-                                                                    jerseyImage={jersy.jersey}
+                                                                    jerseyImage={jersy?.jersey}
                                                                 /> : <Avatar
                                                                     src="/api/placeholder/48/48"
                                                                     alt={bowler?.playerName || 'Bowler'}

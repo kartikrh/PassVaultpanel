@@ -1134,6 +1134,14 @@ export const TEAM_FEATURE_FIELDS = [
         fieldColspan: { xs: 3, md: 2, lg: 2 },
     },
     {
+        name: "currentInnings",
+        placeholder: "C Innings",
+        formName: TEAM,
+        type: COUNTER,
+        className: "no-spinners",
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
+    },
+    {
         name: "teamBattingOrder",
         placeholder: "Batting Order",
         formName: TEAM,
@@ -1149,7 +1157,7 @@ export const TEAM_FEATURE_FIELDS = [
         className: "no-spinners",
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
-     {
+    {
         name: "teamOver",
         placeholder: "Over",
         formName: TEAM,
@@ -1254,7 +1262,7 @@ export const TEAM_FEATURE_FIELDS = [
     },
 ]
 
-export const OVER_FEATURE_FIELD = (bowlingPlayers = [], teamlist = []) => [
+export const OVER_FEATURE_FIELD = (bowlingPlayers = [], teamlist = [], overTypeList = []) => [
     {
         name: "bowlerId",
         placeholder: "Bowler",
@@ -1274,6 +1282,17 @@ export const OVER_FEATURE_FIELD = (bowlingPlayers = [], teamlist = []) => [
         options: teamlist?.map(p => ({
             value: p?.teamId,
             label: p?.teamName
+        })),
+        fieldColspan: { xs: 4, md: 3, lg: 3 },
+    },
+    {
+        name: "overType",
+        placeholder: "Over Type",
+        formName: OVER,
+        type: SELECT,
+        options: overTypeList?.map(p => ({
+            value: p?.id,
+            label: p?.overType
         })),
         fieldColspan: { xs: 4, md: 3, lg: 3 },
     },

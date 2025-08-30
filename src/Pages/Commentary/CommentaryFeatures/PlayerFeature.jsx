@@ -23,6 +23,7 @@ export const PlayerFeature = ({ playerList, handleValueChange, updatedData, titl
         handleValueChange(dataToSend)
     }
     const PLAYER_FIELD = title === "Player Batting" ? BATTING_PLAYER_FEATURE_FIELD(bowlingPlayers) : BOWLING_PLAYER_FEATURE_FIELD;
+    const playerListData = title === "Player Batting" ? playerList?.sort((a,b)=> b?.batterOrder - a?.batterOrder) : playerList?.sort((a,b)=> b?.bowlerOrder - a?.bowlerOrder);
 
     return <Accordion open={open} toggle={toggle}>
         <AccordionItem>
@@ -42,10 +43,13 @@ export const PlayerFeature = ({ playerList, handleValueChange, updatedData, titl
                     </thead>
                     <tbody>
                         {playerList?.length === 0 && <tr><td colSpan={PLAYER_FIELD.length + 1} className="text-center">No Players data to show</td></tr>}
-                        {playerList?.sort((a,b)=> b?.displayOrder - a?.displayOrder)?.map((playerInfo, index) => {
+                        {playerListData?.map((playerInfo, index) => {
                             const currentValues = updatedData[playerInfo.commentaryPlayerId] || playerInfo;
                             return (
-                            <tr key={`${playerInfo.commentaryPlayerId}-${index}`}>
+                            <tr key={`${playerInfo.commentaryPlayerId}-${index}`} 
+                            style={{
+                                fontWeight: (playerInfo?.batterOrder || playerInfo?.bowlerOrder) ? "bold" : "normal"
+                            }}>
                                 <td>
                                     <input
                                         type="checkbox"
