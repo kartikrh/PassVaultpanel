@@ -4,8 +4,10 @@ import ball from '../../../../src/assets/images/cricket-icons/cricket-ball.png';
 import bat from '../../../../src/assets/images/cricket-icons/cricket-bat.png';
 import allrounder from '../../../../src/assets/images/cricket-icons/cricket.png';
 import keeper from '../../../../src/assets/images/cricket-icons/game.png';
+import SegmentedSwitch from '../../../components/Common/Reusables/SegmentSwitch';
 
-const SelectPlayerModal = ({ playerList, toggle, isOpen, selectPlayer, isBowler, overPopUpForBowler }) => {
+const SelectPlayerModal = ({ playerList, toggle, isOpen, selectPlayer, isBowler, overPopUpForBowler, isOverChangeNonDefault, overTypeOption, overType }) => {
+    const overChangeNonDefaultSwitch = isOverChangeNonDefault
     if (playerList && playerList.length > 0) {
         playerList = playerList.sort((a, b) =>
             a.playerName?.trim().localeCompare(b.playerName?.trim(), undefined, { sensitivity: 'base' })
@@ -14,7 +16,7 @@ const SelectPlayerModal = ({ playerList, toggle, isOpen, selectPlayer, isBowler,
     const [players, setPlayers] = useState(playerList);
     const [isBowlerChange, setIsBowlerChange] = useState(false);
     const [search, setSearch] = useState("");
-
+    const [selectedOverType, setSelectedOverType] = useState(overType)
     useEffect(() => {
         setSearch("");
         setPlayers(playerList);
@@ -73,6 +75,13 @@ const SelectPlayerModal = ({ playerList, toggle, isOpen, selectPlayer, isBowler,
                 Select Player
             </ModalHeader>
             <ModalBody>
+                {overChangeNonDefaultSwitch && <div className='pb-3'>
+                    <SegmentedSwitch
+                        options={overTypeOption}
+                        selectedValue={selectedOverType?.value}
+                        onSelectionChange={(value, label) => setSelectedOverType({ value, label })}
+                    />
+                </div>}
                 <Table responsive>
                     <thead>
                         <Input
@@ -88,7 +97,7 @@ const SelectPlayerModal = ({ playerList, toggle, isOpen, selectPlayer, isBowler,
                         {sortedPlayers?.map(value => <tr key={value.commentaryPlayerId}>
                             <td role='button' onClick={() => {
                                 setIsBowlerChange(false)
-                                selectPlayer(value.commentaryPlayerId)
+                                selectPlayer(value.commentaryPlayerId, selectedOverType)
                             }}
                             ><span className='pe-4'>{imageRender(value.playerType)}</span>{value.playerName}</td>
                         </tr>)}
