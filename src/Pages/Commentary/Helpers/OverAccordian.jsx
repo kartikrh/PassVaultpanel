@@ -400,16 +400,24 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                                                             <Typography variant="subtitle2" fontWeight="bold" className='overHeadTextColor accordian-text'>
                                                                 Over {Math.floor(parseFloat(overNum))}
                                                             </Typography>
-                                                            {bowler?.playerimage ?
-                                                                <PlayerImage
-                                                                    // width="30px"
-                                                                    playerImage={bowler?.playerimage}
-                                                                    jerseyImage={jersy?.jersey}
-                                                                /> : <Avatar
-                                                                    src="/api/placeholder/48/48"
-                                                                    alt={bowler?.playerName || 'Bowler'}
-                                                                    sx={{ width: 32, height: 32 }}
-                                                                />
+                                                            {bowler?.jerseyPlayerImage ?
+                                                                <img
+                                                                    src={bowler?.jerseyPlayerImage}
+                                                                    // alt={bowler?.name || "Bowler"}
+                                                                    className="avatar-xs"
+                                                                /> : 
+                                                                <Avatar src="#" alt="ET">
+                                                                    {bowler?.playerName?.charAt(0)?.toUpperCase() || 'B'}
+                                                                </Avatar>
+                                                                // <PlayerImage
+                                                                //     // width="30px"
+                                                                //     playerImage={bowler?.playerimage}
+                                                                //     jerseyImage={jersy?.jersey}
+                                                                // /> : <Avatar
+                                                                //     src="/api/placeholder/48/48"
+                                                                //     alt={bowler?.playerName || 'Bowler'}
+                                                                //     sx={{ width: 32, height: 32 }}
+                                                                // />
                                                             }
                                                             <Typography variant="subtitle2" fontWeight="bold" className='overHeadTextColor accordian-text'>{bowler?.playerName || 'Unknown Bowler'}
                                                             </Typography>
