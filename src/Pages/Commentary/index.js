@@ -1585,7 +1585,7 @@ const Index = () => {
           {/* <span className="point-font">{record?.eventNo}</span> */}
           <span style={{ fontSize: "12px", cursor: "pointer" }}>
             {record.competition}
-            <Tooltip
+            {/* <Tooltip
               title="Edit Competition"
               color={"#e8e8ea"}
               overlayInnerStyle={{ color: "#000" }}
@@ -1599,7 +1599,7 @@ const Index = () => {
                   setSelectedCompititon(record);
                 }}
               ></a>
-            </Tooltip>
+            </Tooltip> */}
           </span>
         </div>
       ),
