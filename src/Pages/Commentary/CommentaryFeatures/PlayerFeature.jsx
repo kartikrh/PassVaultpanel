@@ -46,7 +46,10 @@ export const PlayerFeature = ({ playerList, handleValueChange, updatedData, titl
                         {playerListData?.map((playerInfo, index) => {
                             const currentValues = updatedData[playerInfo.commentaryPlayerId] || playerInfo;
                             return (
-                            <tr key={`${playerInfo.commentaryPlayerId}-${index}`}>
+                            <tr key={`${playerInfo.commentaryPlayerId}-${index}`} 
+                            style={{
+                                fontWeight: (playerInfo?.isPlay) ? "bold" : "normal"
+                            }}>
                                 <td>
                                     <input
                                         type="checkbox"
@@ -72,11 +75,7 @@ export const PlayerFeature = ({ playerList, handleValueChange, updatedData, titl
                                     }
 
                                     if (field.type === SWITCH) {
-                                        if ((field.name === "isPlay" || field.name === "onStrike") && fieldValue === true) {
-                                            displayValue = <b>True</b>;
-                                        } else {
-                                            displayValue = fieldValue === true ? "True" : "False";
-                                        }
+                                        displayValue = fieldValue === true ? "True" : "False";
                                     }
                                     return (
                                     <td key={idx}>
