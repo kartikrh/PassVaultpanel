@@ -32,7 +32,7 @@ export const MarketTemplateRunnerFileds = [
         name: "overRate",
         label: "Over Rate",
         type: TEXT,
-        isRequired: true,
+        // isRequired: true,
         requiredErrorMessage: "Please enter overRate.",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 2, lg: 4 }
@@ -41,7 +41,7 @@ export const MarketTemplateRunnerFileds = [
         name: "underRate",
         label: "Under Rate",
         type: TEXT,
-        isRequired: true,
+        // isRequired: true,
         requiredErrorMessage: "Please enter underRate.",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 2, lg: 4 }
@@ -50,7 +50,7 @@ export const MarketTemplateRunnerFileds = [
         name: "layPrice",
         label: "No Rate",
         type: TEXT,
-        isRequired: true,
+        // isRequired: true,
         requiredErrorMessage: "Please enter noRate.",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 2, lg: 4 }
@@ -59,7 +59,7 @@ export const MarketTemplateRunnerFileds = [
         name: "laySize",
         label: "No Point",
         type: TEXT,
-        isRequired: true,
+        // isRequired: true,
         requiredErrorMessage: "Please enter noPoint.",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 2, lg: 4 }
