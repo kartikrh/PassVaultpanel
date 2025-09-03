@@ -317,6 +317,34 @@ const Index = () => {
         );
       });
   };
+  const handleIsMen = async (pType, record, cState) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/matchType/isMen`, {
+        matchTypeId: record?.matchTypeId,
+        [pType]: cState ? false : true,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
 
   const columns = [
     {
@@ -422,6 +450,31 @@ const Index = () => {
           >
             <i
               className={`bx ${record?.isActive ? "bx-check" : "bx-block"}`}
+            ></i>
+          </Button>
+        </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Men",
+      key: "isMen",
+      render: (text, record) => (
+        <Tooltip
+          title={"Men"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
+          <Button
+            color={`${record.isMen ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleIsMen("isMen", record, record?.isMen);
+            }}
+          >
+            <i
+              className={`bx ${record?.isMen ? "bx-check" : "bx-block"}`}
             ></i>
           </Button>
         </Tooltip>

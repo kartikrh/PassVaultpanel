@@ -131,6 +131,14 @@ const Index = () => {
   const loadInitData = useSelector((state) => state.loadInit.loadInitData);
   const [updateDayModelVisible, setUpdateDayModelVisible] = useState(false);
   const [selectedCommentaryDay, setSelectedCommentaryDay] = useState({});
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+      const handleResize = () => setWindowWidth(window.innerWidth);
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    // }
+  }, []);
 
   let scorecardFrameUrl = null;
 
@@ -1467,7 +1475,7 @@ const Index = () => {
       ),
       key: "eventDate",
       sort: true,
-      sticky: true,
+      sticky: windowWidth > 420 ? true : false,
       style: { width: "10%", left: 0 },
     },
     {
@@ -1527,7 +1535,7 @@ const Index = () => {
       ),
       key: "eventRefId",
       sort: true,
-      sticky: true,
+      sticky: windowWidth > 420 ? true : false,
       style: { width: 100, left: 150 },
     },
     // {
@@ -1605,7 +1613,7 @@ const Index = () => {
       ),
       key: "eventName",
       sort: true,
-      sticky: true,
+      sticky: windowWidth > 420 ? true : false,
       style: { width: 100, left: 250 },
     },
     {
