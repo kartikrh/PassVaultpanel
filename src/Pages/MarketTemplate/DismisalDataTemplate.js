@@ -22,7 +22,9 @@ import {
     SAVE,
     SAVE_AND_CLOSE,
     SAVE_AND_NEW,
+    SUCCESS,
     TAB_MARKET_TEMPLATE,
+    WARNING,
 } from "../../components/Common/Const";
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
@@ -248,7 +250,7 @@ function DismissalDataComponent() {
                     updateToastData({
                         data: "No data to save. Please enter some values.",
                         title: "Warning",
-                        type: "warning",
+                        type: WARNING,
                     })
                 );
                 return;
@@ -266,7 +268,7 @@ function DismissalDataComponent() {
                     updateToastData({
                         data: "Dismissal data saved successfully",
                         title: "Success",
-                        type: "success",
+                        type: SUCCESS,
                     })
                 );
 
