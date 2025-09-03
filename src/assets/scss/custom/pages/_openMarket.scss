@@ -108,8 +108,8 @@
     position: relative;
     color: #3A1290;
     display: flex;
-    justify-content: center;
-    align-items: end;
+    justify-content: space-between;
+    align-items: center;
 }
 .second-col-back{
     color: #3385FF;
@@ -233,7 +233,7 @@
     -moz-appearance: textfield;
     appearance: none;
   
-    font-size: 28px;
+    font-size: 18px;
     line-height: 1.2;
     width: 100%; // optional
     // text-align: center; // optional
