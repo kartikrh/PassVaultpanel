@@ -201,7 +201,16 @@ function DismissalDataComponent() {
             setIsLoading(false);
         }
     };
+    const getMinMaxNonZero = (value) => {
+        const MAX_VALUE = 999;
 
+        if (value < 0) return 0;
+        else if (value > MAX_VALUE) return MAX_VALUE;
+        else {
+            // Round to 2 decimal places
+            return Math.round(value * 100) / 100;
+        }
+    };
     const handleSaveClick = async () => {
         if (!marketTemplateId || marketTemplateId === "0") {
             dispatch(
@@ -400,7 +409,7 @@ function DismissalDataComponent() {
                                                         bowlingStyle.bowlingTypeId,
                                                         runner.marketTemplateRunnerId,
                                                         'predefinedValue',
-                                                        e.target.value
+                                                        getMinMaxNonZero(e.target.value)
                                                     )}
                                                     onFocus={() => handleCellFocus(overTypeId, bowlingStyle.bowlingTypeId, runner.marketTemplateRunnerId)}
                                                     onBlur={handleCellBlur}
@@ -429,7 +438,7 @@ function DismissalDataComponent() {
                                                         bowlingStyle.bowlingTypeId,
                                                         runner.marketTemplateRunnerId,
                                                         'impactProb',
-                                                        e.target.value
+                                                        getMinMaxNonZero(e.target.value)
                                                     )}
                                                     onFocus={() => handleCellFocus(overTypeId, bowlingStyle.bowlingTypeId, runner.marketTemplateRunnerId)}
                                                     onBlur={handleCellBlur}
