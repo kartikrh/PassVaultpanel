@@ -2,14 +2,10 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
     Button,
-    ButtonDropdown,
     Card,
     CardBody,
     Col,
     Container,
-    DropdownItem,
-    DropdownMenu,
-    DropdownToggle,
     Row,
     Table,
 } from "reactstrap";
@@ -19,9 +15,6 @@ import {
     PERMISSION_ADD,
     PERMISSION_EDIT,
     PERMISSION_VIEW,
-    SAVE,
-    SAVE_AND_CLOSE,
-    SAVE_AND_NEW,
     SUCCESS,
     TAB_MARKET_TEMPLATE,
     WARNING,
@@ -35,12 +28,12 @@ import { TextField } from "@mui/material";
 
 function DismissalDataComponent() {
     const pageName = TAB_MARKET_TEMPLATE;
-    const [drp_up, setDrp_up] = useState(false);
-    const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
     const [isLoading, setIsLoading] = useState(false);
     const [expandedSections, setExpandedSections] = useState({});
     const [hasError, setHasError] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
+    const [focusedCell, setFocusedCell] = useState(null);
+    const [originalData, setOriginalData] = useState({});
 
     // Master data structure with default empty arrays
     const [masterData, setMasterData] = useState({
@@ -63,27 +56,14 @@ function DismissalDataComponent() {
         location.state?.marketTemplateId || "0"
     );
 
-    useEffect(() => {
+    // Check if data has changed
+    const hasDataChanged = () => {
         try {
-            if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
-                navigate("/dashboard");
-                return;
-            }
-            fetchMasterData();
+            return JSON.stringify(dismissalData) !== JSON.stringify(originalData);
         } catch (error) {
-            handleError("Error in component initialization", error);
+            return false;
         }
-    }, [permissionObj]);
-
-    useEffect(() => {
-        try {
-            if (marketTemplateId !== "0") {
-                fetchDismissalData(marketTemplateId);
-            }
-        } catch (error) {
-            handleError("Error loading data for market template", error);
-        }
-    }, [marketTemplateId]);
+    };
 
     const handleError = (message, error = null) => {
         console.error(message, error);
@@ -96,6 +76,45 @@ function DismissalDataComponent() {
                 type: ERROR,
             })
         );
+    };
+
+    const handleInputChange = (overType, bowlingStyle, runnerKey, field, value) => {
+        try {
+            setDismissalData(prev => ({
+                ...prev,
+                [overType]: {
+                    ...prev[overType],
+                    [bowlingStyle]: {
+                        ...prev[overType]?.[bowlingStyle],
+                        [runnerKey]: {
+                            ...prev[overType]?.[bowlingStyle]?.[runnerKey],
+                            [field]: value
+                        }
+                    }
+                }
+            }));
+        } catch (error) {
+            console.error("Error updating input value", error);
+        }
+    };
+
+    const handleCellFocus = (overType, bowlingStyle, runnerKey) => {
+        setFocusedCell({ overType, bowlingStyle, runnerKey });
+    };
+
+    const handleCellBlur = () => {
+        setFocusedCell(null);
+    };
+
+    const toggleSection = (overTypeId) => {
+        try {
+            setExpandedSections(prev => ({
+                ...prev,
+                [overTypeId]: !prev[overTypeId]
+            }));
+        } catch (error) {
+            handleError("Error toggling section", error);
+        }
     };
 
     const fetchMasterData = async () => {
@@ -165,6 +184,8 @@ function DismissalDataComponent() {
                 }
 
                 setDismissalData(transformedData);
+                // Store original data for comparison
+                setOriginalData(JSON.parse(JSON.stringify(transformedData)));
 
                 // Expand first section by default
                 if (result.overType && result.overType.length > 0) {
@@ -181,40 +202,27 @@ function DismissalDataComponent() {
         }
     };
 
-    const handleInputChange = (overType, bowlingStyle, runnerKey, field, value) => {
-        try {
-            setDismissalData(prev => ({
-                ...prev,
-                [overType]: {
-                    ...prev[overType],
-                    [bowlingStyle]: {
-                        ...prev[overType]?.[bowlingStyle],
-                        [runnerKey]: {
-                            ...prev[overType]?.[bowlingStyle]?.[runnerKey],
-                            [field]: value
-                        }
-                    }
-                }
-            }));
-        } catch (error) {
-            handleError("Error updating input value", error);
-        }
-    };
-
-    const toggleSection = (overTypeId) => {
-        try {
-            setExpandedSections(prev => ({
-                ...prev,
-                [overTypeId]: !prev[overTypeId]
-            }));
-        } catch (error) {
-            handleError("Error toggling section", error);
-        }
-    };
-
-    const handleSaveClick = async (saveAction) => {
+    const handleSaveClick = async () => {
         if (!marketTemplateId || marketTemplateId === "0") {
-            handleError("Invalid market template ID for saving");
+            dispatch(
+                updateToastData({
+                    data: "Invalid market template ID for saving",
+                    title: "Error",
+                    type: ERROR,
+                })
+            );
+            return;
+        }
+
+        // Check if data has changed
+        if (!hasDataChanged()) {
+            dispatch(
+                updateToastData({
+                    data: "No changes detected. Please modify some values before saving.",
+                    title: "Warning",
+                    type: WARNING,
+                })
+            );
             return;
         }
 
@@ -245,19 +253,7 @@ function DismissalDataComponent() {
                 });
             });
 
-            if (dismissalDataArray.length === 0) {
-                dispatch(
-                    updateToastData({
-                        data: "No data to save. Please enter some values.",
-                        title: "Warning",
-                        type: WARNING,
-                    })
-                );
-                return;
-            }
-
             setIsLoading(true);
-            setCurrentSaveAction(saveAction);
 
             const response = await axiosInstance.post("/admin/marketTemplate/saveDismissal", {
                 dismissalData: dismissalDataArray
@@ -272,20 +268,30 @@ function DismissalDataComponent() {
                     })
                 );
 
-                if (saveAction === SAVE_AND_CLOSE) {
-                    navigate("/marketTemplate");
-                } else if (saveAction === SAVE_AND_NEW) {
-                    setDismissalData({});
-                    setMarketTemplateId("0");
-                }
+                // Update original data after successful save
+                setOriginalData(JSON.parse(JSON.stringify(dismissalData)));
+
+                // Always redirect to market template page after save
+                navigate("/marketTemplate");
             } else {
-                handleError("Failed to save dismissal data");
+                dispatch(
+                    updateToastData({
+                        data: "Failed to save dismissal data. Please try again.",
+                        title: "Error",
+                        type: ERROR,
+                    })
+                );
             }
         } catch (error) {
-            handleError("Error saving dismissal data", error);
+            dispatch(
+                updateToastData({
+                    data: error?.response?.data?.message || "Error saving dismissal data. Please try again.",
+                    title: "Save Error",
+                    type: ERROR,
+                })
+            );
         } finally {
             setIsLoading(false);
-            setCurrentSaveAction(undefined);
         }
     };
 
@@ -310,13 +316,51 @@ function DismissalDataComponent() {
                 );
             }
 
+            // Helper function to check if current cell is focused
+            const isCellFocused = (bowlingStyleId, runnerRunnerId) => {
+                return focusedCell &&
+                    focusedCell.overType.toString() === overTypeId.toString() &&
+                    focusedCell.bowlingStyle.toString() === bowlingStyleId.toString() &&
+                    focusedCell.runnerKey.toString() === runnerRunnerId.toString();
+            };
+
+            // Helper function to check if column is highlighted
+            const isColumnHighlighted = (bowlingStyleId) => {
+                return focusedCell &&
+                    focusedCell.overType.toString() === overTypeId.toString() &&
+                    focusedCell.bowlingStyle.toString() === bowlingStyleId.toString();
+            };
+
+            // Helper function to check if row is highlighted
+            const isRowHighlighted = (runnerRunnerId) => {
+                return focusedCell &&
+                    focusedCell.overType.toString() === overTypeId.toString() &&
+                    focusedCell.runnerKey.toString() === runnerRunnerId.toString();
+            };
+
             return (
                 <Table bordered responsive>
                     <thead>
                         <tr>
-                            <th style={{ minWidth: '120px' }}>Runner Type</th>
+                            <th style={{
+                                minWidth: '120px',
+                                fontWeight: focusedCell && focusedCell.overType.toString() === overTypeId.toString() ? '700' : 'bold',
+                                fontSize: focusedCell && focusedCell.overType.toString() === overTypeId.toString() ? '16px' : '14px'
+                            }}>
+                                Runner Type
+                            </th>
                             {bowlingStyles.map(bowlingStyle => (
-                                <th key={bowlingStyle.bowlingTypeId} className="text-center" style={{ minWidth: '250px' }}>
+                                <th
+                                    key={bowlingStyle.bowlingTypeId}
+                                    className="text-center"
+                                    style={{
+                                        minWidth: '250px',
+                                        fontWeight: isColumnHighlighted(bowlingStyle.bowlingTypeId) ? '700' : 'bold',
+                                        fontSize: isColumnHighlighted(bowlingStyle.bowlingTypeId) ? '16px' : '14px',
+                                        borderBottom: isColumnHighlighted(bowlingStyle.bowlingTypeId) ? '4px solid #28a745' : '1px solid #dee2e6',
+                                        backgroundColor: isColumnHighlighted(bowlingStyle.bowlingTypeId) ? '#f8f9fa' : 'transparent'
+                                    }}
+                                >
                                     {bowlingStyle.bowlingType}
                                 </th>
                             ))}
@@ -325,9 +369,23 @@ function DismissalDataComponent() {
                     <tbody>
                         {runners.map(runner => (
                             <tr key={runner.marketTemplateRunnerId}>
-                                <td><strong>{runner.runner}</strong></td>
+                                <td style={{
+                                    fontWeight: isRowHighlighted(runner.marketTemplateRunnerId) ? '700' : 'bold',
+                                    fontSize: isRowHighlighted(runner.marketTemplateRunnerId) ? '16px' : '14px',
+                                    borderBottom: isRowHighlighted(runner.marketTemplateRunnerId) ? '4px solid #ffc107' : '1px solid #dee2e6',
+                                    backgroundColor: isRowHighlighted(runner.marketTemplateRunnerId) ? '#f8f9fa' : 'transparent'
+                                }}>
+                                    <strong>{runner.runner}</strong>
+                                </td>
                                 {bowlingStyles.map(bowlingStyle => (
-                                    <td key={bowlingStyle.bowlingTypeId} className="p-2">
+                                    <td
+                                        key={bowlingStyle.bowlingTypeId}
+                                        className="p-2"
+                                        style={{
+                                            backgroundColor: isCellFocused(bowlingStyle.bowlingTypeId, runner.marketTemplateRunnerId)
+                                                ? '#e9ecef' : 'transparent'
+                                        }}
+                                    >
                                         <div className="d-flex gap-2" style={{ minWidth: '220px' }}>
                                             <div style={{ flex: 1 }}>
                                                 <TextField
@@ -344,7 +402,18 @@ function DismissalDataComponent() {
                                                         'predefinedValue',
                                                         e.target.value
                                                     )}
+                                                    onFocus={() => handleCellFocus(overTypeId, bowlingStyle.bowlingTypeId, runner.marketTemplateRunnerId)}
+                                                    onBlur={handleCellBlur}
                                                     inputProps={{ step: "0.1", min: "0" }}
+                                                    sx={{
+                                                        '& .MuiOutlinedInput-root': {
+                                                            backgroundColor: isCellFocused(bowlingStyle.bowlingTypeId, runner.marketTemplateRunnerId)
+                                                                ? '#f8f9fa' : 'white',
+                                                            '&:hover': {
+                                                                backgroundColor: '#f8f9fa'
+                                                            }
+                                                        }
+                                                    }}
                                                 />
                                             </div>
                                             <div style={{ flex: 1 }}>
@@ -362,7 +431,18 @@ function DismissalDataComponent() {
                                                         'impactProb',
                                                         e.target.value
                                                     )}
+                                                    onFocus={() => handleCellFocus(overTypeId, bowlingStyle.bowlingTypeId, runner.marketTemplateRunnerId)}
+                                                    onBlur={handleCellBlur}
                                                     inputProps={{ step: "0.1", min: "0" }}
+                                                    sx={{
+                                                        '& .MuiOutlinedInput-root': {
+                                                            backgroundColor: isCellFocused(bowlingStyle.bowlingTypeId, runner.marketTemplateRunnerId)
+                                                                ? '#f8f9fa' : 'white',
+                                                            '&:hover': {
+                                                                backgroundColor: '#f8f9fa'
+                                                            }
+                                                        }
+                                                    }}
                                                 />
                                             </div>
                                         </div>
@@ -374,7 +454,7 @@ function DismissalDataComponent() {
                 </Table>
             );
         } catch (error) {
-            handleError("Error rendering table", error);
+            console.error("Error rendering table:", error);
             return (
                 <div className="text-center p-3 text-danger">
                     <p>Error rendering table. Please try refreshing the page.</p>
@@ -382,6 +462,28 @@ function DismissalDataComponent() {
             );
         }
     };
+
+    useEffect(() => {
+        try {
+            if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+                navigate("/dashboard");
+                return;
+            }
+            fetchMasterData();
+        } catch (error) {
+            handleError("Error in component initialization", error);
+        }
+    }, [permissionObj]);
+
+    useEffect(() => {
+        try {
+            if (marketTemplateId !== "0") {
+                fetchDismissalData(marketTemplateId);
+            }
+        } catch (error) {
+            handleError("Error loading data for market template", error);
+        }
+    }, [marketTemplateId]);
 
     if (hasError) {
         return (
@@ -423,9 +525,7 @@ function DismissalDataComponent() {
                             <CardBody>
                                 {isLoading && <SpinnerModel />}
                                 <Row>
-                                    <Col
-                                        className="mb-3 text-end "
-                                    >
+                                    <Col className="mb-3 text-end">
                                         <button
                                             className="btn btn-danger mx-1"
                                             onClick={handleBackClick}
