@@ -68,7 +68,7 @@ export const MarketTemplateRunnerFileds = [
         name: "backPrice",
         label: "Yes Rate",
         type: TEXT,
-        isRequired: true,
+        // isRequired: true,
         requiredErrorMessage: "Please enter yesRate.",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 2, lg: 3 }
@@ -77,7 +77,7 @@ export const MarketTemplateRunnerFileds = [
         name: "backSize",
         label: "Yes Point",
         type: TEXT,
-        isRequired: true,
+        // isRequired: true,
         requiredErrorMessage: "Please enter yesPoint.",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 2, lg: 3 }
