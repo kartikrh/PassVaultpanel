@@ -329,7 +329,7 @@ function AddCommentary() {
         const filteredData = Object.fromEntries(
             Object.entries(newFormData).filter(([key]) => allowedFields.includes(key))
         );
-        updateSavedFormState(filteredData);;
+        updateSavedFormState(filteredData);
         
         // if both data are not same then do API call and fetch data
         if (newFormData["team1Id"] !== savedFormState["team1Id"]) {
@@ -344,7 +344,7 @@ function AddCommentary() {
                     finalizeRef2.current.updateFormFromParent(resetValues);
                 }
                 setIsApiLoading(true);
-                axiosInstance.post('/admin/player/byTeamIdv1', { teamId: newFormData["team1Id"], competitionId})
+                axiosInstance.post('/admin/player/byTeamIdv1', { teamId: newFormData["team1Id"], competitionId : newFormData["competitionId"] || competitionId })
                     .then((response) => {
                         const formattedData = response?.result?.map(item => {
                             return { label: item?.playerName, value: item?.playerId }
@@ -369,7 +369,8 @@ function AddCommentary() {
                     "team1Players": []
                 }));
             }
-        } else if (newFormData["team2Id"] !== savedFormState["team2Id"]) {
+        }
+        if (newFormData["team2Id"] !== savedFormState["team2Id"]) {
             if (newFormData["team2Id"] !== "0") {
                 if(savedFormState["team2Id"] != 0 && savedFormState["team2Id"]) {
                     const resetValues = {
@@ -381,7 +382,7 @@ function AddCommentary() {
                     finalizeRef2.current.updateFormFromParent(resetValues);
                 }
                 setIsApiLoading(true);
-                axiosInstance.post('/admin/player/byTeamIdv1', { teamId: newFormData["team2Id"],  competitionId })
+                axiosInstance.post('/admin/player/byTeamIdv1', { teamId: newFormData["team2Id"], competitionId : newFormData["competitionId"] || competitionId })
                     .then((response) => {
                         const formattedData = response?.result?.map(item => {
                             return { label: item?.playerName, value: item?.playerId }
@@ -414,7 +415,7 @@ function AddCommentary() {
         const filteredData = Object.fromEntries(
             Object.entries(newFormData).filter(([key]) => allowedFields.includes(key))
         );
-        updateSavedFormState(filteredData);;
+        updateSavedFormState(filteredData);
     }
     const handleFormEDataChange = (newFormData) => {
         // setSavedFormState({...savedFormState, ...newFormData});
@@ -422,7 +423,7 @@ function AddCommentary() {
         const filteredData = Object.fromEntries(
             Object.entries(newFormData).filter(([key]) => allowedFields.includes(key))
         );
-        updateSavedFormState(filteredData);;
+        updateSavedFormState(filteredData);
     }
 
     const handleFormCDataChange = (newFormData) => {
@@ -431,7 +432,7 @@ function AddCommentary() {
         const filteredData = Object.fromEntries(
             Object.entries(newFormData).filter(([key]) => allowedFields.includes(key))
         );
-        updateSavedFormState(filteredData);;
+        updateSavedFormState(filteredData);
         if (newFormData["countryId"] && newFormData["countryId"] !== "0") {
             setIsApiLoading(true);
             axiosInstance.post('/admin/list/venueList', { countryId: (newFormData["countryId"]) })
@@ -495,34 +496,34 @@ function AddCommentary() {
                     }).catch((error) => {
                         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
                     });
-                await axiosInstance.post('/admin/commentary/playerListByTeamId', { teamId: updateScreenData["team1Id"] })
-                    .then((response) => {
-                        const formattedData = response?.result?.map(item => {
-                            return { label: item?.playerName, value: item?.playerId }
-                        }).filter(element => element.value);
-                        newMasterData = {
-                            ...newMasterData,
-                            "team1Captain": formattedData,
-                            "team1Kipper": formattedData,
-                            "team1Players": formattedData
-                        };
-                    }).catch((error) => {
-                        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-                    });
-                await axiosInstance.post('/admin/commentary/playerListByTeamId', { teamId: updateScreenData["team2Id"] })
-                    .then((response) => {
-                        const formattedData = response?.result?.map(item => {
-                            return { label: item?.playerName, value: item?.playerId }
-                        }).filter(element => element.value);
-                        newMasterData = {
-                            ...newMasterData,
-                            "team2Captain": formattedData,
-                            "team2Kipper": formattedData,
-                            "team2Players": formattedData
-                        };
-                    }).catch((error) => {
-                        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-                    });
+                // await axiosInstance.post('/admin/commentary/playerListByTeamId', { teamId: updateScreenData["team1Id"] })
+                //     .then((response) => {
+                //         const formattedData = response?.result?.map(item => {
+                //             return { label: item?.playerName, value: item?.playerId }
+                //         }).filter(element => element.value);
+                //         newMasterData = {
+                //             ...newMasterData,
+                //             "team1Captain": formattedData,
+                //             "team1Kipper": formattedData,
+                //             "team1Players": formattedData
+                //         };
+                //     }).catch((error) => {
+                //         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+                //     });
+                // await axiosInstance.post('/admin/commentary/playerListByTeamId', { teamId: updateScreenData["team2Id"] })
+                //     .then((response) => {
+                //         const formattedData = response?.result?.map(item => {
+                //             return { label: item?.playerName, value: item?.playerId }
+                //         }).filter(element => element.value);
+                //         newMasterData = {
+                //             ...newMasterData,
+                //             "team2Captain": formattedData,
+                //             "team2Kipper": formattedData,
+                //             "team2Players": formattedData
+                //         };
+                //     }).catch((error) => {
+                //         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+                //     });
                 // await axiosInstance.post('/admin/list/venueList', { countryId: updateScreenData["countryId"] })
                 //     .then((response) => {
                 //         const resultData = fetchResult(response);

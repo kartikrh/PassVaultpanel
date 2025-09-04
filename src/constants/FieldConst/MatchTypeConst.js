@@ -444,5 +444,13 @@ export const MatchTypeFields = [
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
+  {
+    name: "isMen",
+    label: "Is Men",
+    defaultValue: true,
+    type: SWITCH,
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 4, lg: 4 },
+  },
 
 ];

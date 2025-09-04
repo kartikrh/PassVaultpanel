@@ -15,6 +15,7 @@ import { MarketTemplateClone, MarketTemplateMultiClone } from "../../components/
 import { updateToastData } from "../../Features/toasterSlice";
 import { Tooltip } from "antd";
 import LoadDataModal from "../../components/Model/LoadDataModal";
+import { BsFillTicketDetailedFill } from "react-icons/bs";
 
 const Index = () => {
   const pageName = TAB_MARKET_TEMPLATE
@@ -51,7 +52,7 @@ const Index = () => {
         marketTypeCategoryId: data?.marketTypeId !== selectedMarketType ? 0 : data?.marketTypeCategoryId || 0,
       })
       .then((response) => {
-        const apiData = response?.result?.sort((a,b)=>a?.marketTemplateId - b?.marketTemplateId);
+        const apiData = response?.result?.sort((a, b) => a?.marketTemplateId - b?.marketTemplateId);
         let apiDataIdList = [];
         apiData.forEach(ele => {
           apiDataIdList.push(ele?.marketTemplateId)
@@ -66,25 +67,25 @@ const Index = () => {
         setIsLoading(false);
       });
   };
-  const fetchMatchTypeList = async () =>{
+  const fetchMatchTypeList = async () => {
     await axiosInstance
-    .post("/admin/marketTemplate/matchTypeList", {})
-    .then((response) => {
-      setMatchType(response?.result)
-    })
-    .catch((error) => {
-      dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-    });
+      .post("/admin/marketTemplate/matchTypeList", {})
+      .then((response) => {
+        setMatchType(response?.result)
+      })
+      .catch((error) => {
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+      });
   }
-  const fetchMarketCategoriesList = async () =>{
+  const fetchMarketCategoriesList = async () => {
     await axiosInstance
-    .post("/admin/marketTemplate/mtAndCategories", {})
-    .then((response) => {
-      setMtAndCategories(response?.result);
-    })
-    .catch((error) => {
-      dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-    });
+      .post("/admin/marketTemplate/mtAndCategories", {})
+      .then((response) => {
+        setMtAndCategories(response?.result);
+      })
+      .catch((error) => {
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+      });
   }
   const handleSingleCheck = (e) => {
     let updateSingleCheck = []
@@ -139,7 +140,7 @@ const Index = () => {
       setIsLoading(true);
       await axiosInstance
         .post(`/admin/marketTemplate/cloneMultipleTemp`, {
-          marketTemplates : multiCloneValues,
+          marketTemplates: multiCloneValues,
         })
         .then((response) => {
           fetchData();
@@ -290,7 +291,7 @@ const Index = () => {
   const handleLoadData = async (password) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/loadPanelData`, {module: [MODULE_MARKET_TEMPLATE], password})
+      .post(`/loadPanelData`, { module: [MODULE_MARKET_TEMPLATE], password })
       .then((response) => {
         fetchData();
         setLoadDataModelVisable(false);
@@ -333,6 +334,9 @@ const Index = () => {
   const handleEdit = (id) => {
     navigate("/addMarketTemplate", { state: { marketTemplateId: id } });
   };
+  const handleWicketDismisal = (id) => {
+    navigate("/wicketDismisalMarket", { state: { marketTemplateId: id } });
+  }
   const handleMarketTemplateRunnerClick = (id) => {
     const url = new URL(window.location.origin + "/marketTemplateRunner");
     sessionStorage.setItem('marketTemplateRunnerId', "" + id);
@@ -481,18 +485,18 @@ const Index = () => {
       title: "Active",
       key: "isActive",
       render: (text, record) => (
-      <Tooltip title={"Status"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-        <Button
-          color={`${record.isActive ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            handlePermissions("isActive", record, record.isActive);
-          }}
-        >
-          <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
-        </Button>
-      </Tooltip>
+        <Tooltip title={"Status"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Button
+            color={`${record.isActive ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handlePermissions("isActive", record, record.isActive);
+            }}
+          >
+            <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
+          </Button>
+        </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -519,18 +523,18 @@ const Index = () => {
       title: "Per Event",
       key: "isPerEvent",
       render: (text, record) => (
-      <Tooltip title={"Per-Event"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-        <Button
-          color={`${record.isPerEvent ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            handleIsPerEvent("isPerEvent", record, record.isPerEvent);
-          }}
-        >
-          <i className={`bx ${record.isPerEvent ? "bx-check" : "bx-block"}`}></i>
-        </Button>
-      </Tooltip>
+        <Tooltip title={"Per-Event"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Button
+            color={`${record.isPerEvent ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleIsPerEvent("isPerEvent", record, record.isPerEvent);
+            }}
+          >
+            <i className={`bx ${record.isPerEvent ? "bx-check" : "bx-block"}`}></i>
+          </Button>
+        </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -538,18 +542,18 @@ const Index = () => {
       title: "Default Send Data",
       key: "defaultIsSendData",
       render: (text, record) => (
-      <Tooltip title={"Send Data"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-        <Button
-          color={`${record.defaultIsSendData ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            handleIsDefaultIsSendData("defaultIsSendData", record, record.defaultIsSendData);
-          }}
-        >
-          <i className={`bx ${record.defaultIsSendData ? "bx-check" : "bx-block"}`}></i>
-        </Button>
-      </Tooltip>
+        <Tooltip title={"Send Data"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Button
+            color={`${record.defaultIsSendData ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleIsDefaultIsSendData("defaultIsSendData", record, record.defaultIsSendData);
+            }}
+          >
+            <i className={`bx ${record.defaultIsSendData ? "bx-check" : "bx-block"}`}></i>
+          </Button>
+        </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -557,18 +561,18 @@ const Index = () => {
       title: "Default Set Result",
       key: "isDefaultSetResult",
       render: (text, record) => (
-      <Tooltip title={"Default Set Result"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-        <Button
-          color={`${record.isDefaultSetResult ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            handleisDefaultSetResult("isDefaultSetResult", record, record.isDefaultSetResult);
-          }}
-        >
-          <i className={`bx ${record.isDefaultSetResult ? "bx-check" : "bx-block"}`}></i>
-        </Button>
-      </Tooltip>
+        <Tooltip title={"Default Set Result"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Button
+            color={`${record.isDefaultSetResult ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleisDefaultSetResult("isDefaultSetResult", record, record.isDefaultSetResult);
+            }}
+          >
+            <i className={`bx ${record.isDefaultSetResult ? "bx-check" : "bx-block"}`}></i>
+          </Button>
+        </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -576,18 +580,18 @@ const Index = () => {
       title: "Show Adv. Market",
       key: "isShowInAdvanceMarket",
       render: (text, record) => (
-      <Tooltip title={"Show Adv. Market"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-        <Button
-          color={`${record.isShowInAdvanceMarket ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            handleIsShowInAdvanceMarket("isShowInAdvanceMarket", record, record.isShowInAdvanceMarket);
-          }}
-        >
-          <i className={`bx ${record.isShowInAdvanceMarket ? "bx-check" : "bx-block"}`}></i>
-        </Button>
-      </Tooltip>
+        <Tooltip title={"Show Adv. Market"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Button
+            color={`${record.isShowInAdvanceMarket ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleIsShowInAdvanceMarket("isShowInAdvanceMarket", record, record.isShowInAdvanceMarket);
+            }}
+          >
+            <i className={`bx ${record.isShowInAdvanceMarket ? "bx-check" : "bx-block"}`}></i>
+          </Button>
+        </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -595,25 +599,41 @@ const Index = () => {
       title: "P-Runner Value",
       key: "isPredefineRunnerValue",
       render: (text, record) => (
-      <Tooltip title={"Runner Value"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-        <Button
-          color={`${record.isPredefineRunnerValue ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            updatePredefineRunnerValue(
-              "isPredefineRunnerValue",
-              record,
-              record?.isPredefineRunnerValue
-            );
-          }}
-        >
-          <i
-            className={`bx ${record?.isPredefineRunnerValue ? "bx-check" : "bx-block"
-              }`}
-          ></i>
-        </Button>
-      </Tooltip>
+        <>
+          <Tooltip title={"Runner Value"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+            <Button
+              color={`${record.isPredefineRunnerValue ? "primary" : "danger"}`}
+              size="sm"
+              className="btn"
+              onClick={() => {
+                updatePredefineRunnerValue(
+                  "isPredefineRunnerValue",
+                  record,
+                  record?.isPredefineRunnerValue
+                );
+              }}
+            >
+              <i
+                className={`bx ${record?.isPredefineRunnerValue ? "bx-check" : "bx-block"
+                  }`}
+              ></i>
+            </Button>
+          </Tooltip>
+          {+record.marketTypeCategoryId === 27 &&
+            <Tooltip title={"Dismissal Wicket"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+              <Button
+                color={`info`}
+                size="sm"
+                className="btn mx-3"
+                onClick={() => {
+                  handleWicketDismisal(record.marketTemplateId);
+                }}
+              >
+                <BsFillTicketDetailedFill />
+              </Button>
+            </Tooltip>
+          }
+        </>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -622,21 +642,21 @@ const Index = () => {
       key: "marketTemplate",
       printType: "ignore",
       render: (text, record) => (
-      <Tooltip title={"Runner"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-        <Button
-          // color={"primary"}
-          size="sm"
-          disabled={
-            !record.isPredefineRunnerValue
-          }
-          className="btn marketTemplateBtn"
-          onClick={() => {
-            handleMarketTemplateRunnerClick(record?.marketTemplateId);
-          }}
-        >
-          <i class='bx bxs-store' ></i>
-        </Button>
-      </Tooltip>
+        <Tooltip title={"Runner"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Button
+            // color={"primary"}
+            size="sm"
+            disabled={
+              !record.isPredefineRunnerValue
+            }
+            className="btn marketTemplateBtn"
+            onClick={() => {
+              handleMarketTemplateRunnerClick(record?.marketTemplateId);
+            }}
+          >
+            <i class='bx bxs-store' ></i>
+          </Button>
+        </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -665,13 +685,13 @@ const Index = () => {
   }, [permissionObj]);
 
   useEffect(() => {
-    if(mtAndCategories && selectedMarketType) {
-      const categoriesData = mtAndCategories?.categories?.filter((item)=>item?.marketTypeId == selectedMarketType)
+    if (mtAndCategories && selectedMarketType) {
+      const categoriesData = mtAndCategories?.categories?.filter((item) => item?.marketTypeId == selectedMarketType)
       setCategories(categoriesData || []);
-    } else if(!selectedMarketType) {
+    } else if (!selectedMarketType) {
       setCategories([]);
     }
-  },[mtAndCategories, selectedMarketType]);
+  }, [mtAndCategories, selectedMarketType]);
 
   const handleReload = (value) => {
     fetchData();
@@ -692,7 +712,7 @@ const Index = () => {
             deleteModelFunction={setDeleteModelVisable}
             // cloneModelFunction={setCloneModelVisible}
             multiCloneModelFunction={setMultiCloneModelVisible}
-            matchType = {matchType}
+            matchType={matchType}
             reFetchData={fetchData}
             handleReload={handleReload}
             loadDataModelFunction={setLoadDataModelVisable}
@@ -727,12 +747,12 @@ const Index = () => {
             cloneValues={multiCloneValues}
             singleCheck={checekedList}
           />
-          {loadDataModelVisable && 
+          {loadDataModelVisable &&
             <LoadDataModal
               loadDataModelVisable={loadDataModelVisable}
               setLoadDataModelVisable={setLoadDataModelVisable}
               handleLoadData={handleLoadData}
-              moduleName={"Market Template"} 
+              moduleName={"Market Template"}
             />}
         </Container>
       </div>

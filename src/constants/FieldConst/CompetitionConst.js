@@ -67,6 +67,28 @@ export const CompetitionFields = [
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
   {
+    name: "startDate",
+    label: "From",
+    isRequired: true,
+    // customStyle: {
+    //   maxWidth: "600px",
+    // },
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 4, lg: 4 },
+    type: DATE_TIME_PICKER,
+  },
+  {
+    name: "endDate",
+    label: "To",
+    isRequired: true,
+    // customStyle: {
+    //   maxWidth: "600px",
+    // },
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 4, lg: 4 },
+    type: DATE_TIME_PICKER,
+  },
+  {
     type: SELECT,
     name: "countryId",
     label: "Country",
@@ -92,28 +114,7 @@ export const CompetitionFields = [
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
-  {
-    name: "startDate",
-    label: "From",
-    // isRequired: true,
-    // customStyle: {
-    //   maxWidth: "600px",
-    // },
-    labelColspan: { xs: 12, md: 2, lg: 2 },
-    fieldColspan: { xs: 12, md: 4, lg: 4 },
-    type: DATE_TIME_PICKER,
-  },
-  {
-    name: "endDate",
-    label: "To",
-    // isRequired: true,
-    // customStyle: {
-    //   maxWidth: "600px",
-    // },
-    labelColspan: { xs: 12, md: 2, lg: 2 },
-    fieldColspan: { xs: 12, md: 4, lg: 4 },
-    type: DATE_TIME_PICKER,
-  },
+  
   {
     name: "pythonId",
     label: "API",

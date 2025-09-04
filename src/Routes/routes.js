@@ -34,6 +34,7 @@ import AddEvents from "../Pages/Events/AddEvents.jsx";
 import AddCommentary from "../Pages/Commentary/AddCommentary.jsx";
 import AddUsers from "../Pages/Users/AddUsers.jsx";
 import AddMarketTemplate from "../Pages/MarketTemplate/AddMarketTamplate.js";
+import UpdateWicketDismisalMarket from "../Pages/MarketTemplate/DismisalDataTemplate.js";
 import ChangePassword from "../Pages/ChangePassword";
 import Toss from "../Pages/Commentary/Toss.jsx";
 import CommentaryMaster from "../Pages/Commentary/CommentaryMaster.js";
@@ -267,6 +268,7 @@ const authProtectedRoutes = [
   { path: "/subscribers", component: <Subscribers /> },
   { path: "/marketTemplate", component: <MarketTemplate /> },
   { path: "/addMarketTemplate", component: <AddMarketTemplate /> },
+  { path: "/wicketDismisalMarket", component: <UpdateWicketDismisalMarket /> },
   { path: "/marketTemplateRunner", component: <MarketTemplateRunner /> },
   { path: "/eventMarkets", component: <EventMarkets /> },
   { path: "/manualOddsMarkets", component: <ManualOddMarketsPage /> },
