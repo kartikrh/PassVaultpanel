@@ -204,13 +204,20 @@ function DismissalDataComponent() {
     const getMinMaxNonZero = (value) => {
         const MAX_VALUE = 999;
 
-        if (value < 0) return 0;
-        else if (value > MAX_VALUE) return MAX_VALUE;
+        // Convert to number and handle invalid inputs
+        const numValue = parseFloat(value);
+
+        // If not a valid number, return empty string (or 0)
+        if (isNaN(numValue)) return '';
+
+        if (numValue < 0) return 0;
+        else if (numValue > MAX_VALUE) return MAX_VALUE;
         else {
             // Round to 2 decimal places
-            return Math.round(value * 100) / 100;
+            return Math.round(numValue * 100) / 100;
         }
     };
+
     const handleSaveClick = async () => {
         if (!marketTemplateId || marketTemplateId === "0") {
             dispatch(
@@ -413,6 +420,16 @@ function DismissalDataComponent() {
                                                     )}
                                                     onFocus={() => handleCellFocus(overTypeId, bowlingStyle.bowlingTypeId, runner.marketTemplateRunnerId)}
                                                     onBlur={handleCellBlur}
+                                                    onKeyPress={(e) => {
+                                                        const allowedKeys = /[0-9.]/;
+                                                        if (!allowedKeys.test(e.key)) {
+                                                            e.preventDefault();
+                                                        }
+                                                        // Prevent multiple decimal points
+                                                        if (e.key === '.' && e.target.value.includes('.')) {
+                                                            e.preventDefault();
+                                                        }
+                                                    }}
                                                     inputProps={{ step: "0.1", min: "0" }}
                                                     sx={{
                                                         '& .MuiOutlinedInput-root': {
@@ -442,6 +459,16 @@ function DismissalDataComponent() {
                                                     )}
                                                     onFocus={() => handleCellFocus(overTypeId, bowlingStyle.bowlingTypeId, runner.marketTemplateRunnerId)}
                                                     onBlur={handleCellBlur}
+                                                    onKeyPress={(e) => {
+                                                        const allowedKeys = /[0-9.]/;
+                                                        if (!allowedKeys.test(e.key)) {
+                                                            e.preventDefault();
+                                                        }
+                                                        // Prevent multiple decimal points
+                                                        if (e.key === '.' && e.target.value.includes('.')) {
+                                                            e.preventDefault();
+                                                        }
+                                                    }}
                                                     inputProps={{ step: "0.1", min: "0" }}
                                                     sx={{
                                                         '& .MuiOutlinedInput-root': {

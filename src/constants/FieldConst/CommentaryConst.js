@@ -380,7 +380,7 @@ export const WeatherDetailsFields = [
         fieldColspan: { xs: 12, md: 4, lg: 4 },
     },
     {
-        name: "location",
+        name: "venueId",
         label: "Location",
         regex: /^.{0,100}$/,
         options: [{ label: "Select a Location", value: "0" }],
