@@ -1139,6 +1139,7 @@ const Commentary = (props) => {
                 "playerimage": oldPlayer["playerimage"],
                 "batsmanAverage": oldPlayer["batsmanAverage"],
                 "bowlerAverage": oldPlayer["bowlerAverage"],
+                "bowlingStyle": oldPlayer["bowlingStyle"],
                 "batterOrder": newPlayer["batterOrder"],
                 "bowlerOrder": newPlayer["bowlerOrder"],
             }
@@ -1151,6 +1152,7 @@ const Commentary = (props) => {
                 "playerimage": newPlayer["playerimage"],
                 "batsmanAverage": newPlayer["batsmanAverage"],
                 "bowlerAverage": newPlayer["bowlerAverage"],
+                "bowlingStyle": newPlayer["bowlingStyle"],
                 "batterOrder": oldPlayer["batterOrder"],
                 "bowlerOrder": oldPlayer["bowlerOrder"],
             }

@@ -88,6 +88,7 @@ export const generateBall = ({ commentaryDetails, teams, currentOver, onPitchPla
     "commentaryPartnershipId": currentPartnership.commentaryPartnershipId || 0,
     "teamScore": teams?.[BATTING_TEAM]?.teamScore || 0,
     "teamWicket": teams?.[BATTING_TEAM]?.teamWicket || 0,
+    "bowlingStyle": onPitchPlayers[CURRENT_BOWLER]?.bowlingStyle || 0
   }
 }
 
