@@ -1767,30 +1767,30 @@ const Index = () => {
       ),
       style: { width: "2%", textAlign: "center" },
     },
-    {
-      title: "Player",
-      key: "updatePlayers",
-      printType: "ignore",
-      render: (text, record) => (
-        <Tooltip
-          title={"Update Players"}
-          color={"#e8e8ea"}
-          overlayInnerStyle={{ color: "#000" }}
-        >
-          <Button
-            color={"info"}
-            size="sm"
-            className="btn"
-            onClick={() => {
-              handleUpdatePlayersClick(record);
-            }}
-          >
-            <i class="bx bxs-up-arrow-square"></i>
-          </Button>
-        </Tooltip>
-      ),
-      style: { width: "2%", textAlign: "center" },
-    },
+    // {
+    //   title: "Player",
+    //   key: "updatePlayers",
+    //   printType: "ignore",
+    //   render: (text, record) => (
+    //     <Tooltip
+    //       title={"Update Players"}
+    //       color={"#e8e8ea"}
+    //       overlayInnerStyle={{ color: "#000" }}
+    //     >
+    //       <Button
+    //         color={"info"}
+    //         size="sm"
+    //         className="btn"
+    //         onClick={() => {
+    //           handleUpdatePlayersClick(record);
+    //         }}
+    //       >
+    //         <i class="bx bxs-up-arrow-square"></i>
+    //       </Button>
+    //     </Tooltip>
+    //   ),
+    //   style: { width: "2%", textAlign: "center" },
+    // },
     // {
     //   title: "Team",
     //   dataIndex: "team1Name",
@@ -2675,6 +2675,30 @@ const Index = () => {
       sort: true,
       style: { width: "2%", textAlign: "center" },
     };
+    const playerColumn = {
+      title: "Player",
+      key: "updatePlayers",
+      printType: "ignore",
+      render: (text, record) => (
+        <Tooltip
+          title={"Update Players"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
+          <Button
+            color={"info"}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleUpdatePlayersClick(record);
+            }}
+          >
+            <i class="bx bxs-up-arrow-square"></i>
+          </Button>
+        </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    }
     const updatedColumn = [...columns];
 
     if (data.some((record) => record?.commentaryStatus === 4 || record?.commentaryStatus === 10)) {
@@ -2684,6 +2708,9 @@ const Index = () => {
 
     if (data.some((record) => record?.commentaryStatus === 4)) {
       updatedColumn.splice(9, 0, eventSnapColumn);
+    }
+    if (data.every((record) => record?.commentaryStatus === 2)) {
+      updatedColumn.splice(12, 0, playerColumn);
     }
     return updatedColumn;
   };

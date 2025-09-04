@@ -59,7 +59,7 @@ const TossScreen = ({ data, next, save, isPredictToggle }) => {
         displayStatus: `${winnerTeam?.shortName} opt to ${
           values.choseTo == 1 ? "Bat" : "Bowl"
         }`,
-        commentaryStatus: "2",
+        commentaryStatus: 2,
       },
       commentaryTeams: UpdatedCurrentInningTeams,
     };
