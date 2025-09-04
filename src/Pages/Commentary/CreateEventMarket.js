@@ -13,6 +13,9 @@ import { convertDateUTCToLocal } from '../../components/Common/Reusables/reusabl
 import EventMarketModal from './CommentaryModels/CustomEventModal';
 import { FaArrowUp } from "react-icons/fa"
 import CustomInput from '../../components/Common/Reusables/CustomInput';
+import Switch from 'react-switch';
+import { PlayerListingCompForCreateMarket } from '../../components/Common/Reusables/PlayerListingCompForCreateMarket';
+import { getStatusColor1 } from './CommentartConst';
 
 const MARKET_STATUS = {
     0: "NotOpen",
@@ -33,6 +36,8 @@ const getOrdinalSuffix = (n) => {
 export const CreateEventMarket = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [players, setPlayers] = useState([]);
+    const [teams, setTeams] = useState([]);
     // document.title = "Create Market";
     const [marketData, setMarketData] = useState({
         teamAndPlayers: [],
@@ -48,6 +53,7 @@ export const CreateEventMarket = () => {
     const marketTypeObj = useSelector((state) => state.marketType?.marketTypeList);
     const commentaryId = +sessionStorage.getItem('marketTemplateCommentaryId') || "0";
     const commentaryDetails = JSON.parse(sessionStorage.getItem('marketTemplateCommentaryDetails') || "{}");
+    const [playersMarketShow, setPlayerMarketShow] = useState(false);
     const [processedMarkets, setProcessedMarkets] = useState({});
     const [selectedMarkets, setSelectedMarkets] = useState({});
     const [showBackToTop, setShowBackToTop] = useState(false);
@@ -63,14 +69,57 @@ export const CreateEventMarket = () => {
         fetchData(commentaryId);
     }, []);
 
+    const OffsymbolPlayerMarketStatus = () => {
+        return (
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100%",
+                    fontSize: 12,
+                    color: "#fff",
+                    paddingRight: "10px",
+                }}
+            >
+                {" "}
+                Players
+            </div>
+        );
+    };
+    const OnSymbolPlayerMarketStatus = () => {
+        return (
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100%",
+                    fontSize: 12,
+                    color: "#fff",
+                    paddingLeft: "11px",
+                }}
+            >
+                {" "}
+                Players
+            </div>
+        );
+    };
+
     const fetchData = async (commentaryId) => {
         setIsLoading(true);
         try {
             const response = await axiosInstance.post("/admin/eventMarket/getDetailsByCIdV1", { commentaryId });
             if (response?.result) {
+                const playersObj = {}
+                const teamsObj = {}
                 const { teamAndPlayers, marketTemplate, commentary, eventMarket, categories, marketTypes, matchType } = response.result;
                 setMarketData({ teamAndPlayers, marketTemplate, commentary, eventMarket, categories, marketTypes });
                 const processedMarkets = processMarketData(marketTemplate, eventMarket, teamAndPlayers, commentary, matchType);
+                response?.result?.playerStats?.forEach(player => { playersObj[player.commentaryPlayerId] = player.playerName })
+                response?.result?.teamAndPlayers?.forEach(team => { teamsObj[team.teamId] = team.shortName })
+                setPlayers(playersObj)
+                setTeams(teamsObj)
                 setProcessedMarkets(processedMarkets);
                 initializeSelectedMarkets(processedMarkets);
             }
@@ -1028,7 +1077,6 @@ export const CreateEventMarket = () => {
 
                     let marketName = ""
                     const ballsPerOver = matchType.ballsPerOver
-                    console.log(market)
                     if (market.isNameInBall) {
                         const endBall = currentOver * ballsPerOver
                         marketName = `${market?.templateName.replace("{x}", endBall)} - ${team.shortName}`;
@@ -1369,6 +1417,24 @@ export const CreateEventMarket = () => {
         }
     };
 
+    function groupMarketsByPlayer(markets) {
+        const grouped = {};
+    
+        markets.forEach(market => {
+        const playerId = market.playerId;
+    
+        if (!grouped[playerId]) {
+            grouped[playerId] = {
+            playerId,
+            markets: [market]
+            };
+        } else {
+            grouped[playerId].markets.push(market);
+        }
+        });
+        return Object.values(grouped);
+    }
+    
     const renderTable = (markets, sectionKey) => {
         const columns = [
             {
@@ -1404,6 +1470,217 @@ export const CreateEventMarket = () => {
             }))
         ];
 
+        if (sectionKey.endsWith("_##_player")) {
+            let groupedMarkets = groupMarketsByPlayer(markets)
+            
+            const handleSelectMarket = (sectionKey, playerId, index) => {
+                // get grouped markets by player from global markets (props/state)
+                const grouped = groupMarketsByPlayer(markets);
+
+                // choose correct source of markets
+                const playerMarkets = playersMarketShow
+                    ? grouped.find(g => g.playerId === playerId)?.markets || []
+                    : processedMarkets[sectionKey]?.[playerId] || [];
+
+                const market = playerMarkets[index];
+                if (!market) return; // safety check
+
+                const errors = validateMarketRow(market);
+
+                // 🔹 helper: find actual section where this player + category belongs
+                const resolveTargetSection = () => {
+                    if (!sectionKey.endsWith("_player")) return { targetKey: sectionKey, targetIndex: index };
+
+                    for (const key in processedMarkets) {
+                        if (key.endsWith("_player")) continue;
+
+                        const marketsList = processedMarkets[key] || [];
+                        const foundIndex = marketsList.findIndex(
+                            m => m.playerId === playerId && m.marketTypeCategoryId === market.marketTypeCategoryId
+                        );
+
+                        if (foundIndex !== -1) {
+                            return { targetKey: key, targetIndex: foundIndex };
+                        }
+                    }
+                    // fallback: stay where we are
+                    return { targetKey: sectionKey, targetIndex: index };
+                };
+
+                // 🔹 update helper (writes into both real section + _player section)
+                const updateSelections = (prev, targetKey, targetIndex) => {
+                    const updatedSelections = { ...prev };
+
+                    // 1. Update the correct section
+                    const sectionSelections = [...(updatedSelections[targetKey] || Array(playerMarkets.length).fill(false))];
+                    if (sectionSelections[targetIndex]) {
+                        for (let i = targetIndex; i < sectionSelections.length; i++) {
+                            sectionSelections[i] = false;
+                        }
+                    } else {
+                        sectionSelections[targetIndex] = true;
+                    }
+                    updatedSelections[targetKey] = sectionSelections;
+
+                    // 2. Also update _player section
+                    const playerKey = `${targetKey.split("_##_")[0]}_##_${targetKey.split("_##_")[1]}_##_player`;
+                    const playerBlock = { ...(updatedSelections[playerKey] || {}) };
+                    const groupSelections = [...(playerBlock[playerId] || Array(playerMarkets.length).fill(false))];
+
+                    if (groupSelections[index]) {
+                        for (let i = index; i < groupSelections.length; i++) {
+                            groupSelections[i] = false;
+                        }
+                    } else {
+                        groupSelections[index] = true;
+                    }
+
+                    playerBlock[playerId] = groupSelections;
+                    updatedSelections[playerKey] = playerBlock;
+
+                    return updatedSelections;
+                };
+
+                // 🔹 Special handling for Fall of Wicket markets
+                if (market.marketTypeCategoryId === 31) {
+                    // Check all previous wickets first
+                    for (let i = 0; i < index; i++) {
+                        const prevMarket = playerMarkets[i];
+                        const prevErrors = validateMarketRow(prevMarket);
+                        if (prevErrors.length > 0 || !selectedMarkets[sectionKey]?.[playerId]?.[i]) {
+                            dispatch(updateToastData({
+                                data: `Please fill in all fields and select Fall of ${i + 1} Wicket first`,
+                                title: "Market Error",
+                                type: ERROR
+                            }));
+                            return;
+                        }
+                    }
+
+                    if (errors.length > 0) {
+                        dispatch(updateToastData({
+                            data: `Please fill in all required fields: ${errors.join(', ')}`,
+                            title: "Market Error",
+                            type: ERROR
+                        }));
+                        return;
+                    }
+
+                    setSelectedMarkets(prev => {
+                        const { targetKey, targetIndex } = resolveTargetSection();
+                        const updatedSelections = updateSelections(prev, targetKey, targetIndex);
+                        console.log("updatedSelections", updatedSelections);
+                        return updatedSelections;
+                    });
+                } else {
+                    // 🔹 Normal market handling
+                    if (errors.length > 0) {
+                        dispatch(updateToastData({
+                            data: `Please fill in all required fields: ${errors.join(', ')}`,
+                            title: "Market Error",
+                            type: ERROR
+                        }));
+                        return;
+                    }
+
+                    setSelectedMarkets(prev => {
+                        const { targetKey, targetIndex } = resolveTargetSection();
+                        const updatedSelections = updateSelections(prev, targetKey, targetIndex);
+                        console.log("updatedSelections", updatedSelections);
+                        console.log("processedMarkets", processedMarkets);
+                        return updatedSelections;
+                    });
+                }
+            };
+
+            const handleSelectAllInGroup = (sectionKey, playerId) => {
+                // get grouped markets by player from global markets (props/state)
+                const grouped = groupMarketsByPlayer(markets);
+
+                // get markets for this player
+                const playerMarkets = grouped.find(g => g.playerId === playerId)?.markets || [];
+
+                // run validation across all markets
+                const errors = playerMarkets.map(validateMarketRow).flat().filter(Boolean);
+
+                if (errors.length > 0) {
+                    dispatch(updateToastData({
+                        data: `Please fill in all required fields`,
+                        title: "Market Error",
+                        type: ERROR
+                    }));
+                    return;
+                }
+
+                setSelectedMarkets(prev => {
+                    const updatedSelections = { ...prev };
+                    const sectionSelections = { ...(updatedSelections[sectionKey] || {}) };
+                    const groupSelections = sectionSelections[playerId] || [];
+
+                    const allSelected = groupSelections.length > 0 && groupSelections.every(Boolean);
+                    const newSelections = playerMarkets.map(() => !allSelected);
+
+                    sectionSelections[playerId] = newSelections;
+                    updatedSelections[sectionKey] = sectionSelections;
+
+                    return updatedSelections;
+                });
+            };
+
+            const getColumns = (sectionKey, playerId) => [ { title: () => ( <input type="checkbox" className="mx-2" checked={selectedMarkets[sectionKey]?.[playerId]?.every(Boolean) || false} onChange={() => handleSelectAllInGroup(sectionKey, playerId)} /> ), style: { width: "5%" }, render: (_, record, index) => ( <input type="checkbox" checked={selectedMarkets[sectionKey]?.[playerId]?.[index] || false} onChange={() => handleSelectMarket(sectionKey, playerId, index)} /> ), }, ...columnInitialsForPlayers, ...runnerColumnsForPlayer.map(column => ({ ...column, render: (text, record, index) => { const runner = record.runners && record.runners[0]; return column.render( runner ? runner[column.key] : null, runner || {}, (key, value) => handleRunnerValueChange(record, 0, key, value), record ); } })) ];
+
+            return (
+                <div className='bg-white'>
+                    
+                    <div className='d-flex p-1 player-market'>
+                            <div style={{ width: '20%' }} className="py-2"></div>
+                            <div className="d-flex" style={{ width: '80%' }}>
+                            {['Runs', 'Boundaries', 'Balls'].slice(0, 3).map((title, index) => (
+                                <div key={index} className="flex-33 player-market-title text-center fs-5 fw-semibold">
+                                    {title}
+                                </div>
+                            ))}
+                            </div>
+                        {/* </div> */}
+                    </div>
+                    {groupedMarkets.map((group) => {
+                        const playerName = players[group.playerId];
+                        const teamName = teams[group?.markets[0]?.teamId];
+
+                        // Split columns: first col (checkbox) + rest
+                        const allColumns = getColumns(sectionKey, group.playerId);
+                        return (
+                            <div key={group.playerId} className="d-flex p-1 player-market">
+                            {/* Left side (20%) */}
+                            <div style={{ width: "20%" }}>
+                                {/* Player + team info */}
+                                <div className="fs-5">{playerName}</div>
+                                <div className="fs-6 gap-2">
+                                <span className="pe-1">{teamName}</span>|
+                                <span className="ps-1">
+                                    Innings - {group?.markets[0]?.inningsId}
+                                </span>
+                                </div>
+                            </div>  
+
+                            {/* Right side (80%) */}
+                            <div style={{ width: "80%" }}>
+                                <PlayerListingCompForCreateMarket
+                                    backgroundColor={getStatusColor1(+group?.markets[0]?.status)}
+                                    key={group.playerId}
+                                    columns={allColumns} // Pass rest of columns only
+                                    dataSource={group.markets}
+                                    tableElement={{ title: playerName, displayTitle: true }}
+                                    tableClassName="open-market-table-class"
+                                    handleValueChange={handleValueChange}
+                                />
+                            </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            );
+        }
         return (
             <Table responsive>
                 <thead>
@@ -1473,7 +1750,14 @@ export const CreateEventMarket = () => {
         <Accordion open={openCategory} toggle={toggleCategory} key={sectionKey}>
             <AccordionItem className="rounded-0">
                 <AccordionHeader targetId={sectionKey} className="market-category-header">
-                    {marketData.categories.find(cat => cat.marketTypeCategoryId === parseInt(categoryId))?.categoryName || `Category ${categoryId}`}
+                    {
+                        categoryId === "player"
+                            ? "Players"
+                            : marketData.categories.find(
+                                cat => cat.marketTypeCategoryId === parseInt(categoryId)
+                            )?.categoryName || `Category ${categoryId}`
+                    }
+                    {/* {marketData.categories.find(cat => cat.marketTypeCategoryId === parseInt(categoryId))?.categoryName || `Category ${categoryId}`} */}
                 </AccordionHeader>
                 <AccordionBody accordionId={sectionKey} className="market-category-body">
                     {renderTable(markets, sectionKey)}
@@ -1481,14 +1765,38 @@ export const CreateEventMarket = () => {
             </AccordionItem>
         </Accordion>
     );
-    const renderMarketType = (typeId, categories, teamId) => (
+    const renderMarketType = (typeId, categories, teamId) => {
+
+        let processedCategories = { ...categories };
+
+        // If playerBool is true, merge categories 12, 29, and 30 into one
+        if (playersMarketShow) {
+            const combined = [
+                ...(categories[12] || []),
+                ...(categories[29] || []),
+                ...(categories[30] || []),
+            ];
+
+            // Replace them with a single "player" category
+            processedCategories = {
+                ...categories,
+                player: combined,
+            };
+
+            // Remove original 12, 29, 30
+            delete processedCategories[12];
+            delete processedCategories[29];
+            delete processedCategories[30];
+        }
+        return(
         <>
-            {Object.entries(categories).map(([categoryId, markets]) => {
+            {Object.entries(processedCategories).map(([categoryId, markets]) => {
                 const sectionKey = `${teamId || 'oneTimeMarket'}_##_${typeId}_##_${categoryId}`;
                 return renderMarketCategory(categoryId, markets, sectionKey);
             })}
         </>
-    );
+        )
+    };
 
     // const typeOrder = ["batsmen", "wicket-keeper", "allrounder", "bowler"];
 
@@ -1568,8 +1876,14 @@ export const CreateEventMarket = () => {
 
     const handleSave = async () => {
         const savedData = Object.entries(processedMarkets)
-            .flatMap(([key, markets]) =>
-                markets.filter((_, index) => selectedMarkets[key]?.[index])
+            .flatMap(([key, markets]) =>{
+                // console.log("selectedMarkets", selectedMarkets)
+                const dd = markets.filter((_, index) => selectedMarkets[key]?.[index])
+                // console.log("key", key)
+                // console.log("markets", markets)
+                // console.log("markets eet", dd)
+                return markets.filter((_, index) => selectedMarkets[key]?.[index])
+            }
             )
             .map(market => {
                 let selectedRunners;
@@ -1789,11 +2103,13 @@ export const CreateEventMarket = () => {
             dataIndex: "margin",
             render: (text, record) => (
                 <>
-                    {/* <Input
-                        className="form-control small-text-fields no-spinners"
+                    {/* <input
                         type="number"
-                        value={(+text || 0).toFixed(2)}
-                        onChange={(e) => handleValueChange(record, "margin", e.target.value)}
+                        placeholder="Margin"
+                        className="line"
+                        value={text}
+                        data-market-id={'margin'}
+                        onChange={(newValue) => handleValueChange(record, "margin", newValue)}
                     /> */}
                     <CustomInput
                         className="form-control small-text-fields"
@@ -1823,6 +2139,163 @@ export const CreateEventMarket = () => {
                         className="form-control small-text-fields"
                         value={text}
                         onChange={(newValue) => handleValueChange(record, "rateDiff", newValue)}
+                    />
+                    <span className="text-danger">
+                        {record?.error?.rateDiff}
+                    </span>
+                </>
+            ),
+            key: "rateDiff",
+            style: { width: "5%" },
+        },
+    ]
+    const columnInitialsForPlayers = [
+        {
+            title: "Market",
+            dataIndex: "marketName",
+            render: (text, record) => (
+                <>
+                    {/* <Input
+                        className="form-control small-text-fields"
+                        type="text"
+                        disabled={+record?.eventMarketId}
+                        value={text}
+                        onChange={(e) => handleValueChange(record, "marketName", e.target.value)}
+                    /> */}
+                    <input
+                        type="text"
+                        placeholder='Market'
+                        className="line"
+                        disabled={+record?.eventMarketId}
+                        value={text}
+                        data-market-id={'marketName'}
+                        onChange={(e) => handleValueChange(record, "marketName", e.target.value)}
+                    />
+                    <span className="text-danger">
+                        {record?.error?.marketName}
+                    </span>
+                </>
+            ),
+            key: "marketName",
+            style: { width: "20%" }, // Reduced width
+        },
+        {
+            title: "Is Active",
+            dataIndex: "isActive",
+            render: (text, record) => (
+                // <Button
+                //     color={`${record.isActive ? "primary" : "danger"}`}
+                //     size="sm"
+                //     className="btn"
+                //     onClick={() => {
+                //         handleValueChange(record, "isActive", !record.isActive);
+                //     }}
+                // >
+                //     <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
+                // </Button>
+                <div className={`${record.isActive ? 'button-a' : 'button-b'} button-a fs-5 fw-bold`} style={{ height: '50%' }} onClick={() => {
+                    handleValueChange(record, "isActive", !record.isActive);
+                }}>
+                    A
+                </div>
+            ),
+            key: "isActive",
+            style: { width: "2%", textAlign: "center" },
+        },
+        {
+            title: "Market Allow",
+            dataIndex: "isAllow",
+            render: (text, record) => (
+                // <Button
+                //     color={`${record.isAllow ? "primary" : "danger"}`}
+                //     size="sm"
+                //     className="btn"
+                //     onClick={() => {
+                //         handleValueChange(record, "isAllow", !record.isAllow);
+                //     }}
+                // >
+                //     <i className={`bx ${record.isAllow ? "bx-check" : "bx-block"}`}></i>
+                // </Button>
+                <div className={`${record.isAllow ? 'button-a' : 'button-b'} button-a fs-5 fw-bold`} style={{ height: '50%' }} onClick={() => {
+                    handleValueChange(record, "isAllow", !record.isAllow);
+                }}>
+                    M
+                </div>
+            ),
+            key: "isAllow",
+            style: { width: "2%", textAlign: "center" },
+        },
+        {
+            title: "Status",
+            dataIndex: "status",
+            render: (text, record) => (
+                <select
+                    className="small-text-fields"
+                    value={text}
+                    onChange={(e) => {
+                        handleValueChange(record, "status", e.target.value);
+                    }}
+                    closeMenuOnSelect={true}
+                >
+                    {
+                        Object.entries(MARKET_STATUS).map(([key, value]) =>
+                            <option key={key} value={key}>{value}</option>
+                        )
+                    }
+                </select>
+            ),
+            key: "status",
+            style: { width: "5%" },
+        },
+        {
+            title: "Margin",
+            dataIndex: "margin",
+            render: (text, record) => (
+                <>
+                    <input
+                        type="number"
+                        placeholder='Margin'
+                        className="line"
+                        value={text}
+                        data-market-id={'margin'}
+                        onChange={(e) => handleValueChange(record, "margin", e.target.value)}
+                    />
+                    {/* <CustomInput
+                        className="form-control small-text-fields"
+                        value={text}
+                        onChange={(newValue) => handleValueChange(record, "margin", newValue)}
+                    /> */}
+                    <span className="text-danger">
+                        {record?.error?.margin}
+                    </span>
+                </>
+            ),
+            key: "margin",
+            style: { width: "5%" },
+        },
+        {
+            title: "Rate Diff",
+            dataIndex: "rateDiff",
+            render: (text, record) => (
+                <>
+                    {/* <Input
+                        className="form-control small-text-fields no-spinners"
+                        type="number"
+                        value={(+text || 0).toFixed(2)}
+                        onChange={(e) => handleValueChange(record, "rateDiff", e.target.value)}
+                    /> */}
+                    {/* <CustomInput
+                        className="form-control small-text-fields"
+                        value={text}
+                        onChange={(newValue) => handleValueChange(record, "rateDiff", newValue)}
+                    /> */}
+                    <input
+                        type="number"
+                        placeholder='rateDiff'
+                        className="line"
+                        value={text}
+                        data-market-id={'rateDiff'}
+                        onChange={(e) => handleValueChange(record, "rateDiff", e.target.value)}
                     />
                     <span className="text-danger">
                         {record?.error?.rateDiff}
@@ -2019,6 +2492,228 @@ export const CreateEventMarket = () => {
             style: { width: "5%" },
         }
     ];
+    const runnerColumnsForPlayer = [
+        {
+            key: "selectRunner",
+            render: (text, record, onChange, market) => (
+                (market?.marketTypeCategoryId === 37 || market?.marketTypeCategoryId === 38) ? (
+                    <input
+                        type="checkbox"
+                        checked={record?.isChecked || false}
+                        onChange={(e) => onChange("isChecked", e.target.checked)}
+                    />
+                ) : null
+            ),
+            style: { width: "5%", textAlign: "center" }
+        },
+        {
+            title: "Runner",
+            key: "runner",
+            render: (text, record, onChange) => (
+                <Input
+                    className="form-control small-text-fields"
+                    type="text"
+                    disabled={+record?.runnerId}
+                    value={record.runner || ""}
+                    onChange={(e) => onChange("runner", e.target.value)}
+                    placeholder="Runner Name"
+                />
+            ),
+            style: { width: "15%" },
+        },
+        {
+            title: "Pre",
+            key: "predefinedValue",
+            render: (text, record, onChange) => (
+                // <CustomInput
+                //     // className="form-control small-text-fields"
+                //     className="line"
+                //     value={record?.predefinedValue == null ? "" : record?.predefinedValue}
+                //     onChange={(newValue) => onChange("predefinedValue", newValue)}
+                //     placeholder="Predefined Value"
+                //     name="predefinedValue"
+                // />
+                <input
+                    name="predefinedValue"
+                    className="line"
+                    placeholder="Predefined Value"
+                    value={record?.predefinedValue == null ? "" : record?.predefinedValue}
+                    data-market-id={'predefinedValue'}
+                    onChange={(e) => {
+                        console.log("newValue", e.target.value);
+                        onChange("predefinedValue", e.target.value);
+                    }}
+                    />
+
+            ),
+            style: { width: "5%" },
+        },
+
+        {
+            title: "Line",
+            key: "line",
+            render: (text, record, onChange) => (
+                // <Input
+                //     className="form-control small-text-fields no-spinners"
+                //     type="number"
+                //     value={record.line}
+                //     onChange={(e) => onChange("line", +e.target.value || 0)}
+                //     placeholder="Line"
+                // />
+                <input
+                    type="number"
+                    placeholder='Line'
+                    className="line"
+                    value={record?.line == null ? "" : record?.line}
+                    data-market-id={'line'}
+                    onChange={(e) => onChange("line", e.target.value)}
+                />
+                // <CustomInput
+                //     className="form-control small-text-fields"
+                //     value={record?.line == null ? "" : record?.line}
+                //     onChange={(newValue) => onChange("line", newValue)}
+                //     placeholder="Line"
+                // />
+            ),
+            style: { width: "5%" },
+        },
+        {
+            title: "Under",
+            key: "under",
+            render: (text, record, onChange) => (
+                // <Input
+                //     className="form-control small-text-fields no-spinners"
+                //     type="number"
+                //     value={record.underRate}
+                //     onChange={(e) => onChange("underRate", +e.target.value || 0)}
+                //     placeholder="Under"
+                // />
+                <CustomInput
+                    className="form-control small-text-fields"
+                    value={record?.underRate}
+                    onChange={(newValue) => onChange("underRate", newValue)}
+                    placeholder="Under"
+                />
+            ),
+            style: { width: "5%" },
+        },
+        {
+            title: "Over",
+            key: "over",
+            render: (text, record, onChange) => (
+                // <Input
+                //     className="form-control small-text-fields no-spinners"
+                //     type="number"
+                //     value={record.overRate}
+                //     onChange={(e) => onChange("overRate", +e.target.value || 0)}
+                //     placeholder="Over"
+                // />
+                <CustomInput
+                    className="form-control small-text-fields"
+                    value={record?.overRate}
+                    onChange={(newValue) => onChange("overRate", newValue)}
+                    placeholder="Over"
+                />
+            ),
+            style: { width: "5%" },
+        },
+        {
+            title: "No Rate",
+            key: "noRate",
+            render: (text, record, onChange) => (
+                // <Input
+                //     className="form-control small-text-fields no-spinners"
+                //     type="number"
+                //     value={record.layPrice}
+                //     onChange={(e) => onChange("layPrice", +e.target.value || 0)}
+                //     placeholder="No Rate"
+                // />
+                <CustomInput
+                    className="form-control small-text-fields"
+                    value={record?.layPrice}
+                    onChange={(newValue) => onChange("layPrice", newValue)}
+                    placeholder="No Rate"
+                />
+            ),
+            style: { width: "5%" },
+        },
+        {
+            title: "Yes Rate",
+            key: "yesRate",
+            render: (text, record, onChange) => (
+                // <Input
+                //     className="form-control small-text-fields no-spinners"
+                //     type="number"
+                //     value={record.backPrice}
+                //     onChange={(e) => onChange("backPrice", +e.target.value || 0)}
+                //     placeholder="Yes Rate"
+                // />
+                <CustomInput
+                    className="form-control small-text-fields"
+                    value={record?.backPrice}
+                    onChange={(newValue) => onChange("backPrice", newValue)}
+                    placeholder="Yes Rate"
+                />
+            ),
+            style: { width: "5%" },
+        },
+        {
+            title: "No Point",
+            key: "noPoint",
+            render: (text, record, onChange) => (
+                // <Input
+                //     className="form-control small-text-fields no-spinners"
+                //     type="number"
+                //     value={record.laySize}
+                //     onChange={(e) => onChange("laySize", +e.target.value || 0)}
+                //     placeholder="No Point"
+                // />
+                // <CustomInput
+                //     className="form-control small-text-fields"
+                //     value={record?.laySize}
+                //     onChange={(newValue) => onChange("laySize", newValue)}
+                //     placeholder="No Point"
+                // />
+                <input
+                    type="number"
+                    placeholder='laySize'
+                    className="line"
+                    value={record?.laySize}
+                    data-market-id={'laySize'}
+                    onChange={(e) => onChange("laySize", e.target.value)}
+                />
+            ),
+            style: { width: "5%" },
+        },
+        {
+            title: "Yes Point",
+            key: "yesPoint",
+            render: (text, record, onChange) => (
+                // <Input
+                //     className="form-control small-text-fields no-spinners"
+                //     type="number"
+                //     value={record.backSize}
+                //     onChange={(e) => onChange("backSize", +e.target.value || 0)}
+                //     placeholder="Yes Point"
+                // />
+                // <CustomInput
+                //     className="form-control small-text-fields"
+                //     value={record?.backSize}
+                //     onChange={(newValue) => onChange("backSize", newValue)}
+                //     placeholder="Yes Point"
+                // />
+                <input
+                    type="number"
+                    placeholder='backSize'
+                    className="line"
+                    value={record?.backSize}
+                    data-market-id={'backSize'}
+                    onChange={(e) => onChange("backSize", e.target.value)}
+                />
+            ),
+            style: { width: "5%" },
+        }
+    ];
     const MarketDetailsDate = commentaryDetails?.eventDate
         ? convertDateUTCToLocal(commentaryDetails.eventDate, "index")
         : "";
@@ -2035,7 +2730,18 @@ export const CreateEventMarket = () => {
                                         <Col className="mt-3 mt-lg-3 mt-md-3" >
                                             <Breadcrumbs title="ScoreCard" breadcrumbItem="Commentary Market Template" page="updatecp" />
                                         </Col>
-                                        <Col className="mt-3 mt-lg-3 mt-md-3 float-right" >
+                                        <Col className="mt-3 mt-lg-3 mt-md-3 float-right text-right" >
+                                            <Switch
+                                                width={80}
+                                                uncheckedIcon={<OffsymbolPlayerMarketStatus />}
+                                                checkedIcon={<OnSymbolPlayerMarketStatus />}
+                                                className="mx-2"
+                                                onColor="#02a499"
+                                                onChange={() => {
+                                                    setPlayerMarketShow(!playersMarketShow);
+                                                }}
+                                                checked={playersMarketShow}
+                                            />
                                             <Button className="btn btn-danger text-right" onClick={handleBackClick} > Back </Button>
                                             <Button color="primary mx-2" className="btn text-right" onClick={handleSave} disabled={isLoading}> Save </Button>
                                             {/* <Button color="primary" className="btn text-right" onClick={() => setIsModalOpen(true)} > Add Runner </Button> */}
