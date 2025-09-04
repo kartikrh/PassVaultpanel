@@ -58,7 +58,7 @@ const Index = ({ data, next, save, isPredictToggle }) => {
         rmk: `${winnerTeam?.shortName} opt to ${values.choseTo == 1 ? "Bat" : "Bowl"}`,
         tossRmk: `${winnerTeam?.shortName} opt to ${values.choseTo == 1 ? "Bat" : "Bowl"}`,
         displayStatus: `${winnerTeam?.shortName} opt to ${values.choseTo == 1 ? "Bat" : "Bowl"}`,
-        commentaryStatus: "2",
+        commentaryStatus: 2,
       },
       commentaryTeams: UpdatedCurrentInningTeams,
       updateTeamStatus: extractRequiredFieldsForTeamStatus(UpdatedCurrentInningTeams),
