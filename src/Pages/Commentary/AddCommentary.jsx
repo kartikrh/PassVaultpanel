@@ -270,12 +270,13 @@ function AddCommentary() {
                     });
                 const selectedCompetition = competitionList.find(item => item?.competitionId == newFormData["competitionId"]);
                 if (selectedCompetition) {
-                    const { matchTypeId, drsCount, isVirtual, pythonId, countryId } = selectedCompetition;
+                    const { matchTypeId, drsCount, isVirtual, pythonId, countryId, venueId } = selectedCompetition;
                     finalizeRef1.current.updateFormFromParent({ matchTypeId });
                     finalizeRef2.current.updateFormFromParent({ drsCount });
                     finalizeRef3.current.updateFormFromParent({ isVirtual });
                     finalizeRef3.current.updateFormFromParent({ pythonId });
                     finalizeRef4.current.updateFormFromParent({ countryId });
+                    finalizeRef4.current.updateFormFromParent({ venueId });
                 }
             } else {
                 setMasterData((preData) => ({
@@ -433,6 +434,7 @@ function AddCommentary() {
             Object.entries(newFormData).filter(([key]) => allowedFields.includes(key))
         );
         updateSavedFormState(filteredData);
+        if (newFormData["countryId"] !== savedFormState["countryId"]) {
         if (newFormData["countryId"] && newFormData["countryId"] !== "0") {
             setIsApiLoading(true);
             axiosInstance.post('/admin/list/venueList', { countryId: (newFormData["countryId"]) })
@@ -444,7 +446,7 @@ function AddCommentary() {
                     })
                     setMasterData((preData) => ({
                         ...preData,
-                        "location": formattedData,
+                        "venueId": formattedData,
                     }));
                     setIsApiLoading(false);
                 }).catch((error) => {
@@ -454,9 +456,9 @@ function AddCommentary() {
         } else {
             setMasterData((preData) => ({
                 ...preData,
-                "location": [],
+                "venueId": [],
             }));
-        }
+        }}
     }
 
     const fetchData = async (id) => {
@@ -789,6 +791,12 @@ function AddCommentary() {
             }
             if (Array.isArray(completeData?.team2Players)) {
                 completeData.team2Players = completeData.team2Players?.filter(id => id != null);
+            }
+            if (completeData?.venueId && masterData?.["venueId"]?.length > 0) {
+                const selectedVenue = masterData["venueId"].find(v => v?.value == completeData.venueId);
+                if (selectedVenue) {
+                    completeData.location = selectedVenue.label;
+                }
             }
             const extraData = {
                 commentaryId: id,
