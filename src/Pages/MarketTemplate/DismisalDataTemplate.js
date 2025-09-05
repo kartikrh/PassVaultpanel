@@ -403,7 +403,7 @@ function DismissalDataComponent() {
                                         }}
                                     >
                                         <div className="d-flex gap-2" style={{ minWidth: '220px' }}>
-                                            <div style={{ flex: '0 0 30%' }}>
+                                            <div style={{ flex: '0 0 70%' }}>
                                                 <TextField
                                                     label="Predefined Value"
                                                     variant="outlined"
@@ -448,7 +448,7 @@ function DismissalDataComponent() {
                                                     }}
                                                 />
                                             </div>
-                                            <div style={{ flex: '0 0 70%' }}>
+                                            <div style={{ flex: '0 0 30%' }}>
                                                 <TextField
                                                     label="Impact Prob"
                                                     variant="outlined"
