@@ -193,7 +193,7 @@ const PlayerCommentary = () => {
                     {teams.map((teamDetails, index) => (
                       <div
                         key={index}
-                        className="col-12 col-lg-6 col-sm-6 col-md-6"
+                        className="col-12 col-lg-12 col-sm-12 col-md-12"
                       >
                         <Card>
                           <CardHeader>{teamDetails?.teamName}</CardHeader>

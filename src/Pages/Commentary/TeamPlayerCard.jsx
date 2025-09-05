@@ -237,6 +237,27 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
         return (a?.playerName || "").localeCompare(b?.playerName || "");
     });
 
+    const handleCheckPlayer = (commentaryPlayerId, playerId, currentInnings, isChecked) => {
+        if (isChecked) {
+            // Add player to editedPlayers with current values
+            setEditedPlayers(prevState => ({
+                ...prevState,
+                [commentaryPlayerId]: {
+                    playerId: playerId,
+                    currentInnings: currentInnings,
+                    isInPlayingEleven: updatedPlayingXiPlayer[commentaryPlayerId] ?? commentaryTeamPlayers.find(p => p.commentaryPlayerId === commentaryPlayerId)?.isInPlayingEleven
+                }
+            }));
+        } else {
+            // Remove player from editedPlayers
+            setEditedPlayers(prevState => {
+                const newState = { ...prevState };
+                delete newState[commentaryPlayerId];
+                return newState;
+            });
+        }
+    };
+
     return (
         <>
             {isLoading && <SpinnerModel />}
@@ -281,11 +302,12 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                         <div className="row">
                             <div className="col-1"></div>
                             <div className="col-1"></div>
+                            <div className="col-1"></div>
                             <div className="col-2">Player</div>
-                            <div className="col-2">Avg</div>
+                            <div className="col-1">Avg</div>
                             {/* <div className="col-1">SR</div> */}
-                            <div className="col-2">BDRY</div>
-                            <div className="col-2">PBF</div>
+                            <div className="col-1">BDRY</div>
+                            <div className="col-1">PBF</div>
                             <div className="col-1">Delete</div>
                             <div className="col-1">XI</div>
                         </div>
@@ -295,6 +317,16 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                     <div key={index} class="row d-flex align-items-center my-2 ">
                         <div class="col-12">
                             <div className="row">
+                                <div className="col-1">
+                                    <input
+                                        className="form-check-input"
+                                        type="checkbox"
+                                        name="chk_child"
+                                        value="option1"
+                                        checked={editedPlayers[player.commentaryPlayerId] || false}
+                                        onChange={(e) => handleCheckPlayer(player.commentaryPlayerId, e.target.checked)}
+                                    />
+                                </div>
                                 <div className="col-1">{imageRender(player?.playerType)}</div>
                                 <div className="col-1">{player?.jerseyPlayerImage ? (
                                     <img
@@ -308,7 +340,7 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                                     </Avatar>
                                 )}</div>
                                 <div className="col-2 playerNameScroll">{player?.playerName}</div>
-                                <div className="col-2">
+                                <div className="col-1">
                                     <input
                                         type="number"
                                         style={{ width: "60px" }}
@@ -337,7 +369,7 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                                         }
                                     />
                                 </div> */}
-                                <div className="col-2">
+                                <div className="col-1">
                                     <input
                                         type="number"
                                         style={{ width: "50px" }}
@@ -354,7 +386,7 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                                         }
                                     />
                                 </div>
-                                <div className="col-2">
+                                <div className="col-1">
                                     <input
                                         type="number"
                                         style={{ width: "50px" }}
