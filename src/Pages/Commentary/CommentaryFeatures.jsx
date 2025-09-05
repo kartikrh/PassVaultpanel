@@ -244,6 +244,7 @@ export const CommentaryFeatures = () => {
                                             selectedItems={selectedItems}
                                             setSelectedItems={setSelectedItems}
                                             bowlingPlayers={bowlingTeamPlayers}
+                                            bowlingStyleList={commentaryData?.bowlingStyles}
                                         />
                                         <PlayerFeature
                                             playerList={bowlingTeamPlayers || []}
@@ -253,6 +254,7 @@ export const CommentaryFeatures = () => {
                                             selectedItems={selectedItems}
                                             setSelectedItems={setSelectedItems}
                                             bowlingPlayers={bowlingTeamPlayers}
+                                            bowlingStyleList={commentaryData?.bowlingStyles}
                                         />
                                         <PartnershipFeature
                                             partnershipList={commentaryData?.commentaryPartnership?.filter((item)=> item?.currentInnings == selectedInnings && item?.teamId === selectedBattingTeamId) || []}

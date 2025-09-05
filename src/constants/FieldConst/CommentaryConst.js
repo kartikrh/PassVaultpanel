@@ -1671,7 +1671,7 @@ export const PARTNERSHIP_FEATURE_FIELD = (battingPlayers = [], ballList = []) =>
     },
 ]
 
-export const BATTING_PLAYER_FEATURE_FIELD = (bowlingPlayers = []) =>[
+export const BATTING_PLAYER_FEATURE_FIELD = (bowlingPlayers = []) => [
     {
         name: "playerName",
         placeholder: "Name",
@@ -1815,7 +1815,7 @@ export const BATTING_PLAYER_FEATURE_FIELD = (bowlingPlayers = []) =>[
     },
 ]
 
-export const BOWLING_PLAYER_FEATURE_FIELD = [
+export const BOWLING_PLAYER_FEATURE_FIELD = (bowlingStyleList = []) => [
     {
         name: "playerName",
         placeholder: "Name",
@@ -1823,6 +1823,17 @@ export const BOWLING_PLAYER_FEATURE_FIELD = [
         type: TEXT,
         isDisable: true,
         fieldColspan: { xs: 4, md: 3, lg: 2 },
+    },
+    {
+        name: "bowlingStyle",
+        placeholder: "Bowling Style",
+        formName: PLAYER,
+        type: SELECT,
+        options: bowlingStyleList?.map(p => ({
+            value: p?.bowlingTypeId,
+            label: p?.bowlingType
+        })),
+        fieldColspan: { xs: 4, md: 3, lg: 3 },
     },
     {
         name: "bowlerOrder",
