@@ -5,7 +5,7 @@ import { useState } from "react";
 import { SLFieldRenderer } from "../../../components/Common/Reusables/SLFieldRenderer";
 import { SELECT, SWITCH } from "../../../components/Common/Const";
 
-export const PlayerFeature = ({ playerList, handleValueChange, updatedData, title, selectedItems, setSelectedItems, bowlingPlayers }) => {
+export const PlayerFeature = ({ playerList, handleValueChange, updatedData, title, selectedItems, setSelectedItems, bowlingPlayers, bowlingStyleList }) => {
     const [open, setOpen] = useState("");
     
     const toggle = (id) => {
@@ -22,7 +22,7 @@ export const PlayerFeature = ({ playerList, handleValueChange, updatedData, titl
         dataToSend[playerInfo.commentaryPlayerId] = updatedPlayerData
         handleValueChange(dataToSend)
     }
-    const PLAYER_FIELD = title === "Player Batting" ? BATTING_PLAYER_FEATURE_FIELD(bowlingPlayers) : BOWLING_PLAYER_FEATURE_FIELD;
+    const PLAYER_FIELD = title === "Player Batting" ? BATTING_PLAYER_FEATURE_FIELD(bowlingPlayers) : BOWLING_PLAYER_FEATURE_FIELD(bowlingStyleList) ;
     const playerListData = title === "Player Batting" ? playerList?.sort((a,b)=> b?.batterOrder - a?.batterOrder) : playerList?.sort((a,b)=> b?.bowlerOrder - a?.bowlerOrder);
 
     return <Accordion open={open} toggle={toggle}>

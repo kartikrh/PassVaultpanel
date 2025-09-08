@@ -220,6 +220,23 @@ const Commentary = (props) => {
         setIsMatchCompleted(true)
     }
     const handleSuperOver = (superOverData) => {
+        const currentPartnershipData = (isEmpty(_currentPartnership) ? currentPartnership : _currentPartnership);
+        const partnershipDetails = {
+            ...currentPartnershipData,
+            "isActive": false,
+        }
+        const updatedPartnership = generatePartnership({ commentaryDetails, currentPartnership: partnershipDetails, teams })
+        const updatedOnPitchPlyer = { ...onPitchPlayers }
+        const resetPlayers = Object.values(updatedOnPitchPlyer).map(player =>
+                player ? { ...player, isPlay: null, onStrike: null } : null
+            )?.filter(Boolean);
+        let objToSave = {
+            "commentaryId": commentaryDetails.commentaryId,
+            "isCallPredict": props?.isPredictToggle,
+            "commentaryPartnership": updatedPartnership,
+            "commentaryPlayers": resetPlayers,
+        }
+        dispatch(addCommentaryScreenData(objToSave));
         const objToSend = {
             commentaryId: commentaryDetails.commentaryId,
             teamMaxOver: superOverData?.overs,
@@ -1139,6 +1156,7 @@ const Commentary = (props) => {
                 "playerimage": oldPlayer["playerimage"],
                 "batsmanAverage": oldPlayer["batsmanAverage"],
                 "bowlerAverage": oldPlayer["bowlerAverage"],
+                "bowlingStyle": oldPlayer["bowlingStyle"],
                 "batterOrder": newPlayer["batterOrder"],
                 "bowlerOrder": newPlayer["bowlerOrder"],
             }
@@ -1151,6 +1169,7 @@ const Commentary = (props) => {
                 "playerimage": newPlayer["playerimage"],
                 "batsmanAverage": newPlayer["batsmanAverage"],
                 "bowlerAverage": newPlayer["bowlerAverage"],
+                "bowlingStyle": newPlayer["bowlingStyle"],
                 "batterOrder": oldPlayer["batterOrder"],
                 "bowlerOrder": oldPlayer["bowlerOrder"],
             }
