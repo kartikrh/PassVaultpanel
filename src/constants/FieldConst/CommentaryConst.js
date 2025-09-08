@@ -209,6 +209,26 @@ export const ExtraInfoFields = [
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
   {
+    name: "streamingType",
+    label: "Streaming Type",
+    defaultValue: 1,
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 4, lg: 4 },
+    type: SELECT,
+    options: [
+        { label: "Select Streaming Type", value: "0" },
+        { label: "URL", value: 1 },
+        { label: "Streams", value: 2 },
+      ],
+  },
+  {
+    name: "streamingUrl",
+    label: "Streaming Url",
+    type: TEXT,
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 4, lg: 4 },
+  },
+  {
     name: "isPredictMarket",
     label: "Predict Market",
     // dependsOnField: 'eventId',
