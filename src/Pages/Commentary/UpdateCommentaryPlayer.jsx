@@ -29,6 +29,7 @@ import { updateToastData } from "../../Features/toasterSlice";
 import axiosInstance from "../../Features/axios";
 import TeamPlayerCard from "./TeamPlayerCard";
 import { isEmpty } from "lodash";
+import { element } from "prop-types";
 
 const PlayerCommentary = () => {
   const pageName = TAB_COMMENTARY;
@@ -43,8 +44,9 @@ const PlayerCommentary = () => {
   );
   // const commentaryId = location.state?.commentaryId || "0";
   // const commentaryDetails = location.state?.commentaryDetails;
-  const dispatch = useDispatch();
   const [teams, setTeams] = useState([]);
+  const [bowlerType, setBowlerType] = useState([]);
+  const dispatch = useDispatch();
   const [commentaryData, setCommentaryData] = useState(null);
   const [openAccordions, setOpenAccordions] = useState("");
   useEffect(() => {
@@ -56,8 +58,37 @@ const PlayerCommentary = () => {
     }
     if (commentaryId !== "0") {
       fetchData(commentaryId);
+      fetchBowlingTypeData(commentaryId);
     }
   }, []);
+
+
+
+  const fetchBowlingTypeData = async (commentaryId) => {
+    setIsDataLoading(true);
+    await axiosInstance
+      .post("/admin/list/allBowlingTypes", { commentaryId })
+      .then((response) => {
+        const bowlerTypes = response?.result?.map(element=>{
+          return {
+            "label":element.bowlingType,
+            "value":element.bowlingTypeId
+          }
+        })
+        setBowlerType(bowlerTypes);
+        setIsDataLoading(false);
+      })
+      .catch((error) => {
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+        setIsDataLoading(false);
+      });
+  };
 
   const fetchData = async (commentaryId) => {
     setIsDataLoading(true);
@@ -80,7 +111,7 @@ const PlayerCommentary = () => {
         setApiResponse(response?.result || {});
         //setTeams(response?.result?.commentaryTeams);
         setIsDataLoading(false);
-        console.log("data:", commentaryDetailsData);
+        // console.log("data:", commentaryDetailsData);
       })
       .catch((error) => {
         dispatch(
@@ -193,7 +224,7 @@ const PlayerCommentary = () => {
                     {teams.map((teamDetails, index) => (
                       <div
                         key={index}
-                        className="col-12 col-lg-6 col-sm-6 col-md-6"
+                        className="col-12 col-lg-12 col-sm-12 col-md-12"
                       >
                         <Card>
                           <CardHeader>{teamDetails?.teamName}</CardHeader>
@@ -233,6 +264,7 @@ const PlayerCommentary = () => {
                                       inningPlayers={inningPlayers}
                                       currentInnings={currentInnings}
                                       fetchData={fetchData}
+                                      bowlingStyle={bowlerType}
                                     />
                                     <hr className="my-3" />
                                   </CardBody>

@@ -403,7 +403,7 @@ function DismissalDataComponent() {
                                         }}
                                     >
                                         <div className="d-flex gap-2" style={{ minWidth: '220px' }}>
-                                            <div style={{ flex: 1 }}>
+                                            <div style={{ flex: '0 0 70%' }}>
                                                 <TextField
                                                     label="Predefined Value"
                                                     variant="outlined"
@@ -432,6 +432,12 @@ function DismissalDataComponent() {
                                                     }}
                                                     inputProps={{ step: "0.1", min: "0" }}
                                                     sx={{
+                                                        '& .MuiInputLabel-root': {
+                                                            fontSize: '12px'
+                                                        },
+                                                        '& .MuiOutlinedInput-input': {
+                                                            fontSize: '12px'
+                                                        },
                                                         '& .MuiOutlinedInput-root': {
                                                             backgroundColor: isCellFocused(bowlingStyle.bowlingTypeId, runner.marketTemplateRunnerId)
                                                                 ? '#f8f9fa' : 'white',
@@ -442,7 +448,7 @@ function DismissalDataComponent() {
                                                     }}
                                                 />
                                             </div>
-                                            <div style={{ flex: 1 }}>
+                                            <div style={{ flex: '0 0 30%' }}>
                                                 <TextField
                                                     label="Impact Prob"
                                                     variant="outlined"
@@ -471,6 +477,12 @@ function DismissalDataComponent() {
                                                     }}
                                                     inputProps={{ step: "0.1", min: "0" }}
                                                     sx={{
+                                                        '& .MuiInputLabel-root': {
+                                                            fontSize: '12px'
+                                                        },
+                                                        '& .MuiOutlinedInput-input': {
+                                                            fontSize: '12px'
+                                                        },
                                                         '& .MuiOutlinedInput-root': {
                                                             backgroundColor: isCellFocused(bowlingStyle.bowlingTypeId, runner.marketTemplateRunnerId)
                                                                 ? '#f8f9fa' : 'white',
