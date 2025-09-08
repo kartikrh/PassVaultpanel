@@ -1355,6 +1355,10 @@ const Index = () => {
     }
   };
 
+  const openVideoIframe = (url) => {
+    window.open(url, "_blank", "width=600,height=400");
+  };
+
   const handleUpdateDay = async (updatedData) => {
     try {
       setIsLoading(true);
@@ -2596,6 +2600,23 @@ const Index = () => {
       ),
       style: { width: "10%" },
     },
+    {
+      title: "",
+      dataIndex: "streamingUrl",
+      key: "streamingUrl",
+      printType: "ignore",
+      render: (text, record) => text && (
+        <Button
+          color="primary"
+          size="sm"
+          className="btn viewScoreCard"
+          onClick={() => openVideoIframe(text)}
+        >
+          SU
+        </Button>
+      ),
+      style: { width: "4%", textAlign: "center" },
+    }
   ];
 
   const getColumns = (data) => {
