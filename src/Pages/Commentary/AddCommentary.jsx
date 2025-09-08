@@ -356,6 +356,7 @@ function AddCommentary() {
                         //     "team1Kipper": formattedData,
                         //     "team1Players": formattedData
                         // }));
+                        // setIsApiLoading(false);
                         if (!formattedData || formattedData.length === 0) {
                             // fallback call
                             return axiosInstance.post('/admin/commentary/playerListByTeamId', { teamId: newFormData["team1Id"] })
@@ -371,6 +372,7 @@ function AddCommentary() {
                                         "team1Kipper": formattedData,
                                         "team1Players": formattedData
                                     }));
+                                    setIsApiLoading(false);
                                 });
                         } else {
                             setMasterData((preData) => ({
@@ -379,8 +381,8 @@ function AddCommentary() {
                                 "team1Kipper": formattedData,
                                 "team1Players": formattedData
                             }));
+                            setIsApiLoading(false);
                         }
-                        setIsApiLoading(false);
                     }).catch((error) => {
                         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
                         setIsApiLoading(false);
@@ -433,6 +435,7 @@ function AddCommentary() {
                                         "team2Kipper": formattedData,
                                         "team2Players": formattedData
                                     }));
+                                    setIsApiLoading(false);
                                 });
                         } else {
                             setMasterData((preData) => ({
@@ -441,6 +444,7 @@ function AddCommentary() {
                                 "team2Kipper": formattedData,
                                 "team2Players": formattedData
                             }));
+                            setIsApiLoading(false);
                         }
                     }).catch((error) => {
                         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
