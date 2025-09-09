@@ -17,6 +17,7 @@ import PenaltyRuns from "../Pages/PenaltyRuns";
 import Competition from "../Pages/Competition";
 import Events from "../Pages/Events";
 import Commentary from "../Pages/Commentary";
+import IccRankings from "../Pages/IccRankings";
 import CommentaryList from "../Pages/CommentaryList";
 import CommentaryHistory from "../Pages/CommentaryHistory";
 import Users from "../Pages/Users";
@@ -165,6 +166,7 @@ import { NewUpdateManualOdds } from "../Pages/Commentary/NewUpdateManualOdds.jsx
 import ImportEntityEvent from "../Pages/ImportEntityEvent/ImportEntityEventTable.js";
 import ImportEntityTeam from "../Pages/ImportEntityTeam/ImportEntityTeamTable.js";
 import ImportEntityPlayer from "../Pages/ImportEntityPlayer/ImportEntityPlayer.js";
+import AddRankings from "../Pages/IccRankings/AddRankings.jsx";
 
 const authProtectedRoutes = [
   //dashboard
@@ -324,6 +326,8 @@ const authProtectedRoutes = [
   { path: "/AddVideoLibrary", component: <AddVideoLibrary /> },
   { path: "/dataprovider", component: <DataproviderPage /> },
   { path: "/dataproviderMarkets", component: <EventDetails /> },
+  { path: "/iccRanking", component: <IccRankings /> },
+  { path: "/addRanking", component: <AddRankings /> },
   {
     path: "/changePassword",
     component: <ChangePassword />,

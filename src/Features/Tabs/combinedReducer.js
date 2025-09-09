@@ -7,6 +7,7 @@ import playerSlice from "./playerSlice";
 import PenaltyRunSlice from "./penaltyRunsSlice";
 import EventTypeSlice from "./eventTypesSlice";
 import eventSlice from "./eventsSlice";
+import ICCRankingSlice from "./addRankings";
 import roleSlice from "./roleSlice";
 import CompetitionSlice from "./competitionSlice";
 import TeamSlice from "./teamSlice";
@@ -91,6 +92,7 @@ const rootReducer = combineReducers({
   whiteLabel: WhiteLabelSlice,
   venue: VenueSlice,
   pythonAPI: pythonApiSlice,
+  iccRankings: ICCRankingSlice
 });
 
 export default rootReducer;
