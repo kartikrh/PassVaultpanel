@@ -56,11 +56,7 @@ const Index = () => {
   const [matchTypes, setMatchTypes] = useState([]);
   const [matchTypeList, setMatchTypeList] = useState([]);
   const [sportList, setSportList] = useState([]);
-  const [pythonApis, setpythonApis] = useState([]);
   const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
-  const [marketTemplateModelVisible, setMarketTemplateModelVisible] =
-    useState(false);
-  const [marketTemplateRecord, setMarketTemplateTimeRecord] = useState({});
   const [typeSelectedOption, setTypeSelectedOption] = useState(undefined);
   const [selectedFilter, setSelectedFilter] = useState({
       // isActive: true,
@@ -69,12 +65,6 @@ const Index = () => {
     });
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  const [changeStatusModelVisible, setChangeStatusModelVisible] =
-    useState(false);
-  const [selectedCompetitionRecord, setSelectedCompetitionRecord] = useState(
-    {}
-  );
 
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
@@ -138,6 +128,25 @@ const Index = () => {
       .post(`/admin/competition/getMatchTypes`, {})
       .then((response) => {
         setMatchTypes(response.result);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+  const updatedImportData = async () => {
+    await axiosInstance
+      .get(`/admin/iccRanking/import`)
+      .then((response) => {
+        // console.log("res", response)
+        // setData((prev) => [...prev, response.res])
         setIsLoading(false);
       })
       .catch((error) => {
@@ -248,13 +257,6 @@ const Index = () => {
           })
         );
       });
-  };
-
-  const handleTournament = (details) => {
-    const url = new URL(window.location.origin + "/tournamentTeamPoints");
-    sessionStorage.setItem("id", "" + details?.id);
-    sessionStorage.setItem("competitionDetails", "" + JSON.stringify(details));
-    window.open(url.href, "_blank");
   };
 
   //edit
@@ -503,7 +505,6 @@ const Index = () => {
             changeOrderApiName="Icc Ranking"
             eventTypes={eventTypes}
             matchType={matchTypes}
-            pythonApis={pythonApis}
             singleCheck={checekedList}
             reFetchData={fetchData}
             handleReload={handleReload}
@@ -557,6 +558,7 @@ const Index = () => {
                   classNamePrefix="filter-dropdown"
                 />
                 <Button
+                onClick={() => updatedImportData()}
                   className="btn border"
                 >
                   Update
