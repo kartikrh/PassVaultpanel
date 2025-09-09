@@ -145,8 +145,13 @@ const Index = () => {
     await axiosInstance
       .get(`/admin/iccRanking/import`)
       .then((response) => {
-        // console.log("res", response)
-        // setData((prev) => [...prev, response.res])
+        dispatch(
+          updateToastData({
+            data: response.result,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
         setIsLoading(false);
       })
       .catch((error) => {
@@ -177,7 +182,7 @@ const Index = () => {
   const handlePermissions = async (pType, record, cState) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/admin/competition/save`, {
+      .post(`/admin/iccRanking/activeInactive`, {
         id: record.id,
         [pType]: cState ? false : true,
       })
@@ -358,9 +363,17 @@ const Index = () => {
     },
     {
       title: "Player",
-      dataIndex: "playerId",
+      dataIndex: "playerName",
       render: (text, record) => <span>{text}</span>,
-      key: "playerId",
+      key: "playerName",
+    //   sort: true,
+      style: { width: "10%" },
+    },
+    {
+      title: "Team",
+      dataIndex: "teamName",
+      render: (text, record) => <span>{text}</span>,
+      key: "teamName",
     //   sort: true,
       style: { width: "10%" },
     },
@@ -390,7 +403,7 @@ const Index = () => {
       key: "isActive",
       render: (text, record) => (
         <Tooltip
-          title={"Competition"}
+          title={"Active"}
           color={"#e8e8ea"}
           overlayInnerStyle={{ color: "#000" }}
         >
