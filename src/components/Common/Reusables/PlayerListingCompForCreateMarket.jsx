@@ -67,7 +67,6 @@ export const PlayerListingCompForCreateMarket = ({ columns, dataSource = [], tab
                                 {expectedMarketTypes.map((marketType, index) => {
                                     const market = marketsByType[marketType];
 
-                                    // console.log("market", market)
                                     // If market doesn't exist, render an empty placeholder with the same width
                                     if (!market) {
                                         return (
@@ -244,35 +243,57 @@ export const PlayerListingCompForCreateMarket = ({ columns, dataSource = [], tab
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className="third-col " style={{ width: '14%' }}>
-                                                <div className="third-col-save-btn p-2 fs-5 fw-bold" style={{ height: '70%' }} onClick={() => updateRecordsFunc(market, "SAVE_ALL")}>
-                                                    S
-                                                </div>
-                                                <div className="third-col-logs-btn p-2 mt-2 fs-6" style={{ height: '28%' }} onClick={() => { handleDS({ ...market, eventTypeName: commentaryInfo?.ety, competitionName: commentaryInfo?.com, eventName: commentaryInfo?.en, eventRefId: commentaryInfo?.eid, eventMarketId: market?.marketId, eventDay: commentaryInfo?.ed, eventTime: commentaryInfo?.et }) }}>
-                                                    L
-                                                </div>
+                                            <div className="third-col pe-1" style={{ width: '10%' }}>
+                                                <div className="arrow-buttons" style={{ height: '50%' }} onClick={() => handleValueChange(market, "line", (market?.line || 0) + 1)}>
+                                                        {/* <FaArrowUp className="up-arrow" /> */}
+                                                        {columns
+                                                                ?.find(col => col.title === "Over")
+                                                                ?.render?.(
+                                                                    market["over"],
+                                                                    market,
+                                                                    index,
+                                                                    (key, value) => handleValueChange(market, key, value)
+                                                                ) ?? market["over"]
+                                                            }
+                                                    </div>
+                                                    <div className=" arrow-buttons" style={{ height: '50%' }} onClick={() => handleValueChange(market, "line", (market?.line || 0) - 1)}>
+                                                        {/* <FaArrowDown className="down-arrow" /> */}
+                                                        {columns
+                                                            ?.find(col => col.title === "Under")
+                                                            ?.render?.(
+                                                                market["under"],
+                                                                market,
+                                                                index,
+                                                                (key, value) => handleValueChange(market, key, value)
+                                                            ) ?? market["under"]
+                                                        }
+                                                    </div>
                                             </div>
-                                            <div className="fourth-col text-black px-2" style={{ width: '15%' }}>
-                                                <input
-                                                    style={{ height: "50%" }}
-                                                    type="number"
-                                                    min={0}
-                                                    className="rate-dif-button"
-                                                    value={market?.rateDiff}
-                                                    onChange={(newValue) => handleValueChange(market, "rateDiff", newValue.target.value)}
-                                                />
-                                                <select
-                                                    style={{ height: "50%" }}
-                                                    className="status-dropdown"
-                                                    value={market?.status}
-                                                    onChange={(e) => {
-                                                        handleValueChange(market, "status", +e.target.value);
-                                                    }}
-                                                >
-                                                    {Object.entries(OPEN_MARKET_STATUS).map(([key, value]) =>
-                                                        <option key={key} value={key}>{value.slice(0, 2)}</option>
-                                                    )}
-                                                </select>
+                                            <div className="third-col" style={{ width: '10%' }}>
+                                                <div className="arrow-buttons" style={{ height: '50%' }} onClick={() => handleValueChange(market, "line", (market?.line || 0) + 1)}>
+                                                    {/* <FaArrowUp className="up-arrow" /> */}
+                                                    {columns
+                                                            ?.find(col => col.title === "Yes Rate")
+                                                            ?.render?.(
+                                                                market["yesRate"],
+                                                                market,
+                                                                index,
+                                                                (key, value) => handleValueChange(market, key, value)
+                                                            ) ?? market["yesRate"]
+                                                        }
+                                                </div>
+                                                <div className=" arrow-buttons" style={{ height: '50%' }} onClick={() => handleValueChange(market, "line", (market?.line || 0) - 1)}>
+                                                    {/* <FaArrowDown className="down-arrow" /> */}
+                                                    {columns
+                                                        ?.find(col => col.title === "No Rate")
+                                                        ?.render?.(
+                                                            market["noRate"],
+                                                            market,
+                                                            index,
+                                                            (key, value) => handleValueChange(market, key, value)
+                                                        ) ?? market["noRate"]
+                                                    }
+                                                </div>
                                             </div>
                                             <div style={{ width: '3%' }}>
                                             </div>

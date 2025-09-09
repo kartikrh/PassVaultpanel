@@ -16,6 +16,27 @@ import CustomInput from '../../components/Common/Reusables/CustomInput';
 import Switch from 'react-switch';
 import { PlayerListingCompForCreateMarket } from '../../components/Common/Reusables/PlayerListingCompForCreateMarket';
 import { getStatusColor1 } from './CommentartConst';
+import TextField from "@mui/material/TextField";
+import { styled } from "@mui/material/styles";
+
+const CustomInputField = styled(TextField)({
+  "& input": {
+    all: "unset",
+    WebkitAppearance: "none",
+    MozAppearance: "textfield",
+    appearance: "none",
+    fontSize: "18px",
+    lineHeight: "1.2",
+    width: "100%",
+    textAlign: "center",
+
+    "&::-webkit-outer-spin-button, &::-webkit-inner-spin-button": {
+      WebkitAppearance: "none",
+      margin: 0,
+    },
+  },
+});
+
 
 const MARKET_STATUS = {
     0: "NotOpen",
@@ -1436,6 +1457,7 @@ export const CreateEventMarket = () => {
     }
     
     const renderTable = (markets, sectionKey) => {
+        console.log("markets", markets)
         const columns = [
             {
                 title: () => (
@@ -1586,8 +1608,8 @@ export const CreateEventMarket = () => {
                     setSelectedMarkets(prev => {
                         const { targetKey, targetIndex } = resolveTargetSection();
                         const updatedSelections = updateSelections(prev, targetKey, targetIndex);
-                        console.log("updatedSelections", updatedSelections);
-                        console.log("processedMarkets", processedMarkets);
+                        // console.log("updatedSelections", updatedSelections);
+                        // console.log("processedMarkets", processedMarkets);
                         return updatedSelections;
                     });
                 }
@@ -1652,7 +1674,7 @@ export const CreateEventMarket = () => {
                         return (
                             <div key={group.playerId} className="d-flex p-1 player-market">
                             {/* Left side (20%) */}
-                            <div style={{ width: "20%" }}>
+                            <div style={{ width: "10%" }}>
                                 {/* Player + team info */}
                                 <div className="fs-5">{playerName}</div>
                                 <div className="fs-6 gap-2">
@@ -1664,7 +1686,7 @@ export const CreateEventMarket = () => {
                             </div>  
 
                             {/* Right side (80%) */}
-                            <div style={{ width: "80%" }}>
+                            <div style={{ width: "90%" }}>
                                 <PlayerListingCompForCreateMarket
                                     backgroundColor={getStatusColor1(+group?.markets[0]?.status)}
                                     key={group.playerId}
@@ -1877,11 +1899,11 @@ export const CreateEventMarket = () => {
     const handleSave = async () => {
         const savedData = Object.entries(processedMarkets)
             .flatMap(([key, markets]) =>{
-                // console.log("selectedMarkets", selectedMarkets)
+                console.log("selectedMarkets", selectedMarkets)
                 const dd = markets.filter((_, index) => selectedMarkets[key]?.[index])
-                // console.log("key", key)
-                // console.log("markets", markets)
-                // console.log("markets eet", dd)
+                console.log("key", key)
+                console.log("markets", markets)
+                console.log("markets eet", dd)
                 return markets.filter((_, index) => selectedMarkets[key]?.[index])
             }
             )
@@ -2165,7 +2187,7 @@ export const CreateEventMarket = () => {
                     <input
                         type="text"
                         placeholder='Market'
-                        className="line"
+                        className="create-temp-fields"
                         disabled={+record?.eventMarketId}
                         value={text}
                         data-market-id={'marketName'}
@@ -2255,7 +2277,7 @@ export const CreateEventMarket = () => {
                     <input
                         type="number"
                         placeholder='Margin'
-                        className="line"
+                        className="create-temp-fields"
                         value={text}
                         data-market-id={'margin'}
                         onChange={(e) => handleValueChange(record, "margin", e.target.value)}
@@ -2292,7 +2314,7 @@ export const CreateEventMarket = () => {
                     <input
                         type="number"
                         placeholder='rateDiff'
-                        className="line"
+                        className="create-temp-fields"
                         value={text}
                         data-market-id={'rateDiff'}
                         onChange={(e) => handleValueChange(record, "rateDiff", e.target.value)}
@@ -2533,17 +2555,47 @@ export const CreateEventMarket = () => {
                 //     placeholder="Predefined Value"
                 //     name="predefinedValue"
                 // />
-                <input
-                    name="predefinedValue"
-                    className="line"
-                    placeholder="Predefined Value"
-                    value={record?.predefinedValue == null ? "" : record?.predefinedValue}
-                    data-market-id={'predefinedValue'}
-                    onChange={(e) => {
-                        console.log("newValue", e.target.value);
-                        onChange("predefinedValue", e.target.value);
-                    }}
-                    />
+                // <input
+                //     name="predefinedValue"
+                //     className="create-temp-fields"
+                //     placeholder="Predefined Value"
+                //     value={record?.predefinedValue == null ? "" : record?.predefinedValue}
+                //     data-market-id={'predefinedValue'}
+                //     onChange={(e) => {
+                //         console.log("newValue", e.target.value);
+                //         onChange("predefinedValue", e.target.value);
+                //     }}
+                //     />
+
+                <TextField
+                name="predefinedValue"
+                className="create-temp-fields"
+                label="Predefined Value"   // 👈 replaces placeholder, works with outlined
+                variant="outlined"
+                size='small'
+                value={record?.predefinedValue == null ? "" : record?.predefinedValue}
+                data-market-id="predefinedValue"
+                onChange={(e) => {
+                    console.log("newValue", e.target.value);
+                    onChange("predefinedValue", e.target.value);
+                }}
+                sx={{
+                    "& .MuiInputBase-input": {
+                    WebkitAppearance: "none",
+                    MozAppearance: "textfield",
+                    appearance: "none",
+                    fontSize: "12px",
+                    lineHeight: 0.8,
+                        border: '0px',
+                    textAlign: "center",
+                    "&::-webkit-outer-spin-button, &::-webkit-inner-spin-button": {
+                        WebkitAppearance: "none",
+                        margin: 0,
+                    },
+                    },
+                }}
+                />
+
 
             ),
             style: { width: "5%" },
@@ -2563,7 +2615,7 @@ export const CreateEventMarket = () => {
                 <input
                     type="number"
                     placeholder='Line'
-                    className="line"
+                    className="create-temp-fields"
                     value={record?.line == null ? "" : record?.line}
                     data-market-id={'line'}
                     onChange={(e) => onChange("line", e.target.value)}
@@ -2588,12 +2640,20 @@ export const CreateEventMarket = () => {
                 //     onChange={(e) => onChange("underRate", +e.target.value || 0)}
                 //     placeholder="Under"
                 // />
-                <CustomInput
-                    className="form-control small-text-fields"
+                <input
+                    type="number"
+                    placeholder='Under'
+                    className="create-temp-fields"
                     value={record?.underRate}
-                    onChange={(newValue) => onChange("underRate", newValue)}
-                    placeholder="Under"
+                    data-market-id={'line'}
+                    onChange={(e) => onChange("underRate", e.target.value)}
                 />
+                // <CustomInput
+                //     className="form-control small-text-fields"
+                //     value={record?.underRate}
+                //     onChange={(newValue) => onChange("underRate", newValue)}
+                //     placeholder="Under"
+                // />
             ),
             style: { width: "5%" },
         },
@@ -2608,12 +2668,20 @@ export const CreateEventMarket = () => {
                 //     onChange={(e) => onChange("overRate", +e.target.value || 0)}
                 //     placeholder="Over"
                 // />
-                <CustomInput
-                    className="form-control small-text-fields"
+                <input
+                    type="number"
+                    placeholder='Over'
+                    className="create-temp-fields"
                     value={record?.overRate}
-                    onChange={(newValue) => onChange("overRate", newValue)}
-                    placeholder="Over"
+                    data-market-id={'line'}
+                    onChange={(e) => onChange("overRate", e.target.value)}
                 />
+                // <CustomInput
+                //     className="form-control small-text-fields"
+                //     value={record?.overRate}
+                //     onChange={(newValue) => onChange("overRate", newValue)}
+                //     placeholder="Over"
+                // />
             ),
             style: { width: "5%" },
         },
@@ -2628,12 +2696,20 @@ export const CreateEventMarket = () => {
                 //     onChange={(e) => onChange("layPrice", +e.target.value || 0)}
                 //     placeholder="No Rate"
                 // />
-                <CustomInput
-                    className="form-control small-text-fields"
+                <input
+                    type="number"
+                    placeholder='No Rate'
+                    className="create-temp-fields"
                     value={record?.layPrice}
-                    onChange={(newValue) => onChange("layPrice", newValue)}
-                    placeholder="No Rate"
+                    data-market-id={'line'}
+                    onChange={(e) => onChange("layPrice", e.target.value)}
                 />
+                // <CustomInput
+                //     className="form-control small-text-fields"
+                //     value={record?.layPrice}
+                //     onChange={(newValue) => onChange("layPrice", newValue)}
+                //     placeholder="No Rate"
+                // />
             ),
             style: { width: "5%" },
         },
@@ -2648,12 +2724,20 @@ export const CreateEventMarket = () => {
                 //     onChange={(e) => onChange("backPrice", +e.target.value || 0)}
                 //     placeholder="Yes Rate"
                 // />
-                <CustomInput
-                    className="form-control small-text-fields"
+                <input
+                    type="number"
+                    placeholder='Yes Rate'
+                    className="create-temp-fields"
                     value={record?.backPrice}
-                    onChange={(newValue) => onChange("backPrice", newValue)}
-                    placeholder="Yes Rate"
+                    data-market-id={'line'}
+                    onChange={(e) => onChange("backPrice", e.target.value)}
                 />
+                // <CustomInput
+                //     className="form-control small-text-fields"
+                //     value={record?.backPrice}
+                //     onChange={(newValue) => onChange("backPrice", newValue)}
+                //     placeholder="Yes Rate"
+                // />
             ),
             style: { width: "5%" },
         },
@@ -2677,7 +2761,7 @@ export const CreateEventMarket = () => {
                 <input
                     type="number"
                     placeholder='laySize'
-                    className="line"
+                    className="create-temp-fields"
                     value={record?.laySize}
                     data-market-id={'laySize'}
                     onChange={(e) => onChange("laySize", e.target.value)}
@@ -2705,7 +2789,7 @@ export const CreateEventMarket = () => {
                 <input
                     type="number"
                     placeholder='backSize'
-                    className="line"
+                    className="create-temp-fields"
                     value={record?.backSize}
                     data-market-id={'backSize'}
                     onChange={(e) => onChange("backSize", e.target.value)}

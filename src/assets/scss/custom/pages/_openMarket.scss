@@ -246,6 +246,28 @@
       margin: 0;
     }
   }
+.create-temp-fields {
+    all: unset;
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
+    appearance: none;
+  
+    font-size: 12px;
+    overflow-x: auto;
+    // padding: 0px 4px;
+    margin: 0px 2px;
+    line-height: 1.2;
+    width: 100%; // optional
+    // text-align: center; // optional
+    text-align: center; 
+  
+    /* optional: remove spinner buttons in some browsers */
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+  }
   
   .laySize {
     all: unset;
