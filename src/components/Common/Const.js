@@ -113,7 +113,7 @@ export const TAB_VIDEOLIBRARY = "Video Library";
 export const TAB_VENDOR = "Vendors";
 export const VENUE = "Venue";
 
-export const TAB_ICC_RANKINGS = "ICC Rankings";
+export const TAB_ICC_RANKINGS = "iccRanking";
 
 export const WHITE_LABEL = "White Label";
 // export const WHITE_LABEL_EVENT_DATA = "White Label Event Data";
