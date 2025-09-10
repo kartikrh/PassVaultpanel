@@ -47,6 +47,54 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
     };
 
     const handleRunnerValueChange = (runnerId, key, value) => {
+        // Handle dismissal wicket markets (marketTypeCategoryId === 27) with formula
+        if (localMarket.marketTypeCategoryId === 27 && key === 'line') {
+            const changedRunnerIndex = localMarket.runner.findIndex(runner => runner.runnerId === runnerId);
+
+            if (changedRunnerIndex !== -1) {
+                const oldLine = parseFloat(localMarket.runner[changedRunnerIndex].line);
+                const newLine = parseFloat(value);
+                const deltaP = newLine - oldLine;
+
+                // Calculate sum of other runners' line values
+                const sumOfOthers = localMarket.runner.reduce((sum, runner, index) => {
+                    return index !== changedRunnerIndex ? sum + parseFloat(runner.line) : sum;
+                }, 0);
+
+                if (sumOfOthers > 0 && Math.abs(deltaP) > 0.001) {
+                    // Apply dismissal wicket formula: Pnew = Pold + (ΔP × Pold / ∑Pothers)
+                    const updatedMarket = {
+                        ...localMarket,
+                        runner: localMarket.runner.map((runner, index) => {
+                            if (index === changedRunnerIndex) {
+                                // Update the changed runner
+                                return {
+                                    ...runner,
+                                    line: newLine,
+                                    backPrice: newLine
+                                };
+                            } else {
+                                // Apply formula to other runners
+                                const oldRunnerLine = parseFloat(runner.line);
+                                const newRunnerLine = oldRunnerLine - (deltaP * oldRunnerLine / sumOfOthers);
+
+                                return {
+                                    ...runner,
+                                    line: parseFloat(newRunnerLine.toFixed(2)),
+                                    backPrice: parseFloat(newRunnerLine.toFixed(2))
+                                };
+                            }
+                        })
+                    };
+
+                    setLocalMarket(updatedMarket);
+                    onUpdate(updatedMarket);
+                    return;
+                }
+            }
+        }
+
+        // Handle all other markets (original logic)
         const updatedMarket = {
             ...localMarket,
             runner: localMarket.runner.map(runner => {
@@ -129,9 +177,9 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
                     </tr>
                 </thead>
                 <tbody className='whitespace-nowrap'>
-                    <tr style={{ backgroundColor: getStatusColor(localMarket.status)}}>
-                        <td style={{color: getStatusFontColor(localMarket.status)}}>{teams[localMarket.teamId]} <div>Innings {localMarket.inningsId}</div></td>
-                        <td style={{color: getStatusFontColor(localMarket.status)}}>{`${localMarket.marketId} - ${localMarket.marketName}`}</td>
+                    <tr style={{ backgroundColor: getStatusColor(localMarket.status) }}>
+                        <td style={{ color: getStatusFontColor(localMarket.status) }}>{teams[localMarket.teamId]} <div>Innings {localMarket.inningsId}</div></td>
+                        <td style={{ color: getStatusFontColor(localMarket.status) }}>{`${localMarket.marketId} - ${localMarket.marketName}`}</td>
                         <td>
                             <select
                                 className="form-control small-text-fields"
@@ -219,7 +267,7 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
                 <tbody className='whitespace-nowrap'>
                     {sortedRunners.map((runner, index) => (
                         <tr key={runner.runnerId} style={{ backgroundColor: getStatusColor(runner.status) }}>
-                            <td style={{color: getStatusFontColor(localMarket.status)}}>{teams[runner.teamId] || `${runner.runnerId} - ${runner.runnerName}`}</td>
+                            <td style={{ color: getStatusFontColor(localMarket.status) }}>{teams[runner.teamId] || `${runner.runnerId} - ${runner.runnerName}`}</td>
                             <td>
                                 <select
                                     className="form-control small-text-fields"
@@ -238,7 +286,7 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
                                     onChange={(newValue) => handleRunnerValueChange(runner.runnerId, "line", newValue)}
                                 />
                             </td>
-                            <td style={{color: getStatusFontColor(localMarket.status)}}>
+                            <td style={{ color: getStatusFontColor(localMarket.status) }}>
                                 <span>{`${(+runner.line / +localMarket.over)?.toFixed(2)}`}</span>
                             </td>
                             <td>
