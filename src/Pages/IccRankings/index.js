@@ -238,7 +238,7 @@ const Index = () => {
   const handleDelete = async (e) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/admin/competition/delete`, {
+      .post(`/admin/iccRanking/delete`, {
         id: checekedList,
       })
       .then((response) => {
@@ -310,7 +310,7 @@ const Index = () => {
               handleSingleCheck(record);
             }}
           />
-          {isDrag ? <i className="bx bx-move ms-1 mt-1"></i> : null}
+          {/* {isDrag ? <i /className="bx bx-move ms-1 mt-1"></i> : null} */}
         </div>
       ), // Use 'select' as a placeholder key for the checkbox column
       key: "select",
