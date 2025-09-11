@@ -46,6 +46,7 @@ export const TAB_COMMENTARY_LIST = "Commentary List";
 export const TAB_COMMENTARY_LOGS = "Commentary Logs";
 export const TAB_COMPETITION = "Competition";
 export const TAB_CONFIG = "Config";
+export const TAB_STREAMING_LIST = "Streaming List";
 
 export const TAB_DISPLAYSTATUS = "DisplayStatus";
 export const TAB_DATA_PROVIDER = "Data Provider";

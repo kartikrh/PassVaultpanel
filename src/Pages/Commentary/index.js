@@ -686,6 +686,15 @@ const Index = () => {
     sessionStorage.removeItem("dataproviderEventDetails");
   };
 
+  const handleStreamingListClick = (details) => {
+    const url = new URL(window.location.origin + "/streamingList");
+    sessionStorage.setItem("streamingListId", "" + details?.commentaryId);
+    sessionStorage.setItem("streamingListDetails", "" + JSON.stringify(details));
+    window.open(url.href, "_blank");
+    sessionStorage.removeItem("streamingListId");
+    sessionStorage.removeItem("streamingListDetails");
+  };
+
   const handleClone = async () => {
     if (cloneValues.name !== "" && cloneValues.refrenceId !== "") {
       setIsLoading(true);
@@ -1463,6 +1472,23 @@ const Index = () => {
           onClick={() => openScorecardIframe(record)}
         >
           S
+        </Button>
+      ),
+      style: { width: "4%", textAlign: "center" },
+    },
+    {
+      title: "",
+      dataIndex: "streamingUrl",
+      key: "streamingUrl",
+      printType: "ignore",
+      render: (text, record) => text && (
+        <Button
+          color="info"
+          size="sm"
+          className="btn"
+          onClick={() => openVideoIframe(text)}
+        >
+          TV
         </Button>
       ),
       style: { width: "4%", textAlign: "center" },
@@ -2600,23 +2626,32 @@ const Index = () => {
       ),
       style: { width: "10%" },
     },
-    {
+     {
       title: "",
       dataIndex: "streamingUrl",
-      key: "streamingUrl",
+      key: "streamingView",
       printType: "ignore",
-      render: (text, record) => text && (
-        <Button
-          color="primary"
-          size="sm"
-          className="btn viewScoreCard"
-          onClick={() => openVideoIframe(text)}
+      render: (text, record) => (
+        <Tooltip
+          title={"Streaming View"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
         >
-          SU
-        </Button>
+          <Button
+            color={"info"}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleStreamingListClick(record);
+            }}
+          >
+            SV
+            {/* <i class="bx bxs-up-arrow-square"></i> */}
+          </Button>
+        </Tooltip>
       ),
       style: { width: "4%", textAlign: "center" },
-    }
+    },
   ];
 
   const getColumns = (data) => {
