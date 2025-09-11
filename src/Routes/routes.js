@@ -167,6 +167,7 @@ import ImportEntityEvent from "../Pages/ImportEntityEvent/ImportEntityEventTable
 import ImportEntityTeam from "../Pages/ImportEntityTeam/ImportEntityTeamTable.js";
 import ImportEntityPlayer from "../Pages/ImportEntityPlayer/ImportEntityPlayer.js";
 import AddRankings from "../Pages/IccRankings/AddRankings.jsx";
+import StreamingList from "../Pages/Commentary/StreamingList.js";
 
 const authProtectedRoutes = [
   //dashboard
@@ -328,6 +329,7 @@ const authProtectedRoutes = [
   { path: "/dataproviderMarkets", component: <EventDetails /> },
   { path: "/iccRanking", component: <IccRankings /> },
   { path: "/addRanking", component: <AddRankings /> },
+  { path: "/streamingList", component: <StreamingList /> },
   {
     path: "/changePassword",
     component: <ChangePassword />,
