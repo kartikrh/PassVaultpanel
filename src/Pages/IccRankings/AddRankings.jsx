@@ -15,7 +15,7 @@ import {
   Row,
 } from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_COMPETITION } from '../../components/Common/Const';
+import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_COMPETITION, TAB_ICC_RANKINGS } from '../../components/Common/Const';
 import { addCompetitionToDb, updateSavedState } from "../../Features/Tabs/competitionSlice";
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
@@ -26,7 +26,7 @@ import { isEmpty } from "lodash";
 import { addIccRankingToDb } from "../../Features/Tabs/addRankings";
 
 function AddRankings() {
-  const pageName = TAB_COMPETITION
+  const pageName = TAB_ICC_RANKINGS
   const finalizeRef = useRef(null);
   const [drp_up, setDrp_up] = useState(false);
   const [savedFormState, setSavedFormState] = useState({});
@@ -35,7 +35,7 @@ function AddRankings() {
   const [masterData, setMasterData] = useState({});
   const [disabledFields, setDisabledFields] = useState({});
   const { isSaved, isLoading } = useSelector(
-    (state) => state.tabsData.competition
+    (state) => state.tabsData.iccRankings
   );
   const permissionObj = useSelector(state => state.auth?.tabPermissionList);
   const dispatch = useDispatch();
@@ -87,7 +87,6 @@ function AddRankings() {
   
   const handleSaveClick = async (saveAction) => {
     const dataToSave = finalizeRef.current.finalizeData()
-    console.log("dataToSave", dataToSave)
       setCurrentSaveAction(saveAction);
       dispatch(addIccRankingToDb({ ...dataToSave, id: id }))
     //   dispatch(addIccRankingToDb(convertObjtoFormData2({ ...dataToSave })))
