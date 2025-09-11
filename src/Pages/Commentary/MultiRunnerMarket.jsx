@@ -3,7 +3,7 @@ import { Button } from 'reactstrap';
 import CustomInput from "../../components/Common/Reusables/CustomInput";
 import { getStatusColor, getStatusFontColor, OPEN_MARKET_STATUS } from "./CommentartConst";
 import "./CommentaryCss.css";
-import { generateOverUnderLineType } from "./functions";
+import { generateOverUnderLineType, getDynamicStep } from "./functions";
 import axiosInstance from "../../Features/axios";
 import { useDispatch, useSelector } from 'react-redux';
 import { updateToastData } from '../../Features/toasterSlice';
@@ -11,12 +11,25 @@ import { ERROR, SUCCESS } from '../../components/Common/Const';
 
 const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadingTrue, loadingFalse }) => {
     const [localMarket, setLocalMarket] = useState(market);
+    const [lockedRunners, setLockedRunners] = useState(new Set());
     const dispatch = useDispatch();
     const marketTypeObj = useSelector((state) => state.marketType?.marketTypeList);
 
     useEffect(() => {
         setLocalMarket(market);
     }, [market]);
+
+    const toggleRunnerLock = (runnerId) => {
+        setLockedRunners(prev => {
+            const newSet = new Set(prev);
+            if (newSet.has(runnerId)) {
+                newSet.delete(runnerId);
+            } else {
+                newSet.add(runnerId);
+            }
+            return newSet;
+        });
+    };
 
     const handleMarketValueChange = (key, value) => {
         let updatedMarket = {
@@ -56,27 +69,25 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
                 const newLine = parseFloat(value);
                 const deltaP = newLine - oldLine;
 
-                // Calculate sum of other runners' line values
-                const sumOfOthers = localMarket.runner.reduce((sum, runner, index) => {
-                    return index !== changedRunnerIndex ? sum + parseFloat(runner.line) : sum;
-                }, 0);
+                // Get unlocked runners (excluding the changed runner)
+                const unlockedRunners = localMarket.runner.filter((runner, index) =>
+                    index !== changedRunnerIndex && !lockedRunners.has(runner.runnerId)
+                );
 
-                if (sumOfOthers > 0 && Math.abs(deltaP) > 0.001) {
-                    // Apply dismissal wicket formula: Pnew = Pold + (ΔP × Pold / ∑Pothers)
+                if (unlockedRunners.length > 0 && Math.abs(deltaP) > 0.001) {
+                    // Calculate sum of unlocked runners (excluding changed runner)
+                    const sumOfUnlocked = unlockedRunners.reduce((sum, runner) => sum + parseFloat(runner.line), 0);
+
                     const updatedMarket = {
                         ...localMarket,
                         runner: localMarket.runner.map((runner, index) => {
                             if (index === changedRunnerIndex) {
-                                // Update the changed runner
-                                return {
-                                    ...runner,
-                                    line: newLine,
-                                    backPrice: newLine
-                                };
-                            } else {
-                                // Apply formula to other runners
+                                return { ...runner, line: newLine, backPrice: newLine };
+                            } else if (!lockedRunners.has(runner.runnerId)) {
+                                // Distribute the change proportionally among unlocked runners
                                 const oldRunnerLine = parseFloat(runner.line);
-                                const newRunnerLine = oldRunnerLine - (deltaP * oldRunnerLine / sumOfOthers);
+                                const proportion = sumOfUnlocked > 0 ? oldRunnerLine / sumOfUnlocked : 0;
+                                const newRunnerLine = Math.max(0, oldRunnerLine - (deltaP * proportion));
 
                                 return {
                                     ...runner,
@@ -84,6 +95,7 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
                                     backPrice: parseFloat(newRunnerLine.toFixed(2))
                                 };
                             }
+                            return runner; // Keep locked runners unchanged
                         })
                     };
 
@@ -103,7 +115,7 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
                     if (key === 'line') {
                         updatedRunner = generateOverUnderLineType({
                             ...updatedRunner,
-                            margin: localMarket.margin, // Use market-level margin
+                            margin: localMarket.margin,
                             lineType: localMarket?.lineType,
                             marketTypeId: localMarket?.marketTypeId,
                             rateDiff: localMarket?.rateDiff,
@@ -158,6 +170,7 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
 
     // Sort runners based on runnerId
     const sortedRunners = [...localMarket.runner].sort((a, b) => a.runnerId - b.runnerId);
+    const isDismissalWicket = localMarket.marketTypeCategoryId === 27;
 
     return (
         <div className="multi-runner-market">
@@ -225,7 +238,9 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
                             <CustomInput
                                 className="form-control small-text-fields"
                                 value={localMarket.lineRatio}
+                                steps={getDynamicStep(localMarket.lineRatio)}
                                 onChange={(newValue) => handleMarketValueChange("lineRatio", newValue)}
+
                             />
                         </td>
                         <td>
@@ -236,6 +251,8 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
                                 className="form-control small-text-fields"
                                 value={localMarket?.margin === null ? "" : localMarket.margin}
                                 onChange={(newValue) => handleMarketValueChange("margin", newValue)}
+                                steps={getDynamicStep(localMarket.margin)}
+
                             />
                         </td>
                         <td>
@@ -243,6 +260,7 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
                                 className="form-control small-text-fields"
                                 value={localMarket?.rateDiff === null ? "" : localMarket.rateDiff}
                                 onChange={(newValue) => handleMarketValueChange("rateDiff", newValue)}
+                                steps={getDynamicStep(localMarket.rateDiff)}
                             />
                         </td>
                     </tr>
@@ -253,6 +271,7 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
                 <thead className='whitespace-nowrap color-light-grey'>
                     <tr>
                         <th>Runner</th>
+                        {isDismissalWicket && <th>Lock</th>}
                         <th>Status</th>
                         <th>Line</th>
                         <th>R-R</th>
@@ -268,11 +287,21 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
                     {sortedRunners.map((runner, index) => (
                         <tr key={runner.runnerId} style={{ backgroundColor: getStatusColor(runner.status) }}>
                             <td style={{ color: getStatusFontColor(localMarket.status) }}>{teams[runner.teamId] || `${runner.runnerId} - ${runner.runnerName}`}</td>
+                            {isDismissalWicket && (
+                                <td>
+                                    <input
+                                        type="checkbox"
+                                        checked={lockedRunners.has(runner.runnerId)}
+                                        onChange={() => toggleRunnerLock(runner.runnerId)}
+                                    />
+                                </td>
+                            )}
                             <td>
                                 <select
                                     className="form-control small-text-fields"
                                     value={runner.status}
                                     onChange={(e) => handleRunnerValueChange(runner.runnerId, "status", +e.target.value)}
+                                    disabled={isDismissalWicket && lockedRunners.has(runner.runnerId)}
                                 >
                                     {Object.entries(OPEN_MARKET_STATUS).map(([key, value]) =>
                                         <option key={key} value={key}>{value}</option>
@@ -284,6 +313,8 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
                                     className="form-control small-text-fields input-line-field"
                                     value={runner?.line === null ? "" : runner.line}
                                     onChange={(newValue) => handleRunnerValueChange(runner.runnerId, "line", newValue)}
+                                    steps={getDynamicStep(runner?.line)}
+                                    disabled={isDismissalWicket && lockedRunners.has(runner.runnerId)}
                                 />
                             </td>
                             <td style={{ color: getStatusFontColor(localMarket.status) }}>
@@ -294,6 +325,8 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
                                     className="form-control small-text-fields input-no-field"
                                     value={runner?.layPrice === null ? "" : runner.layPrice}
                                     onChange={(newValue) => handleRunnerValueChange(runner.runnerId, "layPrice", newValue)}
+                                    steps={getDynamicStep(runner.layPrice)}
+                                    disabled={isDismissalWicket && lockedRunners.has(runner.runnerId)}
                                 />
                             </td>
                             <td>
@@ -301,6 +334,8 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
                                     className="form-control small-text-fields input-yes-field"
                                     value={runner?.backPrice === null ? "" : runner.backPrice}
                                     onChange={(newValue) => handleRunnerValueChange(runner.runnerId, "backPrice", newValue)}
+                                    steps={getDynamicStep(runner?.backPrice)}
+                                    disabled={isDismissalWicket && lockedRunners.has(runner.runnerId)}
                                 />
                             </td>
                             <td>
@@ -308,6 +343,8 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
                                     className="form-control small-text-fields input-under-field"
                                     value={runner?.underRate === null ? "" : runner.underRate}
                                     onChange={(newValue) => handleRunnerValueChange(runner.runnerId, "underRate", newValue)}
+                                    steps={getDynamicStep(runner.underRate)}
+                                    disabled={isDismissalWicket && lockedRunners.has(runner.runnerId)}
                                 />
                             </td>
                             <td>
@@ -315,6 +352,8 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
                                     className="form-control small-text-fields input-over-field"
                                     value={runner?.overRate === null ? "" : runner.overRate}
                                     onChange={(newValue) => handleRunnerValueChange(runner.runnerId, "overRate", newValue)}
+                                    steps={getDynamicStep(runner.overRate)}
+                                    disabled={isDismissalWicket && lockedRunners.has(runner.runnerId)}
                                 />
                             </td>
                             <td>
@@ -322,6 +361,8 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
                                     className="form-control small-text-fields input-no-field"
                                     value={runner?.laySize === null ? "" : runner.laySize}
                                     onChange={(newValue) => handleRunnerValueChange(runner.runnerId, "laySize", newValue)}
+                                    steps={getDynamicStep(runner.laySize)}
+                                    disabled={isDismissalWicket && lockedRunners.has(runner.runnerId)}
                                 />
                             </td>
                             <td>
@@ -329,6 +370,8 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
                                     className="form-control small-text-fields input-yes-field"
                                     value={runner?.backSize === null ? "" : runner.backSize}
                                     onChange={(newValue) => handleRunnerValueChange(runner.runnerId, "backSize", newValue)}
+                                    steps={getDynamicStep(runner.backSize)}
+                                    disabled={isDismissalWicket && lockedRunners.has(runner.runnerId)}
                                 />
                             </td>
                         </tr>

@@ -486,3 +486,16 @@ export const extractRequiredFieldsForTeamStatus = (inputList) => {
     teamId: obj.teamId
   }));
 }
+
+export function getDynamicStep(rate) {
+  if (rate >= 1 && rate < 2) return 0.01;
+  if (rate >= 2 && rate < 3) return 0.02;
+  if (rate >= 3 && rate < 4) return 0.05;
+  if (rate >= 4 && rate < 6) return 0.1;
+  if (rate >= 6 && rate < 10) return 0.2;
+  if (rate >= 10 && rate < 20) return 0.5;
+  if (rate >= 20 && rate < 30) return 1;
+  if (rate >= 30 && rate < 50) return 2;
+  if (rate >= 50 && rate < 100) return 5;
+  return 0.01; // default fallback
+}
