@@ -7,6 +7,7 @@ import CardComponent from './CardComponent'
 import SelectPlayerModal from './CommentaryModels/SelectPlayerModal'
 import axiosInstance from '../../Features/axios'
 import { clone } from 'lodash'
+import SegmentedSwitch from '../../components/Common/Reusables/SegmentSwitch'
 
 const PlayerSelection = forwardRef((props, ref) => {
   document.title = "Player Selection";
@@ -34,6 +35,10 @@ const PlayerSelection = forwardRef((props, ref) => {
   const [playersToUpdate, setPlayersToUpdate] = useState([])
   const [isNext, setIsNext] = useState(false);
 
+  // Add over type state variables
+  const [overTypeOptions, setOverTypeOptions] = useState([]);
+  const [selectedOverType, setSelectedOverType] = useState(null);
+
   useEffect(() => {
     if (data) {
       const commentaryDetails = data.commentaryDetails
@@ -49,6 +54,22 @@ const PlayerSelection = forwardRef((props, ref) => {
         }
         return player
       })
+      // Add over type options loading
+      const overTypeOptionsData = data?.overTypes?.map((element) => {
+        if (element.isActive) {
+          const valueSet = {
+            label: element.overType,
+            value: element.id
+          }
+          if (element.isDefault) {
+            setSelectedOverType(valueSet)
+          }
+          return valueSet
+        }
+        return null
+      }).filter(x => x)
+
+      setOverTypeOptions(overTypeOptionsData || [])
       setPlayersToUpdate(newPlayerToUpdate)
       setCommentaryDetails(commentaryDetails);
       setCurrentInnings(commentaryDetails?.currentInnings)
@@ -59,9 +80,14 @@ const PlayerSelection = forwardRef((props, ref) => {
 
   useEffect(() => {
     if (selectedBowler && selectedStriker && selectedNonStriker) {
-      setIsNext(true);
+      // If over type options exist, require over type selection
+      if (overTypeOptions.length > 0) {
+        setIsNext(selectedOverType ? true : false);
+      } else {
+        setIsNext(true);
+      }
     }
-  }, [selectedBowler, selectedStriker, selectedNonStriker])
+  }, [selectedBowler, selectedStriker, selectedNonStriker, selectedOverType, overTypeOptions])
 
   useEffect(() => {
     if (commentaryTeamsDetails) {
@@ -95,6 +121,14 @@ const PlayerSelection = forwardRef((props, ref) => {
     setTeamListStatus(teamStatus)
     setIsOpen(true)
   }
+
+  // Add over type change handler
+  const onOverTypeChange = (overTypeValue, overTypeName) => {
+    setSelectedOverType({
+      label: overTypeName,
+      value: overTypeValue
+    });
+  };
 
   const onNext = async () => {
     if (data) {
@@ -144,9 +178,12 @@ const PlayerSelection = forwardRef((props, ref) => {
         date: "",
         isDelete: false,
         currentInnings: currentInnings,
+        // Add over type fields
+        overTypeName: selectedOverType?.label,
+        overType: selectedOverType?.value,
       };
       axiosInstance
-        .post(`/admin/commentary/saveDetails`, {
+        .post(`/admin/commentary/saveDetails22`, {
           commentaryId: commentaryDetails.commentaryId,
           isCallPredict: isPredictToggle,
           commentaryOvers
@@ -383,6 +420,24 @@ const PlayerSelection = forwardRef((props, ref) => {
                   />
                 </Col>
               </Row>
+
+              {/* Add Over Type Selection after bowler is selected */}
+              {selectedBowler && overTypeOptions.length > 0 && (
+                <>
+                  <CardTitle className="h4 toss-card-title">
+                    <h4>Select Over Type</h4>
+                  </CardTitle>
+                  <Row className='p-1'>
+                    <Col xs="12">
+                      <SegmentedSwitch
+                        options={overTypeOptions}
+                        selectedValue={selectedOverType?.value}
+                        onSelectionChange={onOverTypeChange}
+                      />
+                    </Col>
+                  </Row>
+                </>
+              )}
             </CardBody>
           </Card>
           <Container className='d-flex justify-content-between flex-wrap' >
@@ -394,7 +449,7 @@ const PlayerSelection = forwardRef((props, ref) => {
             </Button>)}
           </Container>
         </Container>
-        <SelectPlayerModal isOpen={isOpen} toggle={toggle} playerList={getTeamList(teamListStatus)} selectPlayer={selectPlayer} isBowler={teamListStatus == 2 ? true : false}/>
+        <SelectPlayerModal isOpen={isOpen} toggle={toggle} playerList={getTeamList(teamListStatus)} selectPlayer={selectPlayer} isBowler={teamListStatus == 2 ? true : false} />
       </div>
     </React.Fragment>
   )

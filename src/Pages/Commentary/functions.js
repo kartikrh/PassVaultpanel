@@ -174,7 +174,7 @@ export const generateOver = ({ commentaryDetails, teams, onPitchPlayers, selecte
     "powerplay": null,
     "isOverInPowerplay": false,
     "powerplayType": 1,
-    "isMaiden": false,
+    "isMaiden": null,
     "isDelete": null,
   }
 }
