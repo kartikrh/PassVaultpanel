@@ -183,7 +183,7 @@ const PlayerSelection = forwardRef((props, ref) => {
         overType: selectedOverType?.value,
       };
       axiosInstance
-        .post(`/admin/commentary/saveDetails22`, {
+        .post(`/admin/commentary/saveDetails`, {
           commentaryId: commentaryDetails.commentaryId,
           isCallPredict: isPredictToggle,
           commentaryOvers
