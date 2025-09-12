@@ -13,7 +13,7 @@ import VerticalLayout from "../Layout/VerticalLayout/index";
 import HorizontalLayout from "../Layout/HorizontalLayout/index";
 import { AuthProtected } from "./AuthProtected";
 
-import { authProtectedRoutes, publicRoutes } from "./routes";
+import { authProtectedRoutes, publicRoutes, streamingRoutes } from "./routes";
 import CommonToast from "../components/Common/CommonToast";
 
 const getLayout = (layoutType) => {
@@ -51,6 +51,20 @@ const Index = () => {
                   {route.component}
                 </NonAuthLayout>
               }
+              key={idx}
+              exact={true}
+            />
+          ))}
+        </Route>
+
+        <Route>
+          {streamingRoutes.map((route, idx) => (
+            <Route
+              path={route.path}
+              element={
+                <AuthProtected>
+                  {route.component}
+                </AuthProtected>}
               key={idx}
               exact={true}
             />

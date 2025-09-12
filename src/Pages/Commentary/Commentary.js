@@ -228,8 +228,8 @@ const Commentary = (props) => {
         const updatedPartnership = generatePartnership({ commentaryDetails, currentPartnership: partnershipDetails, teams })
         const updatedOnPitchPlyer = { ...onPitchPlayers }
         const resetPlayers = Object.values(updatedOnPitchPlyer).map(player =>
-                player ? { ...player, isPlay: null, onStrike: null } : null
-            )?.filter(Boolean);
+            player ? { ...player, isPlay: null, onStrike: null } : null
+        )?.filter(Boolean);
         let objToSave = {
             "commentaryId": commentaryDetails.commentaryId,
             "isCallPredict": props?.isPredictToggle,
@@ -2031,7 +2031,10 @@ const Commentary = (props) => {
         setWicketHistory(propsData.commentaryData.commentaryWicket)
         setCurrentPartnership(partnershipFromApi)
         setCurrentOver(currentOverToUpdate)
-        setSelectedOverType(currentOverToUpdate?.overType || selectedOverType)
+        setSelectedOverType({
+            label: currentOverToUpdate?.overTypeName,
+            value: currentOverToUpdate?.overType
+        })
         setCurrentBall(currentBallToUpdate)
         if (!isEmpty(currentBallToUpdate)) setBallCountForStrike((currentBallToUpdate.autoStrikeBallCount || 0) + 1)
         setIsLastInnings(commentaryDetails.currentInnings >= matchTypeDetails.noOfIningsPerSide)
@@ -2052,6 +2055,7 @@ const Commentary = (props) => {
             }))
         }
     }
+    console.log("----------", selectedOverType)
     const updateTempToMain = () => {
         // console.log("_currentPartnership", _currentPartnership)
         if (!isEmpty(_currentOver)) {
