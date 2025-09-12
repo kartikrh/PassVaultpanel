@@ -5,6 +5,13 @@
     display: flex;
     overflow-x: auto;
 }
+.player-market-template-card{
+    // color: ;
+    // width: 30%;
+    height: 118px;
+    display: flex;
+    overflow-x: auto;
+}
 .first-col{
     display: flex;
     flex-direction: column;
@@ -344,6 +351,10 @@
 
 body[data-theme="dark"]{
     .player-market-card{
+        // background-color: $dark-body-bg !important;
+        color: $dark-font-color !important;
+    }
+    .player-market-template-card{
         // background-color: $dark-body-bg !important;
         color: $dark-font-color !important;
     }
