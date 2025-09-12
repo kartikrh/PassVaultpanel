@@ -95,16 +95,7 @@ export const PlayerListingCompForCreateMarket = React.memo(
                               alignItems: "center",
                             }}
                           >
-                            <div>
-                              {columnMap["First Column"]?.render
-                                ? columnMap["First Column"].render(
-                                    market[columnMap["First Column"].dataIndex],
-                                    market,
-                                    index,
-                                    handleChange
-                                  )
-                                : market[columnMap["First Column"]?.dataIndex]}
-                            </div>
+                            <div> {columns?.[0] && (columns[0].render ? columns[0].render( market[columns[0].dataIndex], market, index, (key, value) => handleValueChange(market, key, value) ) : market[columns[0].dataIndex])} </div>
                           </div>
 
                           {/* === Active & Market Allow === */}
