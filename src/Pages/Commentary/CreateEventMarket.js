@@ -49,6 +49,7 @@ const CustomTextField = ({
   sx: extraSx = {}, // allow passing extra styles
   ...rest
 }) => {
+    const [isFocused, setIsFocused] = useState(false);
   return (
     <TextField
       name={name}
@@ -59,10 +60,12 @@ const CustomTextField = ({
       value={value ?? ""}
     //   placeholder={placeholder}
       onChange={onChange}
-      {...(shrinkLabel
+      onFocus={() => setIsFocused(true)}
+      onBlur={() => setIsFocused(false)}
+      {...((shrinkLabel)
         ? {
             InputLabelProps: {
-              shrink: Boolean(value),
+              shrink: Boolean(value || isFocused),
             },
           }
         : {})}
