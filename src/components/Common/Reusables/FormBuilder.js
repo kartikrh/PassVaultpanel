@@ -34,7 +34,7 @@ import {
   TEXT_BUTTON,
   BUTTON,
   COLOR_PICKER,
-  IFRAME_BUTTON,
+  // IFRAME_BUTTON,
 } from "../Const.js";
 import "./CustomCss.css";
 import { Row, Col, Input, Form, Button } from "reactstrap";
@@ -451,6 +451,7 @@ const FormBuilder = forwardRef(
                 >
                   <div className="col-md-10">
                     {field.type === TEXT && (
+                      <>
                       <Input
                         className="form-control"
                         style={field?.customStyle}
@@ -464,6 +465,19 @@ const FormBuilder = forwardRef(
                         required={field.isRequired}
                         invalid={fieldErrors[field.name]}
                       />
+                      {field.name === "streamingUrl" && (
+                        <a
+                          href="#"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            openStreamingListIframe();
+                          }}
+                          style={{ cursor: "pointer", color: "#2563eb" }}
+                        >
+                          Open Stream List
+                        </a>
+                      )}
+                      </>
                     )}
 
                     {field.type === TEXT_BUTTON && (
@@ -819,7 +833,7 @@ const FormBuilder = forwardRef(
                         {field?.btnLable}
                       </Button>
                     )}
-                    {field.type === IFRAME_BUTTON && (
+                    {/* {field.type === IFRAME_BUTTON && (
                       <Button
                         key={field.name}
                         color="info"
@@ -827,7 +841,7 @@ const FormBuilder = forwardRef(
                       >
                         {field.name}
                       </Button>
-                    )}
+                    )} */}
                   </div>
                   {/* Add note if it exists */}
                   {field.note && (
