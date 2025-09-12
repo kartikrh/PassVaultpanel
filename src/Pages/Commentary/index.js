@@ -1365,7 +1365,15 @@ const Index = () => {
   };
 
   const openVideoIframe = (url) => {
-    window.open(url, "_blank", "width=600,height=400");
+    if (url && loadInitData) {
+      const baseUrl = loadInitData.find(
+        (item) => item.key === loadInit.STREAMINGWATCHURL
+      )?.value;
+      if (baseUrl) {
+        let iframeURL = `${baseUrl}${url}`
+        window.open(iframeURL, "_blank", "width=600,height=400");
+      }
+    }
   };
 
   const handleUpdateDay = async (updatedData) => {
@@ -1472,23 +1480,6 @@ const Index = () => {
           onClick={() => openScorecardIframe(record)}
         >
           S
-        </Button>
-      ),
-      style: { width: "4%", textAlign: "center" },
-    },
-    {
-      title: "",
-      dataIndex: "streamingUrl",
-      key: "streamingUrl",
-      printType: "ignore",
-      render: (text, record) => text && (
-        <Button
-          color="info"
-          size="sm"
-          className="btn"
-          onClick={() => openVideoIframe(text)}
-        >
-          TV
         </Button>
       ),
       style: { width: "4%", textAlign: "center" },
@@ -1650,6 +1641,21 @@ const Index = () => {
       title: "Match Type",
       dataIndex: "matchType",
       render: (text, record) => (
+        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+        {record?.streamingUrl && (
+          <Tooltip
+            title="Watch TV"
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            <i
+              className="bx bxs-tv"
+              role="button"
+              onClick={() => openVideoIframe(record.streamingUrl)}
+              style={{ cursor: "pointer", fontSize: "18px" }}
+            ></i>
+          </Tooltip>
+        )}
         <span
           onClick={() => {
             setChangeModelVisible(true);
@@ -1666,6 +1672,7 @@ const Index = () => {
             {<a className="bx bx-edit-alt"></a>}
           </Tooltip>
         </span>
+        </div>
       ),
       key: "matchType",
       sort: true,

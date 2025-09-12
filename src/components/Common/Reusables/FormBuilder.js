@@ -34,6 +34,7 @@ import {
   TEXT_BUTTON,
   BUTTON,
   COLOR_PICKER,
+  IFRAME_BUTTON,
 } from "../Const.js";
 import "./CustomCss.css";
 import { Row, Col, Input, Form, Button } from "reactstrap";
@@ -142,6 +143,12 @@ const FormBuilder = forwardRef(
 
         reader.readAsDataURL(file);
       }   
+    };
+
+    const openStreamingListIframe = () => {
+      const baseUrl = window.location.origin;
+      const scorecardFrameUrl = `${baseUrl}/streamingTable`;
+      window.open(scorecardFrameUrl, "_blank", "width=600,height=400");
     };
 
     const handleVideoChange = (field, event) => {
@@ -810,6 +817,15 @@ const FormBuilder = forwardRef(
                         disabled={disabledFields?.[field.name]}
                       >
                         {field?.btnLable}
+                      </Button>
+                    )}
+                    {field.type === IFRAME_BUTTON && (
+                      <Button
+                        key={field.name}
+                        color="info"
+                        onClick={openStreamingListIframe}
+                      >
+                        {field.name}
                       </Button>
                     )}
                   </div>
