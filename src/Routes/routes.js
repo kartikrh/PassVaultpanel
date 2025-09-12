@@ -168,6 +168,7 @@ import ImportEntityTeam from "../Pages/ImportEntityTeam/ImportEntityTeamTable.js
 import ImportEntityPlayer from "../Pages/ImportEntityPlayer/ImportEntityPlayer.js";
 import AddRankings from "../Pages/IccRankings/AddRankings.jsx";
 import StreamingList from "../Pages/Commentary/StreamingList.js";
+import StreamingTable from "../Pages/Commentary/StreamingTable.js";
 
 const authProtectedRoutes = [
   //dashboard
@@ -330,6 +331,7 @@ const authProtectedRoutes = [
   { path: "/iccRanking", component: <IccRankings /> },
   { path: "/addRanking", component: <AddRankings /> },
   { path: "/streamingList", component: <StreamingList /> },
+  { path: "/streamingTable", component: <StreamingTable /> },
   {
     path: "/changePassword",
     component: <ChangePassword />,
