@@ -152,7 +152,7 @@ const StreamingList = () => {
                       <Button color='danger' className="table-header-button" onClick={handleBackClick}>Exit</Button>
                   </Col>
                 </Row>
-                {showStreamTable && <StreamingTable title={"Streaming List"} />}
+                {showStreamTable && <StreamingTable />}
               </CardBody>
             </Card>
           </Row>

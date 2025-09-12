@@ -7,7 +7,7 @@ import { Tooltip } from "antd";
 import { useSelector } from "react-redux";
 import { loadInit } from "../../config";
 
-const StreamingTable = ({title}) => {
+const StreamingTable = () => {
   const finalizeRef = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
   const [dataIndexList, setDataIndexList] = useState([]);
@@ -157,17 +157,15 @@ const StreamingTable = ({title}) => {
 
   return (
    <React.Fragment>
-      <div className={!title ? "page-content" : ""}>
-        {isLoading && <SpinnerModel />}
-        <Table
-          ref={finalizeRef}
-          columns={columns}
-          dataSource={data}
-          dataIndexList={dataIndexList}
-          tableElement={tableElement}
-          reFetchData={fetchStreamListData}
-        />
-      </div>
+      {isLoading && <SpinnerModel />}
+      <Table
+        ref={finalizeRef}
+        columns={columns}
+        dataSource={data}
+        dataIndexList={dataIndexList}
+        tableElement={tableElement}
+        reFetchData={fetchStreamListData}
+      />
     </React.Fragment>
   );
 };

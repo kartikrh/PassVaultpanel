@@ -1364,15 +1364,12 @@ const Index = () => {
     }
   };
 
-  const openVideoIframe = (url) => {
-    if (url && loadInitData) {
-      const baseUrl = loadInitData.find(
-        (item) => item.key === loadInit.STREAMINGWATCHURL
-      )?.value;
-      if (baseUrl) {
-        let iframeURL = `${baseUrl}${url}`
-        window.open(iframeURL, "_blank", "width=600,height=400");
-      }
+  const openVideoIframe = (streamingUrl) => {
+    if(streamingUrl) {
+      sessionStorage.setItem("streamingUrl", streamingUrl);
+      const baseUrl = window.location.origin;
+      let iframeURL = `${baseUrl}/streamwatch`;
+      window.open(iframeURL, "_blank", "width=600, height=400");
     }
   };
 
