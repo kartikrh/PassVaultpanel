@@ -2735,24 +2735,26 @@ const Index = () => {
       title: "Player",
       key: "updatePlayers",
       printType: "ignore",
-      render: (text, record) => (
-        <Tooltip
-          title={"Update Players"}
-          color={"#e8e8ea"}
-          overlayInnerStyle={{ color: "#000" }}
-        >
-          <Button
-            color={"info"}
-            size="sm"
-            className="btn"
-            onClick={() => {
-              handleUpdatePlayersClick(record);
-            }}
+      render: (text, record) => {
+        if(record.commentaryStatus !== 10){
+          return <Tooltip
+            title={"Update Players"}
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
           >
-            <i class="bx bxs-up-arrow-square"></i>
-          </Button>
-        </Tooltip>
-      ),
+            <Button
+              color={"info"}
+              size="sm"
+              className="btn"
+              onClick={() => {
+                handleUpdatePlayersClick(record);
+              }}
+            >
+              <i class="bx bxs-up-arrow-square"></i>
+            </Button>
+          </Tooltip>
+        }
+      },
       style: { width: "2%", textAlign: "center" },
     }
     const updatedColumn = [...columns];
@@ -2765,9 +2767,12 @@ const Index = () => {
     if (data.some((record) => record?.commentaryStatus === 4)) {
       updatedColumn.splice(9, 0, eventSnapColumn);
     }
-    if (data.every((record) => record?.commentaryStatus === 2)) {
-      updatedColumn.splice(12, 0, playerColumn);
+    if (data.some((record) => record?.commentaryStatus !== 10)) {
+      updatedColumn.splice(13, 0, playerColumn);
     }
+    // if (data.every((record) => record?.commentaryStatus === 10)) {
+    //   updatedColumn.splice(12, );
+    // }
     return updatedColumn;
   };
 
