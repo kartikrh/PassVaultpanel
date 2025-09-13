@@ -742,7 +742,7 @@ const TournamentTeamPoints = () => {
                               return (
                                 <th className="px-2 py-2" key={index} style={column.style}>
                                   {column?.dataIndex === "teamId"
-                                    ? `${groupRecord?.groupName || ""} Team ${groupId && `[${groupId}]`}`
+                                    ? `${groupRecord?.groupName || ""} ${groupId && `[${groupId}]`}`
                                     : column.title}
                                 </th>
                             )})}

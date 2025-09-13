@@ -1540,7 +1540,7 @@ const Index = forwardRef(
                               color="btn btn-primary"
                               onClick={() => {
                                 setSearchTerm("");
-                                singleCheck.length > 1
+                                singleCheck.length >= 1
                                   ? datePriceModelFunction(true)
                                   : dispatch(
                                       updateToastData({
