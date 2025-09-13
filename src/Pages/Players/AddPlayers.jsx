@@ -58,13 +58,20 @@ function AddPlayer() {
   const location = useLocation();
   const [id, setId] = useState(location.state?.userId || "0");
   const isPermissionLoaded = !isEmpty(permissionObj);
-  const canAdd = isPermissionLoaded && checkPermission(permissionObj, pageName, PERMISSION_ADD);
-  const canEdit = isPermissionLoaded && checkPermission(permissionObj, pageName, PERMISSION_EDIT);
+  const canAdd =
+    isPermissionLoaded &&
+    checkPermission(permissionObj, pageName, PERMISSION_ADD);
+  const canEdit =
+    isPermissionLoaded &&
+    checkPermission(permissionObj, pageName, PERMISSION_EDIT);
   const canSaveOrClose = canAdd || canEdit;
-  document.title = 'Players'
+  document.title = "Players";
 
   useEffect(() => {
-    if (isPermissionLoaded && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+    if (
+      isPermissionLoaded &&
+      !checkPermission(permissionObj, pageName, PERMISSION_VIEW)
+    ) {
       navigate("/dashboard");
     }
     fetchMasterData();
@@ -99,9 +106,24 @@ function AddPlayer() {
     await axiosInstance
       .post("/admin/player/byId", { playerId: id })
       .then((response) => {
+        const teams = response?.result?.teams || [];
+        const homeTeamOptionsList = teams.map((team) => ({
+          label: team.teamName,
+          value: team.teamId,
+        }));
+
+        setMasterData((prevData) => ({
+          ...prevData,
+          homeTeamId: homeTeamOptionsList,
+        }));
+
+        // console.log("---", homeTeamOptionsList);
+        const defaultTeam = teams.find((team) => team?.homeTeam == true);
+
         setInitialEditData({
           ...response?.result,
           teamId: formatMultiSelectDataTeams(response?.result?.teams),
+          homeTeamId: defaultTeam ? defaultTeam.teamId : "0",
         });
       })
       .catch((error) => {
@@ -227,6 +249,19 @@ function AddPlayer() {
     }
   };
 
+  const handleFormFieldChange = (field, value) => {
+    if (field === "teamId") {
+      setMasterData((prev) => {
+        return {
+          ...prev,
+          homeTeamId: prev?.teamId?.filter((item) =>
+            value.includes(item.value)
+          ),
+        };
+      });
+    }
+  };
+
   const handleBackClick = () => {
     navigate("/Players");
   };
@@ -261,9 +296,7 @@ function AddPlayer() {
                       toggle={() => setDrp_up(!drp_up)}
                     >
                       <Button
-                        disabled={
-                          !canSaveOrClose
-                        }
+                        disabled={!canSaveOrClose}
                         id="caret"
                         color="primary"
                         onClick={() => {
@@ -304,6 +337,7 @@ function AddPlayer() {
                   editFormData={initialEditData}
                   masterData={masterData}
                   disabledFields={disabledFields}
+                  handleFieldChange={handleFormFieldChange}
                 />
               </CardBody>
             </Card>
