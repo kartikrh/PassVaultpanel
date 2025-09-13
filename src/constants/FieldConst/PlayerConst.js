@@ -125,18 +125,27 @@ export const PlayerFields = [
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
-        type: IMAGE,
-        name: "image",
-        label: "Player Image",
-        labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 4, lg: 4 }
-    },
-    {
         type: MULTI_SELECT,
         options: [],
         showSelectAll: true,
         name: "teamId",
         label: "Select Team",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
+    },
+    {
+        type: SELECT,
+        options: [],
+        name: "homeTeamId",
+        label: "Home Team",
+        isRequired: true,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
+    },
+    {
+        type: IMAGE,
+        name: "image",
+        label: "Player Image",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
