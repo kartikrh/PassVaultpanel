@@ -16,6 +16,7 @@ import CustomInput from '../../components/Common/Reusables/CustomInput';
 import Switch from 'react-switch';
 import { PlayerListingCompForCreateMarket } from '../../components/Common/Reusables/PlayerListingCompForCreateMarket';
 import { getStatusColor1 } from './CommentartConst';
+import TextField from "@mui/material/TextField";
 
 const MARKET_STATUS = {
     0: "NotOpen",
@@ -31,6 +32,69 @@ const getOrdinalSuffix = (n) => {
         return `${n}th`;
     }
     return `${n}${suffixes[remainder - 1] || "th"}`;
+};
+
+const CustomTextField = ({
+  name,
+  label,
+  value,
+  onChange,
+  placeholder,
+  height = 28,
+  fontSize = 10,
+  placeholderFontSize = 18,
+  fullWidth = false,
+  shrinkLabel = false,
+  size ,
+  sx: extraSx = {}, // allow passing extra styles
+  ...rest
+}) => {
+    const [isFocused, setIsFocused] = useState(false);
+  return (
+    <TextField
+      name={name}
+      label={label}
+      variant="outlined"
+      {...(size && { size })}
+      fullWidth={fullWidth}
+      value={value ?? ""}
+    //   placeholder={placeholder}
+      onChange={onChange}
+      onFocus={() => setIsFocused(true)}
+      onBlur={() => setIsFocused(false)}
+      {...((shrinkLabel)
+        ? {
+            InputLabelProps: {
+              shrink: Boolean(value || isFocused),
+            },
+          }
+        : {})}
+      sx={{
+        "& .MuiInputBase-root": {
+          height: height,
+        },
+        "& .MuiInputBase-input": {
+          fontSize: fontSize,
+          padding: 0,
+          textAlign: "center",
+          "&::placeholder": {
+            fontSize: placeholderFontSize,
+            color: "gray",
+            opacity: 1,
+          },
+        },
+        "& .MuiInputLabel-root": {
+          fontSize: fontSize,
+          margin: 0,
+        },
+        "& .MuiInputLabel-shrink": {
+          margin: "3px 0",
+        },
+        ...extraSx, // merge extra styles here
+      }}
+      {...rest}
+    />
+  );
 };
 
 export const CreateEventMarket = () => {
@@ -829,6 +893,8 @@ export const CreateEventMarket = () => {
                 const specialMarket = {
                     ...market,
                     playerId: player.commentaryPlayerId,
+                    playerName: player.playerName,
+                    playerType: player.playerType,
                     marketName: specialMarketName,
                     teamId: team.teamId,
                     over: 0,
@@ -1417,23 +1483,113 @@ export const CreateEventMarket = () => {
         }
     };
 
+    // function groupMarketsByPlayer(markets) {
+    //     const grouped = {};
+    
+    //     markets.forEach(market => {
+    //     const playerId = market.playerId;
+    //     const playerType = market.playerType;
+    //     const playerName = market.playerName;
+    
+    //     if (!grouped[playerId]) {
+    //         grouped[playerId] = {
+    //         playerId,
+    //         playerType,
+    //         playerName,
+    //         markets: [market]
+    //         };
+    //     } else {
+    //         grouped[playerId].markets.push(market);
+    //     }
+    //     });
+    //     return Object.values(grouped);
+    // }
+
     function groupMarketsByPlayer(markets) {
         const grouped = {};
-    
+
+        // Group markets by playerId
         markets.forEach(market => {
-        const playerId = market.playerId;
-    
-        if (!grouped[playerId]) {
+            const { playerId, playerType, playerName } = market;
+
+            if (!grouped[playerId]) {
             grouped[playerId] = {
-            playerId,
-            markets: [market]
+                playerId,
+                playerType,
+                playerName,
+                markets: [market]
             };
-        } else {
+            } else {
             grouped[playerId].markets.push(market);
-        }
+            }
         });
-        return Object.values(grouped);
+
+        // Convert object to array
+        const players = Object.values(grouped);
+
+        // Define custom order for player types
+        const typeOrder = {
+            BatsMan: 1,
+            Wicketkeeper: 2,
+            AllRounder: 3,
+            Bowler: 4
+        };
+
+        // Sort based on type order, then playerName
+        players.sort((a, b) => {
+            const typeDiff = typeOrder[a.playerType] - typeOrder[b.playerType];
+            if (typeDiff !== 0) return typeDiff;
+            return a.playerName.localeCompare(b.playerName);
+        });
+
+        return players;
     }
+
+    const getColumnsForPlayer = (
+        sectionKey,
+        playerId,
+        selectedMarkets,
+        handleSelectAllInGroup,
+        handleSelectMarket,
+        columnInitialsForPlayers,
+        runnerColumnsForPlayer,
+        handleRunnerValueChange
+        ) => {
+        return [
+            {
+            title: () => (
+                <input
+                type="checkbox"
+                className="mx-2"
+                checked={selectedMarkets[sectionKey]?.[playerId]?.every(Boolean) || false}
+                onChange={() => handleSelectAllInGroup(sectionKey, playerId)}
+                />
+            ),
+            style: { width: "5%" },
+            render: (_, record, index) => (
+                <input
+                type="checkbox"
+                checked={selectedMarkets[sectionKey]?.[playerId]?.[index] || false}
+                onChange={() => handleSelectMarket(sectionKey, playerId, index)}
+                />
+            ),
+            },
+            ...columnInitialsForPlayers,
+            ...runnerColumnsForPlayer.map(column => ({
+            ...column,
+            render: (text, record) => {
+                const runner = record.runners && record.runners[0];
+                return column.render(
+                runner ? runner[column.key] : null,
+                runner || {},
+                (key, value) => handleRunnerValueChange(record, 0, key, value),
+                record
+                );
+            },
+            })),
+        ];
+    };
+
     
     const renderTable = (markets, sectionKey) => {
         const columns = [
@@ -1569,7 +1725,7 @@ export const CreateEventMarket = () => {
                     setSelectedMarkets(prev => {
                         const { targetKey, targetIndex } = resolveTargetSection();
                         const updatedSelections = updateSelections(prev, targetKey, targetIndex);
-                        console.log("updatedSelections", updatedSelections);
+                        // console.log("updatedSelections", updatedSelections);
                         return updatedSelections;
                     });
                 } else {
@@ -1586,8 +1742,8 @@ export const CreateEventMarket = () => {
                     setSelectedMarkets(prev => {
                         const { targetKey, targetIndex } = resolveTargetSection();
                         const updatedSelections = updateSelections(prev, targetKey, targetIndex);
-                        console.log("updatedSelections", updatedSelections);
-                        console.log("processedMarkets", processedMarkets);
+                        // console.log("updatedSelections", updatedSelections);
+                        // console.log("processedMarkets", processedMarkets);
                         return updatedSelections;
                     });
                 }
@@ -1627,8 +1783,6 @@ export const CreateEventMarket = () => {
                 });
             };
 
-            const getColumns = (sectionKey, playerId) => [ { title: () => ( <input type="checkbox" className="mx-2" checked={selectedMarkets[sectionKey]?.[playerId]?.every(Boolean) || false} onChange={() => handleSelectAllInGroup(sectionKey, playerId)} /> ), style: { width: "5%" }, render: (_, record, index) => ( <input type="checkbox" checked={selectedMarkets[sectionKey]?.[playerId]?.[index] || false} onChange={() => handleSelectMarket(sectionKey, playerId, index)} /> ), }, ...columnInitialsForPlayers, ...runnerColumnsForPlayer.map(column => ({ ...column, render: (text, record, index) => { const runner = record.runners && record.runners[0]; return column.render( runner ? runner[column.key] : null, runner || {}, (key, value) => handleRunnerValueChange(record, 0, key, value), record ); } })) ];
-
             return (
                 <div className='bg-white'>
                     
@@ -1647,34 +1801,43 @@ export const CreateEventMarket = () => {
                         const playerName = players[group.playerId];
                         const teamName = teams[group?.markets[0]?.teamId];
 
-                        // Split columns: first col (checkbox) + rest
-                        const allColumns = getColumns(sectionKey, group.playerId);
+                        const allColumns = getColumnsForPlayer(
+                                sectionKey,
+                                group.playerId,
+                                selectedMarkets,
+                                handleSelectAllInGroup,
+                                handleSelectMarket,
+                                columnInitialsForPlayers,
+                                runnerColumnsForPlayer,
+                                handleRunnerValueChange
+                            );
+
                         return (
                             <div key={group.playerId} className="d-flex p-1 player-market">
                             {/* Left side (20%) */}
-                            <div style={{ width: "20%" }}>
-                                {/* Player + team info */}
-                                <div className="fs-5">{playerName}</div>
-                                <div className="fs-6 gap-2">
-                                <span className="pe-1">{teamName}</span>|
-                                <span className="ps-1">
-                                    Innings - {group?.markets[0]?.inningsId}
-                                </span>
-                                </div>
-                            </div>  
+                                <div style={{ width: "10%" }}>
+                                    {/* Player + team info */}
+                                    <div className="fs-5">{playerName}</div>
+                                    <div className="fs-6 gap-2">
+                                    <span className="pe-1">{teamName}</span>|
+                                    <span className="ps-1">
+                                        Innings - {group?.markets[0]?.inningsId}
+                                    </span>
+                                    </div>
+                                </div>  
 
-                            {/* Right side (80%) */}
-                            <div style={{ width: "80%" }}>
-                                <PlayerListingCompForCreateMarket
-                                    backgroundColor={getStatusColor1(+group?.markets[0]?.status)}
-                                    key={group.playerId}
-                                    columns={allColumns} // Pass rest of columns only
-                                    dataSource={group.markets}
-                                    tableElement={{ title: playerName, displayTitle: true }}
-                                    tableClassName="open-market-table-class"
-                                    handleValueChange={handleValueChange}
-                                />
-                            </div>
+                                {/* Right side (80%) */}
+                                <div style={{ width: "90%" }}>
+                                    <PlayerListingCompForCreateMarket
+                                        backgroundColor={getStatusColor1(+group?.markets[0]?.status)}
+                                        key={group.playerId}
+                                        columns={allColumns} // Pass rest of columns only
+                                        dataSource={group.markets}
+                                        tableElement={{ title: playerName, displayTitle: true }}
+                                        tableClassName="open-market-table-class"
+                                        handleValueChange={handleValueChange}
+                                    />
+                                </div>
                             </div>
                         );
                     })}
@@ -1790,7 +1953,7 @@ export const CreateEventMarket = () => {
         }
         return(
         <>
-            {Object.entries(processedCategories).map(([categoryId, markets]) => {
+            {Object.entries(processedCategories).filter(([sectionKey, markets]) => markets && markets.length > 0).map(([categoryId, markets]) => {
                 const sectionKey = `${teamId || 'oneTimeMarket'}_##_${typeId}_##_${categoryId}`;
                 return renderMarketCategory(categoryId, markets, sectionKey);
             })}
@@ -2106,7 +2269,6 @@ export const CreateEventMarket = () => {
                     {/* <input
                         type="number"
                         placeholder="Margin"
-                        className="line"
                         value={text}
                         data-market-id={'margin'}
                         onChange={(newValue) => handleValueChange(record, "margin", newValue)}
@@ -2149,164 +2311,7 @@ export const CreateEventMarket = () => {
             style: { width: "5%" },
         },
     ]
-    const columnInitialsForPlayers = [
-        {
-            title: "Market",
-            dataIndex: "marketName",
-            render: (text, record) => (
-                <>
-                    {/* <Input
-                        className="form-control small-text-fields"
-                        type="text"
-                        disabled={+record?.eventMarketId}
-                        value={text}
-                        onChange={(e) => handleValueChange(record, "marketName", e.target.value)}
-                    /> */}
-                    <input
-                        type="text"
-                        placeholder='Market'
-                        className="line"
-                        disabled={+record?.eventMarketId}
-                        value={text}
-                        data-market-id={'marketName'}
-                        onChange={(e) => handleValueChange(record, "marketName", e.target.value)}
-                    />
-                    <span className="text-danger">
-                        {record?.error?.marketName}
-                    </span>
-                </>
-            ),
-            key: "marketName",
-            style: { width: "20%" }, // Reduced width
-        },
-        {
-            title: "Is Active",
-            dataIndex: "isActive",
-            render: (text, record) => (
-                // <Button
-                //     color={`${record.isActive ? "primary" : "danger"}`}
-                //     size="sm"
-                //     className="btn"
-                //     onClick={() => {
-                //         handleValueChange(record, "isActive", !record.isActive);
-                //     }}
-                // >
-                //     <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
-                // </Button>
-                <div className={`${record.isActive ? 'button-a' : 'button-b'} button-a fs-5 fw-bold`} style={{ height: '50%' }} onClick={() => {
-                    handleValueChange(record, "isActive", !record.isActive);
-                }}>
-                    A
-                </div>
-            ),
-            key: "isActive",
-            style: { width: "2%", textAlign: "center" },
-        },
-        {
-            title: "Market Allow",
-            dataIndex: "isAllow",
-            render: (text, record) => (
-                // <Button
-                //     color={`${record.isAllow ? "primary" : "danger"}`}
-                //     size="sm"
-                //     className="btn"
-                //     onClick={() => {
-                //         handleValueChange(record, "isAllow", !record.isAllow);
-                //     }}
-                // >
-                //     <i className={`bx ${record.isAllow ? "bx-check" : "bx-block"}`}></i>
-                // </Button>
-                <div className={`${record.isAllow ? 'button-a' : 'button-b'} button-a fs-5 fw-bold`} style={{ height: '50%' }} onClick={() => {
-                    handleValueChange(record, "isAllow", !record.isAllow);
-                }}>
-                    M
-                </div>
-            ),
-            key: "isAllow",
-            style: { width: "2%", textAlign: "center" },
-        },
-        {
-            title: "Status",
-            dataIndex: "status",
-            render: (text, record) => (
-                <select
-                    className="small-text-fields"
-                    value={text}
-                    onChange={(e) => {
-                        handleValueChange(record, "status", e.target.value);
-                    }}
-                    closeMenuOnSelect={true}
-                >
-                    {
-                        Object.entries(MARKET_STATUS).map(([key, value]) =>
-                            <option key={key} value={key}>{value}</option>
-                        )
-                    }
-                </select>
-            ),
-            key: "status",
-            style: { width: "5%" },
-        },
-        {
-            title: "Margin",
-            dataIndex: "margin",
-            render: (text, record) => (
-                <>
-                    <input
-                        type="number"
-                        placeholder='Margin'
-                        className="line"
-                        value={text}
-                        data-market-id={'margin'}
-                        onChange={(e) => handleValueChange(record, "margin", e.target.value)}
-                    />
-                    {/* <CustomInput
-                        className="form-control small-text-fields"
-                        value={text}
-                        onChange={(newValue) => handleValueChange(record, "margin", newValue)}
-                    /> */}
-                    <span className="text-danger">
-                        {record?.error?.margin}
-                    </span>
-                </>
-            ),
-            key: "margin",
-            style: { width: "5%" },
-        },
-        {
-            title: "Rate Diff",
-            dataIndex: "rateDiff",
-            render: (text, record) => (
-                <>
-                    {/* <Input
-                        className="form-control small-text-fields no-spinners"
-                        type="number"
-                        value={(+text || 0).toFixed(2)}
-                        onChange={(e) => handleValueChange(record, "rateDiff", e.target.value)}
-                    /> */}
-                    {/* <CustomInput
-                        className="form-control small-text-fields"
-                        value={text}
-                        onChange={(newValue) => handleValueChange(record, "rateDiff", newValue)}
-                    /> */}
-                    <input
-                        type="number"
-                        placeholder='rateDiff'
-                        className="line"
-                        value={text}
-                        data-market-id={'rateDiff'}
-                        onChange={(e) => handleValueChange(record, "rateDiff", e.target.value)}
-                    />
-                    <span className="text-danger">
-                        {record?.error?.rateDiff}
-                    </span>
-                </>
-            ),
-            key: "rateDiff",
-            style: { width: "5%" },
-        },
-    ]
-
+    
     const runnerColumns = [
         {
             key: "selectRunner",
@@ -2492,6 +2497,234 @@ export const CreateEventMarket = () => {
             style: { width: "5%" },
         }
     ];
+
+    const columnInitialsForPlayers = [
+        {
+            title: "Market",
+            dataIndex: "marketName",
+            render: (text, record) => (
+                <>
+                    {/* <input
+                        type="text"
+                        placeholder='Market'
+                        className="create-temp-fields"
+                        disabled={+record?.eventMarketId}
+                        value={text}
+                        data-market-id={'marketName'}
+                        onChange={(e) => handleValueChange(record, "marketName", e.target.value)}
+                    /> */}
+                    <CustomTextField
+                        name="marketName"
+                        label="Market"
+                        value={text}
+                        placeholder="Market"
+                        fullWidth
+                        height={20} // custom height for Market field
+                        onChange={(e) => handleValueChange(record, "marketName", e.target.value)}
+                    />
+                    <span className="text-danger">
+                        {record?.error?.marketName}
+                    </span>
+                </>
+            ),
+            key: "marketName",
+            style: { width: "20%" }, // Reduced width
+        },
+        {
+            title: "Is Active",
+            dataIndex: "isActive",
+            render: (text, record) => (
+                // <Button
+                //     color={`${record.isActive ? "primary" : "danger"}`}
+                //     size="sm"
+                //     className="btn"
+                //     onClick={() => {
+                //         handleValueChange(record, "isActive", !record.isActive);
+                //     }}
+                // >
+                //     <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
+                // </Button>
+                <div className={`${record.isActive ? 'button-a' : 'button-b'} button-a fs-5 fw-bold`} style={{ height: '50%' }} onClick={() => {
+                    handleValueChange(record, "isActive", !record.isActive);
+                }}>
+                    A
+                </div>
+            ),
+            key: "isActive",
+            style: { width: "2%", textAlign: "center" },
+        },
+        {
+            title: "Market Allow",
+            dataIndex: "isAllow",
+            render: (text, record) => (
+                // <Button
+                //     color={`${record.isAllow ? "primary" : "danger"}`}
+                //     size="sm"
+                //     className="btn"
+                //     onClick={() => {
+                //         handleValueChange(record, "isAllow", !record.isAllow);
+                //     }}
+                // >
+                //     <i className={`bx ${record.isAllow ? "bx-check" : "bx-block"}`}></i>
+                // </Button>
+                <div className={`${record.isAllow ? 'button-a' : 'button-b'} button-a fs-5 fw-bold`} style={{ height: '50%' }} onClick={() => {
+                    handleValueChange(record, "isAllow", !record.isAllow);
+                }}>
+                    M
+                </div>
+            ),
+            key: "isAllow",
+            style: { width: "2%", textAlign: "center" },
+        },
+        {
+            title: "Status",
+            dataIndex: "status",
+            render: (text, record) => (
+                <select
+                    className="small-text-fields"
+                    value={text}
+                    onChange={(e) => {
+                        handleValueChange(record, "status", e.target.value);
+                    }}
+                    closeMenuOnSelect={true}
+                >
+                    {
+                        Object.entries(MARKET_STATUS).map(([key, value]) =>
+                            <option key={key} value={key}>{value}</option>
+                        )
+                    }
+                </select>
+            ),
+            key: "status",
+            style: { width: "5%" },
+        },
+        {
+            title: "Margin",
+            dataIndex: "margin",
+            render: (text, record) => (
+                <>
+                    {/* <input
+                        type="number"
+                        placeholder='Margin'
+                        className="create-temp-fields"
+                        value={text}
+                        data-market-id={'margin'}
+                        onChange={(e) => handleValueChange(record, "margin", e.target.value)}
+                    /> */}
+                    {/* <TextField
+                        name="Margin"
+                        label="Mr"
+                        variant="outlined"
+                        size='small'
+                        value={record?.margin}
+                        data-market-id="margin"
+                        onChange={(e) => handleValueChange(record, "margin", e.target.value)}
+                        sx={{
+                            marginLeft: '2px' ,
+                            "& .MuiInputBase-input": {
+                            fontSize: "10px",
+                            padding: '0px',
+                            textAlign: "center",
+                            "&::placeholder": {
+                                fontSize: "18px", // custom placeholder font size
+                                color: "gray", // you can also style color
+                                opacity: 1, // ensures placeholder is fully visible
+                            },
+                            },
+                            "& .MuiInputBase-root": {
+                                height: 45, // custom height
+                            },
+                            "& .MuiInputLabel-root": {
+                                fontSize: "10px",
+                                margin: '0px'
+                            },
+                            "& .MuiInputLabel-shrink": {
+                                margin: '3px 0px'
+                            },
+                        }}
+                    /> */}
+                    <CustomTextField
+                        name="margin"
+                        label="Mr"
+                        value={record?.margin}
+                        placeholder="Margin"
+                        height={45} // custom height for Margin
+                        onChange={(e) => handleValueChange(record, "margin", e.target.value)}
+                        sx={{ marginLeft: "2px" }} // extra styles
+                        />
+
+                    <span className="text-danger">
+                        {record?.error?.margin}
+                    </span>
+                </>
+            ),
+            key: "margin",
+            style: { width: "5%" },
+        },
+        {
+            title: "Rate Diff",
+            dataIndex: "rateDiff",
+            render: (text, record) => (
+                <>
+                {/* <TextField
+                    name="rateDiff"
+                    label="R.D"
+                    variant="outlined"
+                    size='small'
+                    value={record?.rateDiff}
+                    data-market-id="rateDiff"
+                    onChange={(e) => handleValueChange(record, "rateDiff", e.target.value)}
+                    sx={{
+                        marginLeft: '2px' ,
+                        "& .MuiInputBase-input": {
+                        fontSize: "10px",
+                        padding: '0px',
+                        textAlign: "center",
+                        "&::placeholder": {
+                            fontSize: "18px", // custom placeholder font size
+                            color: "gray", // you can also style color
+                            opacity: 1, // ensures placeholder is fully visible
+                        },
+                        },
+                        "& .MuiInputBase-root": {
+                            height: 45, // custom height
+                        },
+                        "& .MuiInputLabel-root": {
+                            fontSize: "10px",
+                            margin: '0px'
+                        },
+                        "& .MuiInputLabel-shrink": {
+                            margin: '3px 0px'
+                        },
+                    }}
+                /> */}
+                    {/* <input
+                        type="number"
+                        placeholder='rateDiff'
+                        className="create-temp-fields"
+                        value={text}
+                        data-market-id={'rateDiff'}
+                        onChange={(e) => handleValueChange(record, "rateDiff", e.target.value)}
+                    /> */}
+                    <CustomTextField
+                        name="rateDiff"
+                        label="R.D"
+                        value={record?.rateDiff}
+                        placeholder="Rate Diff"
+                        height={45} // matches your original TextField height
+                        onChange={(e) => handleValueChange(record, "rateDiff", e.target.value)}
+                        sx={{ marginLeft: "2px" }} // extra styles if needed
+                    />
+
+                    <span className="text-danger">
+                        {record?.error?.rateDiff}
+                    </span>
+                </>
+            ),
+            key: "rateDiff",
+            style: { width: "5%" },
+        },
+    ]
     const runnerColumnsForPlayer = [
         {
             key: "selectRunner",
@@ -2525,25 +2758,62 @@ export const CreateEventMarket = () => {
             title: "Pre",
             key: "predefinedValue",
             render: (text, record, onChange) => (
-                // <CustomInput
-                //     // className="form-control small-text-fields"
-                //     className="line"
-                //     value={record?.predefinedValue == null ? "" : record?.predefinedValue}
-                //     onChange={(newValue) => onChange("predefinedValue", newValue)}
-                //     placeholder="Predefined Value"
+                // <input
                 //     name="predefinedValue"
+                //     className="create-temp-fields"
+                //     placeholder="Predefined Value"
+                //     value={record?.predefinedValue == null ? "" : record?.predefinedValue}
+                //     data-market-id={'predefinedValue'}
+                //     onChange={(e) => {
+                //         console.log("newValue", e.target.value);
+                //         onChange("predefinedValue", e.target.value);
+                //     }}
+                //     />
+
+                // <TextField
+                //     name="predefinedValue"
+                //     label="predefined"
+                //     variant="outlined"
+                //     size='small'
+                //     type='number'
+                //     value={record?.predefinedValue == null ? "" : record?.predefinedValue}
+                //     data-market-id="predefinedValue"
+                //     onChange={(e) => {
+                //         onChange("predefinedValue", e.target.value);
+                //     }}
+                //     sx={{
+                //         "& .MuiInputBase-input": {
+                //             fontSize: "10px",
+                //             padding: '0px',
+                //             textAlign: "center",
+                //         "&::placeholder": {
+                //             fontSize: "18px", // custom placeholder font size
+                //             color: "gray", // you can also style color
+                //             opacity: 1, // ensures placeholder is fully visible
+                //         },
+                //         },
+                //         "& .MuiInputBase-root": {
+                //             height: 28, // custom height
+                //         },
+                //         "& .MuiInputLabel-root": {
+                //             fontSize: "10px",
+                //             margin: '0px'
+                //         },
+                //         "& .MuiInputLabel-shrink": {
+                //             margin: '3px 0px'
+                //         },
+                //     }}
                 // />
-                <input
+                <CustomTextField
                     name="predefinedValue"
-                    className="line"
-                    placeholder="Predefined Value"
-                    value={record?.predefinedValue == null ? "" : record?.predefinedValue}
-                    data-market-id={'predefinedValue'}
-                    onChange={(e) => {
-                        console.log("newValue", e.target.value);
-                        onChange("predefinedValue", e.target.value);
-                    }}
-                    />
+                    label="predefined"
+                    type="number"
+                    size={'small'}
+                    value={record?.predefinedValue ?? ""}
+                    placeholder="Predefined"
+                    height={28} // matches your original smaller height
+                    onChange={(e) => onChange("predefinedValue", e.target.value)}
+                />
 
             ),
             style: { width: "5%" },
@@ -2553,27 +2823,58 @@ export const CreateEventMarket = () => {
             title: "Line",
             key: "line",
             render: (text, record, onChange) => (
-                // <Input
-                //     className="form-control small-text-fields no-spinners"
+                // <input
                 //     type="number"
-                //     value={record.line}
-                //     onChange={(e) => onChange("line", +e.target.value || 0)}
-                //     placeholder="Line"
-                // />
-                <input
-                    type="number"
-                    placeholder='Line'
-                    className="line"
-                    value={record?.line == null ? "" : record?.line}
-                    data-market-id={'line'}
-                    onChange={(e) => onChange("line", e.target.value)}
-                />
-                // <CustomInput
-                //     className="form-control small-text-fields"
+                //     placeholder='Line'
+                //     className="create-temp-fields"
                 //     value={record?.line == null ? "" : record?.line}
-                //     onChange={(newValue) => onChange("line", newValue)}
-                //     placeholder="Line"
+                //     data-market-id={'line'}
+                //     onChange={(e) => onChange("line", e.target.value)}
                 // />
+                // <TextField
+                //     name="Line"
+                //     label="Line"
+                //     variant="outlined"
+                //     size='small'
+                //     value={record?.line == null ? "" : record?.line}
+                //     data-market-id="line"
+                //     onChange={(e) => {
+                //         onChange("line", e.target.value);
+                //     }}
+                //     sx={{
+                //         marginLeft: '2px' ,
+                //         "& .MuiInputBase-input": {
+                //         fontSize: "10px",
+                //         padding: '0px',
+                //         textAlign: "center",
+                //         "&::placeholder": {
+                //             fontSize: "18px", // custom placeholder font size
+                //             color: "gray", // you can also style color
+                //             opacity: 1, // ensures placeholder is fully visible
+                //         },
+                //         },
+                //         "& .MuiInputBase-root": {
+                //             height: 28, // custom height
+                //         },
+                //         "& .MuiInputLabel-root": {
+                //             fontSize: "10px",
+                //             margin: '0px'
+                //         },
+                //         "& .MuiInputLabel-shrink": {
+                //             margin: '3px 0px'
+                //         },
+                //     }}
+                // />
+                <CustomTextField
+                    name="line"
+                    label="Line"
+                    size={'small'}
+                    value={record?.line ?? ""}
+                    placeholder="Line"
+                    height={28} // same as your original height
+                    onChange={(e) => onChange("line", e.target.value)}
+                    sx={{ marginLeft: "2px" }} // extra left margin just like before
+                />
             ),
             style: { width: "5%" },
         },
@@ -2581,19 +2882,59 @@ export const CreateEventMarket = () => {
             title: "Under",
             key: "under",
             render: (text, record, onChange) => (
-                // <Input
-                //     className="form-control small-text-fields no-spinners"
+                // <input
                 //     type="number"
-                //     value={record.underRate}
-                //     onChange={(e) => onChange("underRate", +e.target.value || 0)}
-                //     placeholder="Under"
+                //     placeholder='Under'
+                //     className="create-temp-fields"
+                //     value={record?.underRate}
+                //     data-market-id={'line'}
+                //     onChange={(e) => onChange("underRate", e.target.value)}
                 // />
-                <CustomInput
-                    className="form-control small-text-fields"
+                // <TextField
+                //     name="underRate"
+                //     label="UD"
+                //     variant="outlined"
+                //     value={record?.underRate}
+                //     data-market-id="underRate"
+                //     onChange={(e) => onChange("underRate", e.target.value)}
+                //     InputLabelProps={{
+                //         shrink: Boolean(record?.underRate) // ✅ Shrinks only when value is truthy
+                //     }}
+                //     sx={{
+                //         marginLeft: '2px' ,
+                //         "& .MuiInputBase-input": {
+                //         fontSize: "10px",
+                //         padding: '0px',
+                //         textAlign: "center",
+                //         "&::placeholder": {
+                //             fontSize: "18px", // custom placeholder font size
+                //             color: "gray", // you can also style color
+                //             opacity: 1, // ensures placeholder is fully visible
+                //         },
+                //         },
+                //         "& .MuiInputBase-root": {
+                //             height: 45, // custom height
+                //         },
+                //         "& .MuiInputLabel-root": {
+                //             fontSize: "10px",
+                //             margin: '0px'
+                //         },
+                //         "& .MuiInputLabel-shrink": {
+                //             margin: '3px 0px'
+                //         },
+                //     }}
+                // />
+                <CustomTextField
+                    name="underRate"
+                    label="UD"
                     value={record?.underRate}
-                    onChange={(newValue) => onChange("underRate", newValue)}
-                    placeholder="Under"
+                    placeholder="Under Rate"
+                    shrinkLabel={true}
+                    height={45} // same as your original height
+                    onChange={(e) => onChange("underRate", e.target.value)}
+                    sx={{ marginLeft: "2px" }} // preserve left margin
                 />
+
             ),
             style: { width: "5%" },
         },
@@ -2601,19 +2942,64 @@ export const CreateEventMarket = () => {
             title: "Over",
             key: "over",
             render: (text, record, onChange) => (
-                // <Input
-                //     className="form-control small-text-fields no-spinners"
+                // <input
                 //     type="number"
-                //     value={record.overRate}
-                //     onChange={(e) => onChange("overRate", +e.target.value || 0)}
-                //     placeholder="Over"
+                //     placeholder='Over'
+                //     className="create-temp-fields"
+                //     value={record?.overRate}
+                //     data-market-id={'line'}
+                //     onChange={(e) => onChange("overRate", e.target.value)}
                 // />
-                <CustomInput
-                    className="form-control small-text-fields"
+                <CustomTextField
+                    name="overRate"
+                    label="Ov"
                     value={record?.overRate}
-                    onChange={(newValue) => onChange("overRate", newValue)}
-                    placeholder="Over"
+                    placeholder="Over Rate"
+                    shrinkLabel={true}
+                    height={45} // same as your original
+                    onChange={(e) => onChange("overRate", e.target.value)}
+                    sx={{ marginLeft: "2px", textAlign: "center" }} // preserve margin & alignment
                 />
+
+                // <TextField
+                //     name="overRate"
+                //     label="Ov"
+                //     variant="outlined"
+                //     // 
+                //     value={record?.overRate}
+                //     data-market-id="overRate"
+                //     onChange={(e) => onChange("overRate", e.target.value)}
+                //     InputLabelProps={{
+                //         shrink: Boolean(record?.overRate) // ✅ Shrinks only when value is truthy
+                //     }}
+                //     sx={{
+                //         marginLeft: '2px' ,
+                //         textAlign: "center",
+                //         "& .MuiInputBase-input": {
+                //         padding: '0px',
+                //         textAlign: "center",
+                //         fontSize: "10px",
+                //         "&::placeholder": {
+                            
+                //             fontSize: "18px", // custom placeholder font size
+                //             color: "gray", // you can also style color
+                //             opacity: 1, // ensures placeholder is fully visible
+                //         },
+                //         },
+                //         "& .MuiInputBase-root": {
+                //             height: 45, // custom height
+                //             textAlign: "center",
+                //         },
+                //         "& .MuiInputLabel-root": {
+                //             fontSize: "10px",
+                //             margin: '0px',
+                //             textAlign: "center",
+                //         },
+                //         "& .MuiInputLabel-shrink": {
+                //             margin: '3px 0px'
+                //         },
+                //     }}
+                // />
             ),
             style: { width: "5%" },
         },
@@ -2621,19 +3007,60 @@ export const CreateEventMarket = () => {
             title: "No Rate",
             key: "noRate",
             render: (text, record, onChange) => (
-                // <Input
-                //     className="form-control small-text-fields no-spinners"
+                // <input
                 //     type="number"
-                //     value={record.layPrice}
-                //     onChange={(e) => onChange("layPrice", +e.target.value || 0)}
-                //     placeholder="No Rate"
+                //     placeholder='No Rate'
+                //     className="create-temp-fields"
+                //     value={record?.layPrice}
+                //     data-market-id={'line'}
+                //     onChange={(e) => onChange("layPrice", e.target.value)}
                 // />
-                <CustomInput
-                    className="form-control small-text-fields"
+                // <TextField
+                //     name="No Rate"
+                //     label="N.R"
+                //     variant="outlined"
+                    
+                //     value={record?.layPrice}
+                //     data-market-id="layPrice"
+                //     onChange={(e) => onChange("layPrice", e.target.value)}
+                //     InputLabelProps={{
+                //         shrink: Boolean(record?.layPrice) // ✅ Shrinks only when value is truthy
+                //     }}
+                //     sx={{
+                //         marginLeft: '2px' ,
+                //         "& .MuiInputBase-input": {
+                //         fontSize: "10px",
+                //         padding: '0px',
+                //         textAlign: "center",
+                //         "&::placeholder": {
+                //             fontSize: "18px", // custom placeholder font size
+                //             color: "gray", // you can also style color
+                //             opacity: 1, // ensures placeholder is fully visible
+                //         },
+                //         },
+                //         "& .MuiInputBase-root": {
+                //             height: 45, // custom height
+                //         },
+                //         "& .MuiInputLabel-root": {
+                //             fontSize: "10px",
+                //             margin: '0px'
+                //         },
+                //         "& .MuiInputLabel-shrink": {
+                //             margin: '3px 0px'
+                //         },
+                //     }}
+                // />
+                <CustomTextField
+                    name="layPrice"
+                    label="N.R"
                     value={record?.layPrice}
-                    onChange={(newValue) => onChange("layPrice", newValue)}
                     placeholder="No Rate"
+                    shrinkLabel={true}
+                    height={45} // ✅ same as original
+                    onChange={(e) => onChange("layPrice", e.target.value)}
+                    sx={{ marginLeft: "2px" }} // ✅ keeps left margin spacing
                 />
+
             ),
             style: { width: "5%" },
         },
@@ -2641,19 +3068,61 @@ export const CreateEventMarket = () => {
             title: "Yes Rate",
             key: "yesRate",
             render: (text, record, onChange) => (
-                // <Input
-                //     className="form-control small-text-fields no-spinners"
+                // <input
                 //     type="number"
-                //     value={record.backPrice}
-                //     onChange={(e) => onChange("backPrice", +e.target.value || 0)}
-                //     placeholder="Yes Rate"
+                //     placeholder='Yes Rate'
+                //     className="create-temp-fields"
+                //     value={record?.backPrice}
+                //     data-market-id={'line'}
+                //     onChange={(e) => onChange("backPrice", e.target.value)}
                 // />
-                <CustomInput
-                    className="form-control small-text-fields"
+                // <TextField
+                //     name="Yes Rate"
+                //     label="Y.R"
+                //     variant="outlined"
+                    
+                //     value={record?.backPrice}
+                //     data-market-id="backPrice"
+                //     onChange={(e) => onChange("backPrice", e.target.value)}
+                //     InputLabelProps={{
+                //         shrink: Boolean(record?.backPrice) // ✅ Shrinks only when value is truthy
+                //     }}
+                //     sx={{
+                //         marginLeft: '2px' ,
+                //         "& .MuiInputBase-input": {
+                //         fontSize: "10px",
+                //         padding: '0px',
+                //         textAlign: "center",
+                //         "&::placeholder": {
+                //             fontSize: "18px", // custom placeholder font size
+                //             color: "gray", // you can also style color
+                //             opacity: 1, // ensures placeholder is fully visible
+                //         },
+                //         },
+                //         "& .MuiInputBase-root": {
+                //             height: 45, // custom height
+                //         },
+                //         "& .MuiInputLabel-root": {
+                //             fontSize: "10px",
+                //             margin: '0px'
+                //         },
+                //         "& .MuiInputLabel-shrink": {
+                //             margin: '3px 0px'
+                //         },
+                        
+                //     }}
+                // />
+                <CustomTextField
+                    name="backPrice"
+                    label="Y.R"
                     value={record?.backPrice}
-                    onChange={(newValue) => onChange("backPrice", newValue)}
                     placeholder="Yes Rate"
+                    shrinkLabel={true}
+                    height={45} // ✅ keeps original height
+                    onChange={(e) => onChange("backPrice", e.target.value)}
+                    sx={{ marginLeft: "2px" }} // ✅ keeps left margin consistent
                 />
+
             ),
             style: { width: "5%" },
         },
@@ -2661,27 +3130,56 @@ export const CreateEventMarket = () => {
             title: "No Point",
             key: "noPoint",
             render: (text, record, onChange) => (
-                // <Input
-                //     className="form-control small-text-fields no-spinners"
+                // <input
                 //     type="number"
-                //     value={record.laySize}
-                //     onChange={(e) => onChange("laySize", +e.target.value || 0)}
-                //     placeholder="No Point"
-                // />
-                // <CustomInput
-                //     className="form-control small-text-fields"
+                //     placeholder='laySize'
+                //     className="create-temp-fields"
                 //     value={record?.laySize}
-                //     onChange={(newValue) => onChange("laySize", newValue)}
-                //     placeholder="No Point"
+                //     data-market-id={'laySize'}
+                //     onChange={(e) => onChange("laySize", e.target.value)}
                 // />
-                <input
-                    type="number"
-                    placeholder='laySize'
-                    className="line"
-                    value={record?.laySize}
-                    data-market-id={'laySize'}
+                // <TextField
+                //     name="laySize"
+                //     label="No"
+                //     variant="outlined"
+                //     size='small'
+                //     value={record?.laySize == null ? "" : record?.laySize}
+                //     data-market-id="laySize"
+                //     onChange={(e) => {
+                //         onChange("laySize", e.target.value);
+                //     }}
+                //     sx={{
+                //         "& .MuiInputBase-input": {
+                //         fontSize: "10px",
+                //         padding: '0px',
+                //         textAlign: "center",
+                //         "&::placeholder": {
+                //             fontSize: "18px", // custom placeholder font size
+                //             color: "gray", // you can also style color
+                //             opacity: 1, // ensures placeholder is fully visible
+                //         },
+                //         },
+                //         "& .MuiInputBase-root": {
+                //             height: 20, // custom height
+                //         },
+                //         "& .MuiInputLabel-root": {
+                //             fontSize: "10px",
+                //             margin: '0px'
+                //         },
+                //         "& .MuiInputLabel-shrink": {
+                //             margin: '3px 0px'
+                //         },
+                //     }}
+                // />
+                <CustomTextField
+                    name="laySize"
+                    label="No"
+                    value={record?.laySize == null ? "" : record?.laySize}
+                    height={20} // ✅ same as original
+                    placeholder="No Size"
                     onChange={(e) => onChange("laySize", e.target.value)}
                 />
+
             ),
             style: { width: "5%" },
         },
@@ -2689,27 +3187,58 @@ export const CreateEventMarket = () => {
             title: "Yes Point",
             key: "yesPoint",
             render: (text, record, onChange) => (
-                // <Input
-                //     className="form-control small-text-fields no-spinners"
+                // <input
                 //     type="number"
-                //     value={record.backSize}
-                //     onChange={(e) => onChange("backSize", +e.target.value || 0)}
-                //     placeholder="Yes Point"
-                // />
-                // <CustomInput
-                //     className="form-control small-text-fields"
+                //     placeholder='backSize'
+                //     className="create-temp-fields"
                 //     value={record?.backSize}
-                //     onChange={(newValue) => onChange("backSize", newValue)}
-                //     placeholder="Yes Point"
+                //     data-market-id={'backSize'}
+                //     onChange={(e) => onChange("backSize", e.target.value)}
                 // />
-                <input
-                    type="number"
-                    placeholder='backSize'
-                    className="line"
-                    value={record?.backSize}
-                    data-market-id={'backSize'}
+                // <TextField
+                //     name="backSize"
+                //     label="Yes"
+                //     variant="outlined"
+                //     size='small'
+                //     value={record?.backSize == null ? "" : record?.backSize}
+                //     data-market-id="backSize"
+                //     onChange={(e) => {
+                //         onChange("backSize", e.target.value);
+                //     }}
+                //     sx={{
+                //         marginLeft: '2px' ,
+                //         "& .MuiInputBase-input": {
+                //         fontSize: "10px",
+                //         padding: '0px',
+                //         textAlign: "center",
+                //         "&::placeholder": {
+                //             fontSize: "18px", // custom placeholder font size
+                //             color: "gray", // you can also style color
+                //             opacity: 1, // ensures placeholder is fully visible
+                //         },
+                //         },
+                //         "& .MuiInputBase-root": {
+                //             height: 20, // custom height
+                //         },
+                //         "& .MuiInputLabel-root": {
+                //             fontSize: "10px",
+                //             margin: '0px'
+                //         },
+                //         "& .MuiInputLabel-shrink": {
+                //             margin: '3px 0px'
+                //         },
+                //     }}
+                // />
+                <CustomTextField
+                    name="backSize"
+                    label="Yes"
+                    value={record?.backSize == null ? "" : record?.backSize}
+                    height={20} // ✅ same as original
+                    placeholder="Yes Size"
                     onChange={(e) => onChange("backSize", e.target.value)}
+                    sx={{ marginLeft: "2px" }} // ✅ preserve marginLeft
                 />
+
             ),
             style: { width: "5%" },
         }
@@ -2717,6 +3246,7 @@ export const CreateEventMarket = () => {
     const MarketDetailsDate = commentaryDetails?.eventDate
         ? convertDateUTCToLocal(commentaryDetails.eventDate, "index")
         : "";
+
     return (
         <React.Fragment>
             <div className="page-content" >
@@ -2738,7 +3268,7 @@ export const CreateEventMarket = () => {
                                                 className="mx-2"
                                                 onColor="#02a499"
                                                 onChange={() => {
-                                                    setPlayerMarketShow(!playersMarketShow);
+                                                    setPlayerMarketShow(prev => !prev);
                                                 }}
                                                 checked={playersMarketShow}
                                             />

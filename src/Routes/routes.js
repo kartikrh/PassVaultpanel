@@ -17,6 +17,7 @@ import PenaltyRuns from "../Pages/PenaltyRuns";
 import Competition from "../Pages/Competition";
 import Events from "../Pages/Events";
 import Commentary from "../Pages/Commentary";
+import IccRankings from "../Pages/IccRankings";
 import CommentaryList from "../Pages/CommentaryList";
 import CommentaryHistory from "../Pages/CommentaryHistory";
 import Users from "../Pages/Users";
@@ -165,6 +166,10 @@ import { NewUpdateManualOdds } from "../Pages/Commentary/NewUpdateManualOdds.jsx
 import ImportEntityEvent from "../Pages/ImportEntityEvent/ImportEntityEventTable.js";
 import ImportEntityTeam from "../Pages/ImportEntityTeam/ImportEntityTeamTable.js";
 import ImportEntityPlayer from "../Pages/ImportEntityPlayer/ImportEntityPlayer.js";
+import AddRankings from "../Pages/IccRankings/AddRankings.jsx";
+import StreamingList from "../Pages/Commentary/StreamingList.js";
+import StreamingTable from "../Pages/Commentary/StreamingTable.js";
+import StreamWatch from "../Pages/Commentary/StreamWatch.js";
 
 const authProtectedRoutes = [
   //dashboard
@@ -324,6 +329,9 @@ const authProtectedRoutes = [
   { path: "/AddVideoLibrary", component: <AddVideoLibrary /> },
   { path: "/dataprovider", component: <DataproviderPage /> },
   { path: "/dataproviderMarkets", component: <EventDetails /> },
+  { path: "/iccRanking", component: <IccRankings /> },
+  { path: "/addRanking", component: <AddRankings /> },
+  { path: "/streamingList", component: <StreamingList /> },
   {
     path: "/changePassword",
     component: <ChangePassword />,
@@ -334,6 +342,12 @@ const authProtectedRoutes = [
     component: <Navigate to="/dashboard" />,
   },
 ];
+
+const streamingRoutes = [
+  { path: "/streamwatch", component: <StreamWatch /> },
+  { path: "/streamingTable", component: <StreamingTable /> },
+]
+
 const publicRoutes = [
   // Authentication Page
   { path: "/logout", component: <Logout /> },
@@ -352,4 +366,4 @@ const publicRoutes = [
   { path: "/pages-comingsoon", component: <ComingSoon /> },
 ];
 
-export { authProtectedRoutes, publicRoutes };
+export { authProtectedRoutes, publicRoutes, streamingRoutes };

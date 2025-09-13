@@ -686,6 +686,15 @@ const Index = () => {
     sessionStorage.removeItem("dataproviderEventDetails");
   };
 
+  const handleStreamingListClick = (details) => {
+    const url = new URL(window.location.origin + "/streamingList");
+    sessionStorage.setItem("streamingListId", "" + details?.commentaryId);
+    sessionStorage.setItem("streamingListDetails", "" + JSON.stringify(details));
+    window.open(url.href, "_blank");
+    sessionStorage.removeItem("streamingListId");
+    sessionStorage.removeItem("streamingListDetails");
+  };
+
   const handleClone = async () => {
     if (cloneValues.name !== "" && cloneValues.refrenceId !== "") {
       setIsLoading(true);
@@ -1355,6 +1364,15 @@ const Index = () => {
     }
   };
 
+  const openVideoIframe = (details) => {
+    if(details?.streamingUrl) {
+      sessionStorage.setItem("streamingData", "" +  JSON.stringify(details));
+      const baseUrl = window.location.origin;
+      let iframeURL = `${baseUrl}/streamwatch`;
+      window.open(iframeURL, "_blank", "width=600, height=400");
+    }
+  };
+
   const handleUpdateDay = async (updatedData) => {
     try {
       setIsLoading(true);
@@ -1620,6 +1638,21 @@ const Index = () => {
       title: "Match Type",
       dataIndex: "matchType",
       render: (text, record) => (
+        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+        {record?.streamingUrl && (
+          <Tooltip
+            title="Watch TV"
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            <i
+              className="bx bxs-tv"
+              role="button"
+              onClick={() => openVideoIframe(record)}
+              style={{ cursor: "pointer", fontSize: "18px" }}
+            ></i>
+          </Tooltip>
+        )}
         <span
           onClick={() => {
             setChangeModelVisible(true);
@@ -1636,6 +1669,7 @@ const Index = () => {
             {<a className="bx bx-edit-alt"></a>}
           </Tooltip>
         </span>
+        </div>
       ),
       key: "matchType",
       sort: true,
@@ -2596,6 +2630,32 @@ const Index = () => {
       ),
       style: { width: "10%" },
     },
+     {
+      title: "",
+      dataIndex: "streamingUrl",
+      key: "streamingView",
+      printType: "ignore",
+      render: (text, record) => (
+        <Tooltip
+          title={"Streaming View"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
+          <Button
+            color={"info"}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleStreamingListClick(record);
+            }}
+          >
+            SV
+            {/* <i class="bx bxs-up-arrow-square"></i> */}
+          </Button>
+        </Tooltip>
+      ),
+      style: { width: "4%", textAlign: "center" },
+    },
   ];
 
   const getColumns = (data) => {
@@ -2679,24 +2739,26 @@ const Index = () => {
       title: "Player",
       key: "updatePlayers",
       printType: "ignore",
-      render: (text, record) => (
-        <Tooltip
-          title={"Update Players"}
-          color={"#e8e8ea"}
-          overlayInnerStyle={{ color: "#000" }}
-        >
-          <Button
-            color={"info"}
-            size="sm"
-            className="btn"
-            onClick={() => {
-              handleUpdatePlayersClick(record);
-            }}
+      render: (text, record) => {
+        if(record.commentaryStatus !== 10){
+          return <Tooltip
+            title={"Update Players"}
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
           >
-            <i class="bx bxs-up-arrow-square"></i>
-          </Button>
-        </Tooltip>
-      ),
+            <Button
+              color={"info"}
+              size="sm"
+              className="btn"
+              onClick={() => {
+                handleUpdatePlayersClick(record);
+              }}
+            >
+              <i class="bx bxs-up-arrow-square"></i>
+            </Button>
+          </Tooltip>
+        }
+      },
       style: { width: "2%", textAlign: "center" },
     }
     const updatedColumn = [...columns];
@@ -2709,9 +2771,12 @@ const Index = () => {
     if (data.some((record) => record?.commentaryStatus === 4)) {
       updatedColumn.splice(9, 0, eventSnapColumn);
     }
-    if (data.every((record) => record?.commentaryStatus === 2)) {
-      updatedColumn.splice(12, 0, playerColumn);
+    if (data.some((record) => record?.commentaryStatus !== 10)) {
+      updatedColumn.splice(13, 0, playerColumn);
     }
+    // if (data.every((record) => record?.commentaryStatus === 10)) {
+    //   updatedColumn.splice(12, );
+    // }
     return updatedColumn;
   };
 

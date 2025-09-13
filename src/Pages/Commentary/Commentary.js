@@ -228,8 +228,8 @@ const Commentary = (props) => {
         const updatedPartnership = generatePartnership({ commentaryDetails, currentPartnership: partnershipDetails, teams })
         const updatedOnPitchPlyer = { ...onPitchPlayers }
         const resetPlayers = Object.values(updatedOnPitchPlyer).map(player =>
-                player ? { ...player, isPlay: null, onStrike: null } : null
-            )?.filter(Boolean);
+            player ? { ...player, isPlay: null, onStrike: null } : null
+        )?.filter(Boolean);
         let objToSave = {
             "commentaryId": commentaryDetails.commentaryId,
             "isCallPredict": props?.isPredictToggle,
@@ -1546,7 +1546,7 @@ const Commentary = (props) => {
                         updateBowler["bowlerWideBallRun"] = getNonNegativeValue((bowler.bowlerWideBallRun || 0) - totalWideRun)
                         updateBowler["bowlerRun"] = getNonNegativeValue((bowler.bowlerRun || 0) - totalWideRun)
                         updateBowler["bowlerEconomy"] = getEconomyRate(updateBowler.bowlerRun, bowler.bowlerTotalBall, matchTypeDetails.ballsPerOver)
-                        updateBattingTeam["teamWideRuns"] = getNonNegativeValue((updateBattingTeam.teamWideRuns || 0) - totalWideRun)
+                        updateBattingTeam["teamWideRuns"] = getNonNegativeValue((teams[BATTING_TEAM].teamWideRuns || 0) - totalWideRun)
                         updateBattingTeam["teamScore"] = getNonNegativeValue((teams[BATTING_TEAM].teamScore || 0) - totalWideRun)
                         updateOver["totalWideBall"] = getNonNegativeValue((currentOver.totalWideBall || 0) - 1)
                         updateOver["totalWideRun"] = getNonNegativeValue((currentOver.totalWideRun || 0) - totalWideRun)
@@ -1564,7 +1564,7 @@ const Commentary = (props) => {
                         batter["batBall"] = getNonNegativeValue((batter.batBall || 0) - 1)
                         updateBowler["bowlerNoBall"] = getNonNegativeValue((bowler.bowlerNoBall || 0) - 1)
                         updateBowler["bowlerNoBallRun"] = getNonNegativeValue((bowler.bowlerNoBallRun || 0) - noBallValue)
-                        updateBattingTeam["teamNoBallRuns"] = getNonNegativeValue((updateBattingTeam.teamWideRuns || 0) - noBallValue)
+                        updateBattingTeam["teamNoBallRuns"] = getNonNegativeValue((teams[BATTING_TEAM].teamNoBallRuns || 0) - noBallValue)
                         updateBattingTeam["teamScore"] = getNonNegativeValue((teams[BATTING_TEAM].teamScore || 0) - totalRun)
                         updateOver["totalNoball"] = getNonNegativeValue((currentOver.totalNoball || 0) - 1)
                         updateOver["totalNoBallRun"] = getNonNegativeValue((currentOver.totalNoBallRun || 0) - noBallValue)
@@ -1590,7 +1590,7 @@ const Commentary = (props) => {
                             updateBowler["bowlerByeBallRun"] = getNonNegativeValue((bowler.bowlerByeBallRun || 0) - UpdatedBallRun)
                             updateOver["totalByesRun"] = getNonNegativeValue((currentOver.totalByesRun || 0) - UpdatedBallRun)
                             updatePartnership["extras"] = getNonNegativeValue(updatePartnership.extras - totalRunToDelete)
-                            updateBattingTeam["teamByRuns"] = getNonNegativeValue((updateBattingTeam.teamByRuns || 0) - UpdatedBallRun)
+                            updateBattingTeam["teamByRuns"] = getNonNegativeValue((teams[BATTING_TEAM].teamByRuns || 0) - UpdatedBallRun)
                             updatePartnership["batter1Balls"] = getNonNegativeValue((updatePartnership.batter1Balls || 0) -
                                 (compareNumStringValues(batter.commentaryPlayerId, currentPartnership.batter1Id) ? 1 : 0));
                             updatePartnership["batter2Balls"] = getNonNegativeValue((updatePartnership.batter2Balls || 0) -
@@ -1601,7 +1601,7 @@ const Commentary = (props) => {
                             updateBowler["bowlerNoBallRun"] = getNonNegativeValue((bowler.bowlerNoBallRun || 0) - UpdatedBallRun)
                             updateOver["totalLegByesRun"] = getNonNegativeValue((currentOver.totalNoBallRun || 0) - UpdatedBallRun)
                             updatePartnership["extras"] = getNonNegativeValue(updatePartnership.extras - totalRunToDelete)
-                            updateBattingTeam["teamLegByRuns"] = getNonNegativeValue((updateBattingTeam.teamLegByRuns || 0) - UpdatedBallRun)
+                            updateBattingTeam["teamLegByRuns"] = getNonNegativeValue((teams[BATTING_TEAM].teamLegByRuns || 0) - UpdatedBallRun)
                             updatePartnership["batter1Balls"] = getNonNegativeValue((updatePartnership.batter1Balls || 0) -
                                 (compareNumStringValues(batter.commentaryPlayerId, currentPartnership.batter1Id) ? 1 : 0));
                             updatePartnership["batter2Balls"] = getNonNegativeValue((updatePartnership.batter2Balls || 0) -
@@ -1624,18 +1624,18 @@ const Commentary = (props) => {
                             updateBowler["bowlerByeBallRun"] = getNonNegativeValue((bowler.bowlerByeBallRun || 0) - run)
                             updateOver["totalByesBall"] = getNonNegativeValue((currentOver.totalByesBall || 0) - 1)
                             updateOver["totalByesRun"] = getNonNegativeValue((currentOver.totalByesRun || 0) - run)
-                            updateBattingTeam["teamByRuns"] = getNonNegativeValue((updateBattingTeam.teamByRuns || 0) - run)
+                            updateBattingTeam["teamByRuns"] = getNonNegativeValue((teams[BATTING_TEAM].teamByRuns || 0) - run)
                         }
                         else if (type === BALL_TYPE_LEG_BYE) {
                             updateBowler["bowlerLegByeBall"] = getNonNegativeValue((bowler.bowlerLegByeBall || 0) - 1)
                             updateBowler["bowlerLegByeBallRun"] = getNonNegativeValue((bowler.bowlerLegByeBallRun || 0) - run)
                             updateOver["totalLegByesBall"] = getNonNegativeValue((currentOver.totalLegByesBall || 0) - 1)
                             updateOver["totalLegByesRun"] = getNonNegativeValue((currentOver.totalLegByesRun || 0) - run)
-                            updateBattingTeam["teamLegByRuns"] = getNonNegativeValue((updateBattingTeam.teamLegByRuns || 0) - run)
+                            updateBattingTeam["teamLegByRuns"] = getNonNegativeValue((teams[BATTING_TEAM].teamLegByRuns || 0) - run)
                         }
                     }
                     if (matchTypeDetails.isLimitedOvers && (target > 0)) {
-                        updateBattingTeam["rrr"] = getRequiredRunRate(updateBattingTeam.teamScore,
+                        updateBattingTeam["rrr"] = getRequiredRunRate(teams[BATTING_TEAM].teamScore,
                             currentOver, matchTypeDetails.ballsPerOver, target, teams[BATTING_TEAM]?.teamMaxOver)
                     }
                     updateBatter["batsmanStrikeRate"] = getStrikeRate(updateBatter.batRun, updateBatter.batBall)
@@ -2031,7 +2031,10 @@ const Commentary = (props) => {
         setWicketHistory(propsData.commentaryData.commentaryWicket)
         setCurrentPartnership(partnershipFromApi)
         setCurrentOver(currentOverToUpdate)
-        setSelectedOverType(currentOverToUpdate?.overType || selectedOverType)
+        setSelectedOverType({
+            label: currentOverToUpdate?.overTypeName,
+            value: currentOverToUpdate?.overType
+        })
         setCurrentBall(currentBallToUpdate)
         if (!isEmpty(currentBallToUpdate)) setBallCountForStrike((currentBallToUpdate.autoStrikeBallCount || 0) + 1)
         setIsLastInnings(commentaryDetails.currentInnings >= matchTypeDetails.noOfIningsPerSide)
@@ -2052,6 +2055,7 @@ const Commentary = (props) => {
             }))
         }
     }
+    console.log("----------", selectedOverType)
     const updateTempToMain = () => {
         // console.log("_currentPartnership", _currentPartnership)
         if (!isEmpty(_currentOver)) {
