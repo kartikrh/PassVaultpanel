@@ -69,39 +69,45 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
                 const newLine = parseFloat(value);
                 const deltaP = newLine - oldLine;
 
-                // Get unlocked runners (excluding the changed runner)
-                const unlockedRunners = localMarket.runner.filter((runner, index) =>
+                // Get all other runners (excluding the changed runner) that are unlocked
+                const otherUnlockedRunners = localMarket.runner.filter((runner, index) =>
                     index !== changedRunnerIndex && !lockedRunners.has(runner.runnerId)
                 );
 
-                if (unlockedRunners.length > 0 && Math.abs(deltaP) > 0.001) {
-                    // Calculate sum of unlocked runners (excluding changed runner)
-                    const sumOfUnlocked = unlockedRunners.reduce((sum, runner) => sum + parseFloat(runner.line), 0);
+                if (otherUnlockedRunners.length > 0 && Math.abs(deltaP) > 0.001) {
+                    const sumOfOtherUnlocked = otherUnlockedRunners.reduce((sum, runner) => sum + parseFloat(runner.line), 0);
 
-                    const updatedMarket = {
-                        ...localMarket,
-                        runner: localMarket.runner.map((runner, index) => {
-                            if (index === changedRunnerIndex) {
-                                return { ...runner, line: newLine, backPrice: newLine };
-                            } else if (!lockedRunners.has(runner.runnerId)) {
-                                // Distribute the change proportionally among unlocked runners
-                                const oldRunnerLine = parseFloat(runner.line);
-                                const proportion = sumOfUnlocked > 0 ? oldRunnerLine / sumOfUnlocked : 0;
-                                const newRunnerLine = Math.max(0, oldRunnerLine - (deltaP * proportion));
+                    if (sumOfOtherUnlocked > 0) {
+                        const updatedMarket = {
+                            ...localMarket,
+                            runner: localMarket.runner.map((runner, index) => {
+                                if (index === changedRunnerIndex) {
+                                    return { ...runner, line: newLine, backPrice: newLine };
+                                } else if (!lockedRunners.has(runner.runnerId)) {
+                                    const oldRunnerLine = parseFloat(runner.line);
+                                    const proportion = oldRunnerLine / sumOfOtherUnlocked;
+                                    const change = deltaP * proportion;
+                                    const newRunnerLine = Math.max(0, oldRunnerLine - change);
 
-                                return {
-                                    ...runner,
-                                    line: parseFloat(newRunnerLine.toFixed(2)),
-                                    backPrice: parseFloat(newRunnerLine.toFixed(2))
-                                };
-                            }
-                            return runner; // Keep locked runners unchanged
-                        })
-                    };
+                                    // Round to 2 decimal places but ensure minimum change of 0.01 when delta is significant
+                                    const finalLine = Math.abs(change) > 0.005 ?
+                                        parseFloat(newRunnerLine.toFixed(2)) :
+                                        parseFloat((oldRunnerLine - (deltaP * proportion)).toFixed(2));
 
-                    setLocalMarket(updatedMarket);
-                    onUpdate(updatedMarket);
-                    return;
+                                    return {
+                                        ...runner,
+                                        line: Math.max(0, finalLine),
+                                        backPrice: Math.max(0, finalLine)
+                                    };
+                                }
+                                return runner;
+                            })
+                        };
+
+                        setLocalMarket(updatedMarket);
+                        onUpdate(updatedMarket);
+                        return;
+                    }
                 }
             }
         }
