@@ -35,6 +35,12 @@ import Item from "antd/es/list/Item";
       { label: "Team", value: 1 },
       { label: "Player", value: 2 },
   ]
+  const playerTypeOptions = [
+      { label: "Select Type", value: "0" },
+      { label: "Batsmen", value: 1 },
+      { label: "Bowler", value: 2 },
+      { label: "All Rounder", value: 4 },
+  ]
 
   // const countryOptions = (countryCode && countryCode.length) > 0 ? countryCode.map((country) => ({
   //   label: country?.countryName,
@@ -51,13 +57,13 @@ const Index = () => {
   const [checekedList, setCheckedList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
-  const [isDrag, setIsDrag] = useState(false);
   const [eventTypes, setEventTypes] = useState([]);
   const [matchTypes, setMatchTypes] = useState([]);
   const [matchTypeList, setMatchTypeList] = useState([]);
   const [sportList, setSportList] = useState([]);
   const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
   const [typeSelectedOption, setTypeSelectedOption] = useState(undefined);
+  const [playerTypeSelectedOption, setPlayerTypeSelectedOption] = useState(undefined);
   const [selectedFilter, setSelectedFilter] = useState({
       // isActive: true,
       matchTypeId: undefined,
@@ -74,7 +80,8 @@ const Index = () => {
       ...data,
       sportId: selectedFilter?.sportId?.value,
       matchTypeId: selectedFilter?.matchTypeId?.value,
-      type: typeSelectedOption
+      type: typeSelectedOption,
+      playerTypeId: playerTypeSelectedOption
     }
     await axiosInstance
       .post(
@@ -426,13 +433,21 @@ const Index = () => {
   ];
 
   const handleReset = (value) => {
-    fetchData(value);
+    
+    setSelectedFilter({
+      matchTypeId: undefined,
+      sportId: undefined
+    })
+    setTypeSelectedOption(undefined)
+    setPlayerTypeSelectedOption(undefined)
   };
 
   //elements required
   const tableElement = {
     title: "ICC Rankings",
     isActive: true,
+    resetButton: true,
+    reloadButton: true,
   };
 
   useEffect(() => {
@@ -448,7 +463,7 @@ const Index = () => {
 
   useEffect(() =>{
     fetchData();
-  }, [typeSelectedOption, selectedFilter])
+  }, [typeSelectedOption, selectedFilter, playerTypeSelectedOption])
 
   const handleReload = (value) => {
     fetchData();
@@ -502,7 +517,6 @@ const Index = () => {
     const filterDataToUpdate = { ...selectedFilter, [key]: value };
     setSelectedFilter(filterDataToUpdate);
   };
-
   return (
     <React.Fragment>
       <div className="page-content">
@@ -534,13 +548,17 @@ const Index = () => {
               pageName,
               PERMISSION_DELETE
             )}
-            renderCustomFilter={() => (
-              <>
+            renderCustomFilter={() => {
+              return <>
                 <Select
                   styles={{
                     control: (provided) => ({ ...provided, width: 140 }),
                   }}
-                  value={typeOptions.find((option) => option.value === typeSelectedOption)}
+                  value={
+                    typeSelectedOption
+                      ? typeOptions.find((option) => option.value === typeSelectedOption)
+                      : null
+                  }
                   onChange={(e) => setTypeSelectedOption(e?.value)}
                   options={typeOptions}
                   placeholder="Type"
@@ -548,9 +566,24 @@ const Index = () => {
                 />
                 <Select
                   styles={{
+                    control: (provided) => ({ ...provided, width: 140 }),
+                  }}
+                  // value={playerTypeOptions.find((option) => option.value === playerTypeSelectedOption)}
+                  value={
+                    playerTypeSelectedOption
+                      ? playerTypeOptions.find((option) => option.value === playerTypeSelectedOption)
+                      : null
+                  }
+                  onChange={(e) => setPlayerTypeSelectedOption(e?.value)}
+                  options={playerTypeOptions}
+                  placeholder="Player Type"
+                  classNamePrefix="filter-dropdown"
+                />
+                <Select
+                  styles={{
                     control: (provided) => ({ ...provided, width: 180 }),
                   }}
-                  value={selectedFilter?.matchTypeId}
+                  value={selectedFilter?.matchTypeId ? selectedFilter?.matchTypeId : null}
                   placeholder={"Match Type"}
                   onChange={(e) => {
                     handleFilterChange("matchTypeId", e);
@@ -562,7 +595,7 @@ const Index = () => {
                   styles={{
                     control: (provided) => ({ ...provided, width: 180 }),
                   }}
-                  value={selectedFilter?.sportId}
+                  value={selectedFilter?.sportId ? selectedFilter?.sportId : null}
                   placeholder={"Sport"}
                   onChange={(e) => {
                     handleFilterChange("sportId", e);
@@ -577,7 +610,7 @@ const Index = () => {
                   Update
                 </Button>
               </>
-            )}
+            }}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

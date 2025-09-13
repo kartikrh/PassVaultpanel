@@ -1364,8 +1364,13 @@ const Index = () => {
     }
   };
 
-  const openVideoIframe = (url) => {
-    window.open(url, "_blank", "width=600,height=400");
+  const openVideoIframe = (streamingUrl) => {
+    if(streamingUrl) {
+      sessionStorage.setItem("streamingUrl", streamingUrl);
+      const baseUrl = window.location.origin;
+      let iframeURL = `${baseUrl}/streamwatch`;
+      window.open(iframeURL, "_blank", "width=600, height=400");
+    }
   };
 
   const handleUpdateDay = async (updatedData) => {
@@ -1472,23 +1477,6 @@ const Index = () => {
           onClick={() => openScorecardIframe(record)}
         >
           S
-        </Button>
-      ),
-      style: { width: "4%", textAlign: "center" },
-    },
-    {
-      title: "",
-      dataIndex: "streamingUrl",
-      key: "streamingUrl",
-      printType: "ignore",
-      render: (text, record) => text && (
-        <Button
-          color="info"
-          size="sm"
-          className="btn"
-          onClick={() => openVideoIframe(text)}
-        >
-          TV
         </Button>
       ),
       style: { width: "4%", textAlign: "center" },
@@ -1650,6 +1638,21 @@ const Index = () => {
       title: "Match Type",
       dataIndex: "matchType",
       render: (text, record) => (
+        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+        {record?.streamingUrl && (
+          <Tooltip
+            title="Watch TV"
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            <i
+              className="bx bxs-tv"
+              role="button"
+              onClick={() => openVideoIframe(record.streamingUrl)}
+              style={{ cursor: "pointer", fontSize: "18px" }}
+            ></i>
+          </Tooltip>
+        )}
         <span
           onClick={() => {
             setChangeModelVisible(true);
@@ -1666,6 +1669,7 @@ const Index = () => {
             {<a className="bx bx-edit-alt"></a>}
           </Tooltip>
         </span>
+        </div>
       ),
       key: "matchType",
       sort: true,
@@ -2735,24 +2739,26 @@ const Index = () => {
       title: "Player",
       key: "updatePlayers",
       printType: "ignore",
-      render: (text, record) => (
-        <Tooltip
-          title={"Update Players"}
-          color={"#e8e8ea"}
-          overlayInnerStyle={{ color: "#000" }}
-        >
-          <Button
-            color={"info"}
-            size="sm"
-            className="btn"
-            onClick={() => {
-              handleUpdatePlayersClick(record);
-            }}
+      render: (text, record) => {
+        if(record.commentaryStatus !== 10){
+          return <Tooltip
+            title={"Update Players"}
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
           >
-            <i class="bx bxs-up-arrow-square"></i>
-          </Button>
-        </Tooltip>
-      ),
+            <Button
+              color={"info"}
+              size="sm"
+              className="btn"
+              onClick={() => {
+                handleUpdatePlayersClick(record);
+              }}
+            >
+              <i class="bx bxs-up-arrow-square"></i>
+            </Button>
+          </Tooltip>
+        }
+      },
       style: { width: "2%", textAlign: "center" },
     }
     const updatedColumn = [...columns];
@@ -2765,9 +2771,12 @@ const Index = () => {
     if (data.some((record) => record?.commentaryStatus === 4)) {
       updatedColumn.splice(9, 0, eventSnapColumn);
     }
-    if (data.every((record) => record?.commentaryStatus === 2)) {
-      updatedColumn.splice(12, 0, playerColumn);
+    if (data.some((record) => record?.commentaryStatus !== 10)) {
+      updatedColumn.splice(13, 0, playerColumn);
     }
+    // if (data.every((record) => record?.commentaryStatus === 10)) {
+    //   updatedColumn.splice(12, );
+    // }
     return updatedColumn;
   };
 

@@ -168,6 +168,8 @@ import ImportEntityTeam from "../Pages/ImportEntityTeam/ImportEntityTeamTable.js
 import ImportEntityPlayer from "../Pages/ImportEntityPlayer/ImportEntityPlayer.js";
 import AddRankings from "../Pages/IccRankings/AddRankings.jsx";
 import StreamingList from "../Pages/Commentary/StreamingList.js";
+import StreamingTable from "../Pages/Commentary/StreamingTable.js";
+import StreamWatch from "../Pages/Commentary/StreamWatch.js";
 
 const authProtectedRoutes = [
   //dashboard
@@ -340,6 +342,12 @@ const authProtectedRoutes = [
     component: <Navigate to="/dashboard" />,
   },
 ];
+
+const streamingRoutes = [
+  { path: "/streamwatch", component: <StreamWatch /> },
+  { path: "/streamingTable", component: <StreamingTable /> },
+]
+
 const publicRoutes = [
   // Authentication Page
   { path: "/logout", component: <Logout /> },
@@ -358,4 +366,4 @@ const publicRoutes = [
   { path: "/pages-comingsoon", component: <ComingSoon /> },
 ];
 
-export { authProtectedRoutes, publicRoutes };
+export { authProtectedRoutes, publicRoutes, streamingRoutes };

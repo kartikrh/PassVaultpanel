@@ -19,7 +19,6 @@ import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND
 import { addCompetitionToDb, updateSavedState } from "../../Features/Tabs/competitionSlice";
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
-import { convertObjtoFormData2 } from "../../components/Common/utilities";
 import { checkPermission, convertDateLocalToUTC } from '../../components/Common/Reusables/reusableMethods';
 import { updateToastData } from "../../Features/toasterSlice";
 import { isEmpty } from "lodash";
