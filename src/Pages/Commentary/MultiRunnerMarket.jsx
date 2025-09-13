@@ -67,40 +67,50 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
             if (changedRunnerIndex !== -1) {
                 const oldLine = parseFloat(localMarket.runner[changedRunnerIndex].line);
                 const newLine = parseFloat(value);
-                const deltaP = newLine - oldLine;
+
+                // Convert to percentages
+                const oldPercentage = 1 / oldLine;
+                const newPercentage = 1 / newLine;
+                const deltaPercentage = newPercentage - oldPercentage;
 
                 // Get all other runners (excluding the changed runner) that are unlocked
                 const otherUnlockedRunners = localMarket.runner.filter((runner, index) =>
                     index !== changedRunnerIndex && !lockedRunners.has(runner.runnerId)
                 );
 
-                if (otherUnlockedRunners.length > 0 && Math.abs(deltaP) > 0.001) {
-                    const sumOfOtherUnlocked = otherUnlockedRunners.reduce((sum, runner) => sum + parseFloat(runner.line), 0);
+                if (otherUnlockedRunners.length > 0 && Math.abs(deltaPercentage) > 0.0001) {
+                    // Calculate current percentages of other unlocked runners
+                    const otherUnlockedPercentages = otherUnlockedRunners.map(runner => ({
+                        runner,
+                        percentage: 1 / parseFloat(runner.line)
+                    }));
 
-                    if (sumOfOtherUnlocked > 0) {
+                    const sumOfOtherPercentages = otherUnlockedPercentages.reduce((sum, item) => sum + item.percentage, 0);
+
+                    if (sumOfOtherPercentages > 0) {
                         const updatedMarket = {
                             ...localMarket,
                             runner: localMarket.runner.map((runner, index) => {
                                 if (index === changedRunnerIndex) {
                                     return { ...runner, line: newLine, backPrice: newLine };
                                 } else if (!lockedRunners.has(runner.runnerId)) {
-                                    const oldRunnerLine = parseFloat(runner.line);
-                                    const proportion = oldRunnerLine / sumOfOtherUnlocked;
-                                    const change = deltaP * proportion;
-                                    const newRunnerLine = Math.max(0, oldRunnerLine - change);
+                                    // Find this runner's current percentage
+                                    const currentPercentage = 1 / parseFloat(runner.line);
+                                    const proportion = currentPercentage / sumOfOtherPercentages;
 
-                                    // Round to 2 decimal places but ensure minimum change of 0.01 when delta is significant
-                                    const finalLine = Math.abs(change) > 0.005 ?
-                                        parseFloat(newRunnerLine.toFixed(2)) :
-                                        parseFloat((oldRunnerLine - (deltaP * proportion)).toFixed(2));
+                                    // Distribute the delta percentage proportionally (subtract to compensate)
+                                    const newRunnerPercentage = Math.max(0.001, currentPercentage - (deltaPercentage * proportion));
+
+                                    // Convert back to odds (line)
+                                    const newRunnerLine = 1 / newRunnerPercentage;
 
                                     return {
                                         ...runner,
-                                        line: Math.max(0, finalLine),
-                                        backPrice: Math.max(0, finalLine)
+                                        line: parseFloat(newRunnerLine.toFixed(2)),
+                                        backPrice: parseFloat(newRunnerLine.toFixed(2))
                                     };
                                 }
-                                return runner;
+                                return runner; // Keep locked runners unchanged
                             })
                         };
 
