@@ -15,7 +15,7 @@ import "./streamingList.css";
 import StreamingTable from "./StreamingTable";
 
 const StreamingList = () => {
-  document.title = "Streaming List";
+  const commentaryId = +sessionStorage.getItem("streamingListId") || 0;
   const commentaryDetails = JSON.parse(
     sessionStorage.getItem("streamingListDetails") || "{}"
   );
@@ -27,10 +27,13 @@ const StreamingList = () => {
     commentaryDetails?.streamingUrl || ""
   );
   const [showStreamTable, setShowStreamTable] = useState(false);
-  const commentaryId = +sessionStorage.getItem("streamingListId") || 0;
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  if(commentaryDetails){
+      document.title = `Streaming List - ${commentaryDetails?.eventName} [${commentaryDetails?.eventRefId}]`;
+  } else {
+      document.title = "Streaming List";
+  }
   const streamingTypeOptions = [
     { label: "Select Streaming Type", value: "0" },
     { label: "URL", value: 1 },
