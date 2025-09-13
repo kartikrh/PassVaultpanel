@@ -5,17 +5,30 @@ import { configInit } from "../../Features/Config/configSlice";
 
 export default function StreamWatch() {
   const loadInitData = useSelector((state) => state.loadInit.loadInitData);
-  const streamUrl = sessionStorage.getItem("streamingUrl");
+  const streamData = JSON.parse(
+    sessionStorage.getItem("streamingData") || "{}"
+  );
   const dispatch = useDispatch();
 
   let iframeURL = null;
-  if (streamUrl && loadInitData) {
+  if (streamData?.streamingUrl && streamData?.streamingType && streamData?.streamingType != 0 && loadInitData) {
     const baseUrl = loadInitData.find(
       (item) => item.key === loadInit.STREAMINGWATCHURL
     )?.value;
 
     if (baseUrl) {
-      iframeURL = `${baseUrl}${streamUrl}`;
+      if (parseInt(streamData.streamingType) === 1) {
+        try {
+          // Extract only the origin (protocol + domain)
+          const urlObj = new URL(baseUrl);
+          const streamURL = encodeURIComponent(streamData.streamingUrl);
+          iframeURL = `${urlObj.origin}?url=${streamURL}`;
+        } catch (e) {
+          console.error("Invalid baseUrl", e);
+        }
+      } else if (parseInt(streamData.streamingType) === 2){
+        iframeURL = `${baseUrl}${streamData.streamingUrl}`;
+      }
     }
   }
 
