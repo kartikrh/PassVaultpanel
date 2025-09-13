@@ -67,41 +67,57 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
             if (changedRunnerIndex !== -1) {
                 const oldLine = parseFloat(localMarket.runner[changedRunnerIndex].line);
                 const newLine = parseFloat(value);
-                const deltaP = newLine - oldLine;
 
-                // Get unlocked runners (excluding the changed runner)
-                const unlockedRunners = localMarket.runner.filter((runner, index) =>
+                // Convert to percentages
+                const oldPercentage = 1 / oldLine;
+                const newPercentage = 1 / newLine;
+                const deltaPercentage = newPercentage - oldPercentage;
+
+                // Get all other runners (excluding the changed runner) that are unlocked
+                const otherUnlockedRunners = localMarket.runner.filter((runner, index) =>
                     index !== changedRunnerIndex && !lockedRunners.has(runner.runnerId)
                 );
 
-                if (unlockedRunners.length > 0 && Math.abs(deltaP) > 0.001) {
-                    // Calculate sum of unlocked runners (excluding changed runner)
-                    const sumOfUnlocked = unlockedRunners.reduce((sum, runner) => sum + parseFloat(runner.line), 0);
+                if (otherUnlockedRunners.length > 0 && Math.abs(deltaPercentage) > 0.0001) {
+                    // Calculate current percentages of other unlocked runners
+                    const otherUnlockedPercentages = otherUnlockedRunners.map(runner => ({
+                        runner,
+                        percentage: 1 / parseFloat(runner.line)
+                    }));
 
-                    const updatedMarket = {
-                        ...localMarket,
-                        runner: localMarket.runner.map((runner, index) => {
-                            if (index === changedRunnerIndex) {
-                                return { ...runner, line: newLine, backPrice: newLine };
-                            } else if (!lockedRunners.has(runner.runnerId)) {
-                                // Distribute the change proportionally among unlocked runners
-                                const oldRunnerLine = parseFloat(runner.line);
-                                const proportion = sumOfUnlocked > 0 ? oldRunnerLine / sumOfUnlocked : 0;
-                                const newRunnerLine = Math.max(0, oldRunnerLine - (deltaP * proportion));
+                    const sumOfOtherPercentages = otherUnlockedPercentages.reduce((sum, item) => sum + item.percentage, 0);
 
-                                return {
-                                    ...runner,
-                                    line: parseFloat(newRunnerLine.toFixed(2)),
-                                    backPrice: parseFloat(newRunnerLine.toFixed(2))
-                                };
-                            }
-                            return runner; // Keep locked runners unchanged
-                        })
-                    };
+                    if (sumOfOtherPercentages > 0) {
+                        const updatedMarket = {
+                            ...localMarket,
+                            runner: localMarket.runner.map((runner, index) => {
+                                if (index === changedRunnerIndex) {
+                                    return { ...runner, line: newLine, backPrice: newLine };
+                                } else if (!lockedRunners.has(runner.runnerId)) {
+                                    // Find this runner's current percentage
+                                    const currentPercentage = 1 / parseFloat(runner.line);
+                                    const proportion = currentPercentage / sumOfOtherPercentages;
 
-                    setLocalMarket(updatedMarket);
-                    onUpdate(updatedMarket);
-                    return;
+                                    // Distribute the delta percentage proportionally (subtract to compensate)
+                                    const newRunnerPercentage = Math.max(0.001, currentPercentage - (deltaPercentage * proportion));
+
+                                    // Convert back to odds (line)
+                                    const newRunnerLine = 1 / newRunnerPercentage;
+
+                                    return {
+                                        ...runner,
+                                        line: parseFloat(newRunnerLine.toFixed(2)),
+                                        backPrice: parseFloat(newRunnerLine.toFixed(2))
+                                    };
+                                }
+                                return runner; // Keep locked runners unchanged
+                            })
+                        };
+
+                        setLocalMarket(updatedMarket);
+                        onUpdate(updatedMarket);
+                        return;
+                    }
                 }
             }
         }

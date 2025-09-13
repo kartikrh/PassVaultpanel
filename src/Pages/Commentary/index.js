@@ -1364,9 +1364,9 @@ const Index = () => {
     }
   };
 
-  const openVideoIframe = (streamingUrl) => {
-    if(streamingUrl) {
-      sessionStorage.setItem("streamingUrl", streamingUrl);
+  const openVideoIframe = (details) => {
+    if(details?.streamingUrl) {
+      sessionStorage.setItem("streamingData", "" +  JSON.stringify(details));
       const baseUrl = window.location.origin;
       let iframeURL = `${baseUrl}/streamwatch`;
       window.open(iframeURL, "_blank", "width=600, height=400");
@@ -1648,7 +1648,7 @@ const Index = () => {
             <i
               className="bx bxs-tv"
               role="button"
-              onClick={() => openVideoIframe(record.streamingUrl)}
+              onClick={() => openVideoIframe(record)}
               style={{ cursor: "pointer", fontSize: "18px" }}
             ></i>
           </Tooltip>

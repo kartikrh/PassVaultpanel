@@ -4,8 +4,9 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import axios from "axios";
 import { convertTimeUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
 import { Tooltip } from "antd";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { loadInit } from "../../config";
+import { configInit } from "../../Features/Config/configSlice";
 
 const StreamingTable = () => {
   const finalizeRef = useRef(null);
@@ -16,6 +17,7 @@ const StreamingTable = () => {
   const loadInitData = useSelector((state) => state.loadInit.loadInitData);
   let streamingURL = loadInitData.find(item => item.key === loadInit.STREAMINGURL)?.value;
   let streamingXkey = loadInitData.find(item => item.key === loadInit.STREAMINGXKEY)?.value;
+  const dispatch = useDispatch();
 
   const fetchStreamListData = async () => {
     try {
@@ -59,6 +61,10 @@ const StreamingTable = () => {
       setClipboard((prev) => ({ ...prev, [id]: false }));
     }, 2000);
   };
+
+  useEffect(() => {
+    dispatch(configInit());
+  }, []);
 
   const columns = [
     {

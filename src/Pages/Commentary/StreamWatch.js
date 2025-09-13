@@ -1,21 +1,52 @@
-import React from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { loadInit } from "../../config";
+import { configInit } from "../../Features/Config/configSlice";
 
 export default function StreamWatch() {
   const loadInitData = useSelector((state) => state.loadInit.loadInitData);
-  const streamUrl = sessionStorage.getItem("streamingUrl");
+  const streamData = JSON.parse(
+    sessionStorage.getItem("streamingData") || "{}"
+  );
+  const dispatch = useDispatch();
 
   let iframeURL = null;
-  if (streamUrl && loadInitData) {
+  if (
+    streamData?.streamingUrl &&
+    streamData?.streamingType &&
+    streamData?.streamingType != 0 &&
+    loadInitData
+  ) {
     const baseUrl = loadInitData.find(
       (item) => item.key === loadInit.STREAMINGWATCHURL
     )?.value;
 
     if (baseUrl) {
-      iframeURL = `${baseUrl}${streamUrl}`;
+      if (parseInt(streamData.streamingType) === 1) {
+        let videoUrl = streamData.streamingUrl;
+
+        if (videoUrl.includes("youtube.com") || videoUrl.includes("youtu.be")) {
+          const idMatch = videoUrl.match(
+            /(?:v=|\/live\/|youtu\.be\/)([a-zA-Z0-9_-]{11})/
+          );
+          if (idMatch && idMatch[1]) {
+            iframeURL = `https://www.youtube.com/embed/${idMatch[1]}`;
+          } else {
+            iframeURL = videoUrl;
+          }
+        } else {
+          iframeURL = videoUrl;
+        }
+      } else if (parseInt(streamData.streamingType) === 2) {
+        iframeURL = `${baseUrl}${streamData.streamingUrl}`;
+      }
     }
   }
+
+  useEffect(() => {
+    dispatch(configInit());
+  }, []);
+
   return (
     <React.Fragment>
       <div

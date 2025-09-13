@@ -12,7 +12,7 @@ import {
 } from "../../Features/Authentication/authorizationSlice";
 import MetisMenu from "metismenujs";
 import { getMarketType } from "../../Features/Authentication/marketTypeSlice";
-// import { configInit } from "../../Features/Config/configSlice";
+import { configInit } from "../../Features/Config/configSlice";
 import "./sidebar.css";
 import LogRocket from "logrocket";
 import { loadInit } from "../../config";
@@ -238,7 +238,7 @@ const Sidebar = (props) => {
     dispatch(getAuthorisedTabs());
     dispatch(getTabPermissions());
     dispatch(getMarketType());
-    // dispatch(configInit());
+    dispatch(configInit());
   }, []);
 
   const toggleMenu = (menu) => {
