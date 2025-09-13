@@ -1,10 +1,12 @@
-import React from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { loadInit } from "../../config";
+import { configInit } from "../../Features/Config/configSlice";
 
 export default function StreamWatch() {
   const loadInitData = useSelector((state) => state.loadInit.loadInitData);
   const streamUrl = sessionStorage.getItem("streamingUrl");
+  const dispatch = useDispatch();
 
   let iframeURL = null;
   if (streamUrl && loadInitData) {
@@ -16,6 +18,11 @@ export default function StreamWatch() {
       iframeURL = `${baseUrl}${streamUrl}`;
     }
   }
+
+  useEffect(() => {
+    dispatch(configInit());
+  }, []);
+
   return (
     <React.Fragment>
       <div
