@@ -11,22 +11,33 @@ export default function StreamWatch() {
   const dispatch = useDispatch();
 
   let iframeURL = null;
-  if (streamData?.streamingUrl && streamData?.streamingType && streamData?.streamingType != 0 && loadInitData) {
+  if (
+    streamData?.streamingUrl &&
+    streamData?.streamingType &&
+    streamData?.streamingType != 0 &&
+    loadInitData
+  ) {
     const baseUrl = loadInitData.find(
       (item) => item.key === loadInit.STREAMINGWATCHURL
     )?.value;
 
     if (baseUrl) {
       if (parseInt(streamData.streamingType) === 1) {
-        try {
-          // Extract only the origin (protocol + domain)
-          const urlObj = new URL(baseUrl);
-          const streamURL = encodeURIComponent(streamData.streamingUrl);
-          iframeURL = `${urlObj.origin}?url=${streamURL}`;
-        } catch (e) {
-          console.error("Invalid baseUrl", e);
+        let videoUrl = streamData.streamingUrl;
+
+        if (videoUrl.includes("youtube.com") || videoUrl.includes("youtu.be")) {
+          const idMatch = videoUrl.match(
+            /(?:v=|\/live\/|youtu\.be\/)([a-zA-Z0-9_-]{11})/
+          );
+          if (idMatch && idMatch[1]) {
+            iframeURL = `https://www.youtube.com/embed/${idMatch[1]}`;
+          } else {
+            iframeURL = videoUrl;
+          }
+        } else {
+          iframeURL = videoUrl;
         }
-      } else if (parseInt(streamData.streamingType) === 2){
+      } else if (parseInt(streamData.streamingType) === 2) {
         iframeURL = `${baseUrl}${streamData.streamingUrl}`;
       }
     }
