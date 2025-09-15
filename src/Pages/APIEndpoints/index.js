@@ -138,6 +138,12 @@ const Index = () => {
         return "updateMenuList";
       case 8:
         return "configUpdate";
+      case 9:
+        return "getICCRankingData";
+      case 10:
+        return "insertTeam";
+      case 11:
+        return "insertPlayer";
       default:
         return "Unknown";
     } 
