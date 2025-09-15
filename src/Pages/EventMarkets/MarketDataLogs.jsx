@@ -22,6 +22,8 @@ import {
   TAB_EVENT_MARKETS,
   TAB_MARKET_DATA_LOGS,
 } from "../../components/Common/Const";
+import { loadInit } from "../../config";
+import axios from "axios";
 
 function MarketDataLogs() {
   const [data, setData] = useState([]);
@@ -50,6 +52,18 @@ function MarketDataLogs() {
   const marketDetails = JSON.parse(
     sessionStorage.getItem("eventMarketDataLogDetails") || "{}"
   );
+  const loadInitData = useSelector((state) => state.loadInit.loadInitData);
+  let wrongRateRqstUrl = loadInitData.find(item => item.key === loadInit.WRONGRATEREQUESTURL)?.value;
+  let wrongRateRqstKey = loadInitData.find(item => item.key === loadInit.WRONGRATEREQUESTXKEY)?.value;
+
+  const userDetails = JSON.parse(localStorage.getItem("userData") || "{}")
+
+  // useEffect(() => {
+  //   if(!isEmpty(marketDetails)){
+  //     document.title = `${marketDetails.eventRefId} - ${marketDetails.eventName} logs`;
+  //   }
+  // }, [marketDetails])
+
   const finalizeRef = useRef(null);
   const navigate = useNavigate();
 
@@ -110,6 +124,33 @@ function MarketDataLogs() {
           })
         );
       });
+  };
+
+  const sendWrongRateRequest = async (data) => {
+    const payload = {
+        centrId: data.centrId,
+        fromDate: data.startDate,
+        toDate: data.endDate,
+        rate: data.rate,
+        remark: data.remark,
+        operationById: 0,
+        operationByName: userDetails.userName,
+      }
+    try {
+      const response = await axios.post(
+        wrongRateRqstUrl, // API URL
+        payload,
+        {
+          headers: {
+            "X-app": wrongRateRqstKey,
+          },
+        }
+      );
+
+      console.log("✅ API Response:", response.data);
+    } catch (error) {
+      console.error("API Error:", error.response?.data || error.message);
+    }
   };
 
   useEffect(() => {
@@ -565,7 +606,7 @@ function MarketDataLogs() {
     : "";
 
   const tableElement = {
-    title: "Market Data Logs",
+    title: `${marketDetails.eventRefId} - ${marketDetails.eventName} logs`,
     isServerPagination: true,
     isDatePrice: true,
     sendDataListSelect: true,
@@ -724,6 +765,7 @@ function MarketDataLogs() {
               setDatePriceValues={setDatePriceValues}
               setCheckedList={setCheckedList}
               marketDetails={marketDetails}
+              sendWrongRateRequest={sendWrongRateRequest}
             />
           )}
         </Container>
