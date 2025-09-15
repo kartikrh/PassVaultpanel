@@ -324,6 +324,14 @@ const Index = () => {
     const url = new URL(window.location.origin + "/updateCommentaryFeature");
     window.open(url.href, "_blank");
   };
+  const handleStreamingListClick = (details) => {
+    const url = new URL(window.location.origin + "/streamingList");
+    sessionStorage.setItem("streamingListId", "" + details?.commentaryId);
+    sessionStorage.setItem("streamingListDetails", "" + JSON.stringify(details));
+    window.open(url.href, "_blank");
+    sessionStorage.removeItem("streamingListId");
+    sessionStorage.removeItem("streamingListDetails");
+  };
   const handleClone = async () => {
     if (cloneValues.name !== "" && cloneValues.refrenceId !== "") {
       setIsLoading(true);
@@ -746,6 +754,15 @@ const Index = () => {
     }
   };
 
+  const openVideoIframe = (details) => {
+    if(details?.streamingUrl) {
+      sessionStorage.setItem("streamingData", "" +  JSON.stringify(details));
+      const baseUrl = window.location.origin;
+      let iframeURL = `${baseUrl}/streamwatch`;
+      window.open(iframeURL, "_blank", "width=600, height=400");
+    }
+  };
+
   const handleUpdateDay = async (updatedData) => {
     try {
       setIsLoading(true);
@@ -938,6 +955,21 @@ const Index = () => {
       title: "Match Type",
       dataIndex: "matchType",
       render: (text, record) => (
+        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+        {record?.streamingUrl && (
+          <Tooltip
+            title="Watch TV"
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            <i
+              className="bx bxs-tv"
+              role="button"
+              onClick={() => openVideoIframe(record)}
+              style={{ cursor: "pointer", fontSize: "18px" }}
+            ></i>
+          </Tooltip>
+        )}
         <span
           onClick={() => {
             setChangeModelVisible(true);
@@ -954,6 +986,7 @@ const Index = () => {
             {<a className="bx bx-edit-alt"></a>}
           </Tooltip>
         </span>
+        </div>
       ),
       key: "matchType",
       sort: true,
@@ -1447,31 +1480,57 @@ const Index = () => {
     // },
     
     {
-          title: "Scoring Type",
-          dataIndex: "scoringType",
-          key: "scoringType",
-          sort: true,
-          render: (text, record) => (
-            <div className="">
-            <div className="d-flex align-items-center gap-2">
-              <span
-                style={{ cursor: record.isPredictMarket && "pointer" }}
-                // onClick={() => {
-                //   if (record.isPredictMarket) {
-                //     handleOddsViewClick(record.commentaryId);
-                //   }
-                // }}
-              >
-                {text == 1 ? "Manual" : text == 2 ? "Entity" : ""}
-              </span>
-            </div>
-            <div>
-              {record?.tpId}
-            </div>
-            </div>
-          ),
-          style: { width: "10%" },
-        },
+      title: "Scoring Type",
+      dataIndex: "scoringType",
+      key: "scoringType",
+      sort: true,
+      render: (text, record) => (
+        <div className="">
+        <div className="d-flex align-items-center gap-2">
+          <span
+            style={{ cursor: record.isPredictMarket && "pointer" }}
+            // onClick={() => {
+            //   if (record.isPredictMarket) {
+            //     handleOddsViewClick(record.commentaryId);
+            //   }
+            // }}
+          >
+            {text == 1 ? "Manual" : text == 2 ? "Entity" : ""}
+          </span>
+        </div>
+        <div>
+          {record?.tpId}
+        </div>
+        </div>
+      ),
+      style: { width: "10%" },
+    },
+    {
+      title: "",
+      dataIndex: "streamingUrl",
+      key: "streamingView",
+      printType: "ignore",
+      render: (text, record) => (
+        <Tooltip
+          title={"Streaming View"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
+          <Button
+            color={"info"}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleStreamingListClick(record);
+            }}
+          >
+            SV
+            {/* <i class="bx bxs-up-arrow-square"></i> */}
+          </Button>
+        </Tooltip>
+      ),
+      style: { width: "4%", textAlign: "center" },
+    },
   ];
 
   const getColumns = (data) => {
