@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { CardHeader, Col, Container, Row, Button } from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { ERROR } from "../../components/Common/Const";
+import { ERROR, SUCCESS } from "../../components/Common/Const";
 import Table from "../../components/Common/Table";
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
@@ -127,6 +127,7 @@ function MarketDataLogs() {
   };
 
   const sendWrongRateRequest = async (data) => {
+    setIsLoading(true);
     const payload = {
         centrId: data.centrId,
         fromDate: data.startDate,
@@ -146,10 +147,26 @@ function MarketDataLogs() {
           },
         }
       );
-
-      console.log("✅ API Response:", response.data);
+       dispatch(
+          updateToastData({
+            data: response.data.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+        setIsLoading(false);
+        setDateModelVisable(false)
     } catch (error) {
       console.error("API Error:", error.response?.data || error.message);
+
+      dispatch(
+        updateToastData({
+          data: error?.message,
+          title: error?.title,
+          type: ERROR,
+        })
+      );
+      setIsLoading(false);
     }
   };
 
