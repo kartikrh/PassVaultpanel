@@ -149,7 +149,8 @@ const Index = forwardRef(
       handleCustomReset,
       pythonApis,
       customPageSizeOptions,
-      playerSearch
+      playerSearch,
+      dateTypeTitle
     },
     ref
   ) => {
@@ -2584,7 +2585,8 @@ const Index = forwardRef(
                           (tableElement?.title == "Market Data Logs" ||
                             tableElement?.title == "Registration Pending" ||
                             tableElement?.title == "Commentary History" ||
-                            tableElement?.title == "Registered Users") ? (
+                            tableElement?.title == "Registered Users" || 
+                            tableElement?.dateTypeTitle == "Market data logs") ? (
                             <Select
                               value={dateType}
                               placeholder="Date Type"

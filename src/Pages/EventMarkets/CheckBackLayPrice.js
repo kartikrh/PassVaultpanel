@@ -52,7 +52,6 @@ const CheckBackLayPrice = ({
             if (runner?.layPrice) layPrices.add(runner?.layPrice);
           });
         });
-
         setRawMinDate(minDate);
         setRawMaxDate(maxDate);
 
@@ -136,6 +135,16 @@ const CheckBackLayPrice = ({
     return `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
 }
 
+function formatDateForInputIST(date) {
+  if (!date) return "";
+  
+  // Convert to IST by adding offset (5.5 hours)
+  const istDate = new Date(date.getTime() + (5.5 * 60 * 60 * 1000));
+  
+  // Format to YYYY-MM-DDTHH:mm:ss (24-hour format)
+  return istDate.toISOString().slice(0, 19);
+}
+
   return (
     <Modal
       isOpen={dateModelVisable}
@@ -188,7 +197,7 @@ const CheckBackLayPrice = ({
                 className="form-control"
                 type="datetime-local"
                 step="1"
-                value={startDate ? startDate.toISOString().slice(0, 19) : ""}
+                value={startDate ? formatDateForInputIST(startDate) : ""}
                 onChange={(e) => setStartDate(new Date(e.target.value))}
               />
             </div>
@@ -199,7 +208,7 @@ const CheckBackLayPrice = ({
                 className="form-control"
                 type="datetime-local"
                 step="1"
-                value={endDate ? endDate.toISOString().slice(0, 19) : ""}
+                value={endDate ? formatDateForInputIST(endDate) : ""}
                 onChange={(e) => setEndDate(new Date(e.target.value))}
               />
             </div>
