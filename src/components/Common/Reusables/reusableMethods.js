@@ -122,6 +122,10 @@ export const convertTimeUTCToLocal = (UTCDate, page, format) => {
   return "";
 };
 
+export const formatDateTime = (date) => {
+  if (!date) return "";
+  return moment(date).format("DD/MM/YY, h:mm:ss a");
+};
 
 export const convertDateUTCToLocal2 = (UTCDate, page, format) => {
   if (UTCDate) {

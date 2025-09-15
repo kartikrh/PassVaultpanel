@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Table from "../../components/Common/Table";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axios from "axios";
-import { convertTimeUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
+import { formatDateTime } from "../../components/Common/Reusables/reusableMethods";
 import { Tooltip } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { loadInit } from "../../config";
@@ -71,7 +71,7 @@ const StreamingTable = () => {
       title: "Time",
       dataIndex: "timeStart",
       render: (text, record) => (
-        <span>{convertTimeUTCToLocal(text, "index")}</span>
+        <span>{formatDateTime(text)}</span>
       ),
       key: "timeStart",
       sort: true,
