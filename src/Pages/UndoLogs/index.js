@@ -58,6 +58,7 @@ const Index = () => {
   });
   const commentaryId = +sessionStorage.getItem('undoLogsId') || 0;
   const commentaryDetails = JSON.parse(sessionStorage.getItem('undoLogsDetails') || "{}");
+  const [createdByList, setCreatedByList] = useState([]);
 
   const navigate = useNavigate();
 
@@ -72,6 +73,7 @@ const Index = () => {
       eventTypeId: data?.eventTypeId || 0,
       competitionId: data?.eventTypeId !== eventTypeId ? 0 : data?.competitionId || 0,
       commentaryId: (data?.eventTypeId !== eventTypeId || data?.competitionId !== competitionId) ? 0 : data?.commentaryId || 0,
+      createdById: data?.createdById || 0,
     }
     if(commentaryId !== 0) {
       payload = {
@@ -96,6 +98,15 @@ const Index = () => {
         logsData.forEach((ele) => {
           logsDataIdList.push(ele?.id);
         });
+        const createdByListData = logsData.reduce((acc, item) => {
+          const key = `${item.createdById}-${item.createdBy}`;
+          if (!acc.seen.has(key)) {
+            acc.seen.add(key);
+            acc.result.push({ createdById: item.createdById, createdBy: item.createdBy });
+          }
+          return acc;
+        }, { seen: new Set(), result: [] }).result;
+        setCreatedByList(createdByListData);
         setDataIndexList(logsDataIdList)
         setData(logsData);
         setTotal(response?.result?.totalRecords || 0); 
@@ -367,6 +378,7 @@ const Index = () => {
     eventTypeSelect: true,
     competitionsSelect: true,
     commentarySelect: true,
+    createdByIdSelect: true,
     resetButton: true,
     reloadButton: true,
     isServerPagination: true,
@@ -420,6 +432,7 @@ const Index = () => {
             eventTypes={eventTypes}
             competitions={competitions}
             commentary={commentary}
+            createdByList={createdByList}
             singleCheck={checekedList}
             reFetchData={fetchData}
             selectedTableElementsLogs={selectedTableElements}
