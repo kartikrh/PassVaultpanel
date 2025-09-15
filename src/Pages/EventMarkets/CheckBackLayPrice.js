@@ -13,6 +13,7 @@ const CheckBackLayPrice = ({
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [prices, setPrices] = useState([]);
+  const [newPrices, setNewPrices] = useState("");
   const [difference, setDifference] = useState(2);
   const [rawMinDate, setRawMinDate] = useState(null);
   const [rawMaxDate, setRawMaxDate] = useState(null);
@@ -64,6 +65,7 @@ const CheckBackLayPrice = ({
         const uniquePrices = [...new Set(combinedPrices)];
         uniquePrices.sort((a, b) => a - b);
         setPrices(uniquePrices);
+        setNewPrices(uniquePrices.join(","));
       }
     }, [datePriceValues]);
 
@@ -201,9 +203,18 @@ const CheckBackLayPrice = ({
                 onChange={(e) => setEndDate(new Date(e.target.value))}
               />
             </div>
-            <div className="my-1 d-flex align-items-center justify-content-start">
+            {/* <div className="my-1 d-flex align-items-center justify-content-start">
               <span className="margin-right-10 label-price-width">Price :</span>
               <input className="form-control" type="text" value={prices.length > 0 ? prices.join(",") : ""} />
+            </div> */}
+            <div className="my-1 d-flex align-items-center justify-content-start">
+              <span className="margin-right-10 label-price-width">Price :</span>
+              <input
+                className="form-control"
+                type="text"
+                value={newPrices}
+                onChange={(e) => setNewPrices(e.target.value)}
+              />
             </div>
             <div className="my-1 d-flex align-items-center justify-content-start">
               <span className="margin-right-10 label-price-width">*Remark :</span>
@@ -232,7 +243,7 @@ const CheckBackLayPrice = ({
                     "startDate" : formatFullDate(startDate),
                     "endDate" :formatFullDate(endDate),
                     "remark" : remark,
-                    "rate" : prices.join(","),
+                    "rate" : newPrices,
                     "centrId" : marketDetails.eventMarketId
                   }
                 )
