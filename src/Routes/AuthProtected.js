@@ -4,7 +4,8 @@ import { Navigate, Route, useNavigate } from "react-router-dom";
 import { useProfile } from "../Hooks/UserHooks";
 import { io } from "socket.io-client";
 import axiosInstance from "../Features/axios";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+// import { configInit } from "../Features/Config/configSlice";
 
 
 const AuthProtected = (props) => {
@@ -12,6 +13,8 @@ const AuthProtected = (props) => {
   const token = useSelector((state) => state.user.token);
 
   const navigate = useNavigate();
+  // const dispatch = useDispatch();
+
   const [isSocketConnected, setIsSocketConnected] = useState(false);
 
   /*
@@ -40,6 +43,10 @@ const AuthProtected = (props) => {
     window.addEventListener('storage', storageChange, false);
     return () => window.removeEventListener('storage', storageChange, false);
   }, []);
+
+  // useEffect(() => {
+  //   dispatch(configInit());
+  // }, []);
 
   useEffect(() => {
     let socket;

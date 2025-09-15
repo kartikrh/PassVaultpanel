@@ -65,7 +65,7 @@ const PlayerInfo = styled(Box)(({ theme }) => ({
 }));
 
 const BallsContainer = styled(Box)(({ theme }) => ({
-    width: '70%',
+    width: '100%',
     padding: '0 16px',
     order: 2,
     [theme.breakpoints.down('sm')]: {

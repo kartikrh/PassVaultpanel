@@ -22,6 +22,7 @@ export const TEXT_BUTTON = "TEXT_BUTTON";
 export const LABEL = "LABEL";
 export const LABEL_PARTATION = "LABEL_PARTATION";
 export const BUTTON = "BUTTON";
+// export const IFRAME_BUTTON = "IFRAME BUTTON";
 export const COLOR_PICKER = "COLOR_PICKER";
 export const WARNING = "WARNING";
 
@@ -46,6 +47,7 @@ export const TAB_COMMENTARY_LIST = "Commentary List";
 export const TAB_COMMENTARY_LOGS = "Commentary Logs";
 export const TAB_COMPETITION = "Competition";
 export const TAB_CONFIG = "Config";
+export const TAB_STREAMING_LIST = "Streaming List";
 
 export const TAB_DISPLAYSTATUS = "DisplayStatus";
 export const TAB_DATA_PROVIDER = "Data Provider";
@@ -112,6 +114,8 @@ export const TAB_UNDO_LOGS = "Undo Logs";
 export const TAB_VIDEOLIBRARY = "Video Library";
 export const TAB_VENDOR = "Vendors";
 export const VENUE = "Venue";
+
+export const TAB_ICC_RANKINGS = "iccRanking";
 
 export const WHITE_LABEL = "White Label";
 // export const WHITE_LABEL_EVENT_DATA = "White Label Event Data";

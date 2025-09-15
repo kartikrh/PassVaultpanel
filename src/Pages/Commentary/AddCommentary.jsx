@@ -347,16 +347,42 @@ function AddCommentary() {
                 setIsApiLoading(true);
                 axiosInstance.post('/admin/player/byTeamIdv1', { teamId: newFormData["team1Id"], competitionId : newFormData["competitionId"] || competitionId })
                     .then((response) => {
-                        const formattedData = response?.result?.map(item => {
+                        let formattedData = response?.result?.map(item => {
                             return { label: item?.playerName, value: item?.playerId }
                         }).filter(element => element.value);
-                        setMasterData((preData) => ({
-                            ...preData,
-                            "team1Captain": formattedData,
-                            "team1Kipper": formattedData,
-                            "team1Players": formattedData
-                        }));
-                        setIsApiLoading(false);
+                        // setMasterData((preData) => ({
+                        //     ...preData,
+                        //     "team1Captain": formattedData,
+                        //     "team1Kipper": formattedData,
+                        //     "team1Players": formattedData
+                        // }));
+                        // setIsApiLoading(false);
+                        if (!formattedData || formattedData.length === 0) {
+                            // fallback call
+                            return axiosInstance.post('/admin/commentary/playerListByTeamId', { teamId: newFormData["team1Id"] })
+                                .then((fallbackRes) => {
+                                    formattedData = fallbackRes?.result?.map(item => ({
+                                        label: item?.playerName,
+                                        value: item?.playerId
+                                    })).filter(element => element.value);
+
+                                    setMasterData((preData) => ({
+                                        ...preData,
+                                        "team1Captain": formattedData,
+                                        "team1Kipper": formattedData,
+                                        "team1Players": formattedData
+                                    }));
+                                    setIsApiLoading(false);
+                                });
+                        } else {
+                            setMasterData((preData) => ({
+                                ...preData,
+                                "team1Captain": formattedData,
+                                "team1Kipper": formattedData,
+                                "team1Players": formattedData
+                            }));
+                            setIsApiLoading(false);
+                        }
                     }).catch((error) => {
                         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
                         setIsApiLoading(false);
@@ -385,16 +411,41 @@ function AddCommentary() {
                 setIsApiLoading(true);
                 axiosInstance.post('/admin/player/byTeamIdv1', { teamId: newFormData["team2Id"], competitionId : newFormData["competitionId"] || competitionId })
                     .then((response) => {
-                        const formattedData = response?.result?.map(item => {
+                        let formattedData = response?.result?.map(item => {
                             return { label: item?.playerName, value: item?.playerId }
                         }).filter(element => element.value);
-                        setMasterData((preData) => ({
-                            ...preData,
-                            "team2Captain": formattedData,
-                            "team2Kipper": formattedData,
-                            "team2Players": formattedData
-                        }));
-                        setIsApiLoading(false);
+                        // setMasterData((preData) => ({
+                        //     ...preData,
+                        //     "team2Captain": formattedData,
+                        //     "team2Kipper": formattedData,
+                        //     "team2Players": formattedData
+                        // }));
+                        // setIsApiLoading(false);
+                        if (!formattedData || formattedData.length === 0) {
+                            return axiosInstance.post('/admin/commentary/playerListByTeamId', { teamId: newFormData["team2Id"] })
+                                .then((fallbackRes) => {
+                                    formattedData = fallbackRes?.result?.map(item => ({
+                                        label: item?.playerName,
+                                        value: item?.playerId
+                                    })).filter(element => element.value);
+
+                                    setMasterData((preData) => ({
+                                        ...preData,
+                                        "team2Captain": formattedData,
+                                        "team2Kipper": formattedData,
+                                        "team2Players": formattedData
+                                    }));
+                                    setIsApiLoading(false);
+                                });
+                        } else {
+                            setMasterData((preData) => ({
+                                ...preData,
+                                "team2Captain": formattedData,
+                                "team2Kipper": formattedData,
+                                "team2Players": formattedData
+                            }));
+                            setIsApiLoading(false);
+                        }
                     }).catch((error) => {
                         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
                         setIsApiLoading(false);
