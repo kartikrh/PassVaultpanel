@@ -83,12 +83,27 @@ function AddRankings() {
       });
   };
   
+  // const handleSaveClick = async (saveAction) => {
+  //   const dataToSave = finalizeRef.current.finalizeData()
+  //   console.log("dataToSave", dataToSave)
+  //   console.log("id", id)
+  //     setCurrentSaveAction(saveAction);
+  //     dispatch(addIccRankingToDb({ ...dataToSave, id: id }))
+  //   //   dispatch(addIccRankingToDb(convertObjtoFormData2({ ...dataToSave })))
+  // };
+
   const handleSaveClick = async (saveAction) => {
-    const dataToSave = finalizeRef.current.finalizeData()
-      setCurrentSaveAction(saveAction);
-      dispatch(addIccRankingToDb({ ...dataToSave, id: id }))
-    //   dispatch(addIccRankingToDb(convertObjtoFormData2({ ...dataToSave })))
+    let dataToSave = finalizeRef.current.finalizeData();
+
+    if (dataToSave.type === 1) {
+      const { playerTypeId, playerId, ...rest } = dataToSave;
+      dataToSave = rest;
+    }
+
+    setCurrentSaveAction(saveAction);
+    dispatch(addIccRankingToDb({ ...dataToSave, id }));
   };
+
 
   const handleBackClick = () => {
     navigate("/iccRanking");
@@ -125,7 +140,7 @@ function AddRankings() {
               // setIsApiLoading(false);
           });
       }    
-      if (/* newFormData["teamId"] && (newFormData["teamId"] !== savedFormState["teamId"]) && */ newFormData["type"] == 2) {
+      if (newFormData["teamId"] && (newFormData["teamId"] !== savedFormState["teamId"]) && newFormData["type"] == 2) {
           setIsApiLoading(true);
           axiosInstance.post('/admin/list/playerList', { 'eventTypeId' : newFormData["sportId"] })
           .then((response) => {
