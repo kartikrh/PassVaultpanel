@@ -314,7 +314,8 @@ const FormBuilder = forwardRef(
       }));
     };
 
-    const handleChange = (field, value) => {
+    const handleChange = (field, selected) => {
+      const value = field.type === "SELECT" ? selected?.value : selected
       if (handleFieldChange) {
         handleFieldChange(field.name, value);
       }
@@ -337,10 +338,30 @@ const FormBuilder = forwardRef(
       } else {
         delete errors[field.name];
       }
-      setFormData((prevFormData) => ({
-        ...prevFormData,
-        [field.name]: value,
-      }));
+      // setFormData((prevFormData) => ({
+      //   ...prevFormData,
+      //   [field.name]: value,
+      // }));
+      setFormData((prevFormData) => {
+        let updatedFormData = {
+          ...prevFormData,
+          [field.name]: value,
+        };
+
+        if (field.type === SELECT && selected) {
+          Object.entries(selected).forEach(([key, val]) => {
+            if (key !== "label" && key !== "value") {
+              // check if any field has same name
+              const matchedField = fields.find((f) => f.name === key);
+              if (matchedField) {
+                updatedFormData[key] = val;
+              }
+            }
+          });
+        }
+
+        return updatedFormData;
+      });
       setFieldErrors(errors);
     };
 
@@ -410,8 +431,12 @@ const FormBuilder = forwardRef(
                         field.name === "winPoint" ||
                         field.name === "tiePoint" ||
                         field.name === "lossPoint" ||
-                        field.name === "cancelPoint"
-                      ? "d-none"
+                        field.name === "cancelPoint" ||
+                        field.name === "playerTypeId" ||
+                        field.name === "playerId" 
+                      ? "d-none" 
+                      // : field.name === "playerTypeId" ||
+                      //   field.name === "playerId" ?  "d-none"
                       : "invisible"
                   }`}
                   xs={field.labelColspan?.xs || 3}
@@ -441,7 +466,9 @@ const FormBuilder = forwardRef(
                         field.name === "winPoint" ||
                         field.name === "tiePoint" ||
                         field.name === "lossPoint" ||
-                        field.name === "cancelPoint"
+                        field.name === "cancelPoint" ||
+                        field.name === "playerTypeId" ||
+                        field.name === "playerId" 
                       ? "d-none"
                       : "invisible"
                   } mb-4`}
@@ -567,7 +594,7 @@ const FormBuilder = forwardRef(
                           masterData?.[field.name] || []
                         )}
                         onChange={(selectedOption) => {
-                          handleChange(field, selectedOption?.value || null);
+                          handleChange(field, selectedOption || null);
                         }}
                         closeMenuOnSelect={!field.isMulti}
                         required={field.isRequired}
