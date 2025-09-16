@@ -129,6 +129,17 @@ function MarketDataLogs() {
   };
 
   const sendWrongRateRequest = async (data) => {
+    if (!userDetails?.userName) {
+      console.error("userDetails is missing, cannot send request.");
+      dispatch(
+        updateToastData({
+          data: "userDetails is missing, cannot send request",
+          title: "User Details Missing",
+          type: ERROR,
+        })
+      );
+      return;
+    }
     setIsLoading(true);
     const payload = {
         centrId: data.centrId,
