@@ -25,6 +25,7 @@ import { checkPermission } from "../../components/Common/Reusables/reusableMetho
 import { updateToastData } from "../../Features/toasterSlice";
 import { isEmpty } from "lodash";
 import { TextField } from "@mui/material";
+import { getDynamicStep } from "../Commentary/functions";
 
 function DismissalDataComponent() {
     const pageName = TAB_MARKET_TEMPLATE;
@@ -430,7 +431,7 @@ function DismissalDataComponent() {
                                                             e.preventDefault();
                                                         }
                                                     }}
-                                                    inputProps={{ step: "0.1", min: "0" }}
+                                                    steps={getDynamicStep(dismissalData[overTypeId]?.[bowlingStyle.bowlingTypeId]?.[runner.marketTemplateRunnerId]?.predefinedValue)}
                                                     sx={{
                                                         '& .MuiInputLabel-root': {
                                                             fontSize: '12px'
@@ -475,7 +476,7 @@ function DismissalDataComponent() {
                                                             e.preventDefault();
                                                         }
                                                     }}
-                                                    inputProps={{ step: "0.1", min: "0" }}
+                                                    steps={getDynamicStep(dismissalData[overTypeId]?.[bowlingStyle.bowlingTypeId]?.[runner.marketTemplateRunnerId]?.impactProb)}
                                                     sx={{
                                                         '& .MuiInputLabel-root': {
                                                             fontSize: '12px'
