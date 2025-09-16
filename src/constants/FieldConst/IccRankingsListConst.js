@@ -47,7 +47,7 @@ export const IccRankingsFields = [
     {
         name: "teamId",
         label: "Team",
-        // isRequired: true,
+        isRequired: true,
         requiredErrorMessage: "Please select team",
         type: SELECT,
         options: [],
