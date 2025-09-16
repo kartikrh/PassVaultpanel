@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { loadInit } from "../../config";
 import { configInit } from "../../Features/Config/configSlice";
+import SpinnerModel from "../../components/Model/SpinnerModel";
 
 export default function StreamWatch() {
   const loadInitData = useSelector((state) => state.loadInit.loadInitData);
@@ -72,16 +73,8 @@ export default function StreamWatch() {
             allowFullScreen
           />
         ) : (
-          <p
-            style={{
-              color: "#999",
-              textAlign: "center",
-              marginTop: "20px",
-            }}
-          >
-            No stream URL provided.
-          </p>
-        )}
+        <SpinnerModel />
+      )}
       </div>
     </React.Fragment>
   );

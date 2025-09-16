@@ -465,7 +465,7 @@ const FormBuilder = forwardRef(
                         required={field.isRequired}
                         invalid={fieldErrors[field.name]}
                       />
-                      {field.name === "streamingUrl" && (
+                      {(field.name === "streamingUrl" && formData?.streamingType == 2) && (
                         <a
                           href="#"
                           onClick={(e) => {
