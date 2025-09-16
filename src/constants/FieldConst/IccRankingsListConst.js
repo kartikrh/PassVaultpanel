@@ -47,7 +47,7 @@ export const IccRankingsFields = [
     {
         name: "teamId",
         label: "Team",
-        isRequired: true,
+        // isRequired: true,
         requiredErrorMessage: "Please select team",
         type: SELECT,
         options: [],
@@ -58,8 +58,10 @@ export const IccRankingsFields = [
         name: "playerId",
         label: "Player",
         isRequired: true,
-        // dependsOnField: "type",
-        // dependsOnValue: 2,
+        dependsOnField: "type",
+        dependsOnValue: 2,
+        // requiredWhenField: "type",
+        // requiredWhenValue: 2,
         requiredErrorMessage: "Please select player",
         type: SELECT,
         options: [],
@@ -70,8 +72,8 @@ export const IccRankingsFields = [
         name: "playerTypeId",
         label: "Player Type",
         isRequired: true,
-        // dependsOnField: "type",
-        // dependsOnValue: 2,
+        dependsOnField: "type",
+        dependsOnValue: 2,
         requiredErrorMessage: "Please select player type",
         type: SELECT,
         options: [
@@ -87,7 +89,7 @@ export const IccRankingsFields = [
     {
         name: "point",
         label: "Point",
-        isRequired: true,
+        // isRequired: true,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 },
         type: COUNTER,
@@ -105,18 +107,10 @@ export const IccRankingsFields = [
         name: "preRank",
         label: "pre.Rank",
         parentclassName: "",
-        isRequired: true,
+        // isRequired: true,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 },
         type: COUNTER,
-    },
-    {
-        name: "isActive",
-        label: "Active",
-        type: SWITCH,
-        defaultValue: true,
-        labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
         name: "rating",
@@ -129,7 +123,7 @@ export const IccRankingsFields = [
     {
         name: "remark",
         label: "Remark",
-        isRequired: true,
+        // isRequired: true,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 },
         type: TEXT,
@@ -141,4 +135,12 @@ export const IccRankingsFields = [
     //     labelColspan: { xs: 12, md: 2, lg: 2 },
     //     fieldColspan: { xs: 12, md: 2, lg: 2 }
     // },
+    {
+        name: "isActive",
+        label: "Active",
+        type: SWITCH,
+        defaultValue: true,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
+    },
 ];
