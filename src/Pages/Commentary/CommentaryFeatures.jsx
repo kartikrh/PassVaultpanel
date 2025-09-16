@@ -257,7 +257,7 @@ export const CommentaryFeatures = () => {
                                             bowlingStyleList={commentaryData?.bowlingStyles}
                                         />
                                         <PartnershipFeature
-                                            partnershipList={commentaryData?.commentaryPartnership?.filter((item)=> item?.currentInnings == selectedInnings && item?.teamId === selectedBattingTeamId) || []}
+                                            partnershipList={commentaryData?.commentaryPartnership?.filter((item)=> item?.currentInnings == selectedInnings && item?.teamId == selectedBattingTeamId) || []}
                                             updatedData={partnershipData || {}}
                                             handleValueChange={updatedData => setPartnershipData({ ...updatedData })}
                                             deletedList={deletePartnership}
@@ -268,7 +268,7 @@ export const CommentaryFeatures = () => {
                                             ballList={commentaryData?.commentaryBallByBall?.filter((item)=> item.currentInnings == selectedInnings && item?.teamId == selectedBattingTeamId) || []}
                                         />
                                         <WicketFeature
-                                            wicketList={commentaryData?.commentaryWicket?.filter((item)=> item?.currentInnings == selectedInnings && item?.teamId === selectedBattingTeamId) || []}
+                                            wicketList={commentaryData?.commentaryWicket?.filter((item)=> item?.currentInnings == selectedInnings && item?.teamId == selectedBattingTeamId) || []}
                                             updatedData={wicketData || {}}
                                             handleValueChange={updatedData => setWicketData({ ...updatedData })}
                                             deletedList={deleteWicket}
@@ -277,10 +277,10 @@ export const CommentaryFeatures = () => {
                                             setSelectedItems={setSelectedItems}
                                             battingPlayers={battingTeamPlayers}
                                             bowlingPlayers={bowlingTeamPlayers}
-                                            overList={commentaryData?.commentaryOvers?.filter((item)=> item.currentInnings == selectedInnings && item?.teamId !== selectedBattingTeamId) || []}
+                                            overList={commentaryData?.commentaryOvers?.filter((item)=> item.currentInnings == selectedInnings && item?.teamId == selectedBattingTeamId) || []}
                                         />
                                         <OverBallByBallFeature
-                                            overList={commentaryData?.commentaryOvers?.filter((item)=> item.currentInnings == selectedInnings && item?.teamId !== selectedBattingTeamId) || []}
+                                            overList={commentaryData?.commentaryOvers?.filter((item)=> item.currentInnings == selectedInnings && item?.teamId == selectedBattingTeamId) || []}
                                             ballList={commentaryData?.commentaryBallByBall?.filter((item)=> item.currentInnings == selectedInnings && item?.teamId == selectedBattingTeamId) || []}
                                             updatedData={overData || {}}
                                             handleValueChange={updatedData => setOverData({ ...updatedData })}
