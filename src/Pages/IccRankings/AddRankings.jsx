@@ -16,7 +16,7 @@ import {
 } from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { ERROR, PERMISSION_ADD, PERMISSION_EDIT, PERMISSION_VIEW, SAVE, SAVE_AND_CLOSE, SAVE_AND_NEW, TAB_COMPETITION, TAB_ICC_RANKINGS } from '../../components/Common/Const';
-import { addCompetitionToDb, updateSavedState } from "../../Features/Tabs/competitionSlice";
+import { updateSavedState } from "../../Features/Tabs/competitionSlice";
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { checkPermission, convertDateLocalToUTC } from '../../components/Common/Reusables/reusableMethods';
@@ -31,6 +31,7 @@ function AddRankings() {
   const [savedFormState, setSavedFormState] = useState({});
   const [initialEditData, setInitialEditData] = useState(undefined);
   const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
+  const [isApiLoading, setIsApiLoading] = useState(false);
   const [masterData, setMasterData] = useState({});
   const [disabledFields, setDisabledFields] = useState({});
   const { isSaved, isLoading } = useSelector(
@@ -41,8 +42,6 @@ function AddRankings() {
   let navigate = useNavigate();
   const location = useLocation();
   const [id, setId] = useState(location.state?.userId || "0");
-
-  console.log("savedFormState", savedFormState)
 
   useEffect(() => {
     if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
@@ -84,12 +83,27 @@ function AddRankings() {
       });
   };
   
+  // const handleSaveClick = async (saveAction) => {
+  //   const dataToSave = finalizeRef.current.finalizeData()
+  //   console.log("dataToSave", dataToSave)
+  //   console.log("id", id)
+  //     setCurrentSaveAction(saveAction);
+  //     dispatch(addIccRankingToDb({ ...dataToSave, id: id }))
+  //   //   dispatch(addIccRankingToDb(convertObjtoFormData2({ ...dataToSave })))
+  // };
+
   const handleSaveClick = async (saveAction) => {
-    const dataToSave = finalizeRef.current.finalizeData()
-      setCurrentSaveAction(saveAction);
-      dispatch(addIccRankingToDb({ ...dataToSave, id: id }))
-    //   dispatch(addIccRankingToDb(convertObjtoFormData2({ ...dataToSave })))
+    let dataToSave = finalizeRef.current.finalizeData();
+
+    if (dataToSave.type === 1) {
+      const { playerTypeId, playerId, ...rest } = dataToSave;
+      dataToSave = rest;
+    }
+
+    setCurrentSaveAction(saveAction);
+    dispatch(addIccRankingToDb({ ...dataToSave, id }));
   };
+
 
   const handleBackClick = () => {
     navigate("/iccRanking");
@@ -103,7 +117,6 @@ function AddRankings() {
   };
 
   const handleFormDataChange = (newFormData) => {
-    console.log("newFormData", newFormData)
       // setSavedFormState({...savedFormState, ...newFormData});
       const allowedFields = IccRankingsFields.map(field => field.name).filter(Boolean);
           const filteredData = Object.fromEntries(
@@ -111,10 +124,9 @@ function AddRankings() {
           );
       updateSavedFormState(filteredData);
       if (newFormData["sportId"] !== savedFormState["sportId"]) {
-          // setIsApiLoading(true);
+          setIsApiLoading(true);
           axiosInstance.post('/admin/list/teamList', { 'eventTypeId' : newFormData["sportId"] })
           .then((response) => {
-              console.log("teamList", response)
               const formattedData = response?.result?.map(item => {
                   return { label: item?.teamName, value: item?.teamId }
               }).filter(element => element.value);
@@ -122,17 +134,16 @@ function AddRankings() {
                   ...preData,
                   "teamId": formattedData,
               }));
-              // setIsApiLoading(false);
+              setIsApiLoading(false);
           }).catch((error) => {
               dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
               // setIsApiLoading(false);
           });
       }    
       if (newFormData["teamId"] && (newFormData["teamId"] !== savedFormState["teamId"]) && newFormData["type"] == 2) {
-          // setIsApiLoading(true);
+          setIsApiLoading(true);
           axiosInstance.post('/admin/list/playerList', { 'eventTypeId' : newFormData["sportId"] })
           .then((response) => {
-              console.log("playerList", response)
               const formattedData = response?.result?.map(item => {
                   return { label: item?.playerName, value: item?.playerId }
               }).filter(element => element.value);
@@ -140,36 +151,33 @@ function AddRankings() {
                   ...preData,
                   "playerId": formattedData,
               }));
-              // setIsApiLoading(false);
+              setIsApiLoading(false);
           }).catch((error) => {
               dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-              // setIsApiLoading(false);
+              setIsApiLoading(false);
           });
       }    
-        
   }
 
   const matchList = async () =>{
     axiosInstance.post('/admin/list/matchTypeList')
         .then((response) => {
             const formattedData = response?.result?.map(item => {
-                return { label: item?.matchType, value: item?.matchTypeId }
+                return { label: item?.matchType, value: item?.matchTypeId, isMen: item?.isMen }
             })
-            console.log("formattedData", formattedData)
             setMasterData((preData) => ({
                 ...preData,
                 "matchTypeId": formattedData
             }));
-            // setIsApiLoading(false);
+            setIsApiLoading(false);
         }).catch((error) => {
             dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-            // setIsApiLoading(false);
+            setIsApiLoading(false);
         });
 
         await axiosInstance
             .post("/admin/list/eventTypeList", {})
             .then((response) => {
-                console.log("sportId", response)
                 setMasterData((preData) => ({
                 ...preData,
                 sportId: response.result?.map((item) => {
@@ -192,7 +200,7 @@ function AddRankings() {
             </Col>
             <Card>
               <CardBody>
-                {isLoading && <SpinnerModel />}
+                {(isLoading || isApiLoading) && <SpinnerModel />}
                 <Row>
                   <Col
                     className="mb-3"

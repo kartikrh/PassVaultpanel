@@ -2630,7 +2630,7 @@ const Index = () => {
       ),
       style: { width: "10%" },
     },
-     {
+    {
       title: "",
       dataIndex: "streamingUrl",
       key: "streamingView",

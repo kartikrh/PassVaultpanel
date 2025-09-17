@@ -1964,7 +1964,7 @@ const Commentary = (props) => {
         partnershipFromApi = propsData.commentaryData.commentaryPartnership?.find((i) => i?.isActive) || {};
         propsData.commentaryData.commentaryOvers.forEach(overDetails => {
             if (
-                isEqual(+overDetails.teamId, currentInningsTeams?.[BOWLING_TEAM]?.teamId) &&
+                isEqual(+overDetails.teamId, currentInningsTeams?.[BATTING_TEAM]?.teamId) &&
                 isEqual(+overDetails.over, +currentOver) &&
                 isEqual(+overDetails?.currentInnings, commentaryDetails.currentInnings)) currentOverToUpdate = overDetails
         });
@@ -2055,7 +2055,6 @@ const Commentary = (props) => {
             }))
         }
     }
-    console.log("----------", selectedOverType)
     const updateTempToMain = () => {
         // console.log("_currentPartnership", _currentPartnership)
         if (!isEmpty(_currentOver)) {
@@ -2375,7 +2374,6 @@ const Commentary = (props) => {
             //   console.log("+currentPartnership?.commentaryPartnershipId == 0", +currentPartnership?.commentaryPartnershipId)
             //   console.log("isEmpty(currentPartnership)", isEmpty(currentPartnership))
             // console.log("partnershipFromApi", partnershipFromApi)
-            // console.log("currentPartnership ----> ", currentPartnership)
             //   console.log("!isEmpty(partnershipFromApi)", isEmpty(partnershipFromApi))
             //   console.log("(!currentPartnership?.commentaryPartnershipId && (+currentPartnership?.commentaryPartnershipId == 0))", (!currentPartnership?.commentaryPartnershipId && (+currentPartnership?.commentaryPartnershipId == 0)))
             // console.log("full condition", (isEmpty(currentPartnership) || (!currentPartnership?.commentaryPartnershipId && (+currentPartnership?.commentaryPartnershipId == 0))) && (!isEmpty(partnershipFromApi) || (partnershipFromApi?.commentaryPartnershipId && (+partnershipFromApi?.commentaryPartnershipId != 0))))

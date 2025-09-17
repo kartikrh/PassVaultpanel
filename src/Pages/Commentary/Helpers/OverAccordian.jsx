@@ -217,7 +217,7 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
         const over = processedHistory.find(oh =>
             (oh.over + 1) === Math.floor(parseFloat(overNum)) &&
             oh.currentInnings.toString() === innings &&
-            oh.teamId.toString() !== teamId
+            oh.teamId.toString() === teamId
         );
 
         return over || null;

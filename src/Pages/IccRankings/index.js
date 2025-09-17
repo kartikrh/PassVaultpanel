@@ -112,6 +112,7 @@ const Index = () => {
   };
 
   const fetchEventTypeData = async () => {
+    setIsLoading(true)
     await axiosInstance
       .post(`/admin/list/eventTypeList`, {})
       .then((response) => {
@@ -131,6 +132,7 @@ const Index = () => {
   };
 
   const fetchMatchTypeData = async () => {
+    setIsLoading(true)
     await axiosInstance
       .post(`/admin/competition/getMatchTypes`, {})
       .then((response) => {
@@ -149,6 +151,7 @@ const Index = () => {
       });
   };
   const updatedImportData = async () => {
+    setIsLoading(true)
     await axiosInstance
       .get(`/admin/iccRanking/import`)
       .then((response) => {

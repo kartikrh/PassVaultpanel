@@ -154,7 +154,7 @@ const PlayerSelection = forwardRef((props, ref) => {
       const commentaryOvers = {
         overId: "0",
         commentaryId: commentaryDetails?.commentaryId,
-        teamId: bowlingteam?.teamId,
+        teamId: battingteam?.teamId,
         over: 0,
         ballCount: 0,
         bowlerId: _bowlerPlayer?.commentaryPlayerId,
