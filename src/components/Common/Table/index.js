@@ -115,6 +115,7 @@ const Index = forwardRef(
       handleReload,
       competitions,
       commentary,
+      createdByList,
       serverCurrentPage,
       serverPageSize,
       serverTotal,
@@ -149,7 +150,8 @@ const Index = forwardRef(
       handleCustomReset,
       pythonApis,
       customPageSizeOptions,
-      playerSearch
+      playerSearch,
+      dateTypeTitle
     },
     ref
   ) => {
@@ -1084,6 +1086,10 @@ const Index = forwardRef(
         commentary: {
           value: 0,
           label: "Commentary",
+        },
+        createdById: {
+          value: 0,
+          label: "created By",
         },
         eventType: {
           value: 0,
@@ -2212,6 +2218,40 @@ const Index = forwardRef(
                               />
                             </div>
                           ) : null}
+                          {tableElement?.createdByIdSelect ? (
+                            <div className="">
+                              <Select
+                                value={
+                                  selectedTableElementsLogs?.createdById ||
+                                  selectedTableElements?.createdById
+                                }
+                                placeholder="Created By"
+                                styles={{
+                                  control: (provided) => ({
+                                    ...provided,
+                                    width: 200,
+                                  }), // Adjust width as needed
+                                }}
+                                onChange={(e) => {
+                                  if (
+                                    e?.value !==
+                                    selectedTableElements?.createdById?.value
+                                  ) {
+                                    handleTableActions("createdById", e);
+                                    setSelectedTableElements({
+                                      ...selectedTableElements,
+                                      createdById: e,
+                                    });
+                                  }
+                                }}
+                                options={createdByList?.map((item) => ({
+                                  label: item?.createdBy,
+                                  value: item?.createdById,
+                                }))}
+                                classNamePrefix="filter-dropdown"
+                              />
+                            </div>
+                          ) : null}
                           {tableElement?.teamsList ? (
                             <Select
                               value={
@@ -2584,7 +2624,8 @@ const Index = forwardRef(
                           (tableElement?.title == "Market Data Logs" ||
                             tableElement?.title == "Registration Pending" ||
                             tableElement?.title == "Commentary History" ||
-                            tableElement?.title == "Registered Users") ? (
+                            tableElement?.title == "Registered Users" || 
+                            tableElement?.dateTypeTitle == "Market data logs") ? (
                             <Select
                               value={dateType}
                               placeholder="Date Type"

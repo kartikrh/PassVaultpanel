@@ -151,7 +151,7 @@ export const generateOver = ({ commentaryDetails, teams, onPitchPlayers, selecte
   return {
     "overId": 0,
     "commentaryId": commentaryDetails.commentaryId,
-    "teamId": teams[BOWLING_TEAM].teamId,
+    "teamId": teams[BATTING_TEAM].teamId,
     "bowlerId": onPitchPlayers[CURRENT_BOWLER]?.commentaryPlayerId,
     "currentInnings": commentaryDetails.currentInnings,
     "over": Math.floor(+teams?.[BATTING_TEAM]?.teamOver),

@@ -117,7 +117,6 @@ function AddPlayer() {
           homeTeamId: homeTeamOptionsList,
         }));
 
-        // console.log("---", homeTeamOptionsList);
         const defaultTeam = teams.find((team) => team?.homeTeam == true);
 
         setInitialEditData({

@@ -10,7 +10,9 @@ import { useNavigate } from "react-router-dom";
 import {
   checkPermission,
   convertDateUtcFormat,
+  convertDateUtcFormat24,
   convertDateUTCToLocal2,
+  convertDateUTCToLocal24,
 } from "../../components/Common/Reusables/reusableMethods";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import NestedTable from "./NestedTable";
@@ -127,12 +129,23 @@ function MarketDataLogs() {
   };
 
   const sendWrongRateRequest = async (data) => {
+    if (!userDetails?.userName) {
+      console.error("userDetails is missing, cannot send request.");
+      dispatch(
+        updateToastData({
+          data: "userDetails is missing, cannot send request",
+          title: "User Details Missing",
+          type: ERROR,
+        })
+      );
+      return;
+    }
     setIsLoading(true);
     const payload = {
         centrId: data.centrId,
         fromDate: data.startDate,
         toDate: data.endDate,
-        rate: data.rate,
+        rate: data.rate !== "" ? data.rate : null,
         remark: data.remark,
         operationById: 0,
         operationByName: userDetails.userName,
@@ -147,18 +160,27 @@ function MarketDataLogs() {
           },
         }
       );
-       dispatch(
+      if(response.data.success == true){
+        dispatch(
           updateToastData({
             data: response.data.message,
             title: response?.title,
             type: SUCCESS,
           })
         );
-        setIsLoading(false);
         setDateModelVisable(false)
+      }else{
+        dispatch(
+        updateToastData({
+          data: response.data.message,
+          title: response?.title,
+          type: ERROR,
+        })
+      );
+      }
+        setIsLoading(false);
     } catch (error) {
       console.error("API Error:", error.response?.data || error.message);
-
       dispatch(
         updateToastData({
           data: error?.message,
@@ -268,11 +290,13 @@ function MarketDataLogs() {
     {
       title: "Date",
       dataIndex: "createdDate",
-      render: (text) => (
+      render: (text, record) => (
         <span>
           {dateType?.value == 1
-            ? convertDateUTCToLocal2(text, "index")
-            : convertDateUtcFormat(text, "index")}
+            ? convertDateUTCToLocal24(text, "index")
+            // ? convertDateUTCToLocal2(text, "index")
+            : convertDateUtcFormat24(text, "index")
+          }
         </span>
       ),
       key: "createdDate",
@@ -624,6 +648,7 @@ function MarketDataLogs() {
 
   const tableElement = {
     title: `${marketDetails.eventRefId} - ${marketDetails.eventName} logs`,
+    dateTypeTitle: "Market data logs",
     isServerPagination: true,
     isDatePrice: true,
     sendDataListSelect: true,
