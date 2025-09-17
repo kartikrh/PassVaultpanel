@@ -270,18 +270,8 @@ const Index = () => {
     setIsCancelModalOpen(true);
   };
   const handleReset = (value) => {
-    const newDateRange = {
-      startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
-      endDate: `${new Date().toISOString().split("T")[0]}T23:59:00`,
-    };
-
-    setDateRange(newDateRange);
     setIsSearch(false)
-    fetchData({
-      ...value,
-      startDate: convertDateLocalToUTC(newDateRange.startDate, "index"),
-      endDate: convertDateLocalToUTC(newDateRange.endDate, "index"),
-    });
+    fetchData();
   };
   const getStatusText = (status) => {
     switch (status) {

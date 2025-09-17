@@ -70,8 +70,8 @@ function ScoringLogs() {
     if (isSearch) {
       payload = {
         ...payload,
-        startDate: convertDateLocalToUTC(latestValueFromTable ? latestValueFromTable?.startDate : dateRange?.startDate, "index"),
-        endDate: convertDateLocalToUTC(latestValueFromTable ? latestValueFromTable?.endDate : dateRange?.endDate, "index"),
+        startDate: convertDateLocalToUTC(latestValueFromTable?.startDate ? latestValueFromTable?.startDate : dateRange?.startDate, "index"),
+        endDate: convertDateLocalToUTC(latestValueFromTable?.endDate ? latestValueFromTable?.endDate : dateRange?.endDate, "index"),
       };
     }
     await axiosInstance
