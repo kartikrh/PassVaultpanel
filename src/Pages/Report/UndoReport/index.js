@@ -12,6 +12,7 @@ import {
 import { useSelector } from "react-redux";
 import { checkPermission, convertDateLocalToUTC, convertDateUtcFormat, convertDateUTCToLocal2 } from "../../../components/Common/Reusables/reusableMethods";
 import { isEmpty } from "lodash";
+import { mapCommentaryStatus } from "../../Commentary/functions";
 const UNDO_REPORT_TYPE = [
   { label: "Competition", value: 1 },
   { label: "User", value: 2 }
@@ -106,21 +107,6 @@ const Index = () => {
 
   const UserColumns = [
     {
-      title: "Date",
-      dataIndex: "date",
-      render: (text, record) => (
-        <span>
-          {dateType?.value == 1
-            ? convertDateUTCToLocal2(text, "index")
-            : convertDateUtcFormat(text, "index")
-          }
-        </span>
-      ),
-      key: "date",
-      sort: true,
-      style: { width: "10%" },
-    },
-    {
       title: "User Id",
       dataIndex: "createdById",
       key: "createdById",
@@ -176,6 +162,16 @@ const Index = () => {
       title: "Event Name",
       dataIndex: "eventName",
       key: "eventName",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      render: (text, record) => (
+        <span>{mapCommentaryStatus(text)}</span>
+      ),
+      key: "status",
       sort: true,
       style: { width: "10%" },
     },
