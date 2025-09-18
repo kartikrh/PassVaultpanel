@@ -10,11 +10,11 @@ import {
   TAB_UNDO_LOGS,
 } from "../../../components/Common/Const";
 import { useSelector } from "react-redux";
-import { checkPermission, convertDateLocalToUTC, convertDateUtcFormat, convertDateUTCToLocal2 } from "../../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateLocalToUTC, convertDateUtcFormat, convertDateUtcFormatWithoutSec, convertDateUTCToLocal2, convertDateUTCToLocalWithoutSec } from "../../../components/Common/Reusables/reusableMethods";
 import { isEmpty } from "lodash";
 import { mapCommentaryStatus } from "../../Commentary/functions";
 const UNDO_REPORT_TYPE = [
-  { label: "Competition", value: 1 },
+  { label: "Commentary", value: 1 },
   { label: "User", value: 2 }
 ]
 const Index = () => {
@@ -23,7 +23,7 @@ const Index = () => {
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   document.title = "Undo Report";
   const [data, setData] = useState([]);
-  const [reportType, setReportType] = useState();
+  const [reportType, setReportType] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [eventTypeId, setEventTypeId] = useState(null);
   const [competitionId, setCompetitionId] = useState(null);
@@ -142,8 +142,8 @@ const Index = () => {
       render: (text, record) => (
         <span>
           {dateType?.value == 1
-            ? convertDateUTCToLocal2(text, "index")
-            : convertDateUtcFormat(text, "index")
+            ? convertDateUTCToLocalWithoutSec(text, "index")
+            : convertDateUtcFormatWithoutSec(text, "index")
           }
         </span>
       ),
