@@ -125,8 +125,8 @@ const Index = () => {
     if (isSearch) {
       payload = {
         ...payload,
-        startDate: convertDateLocalToUTC(latestValueFromTable ? latestValueFromTable?.startDate : dateRange?.startDate, "index"),
-        endDate: convertDateLocalToUTC(latestValueFromTable ? latestValueFromTable?.endDate : dateRange?.endDate, "index"),
+        startDate: convertDateLocalToUTC(latestValueFromTable?.startDate ? latestValueFromTable?.startDate : dateRange?.startDate, "index"),
+        endDate: convertDateLocalToUTC(latestValueFromTable?.endDate ? latestValueFromTable?.endDate : dateRange?.endDate, "index"),
       };
     }
     if (dataSource?.eventTypeId === null) {
@@ -221,18 +221,8 @@ const Index = () => {
   };
 
   const handleReset = (value) => {
-    const newDateRange = {
-      startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
-      endDate: `${new Date().toISOString().split("T")[0]}T23:59:00`,
-    };
-
-    setDateRange(newDateRange);
-    fetchData({
-      ...value,
-      startDate: convertDateLocalToUTC(newDateRange.startDate, "index"),
-      endDate: convertDateLocalToUTC(newDateRange.endDate, "index"),
-    });
     setIsSearch(false)
+    fetchData();
   };
   const getStatusText = (status) => {
     switch (status) {

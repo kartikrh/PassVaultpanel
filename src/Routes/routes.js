@@ -124,6 +124,7 @@ import ThirdpartyLogs from "../Pages/ThirdpartyLogs";
 import ErrorLogs from "../Pages/ErrorLogs";
 import PredictorLogs from "../Pages/PredictorLogs";
 import UndoLogs from "../Pages/UndoLogs";
+import UndoReport from "../Pages/Report/UndoReport";
 import ScoringLogs from "../Pages/ScoringLogs";
 import EventMarketLogs from "../Pages/EventMarketLogs";
 import AddSocialMedia from "../Pages/SocialMedia/AddSocialMedia.jsx";
@@ -227,6 +228,7 @@ const authProtectedRoutes = [
   { path: "/addWhiteLabel", component: <AddWhiteLabel /> },
   { path: "/whiteLabelEventData", component: <ShowHide /> },
   { path: "/venue", component: <Venue /> },
+  { path: "/undoReport", component: <UndoReport /> },
   { path: "/addVenue", component: <AddVenue /> },
   { path: "/importEntity", component: <ImportEntity /> },
   { path: "/ImportEntityEvent", component: <ImportEntityEvent /> },
