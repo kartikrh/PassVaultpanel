@@ -64,7 +64,7 @@ const Index = () => {
     useState(false);
   const [closeSuspendTimeRecord, setCloseSuspendTimeRecord] = useState({});
   const [mtAndCategories, setMtAndCategories] = useState(null);
-  const [selectedMarketType, setSelectedMarketType] = useState(8);
+  const [selectedMarketType, setSelectedMarketType] = useState(5);
   const [categories, setCategories] = useState([]);
   const [delay, setDelay] = useState(null);
   const [isSearch, setIsSearch] = useState(false);
@@ -85,8 +85,8 @@ const Index = () => {
     eventType: null,
     competition: null,
     eventName: null,
-    marketTypeName: {value: 8, label: 'ManualOdds'},
-    categoryName: {value: 5, label: 'ManualOdds'},
+    marketTypeName: {value: 5, label: 'ManualOdds'},
+    // categoryName: {value: 0, label: 'ManualOdds'},
   });
 
   useEffect(() => {
@@ -108,8 +108,8 @@ const Index = () => {
       ...dataSource,
       rateSourceRefId:
         dataSource?.rateSourceRefId || ratesource?.rateSourceRefId,
-      marketTypeId: dataSource?.marketTypeCategoryId || ratesource?.marketTypeCategoryId || 5,
-      marketTypeCategoryId: 8,
+      marketTypeCategoryId: dataSource?.marketTypeCategoryId || ratesource?.marketTypeCategoryId,
+      marketTypeId: 5,
       eventTypeId: dataSource?.eventTypeId || 0,
       competitionId:
         dataSource?.eventTypeId !== eventTypeId
@@ -127,15 +127,15 @@ const Index = () => {
         rateSourceRefId:
           dataSource?.rateSourceRefId || ratesource?.rateSourceRefId,
         commentaryId: commentaryId,
-        marketTypeCategoryId: 8,
-        marketTypeId: dataSource?.marketTypeCategoryId || ratesource?.marketTypeCategoryId || 5,
+        marketTypeId: 5,
+        marketTypeCategoryId: dataSource?.marketTypeCategoryId || ratesource?.marketTypeCategoryId ,
       };
     }
     if (isSearch) {
       payload = {
         ...payload,
-        startDate: convertDateLocalToUTC(latestValueFromTable ? latestValueFromTable?.startDate : dateRange?.startDate, "index"),
-        endDate: convertDateLocalToUTC(latestValueFromTable ? latestValueFromTable?.endDate : dateRange?.endDate, "index"),
+        startDate: convertDateLocalToUTC(latestValueFromTable?.startDate ? latestValueFromTable?.startDate : dateRange?.startDate, "index"),
+        endDate: convertDateLocalToUTC(latestValueFromTable?.endDate ? latestValueFromTable?.endDate : dateRange?.endDate, "index"),
       };
     }
     if (dataSource?.eventTypeId === null) {
@@ -242,14 +242,12 @@ const Index = () => {
   ]);
 
   useEffect(() => {
-    if (mtAndCategories && selectedMarketType) {
       const categoriesData = mtAndCategories?.categories?.filter(
-        (item) => item?.marketTypeId == selectedMarketType
+        (item) => {
+          return item?.marketTypeId == 5
+        }
       );
       setCategories(categoriesData || []);
-    } else if (!selectedMarketType) {
-      setCategories([]);
-    }
   }, [mtAndCategories, selectedMarketType]);
 
   const handleAllowPermissions = async (pType, record, cState) => {
@@ -433,18 +431,8 @@ const Index = () => {
   };
 
   const handleReset = (value) => {
-    const newDateRange = {
-      startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
-      endDate: `${new Date().toISOString().split("T")[0]}T23:59:00`,
-    };
-
-    setDateRange(newDateRange);
     setIsSearch(false)
-    fetchData({
-      ...value,
-      startDate: convertDateLocalToUTC(newDateRange.startDate, "index"),
-      endDate: convertDateLocalToUTC(newDateRange.endDate, "index"),
-    });
+    fetchData();
   };
   const handleEdit = (state) => {
     navigate("/addManualOddsMarket");

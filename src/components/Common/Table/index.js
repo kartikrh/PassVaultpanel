@@ -151,7 +151,10 @@ const Index = forwardRef(
       pythonApis,
       customPageSizeOptions,
       playerSearch,
-      dateTypeTitle
+      dateTypeTitle,
+      reportType,
+      reportTypeOption,
+      updateReportType
     },
     ref
   ) => {
@@ -291,12 +294,12 @@ const Index = forwardRef(
                 (currentPage == 1
                   ? currentPage - 1
                   : currentPage == 0
-                  ? currentPage
-                  : currentPage - 1) * pageSize,
+                    ? currentPage
+                    : currentPage - 1) * pageSize,
                 (currentPage == 0 ? 0 : Number((currentPage - 1) * pageSize)) +
-                  Number(pageSize)
+                Number(pageSize)
               );
-              
+
               setFilteredData(sliced);
             } else {
               setFilteredData(updatedData);
@@ -542,23 +545,23 @@ const Index = forwardRef(
           ...tableActions,
           isApproved: id,
         });
-      // } else if (key === "isTrending") {
-      //   if (setServerCurrentPage) {
-      //     setServerCurrentPage(0);
-      //   }
+        // } else if (key === "isTrending") {
+        //   if (setServerCurrentPage) {
+        //     setServerCurrentPage(0);
+        //   }
 
-      //   setTrendingStatusSwitch(id);
-      //   setTableActions((preValue) => {
-      //     return {
-      //       ...preValue,
-      //       [key]: id,
-      //     };
-      //   });
-      //   reFetchData({
-      //     ...tableActions,
-      //     isTrending: id.value,
-      //   });
-      // } else if (key === "isMen") {
+        //   setTrendingStatusSwitch(id);
+        //   setTableActions((preValue) => {
+        //     return {
+        //       ...preValue,
+        //       [key]: id,
+        //     };
+        //   });
+        //   reFetchData({
+        //     ...tableActions,
+        //     isTrending: id.value,
+        //   });
+        // } else if (key === "isMen") {
         // if (setServerCurrentPage) {
         //   setServerCurrentPage(0);
         // }
@@ -685,15 +688,15 @@ const Index = forwardRef(
         });
         setSearchedData(updatedData)
         if (searchTerm.length <= 2) {
-          if(tableElement.title !== "Dashboard"){
+          if (tableElement.title !== "Dashboard") {
             setTotal(dataSource.length);
             const sliced = dataSource.slice(
               (currentPage == 1 ? currentPage - 1 : currentPage == 0 ? currentPage : currentPage - 1) * pageSize,
               (currentPage == 0 ? 0 : Number((currentPage - 1) * pageSize)) +
-                Number(pageSize)
+              Number(pageSize)
             );
             setFilteredData(sliced);
-          }else{
+          } else {
             setFilteredData(dataSource)
           }
         } else {
@@ -701,7 +704,7 @@ const Index = forwardRef(
           const sliced = updatedData.slice(
             (currentPage == 1 ? currentPage - 1 : currentPage == 0 ? currentPage : currentPage - 1) * pageSize,
             (currentPage == 0 ? 0 : Number((currentPage - 1) * pageSize)) +
-              Number(pageSize)
+            Number(pageSize)
           );
           setFilteredData(sliced);
           // setTotal(updatedData.length);
@@ -988,12 +991,12 @@ const Index = forwardRef(
             (serverCurrentPage == 1
               ? serverCurrentPage - 1
               : serverCurrentPage == 0
-              ? serverCurrentPage
-              : serverCurrentPage - 1) * serverPageSize,
+                ? serverCurrentPage
+                : serverCurrentPage - 1) * serverPageSize,
             (serverCurrentPage == 0
               ? 0
               : Number((serverCurrentPage - 1) * serverPageSize)) +
-              Number(serverPageSize)
+            Number(serverPageSize)
           );
         } else {
           const pageToJump = possibleNoOfPages - 1;
@@ -1004,7 +1007,7 @@ const Index = forwardRef(
         }
         setData(sliced);
       } else if (isPagination) {
-        if(searchTerm.length > 2){
+        if (searchTerm.length > 2) {
           handleSearchFilter()
           dataSource = searchedData
         }
@@ -1015,10 +1018,10 @@ const Index = forwardRef(
             (currentPage == 1
               ? currentPage - 1
               : currentPage == 0
-              ? currentPage
-              : currentPage - 1) * pageSize,
+                ? currentPage
+                : currentPage - 1) * pageSize,
             (currentPage == 0 ? 0 : Number((currentPage - 1) * pageSize)) +
-              Number(pageSize)
+            Number(pageSize)
           );
         } else {
           const pageToJump = possibleNoOfPages - 1;
@@ -1065,7 +1068,7 @@ const Index = forwardRef(
         handleCustomReset();
         return;
       }
-      dateType && setDateType({label: 'Local Timezone', value: 1})
+      dateType && setDateType({ label: 'Local Timezone', value: 1 })
       setSearchTerm("");
       setTableActions({
         isActive: true,
@@ -1383,7 +1386,7 @@ const Index = forwardRef(
     // }, [searchTerm, debouncedHandleSearchFilter]);
 
     useEffect(() => {
-      if(searchTerm.length === 0){
+      if (searchTerm.length === 0) {
         setSearchedData([])
       }
     }, [searchTerm])
@@ -1443,12 +1446,12 @@ const Index = forwardRef(
                                 singleCheck.length === 1
                                   ? cloneModelFunction(true)
                                   : dispatch(
-                                      updateToastData({
-                                        data: "Select at least one (only One) row",
-                                        title: "Error",
-                                        type: ERROR,
-                                      })
-                                    );
+                                    updateToastData({
+                                      data: "Select at least one (only One) row",
+                                      title: "Error",
+                                      type: ERROR,
+                                    })
+                                  );
                               }}
                               id="create-btn"
                             >
@@ -1465,12 +1468,12 @@ const Index = forwardRef(
                                 singleCheck.length > 0
                                   ? multiCloneModelFunction(true)
                                   : dispatch(
-                                      updateToastData({
-                                        data: "Select at least one row",
-                                        title: "Error",
-                                        type: ERROR,
-                                      })
-                                    );
+                                    updateToastData({
+                                      data: "Select at least one row",
+                                      title: "Error",
+                                      type: ERROR,
+                                    })
+                                  );
                               }}
                               id="create-btn"
                             >
@@ -1549,12 +1552,12 @@ const Index = forwardRef(
                                 singleCheck.length >= 1
                                   ? datePriceModelFunction(true)
                                   : dispatch(
-                                      updateToastData({
-                                        data: "Select at least two rows to open request info modal",
-                                        title: "Error",
-                                        type: ERROR,
-                                      })
-                                    );
+                                    updateToastData({
+                                      data: "Select at least two rows to open request info modal",
+                                      title: "Error",
+                                      type: ERROR,
+                                    })
+                                  );
                               }}
                             >
                               Request Info
@@ -1569,12 +1572,12 @@ const Index = forwardRef(
                                 singleCheck.length > 0
                                   ? loadModelFunction(true)
                                   : dispatch(
-                                      updateToastData({
-                                        data: "Select at least one (only One) row",
-                                        title: "Error",
-                                        type: ERROR,
-                                      })
-                                    );
+                                    updateToastData({
+                                      data: "Select at least one (only One) row",
+                                      title: "Error",
+                                      type: ERROR,
+                                    })
+                                  );
                               }}
                               id="create-btn"
                             >
@@ -1590,12 +1593,12 @@ const Index = forwardRef(
                                 singleCheck.length > 0
                                   ? suspendModelFunction(true)
                                   : dispatch(
-                                      updateToastData({
-                                        data: "Select at least one (only One) row",
-                                        title: "Error",
-                                        type: ERROR,
-                                      })
-                                    );
+                                    updateToastData({
+                                      data: "Select at least one (only One) row",
+                                      title: "Error",
+                                      type: ERROR,
+                                    })
+                                  );
                               }}
                             >
                               Suspend
@@ -1609,12 +1612,12 @@ const Index = forwardRef(
                                 singleCheck.length > 0
                                   ? closeModelFunction(true)
                                   : dispatch(
-                                      updateToastData({
-                                        data: "Select at least one (only One) row",
-                                        title: "Error",
-                                        type: ERROR,
-                                      })
-                                    );
+                                    updateToastData({
+                                      data: "Select at least one (only One) row",
+                                      title: "Error",
+                                      type: ERROR,
+                                    })
+                                  );
                               }}
                             >
                               Close
@@ -1628,12 +1631,12 @@ const Index = forwardRef(
                                 singleCheck.length > 0
                                   ? cancelModelFunction(true)
                                   : dispatch(
-                                      updateToastData({
-                                        data: "Select at least one (only One) row",
-                                        title: "Error",
-                                        type: ERROR,
-                                      })
-                                    );
+                                    updateToastData({
+                                      data: "Select at least one (only One) row",
+                                      title: "Error",
+                                      type: ERROR,
+                                    })
+                                  );
                               }}
                             >
                               Cancel
@@ -1647,12 +1650,12 @@ const Index = forwardRef(
                                 singleCheck.length > 0
                                   ? deleteModelFunction(true)
                                   : dispatch(
-                                      updateToastData({
-                                        data: "Select at least one (only One) row",
-                                        title: "Error",
-                                        type: ERROR,
-                                      })
-                                    );
+                                    updateToastData({
+                                      data: "Select at least one (only One) row",
+                                      title: "Error",
+                                      type: ERROR,
+                                    })
+                                  );
                               }}
                             >
                               <i className="ri-delete-bin-2-line"></i>
@@ -1666,12 +1669,12 @@ const Index = forwardRef(
                                 singleCheck.length > 0
                                   ? noCalculateModelFunction(true)
                                   : dispatch(
-                                      updateToastData({
-                                        data: "Select at least one (only One) row",
-                                        title: "Error",
-                                        type: ERROR,
-                                      })
-                                    );
+                                    updateToastData({
+                                      data: "Select at least one (only One) row",
+                                      title: "Error",
+                                      type: ERROR,
+                                    })
+                                  );
                               }}
                             >
                               Not Calculate
@@ -1878,12 +1881,11 @@ const Index = forwardRef(
                                       new Date(b.eventDate)
                                   ) // Sort in ascending order
                                   ?.map((item) => ({
-                                    label: `${
-                                      item?.eventName
-                                    } (${convertDateUTCToLocal(
-                                      item?.eventDate,
-                                      "index"
-                                    )})`,
+                                    label: `${item?.eventName
+                                      } (${convertDateUTCToLocal(
+                                        item?.eventDate,
+                                        "index"
+                                      )})`,
                                     value: item?.commentaryId,
                                   }))}
                                 classNamePrefix="filter-dropdown"
@@ -2055,8 +2057,8 @@ const Index = forwardRef(
                             </div>
                           ) : null}
                           {tableElement.title !== "Event Markets" &&
-                          tableElement.title !== "Manual Odds Markets" &&
-                          tableElement?.marketTypeSelect ? (
+                            tableElement.title !== "Manual Odds Markets" &&
+                            tableElement?.marketTypeSelect ? (
                             <div className="">
                               <Select
                                 styles={{
@@ -2096,8 +2098,8 @@ const Index = forwardRef(
                             </div>
                           ) : null}
                           {tableElement.title !== "Event Markets" &&
-                          tableElement.title !== "Manual Odds Markets" &&
-                          tableElement?.categorySelect ? (
+                            tableElement.title !== "Manual Odds Markets" &&
+                            tableElement?.categorySelect ? (
                             <div className="">
                               <Select
                                 styles={{
@@ -2206,12 +2208,11 @@ const Index = forwardRef(
                                   }
                                 }}
                                 options={commentary?.map((item) => ({
-                                  label: `${
-                                    item?.eventName
-                                  } (${convertDateUTCToLocal(
-                                    item?.eventDate,
-                                    "index"
-                                  )})`,
+                                  label: `${item?.eventName
+                                    } (${convertDateUTCToLocal(
+                                      item?.eventDate,
+                                      "index"
+                                    )})`,
                                   value: item?.commentaryId,
                                 }))}
                                 classNamePrefix="filter-dropdown"
@@ -2411,12 +2412,12 @@ const Index = forwardRef(
                                   singleCheck.length > 0
                                     ? handleClientSocketChange()
                                     : dispatch(
-                                        updateToastData({
-                                          data: "Select at least one (only One) row",
-                                          title: "Error",
-                                          type: ERROR,
-                                        })
-                                      );
+                                      updateToastData({
+                                        data: "Select at least one (only One) row",
+                                        title: "Error",
+                                        type: ERROR,
+                                      })
+                                    );
                                 }}
                                 type="delay"
                                 id="create-btn"
@@ -2425,7 +2426,7 @@ const Index = forwardRef(
                               </button>
                             </div>
                           ) : null}
-                          
+
                           {tableElement?.isTrending ? (
                             <div className="d-flex align-items-center">
                               {/* <Switch
@@ -2578,8 +2579,8 @@ const Index = forwardRef(
                             </div>
                           ) : null}
                           {!tableElement?.isDateRange &&
-                          tableElement?.resetButton &&
-                          tableElement?.title !== "Commentary History" ? (
+                            tableElement?.resetButton &&
+                            tableElement?.title !== "Commentary History" ? (
                             <div>
                               <button
                                 disabled={
@@ -2601,10 +2602,10 @@ const Index = forwardRef(
                             </div>
                           ) : null}
                           {!tableElement?.isDateRange &&
-                          tableElement?.reloadButton &&
-                          tableElement?.title !== "Error Logs" &&
-                          tableElement?.title !== "Thirdparty Logs" &&
-                          tableElement?.title !== "Commentary History" ? (
+                            tableElement?.reloadButton &&
+                            tableElement?.title !== "Error Logs" &&
+                            tableElement?.title !== "Thirdparty Logs" &&
+                            tableElement?.title !== "Commentary History" ? (
                             <div>
                               <button
                                 className="btn btn-primary"
@@ -2620,12 +2621,12 @@ const Index = forwardRef(
                             </div>
                           ) : null}
                           {!tableElement?.isDateRange &&
-                          tableElement?.isDateTypeSelect &&
-                          (tableElement?.title == "Market Data Logs" ||
-                            tableElement?.title == "Registration Pending" ||
-                            tableElement?.title == "Commentary History" ||
-                            tableElement?.title == "Registered Users" || 
-                            tableElement?.dateTypeTitle == "Market data logs") ? (
+                            tableElement?.isDateTypeSelect &&
+                            (tableElement?.title == "Market Data Logs" ||
+                              tableElement?.title == "Registration Pending" ||
+                              tableElement?.title == "Commentary History" ||
+                              tableElement?.title == "Registered Users" ||
+                              tableElement?.dateTypeTitle == "Market data logs") ? (
                             <Select
                               value={dateType}
                               placeholder="Date Type"
@@ -2694,7 +2695,7 @@ const Index = forwardRef(
                           </Button>
                         )}
                         {!tableElement?.isDateRange &&
-                        tableElement?.loadData ? (
+                          tableElement?.loadData ? (
                           <Button
                             color="warning"
                             onClick={() => {
@@ -2814,7 +2815,7 @@ const Index = forwardRef(
                           </button>
 
                           {tableElement?.resetButton &&
-                          tableElement?.title === "Commentary History" ? (
+                            tableElement?.title === "Commentary History" ? (
                             <div>
                               <button
                                 disabled={
@@ -2837,9 +2838,9 @@ const Index = forwardRef(
                           ) : null}
 
                           {tableElement?.reloadButton &&
-                          (tableElement?.title === "Error Logs" ||
-                            tableElement?.title === "Thirdparty Logs" ||
-                            tableElement?.title === "Commentary History") ? (
+                            (tableElement?.title === "Error Logs" ||
+                              tableElement?.title === "Thirdparty Logs" ||
+                              tableElement?.title === "Commentary History") ? (
                             <div>
                               <button
                                 className="btn btn-primary"
@@ -2875,9 +2876,8 @@ const Index = forwardRef(
                               }}
                             >
                               <i
-                                className={`bx ${
-                                  isSearch ? "bx-check" : "bx-block"
-                                }`}
+                                className={`bx ${isSearch ? "bx-check" : "bx-block"
+                                  }`}
                               ></i>
                             </Button>
                             <div className="d-flex flex-column">
@@ -2982,6 +2982,15 @@ const Index = forwardRef(
                                 classNamePrefix="filter-dropdown"
                               />
                             ) : null}
+                            {tableElement?.isReportTypeSelected ? (
+                              <Select
+                                value={reportTypeOption.find((option) => option.value === reportType)}
+                                onChange={(e) => updateReportType(e?.value)}
+                                options={reportTypeOption}
+                                placeholder="Report Type"
+                                classNamePrefix="filter-dropdown"
+                              />
+                            ) : null}
                             {/* {tableElement?.isDataprovider ? (
                           <Button
                             onClick={() => {
@@ -3010,12 +3019,12 @@ const Index = forwardRef(
                                   singleCheck.length > 0
                                     ? closeMarketModelFunction(true)
                                     : dispatch(
-                                        updateToastData({
-                                          data: "Select at least one row",
-                                          title: "Error",
-                                          type: ERROR,
-                                        })
-                                      );
+                                      updateToastData({
+                                        data: "Select at least one row",
+                                        title: "Error",
+                                        type: ERROR,
+                                      })
+                                    );
                                 }}
                               >
                                 Close Market
@@ -3038,12 +3047,12 @@ const Index = forwardRef(
                                   singleCheck.length > 0
                                     ? cancelModelFunction(true)
                                     : dispatch(
-                                        updateToastData({
-                                          data: "Select at least one row",
-                                          title: "Error",
-                                          type: ERROR,
-                                        })
-                                      );
+                                      updateToastData({
+                                        data: "Select at least one row",
+                                        title: "Error",
+                                        type: ERROR,
+                                      })
+                                    );
                                 }}
                               >
                                 Cancel Market
@@ -3056,12 +3065,12 @@ const Index = forwardRef(
                                   singleCheck.length > 0
                                     ? resultModelFunction(true)
                                     : dispatch(
-                                        updateToastData({
-                                          data: "Select at least one row",
-                                          title: "Error",
-                                          type: ERROR,
-                                        })
-                                      );
+                                      updateToastData({
+                                        data: "Select at least one row",
+                                        title: "Error",
+                                        type: ERROR,
+                                      })
+                                    );
                                 }}
                               >
                                 Result
@@ -3093,12 +3102,12 @@ const Index = forwardRef(
                       </div>
                     }
                     {tableElement.title === "Event Markets" ||
-                    tableElement?.delayTextBox ? (
+                      tableElement?.delayTextBox ? (
                       <Row className="">
                         <div className="d-flex flex-wrap align-items-center gap-2">
                           {(tableElement.title === "Event Markets" ||
                             tableElement.title === "Manual Odds Markets") &&
-                          tableElement?.marketTypeSelect ? (
+                            tableElement?.marketTypeSelect ? (
                             <div className="">
                               <Select
                                 styles={{
@@ -3145,7 +3154,7 @@ const Index = forwardRef(
                           ) : null}
                           {(tableElement.title === "Event Markets" ||
                             tableElement.title === "Manual Odds Markets") &&
-                          tableElement?.categorySelect ? (
+                            tableElement?.categorySelect ? (
                             <div className="">
                               <Select
                                 styles={{
@@ -3174,26 +3183,26 @@ const Index = forwardRef(
                                     });
                                   }
                                 }}
-                                // options={[
-                                //   { label: "Select Category", value: 0 },
-                                //   ...categories?.map((item) => ({
-                                //     label: item?.categoryName,
-                                //     value: item?.marketTypeCategoryId,
-                                //   })),
-                                // ]}
                                 options={[
-                                  { label: "Select Market Type", value: 0 },
-                                  ...(tableElement.title ===
-                                  "Manual Odds Markets"
-                                    ? marketTypes?.map((item) => ({
-                                        label: item?.marketTypeName,
-                                        value: item?.marketTypeId,
-                                      })) || []
-                                    : categories?.map((item) => ({
-                                        label: item?.categoryName,
-                                        value: item?.marketTypeCategoryId,
-                                      })) || []),
+                                  { label: "Select Category", value: 0 },
+                                  ...categories?.map((item) => ({
+                                    label: item?.categoryName,
+                                    value: item?.marketTypeCategoryId,
+                                  })),
                                 ]}
+                                // options={[
+                                //   { label: "Select Market Type", value: 0 },
+                                //   ...(tableElement.title ===
+                                //   "Manual Odds Markets"
+                                //     ? marketTypes?.map((item) => ({
+                                //         label: item?.marketTypeName,
+                                //         value: item?.marketTypeId,
+                                //       })) || []
+                                //     : categories?.map((item) => ({
+                                //         label: item?.categoryName,
+                                //         value: item?.marketTypeCategoryId,
+                                //       })) || []),
+                                // ]}
                                 // isDisabled={
                                 //   selectedTableElementsLogs?.categoryName
                                 // }
@@ -3302,7 +3311,7 @@ const Index = forwardRef(
                   <Row className="g-2 d-flex align-items-center">
                     <Col className="col-sm-auto">
                       {Number(serverCurrentPage) != 0 &&
-                      Number((Number(serverCurrentPage) - 1) * serverPageSize) +
+                        Number((Number(serverCurrentPage) - 1) * serverPageSize) +
                         1 >
                         serverTotal ==
                         false ? (
@@ -3322,9 +3331,9 @@ const Index = forwardRef(
                           {serverTotal} entries
                         </span>
                       ) : Number(
-                          (Number(serverCurrentPage) - 1) * serverPageSize
-                        ) +
-                          1 >
+                        (Number(serverCurrentPage) - 1) * serverPageSize
+                      ) +
+                        1 >
                         serverTotal ? (
                         <span>
                           Showing{" "}
@@ -3356,7 +3365,7 @@ const Index = forwardRef(
                     </Col>
                     <Col className="col-sm">
                       <div className="d-flex justify-content-sm-end align-items-end flex-sm-row flex-column">
-                        {tableElement.title !== "Import Events" && tableElement.title !== "Dashboard"  && (
+                        {tableElement.title !== "Import Events" && tableElement.title !== "Dashboard" && (
                           <div className="me-1 d-flex">
                             <CSVLink
                               data={generateSimplifiedData().csvData}
@@ -3429,10 +3438,10 @@ const Index = forwardRef(
                   <Row className="g-2 d-flex align-items-center">
                     <Col className="col-sm-auto">
                       {Number(currentPage) != 0 &&
-                      Number((Number(currentPage) - 1) * pageSize) + 1 >
+                        Number((Number(currentPage) - 1) * pageSize) + 1 >
                         (tableElement.title === "Tabs"
-                          ? serverTotal: searchTerm.length > 2 ? searchedData.length
-                          : dataSource?.length) ==
+                          ? serverTotal : searchTerm.length > 2 ? searchedData.length
+                            : dataSource?.length) ==
                         false ? (
                         <span>
                           Showing{" "}
@@ -3463,8 +3472,8 @@ const Index = forwardRef(
 
                       ) : Number((Number(currentPage) - 1) * pageSize) + 1 >
                         (tableElement.title === "Tabs"
-                          ? serverTotal: searchTerm.length > 2 ? searchedData.length
-                          : dataSource?.length) ? (
+                          ? serverTotal : searchTerm.length > 2 ? searchedData.length
+                            : dataSource?.length) ? (
                         <span>
                           Showing{" "}
                           {Number((Number(currentPage) - 2) * pageSize) + 1} -{" "}
@@ -3596,41 +3605,41 @@ const Index = forwardRef(
                   </Row>
                 ) : <Row>
                   <Col className="col-sm-auto">
-                     
-                        <span>
-                          {`Showing 
+
+                    <span>
+                      {`Showing 
                             ${dataSource?.length}
                            entries`}
-                        </span>
-                      <div className="d-flex align-items-center justify-content-end"></div>
-                    </Col>
-                    <Col className="col-sm">
-                      <div className="d-flex justify-content-sm-end align-items-end flex-sm-row flex-column">
-                        <div className="position-relative">
-                          <input
-                            type="text"
-                            className="form-control"
-                            placeholder="Search Min. 2 characters"
-                            value={searchTerm}
-                            onChange={(e) => {
-                              setSearchTerm(e.target.value);
+                    </span>
+                    <div className="d-flex align-items-center justify-content-end"></div>
+                  </Col>
+                  <Col className="col-sm">
+                    <div className="d-flex justify-content-sm-end align-items-end flex-sm-row flex-column">
+                      <div className="position-relative">
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Search Min. 2 characters"
+                          value={searchTerm}
+                          onChange={(e) => {
+                            setSearchTerm(e.target.value);
+                          }}
+                        />
+                        {isSearching && (
+                          <span
+                            className="position-absolute"
+                            style={{
+                              right: "10px",
+                              top: "50%",
+                              transform: "translateY(-50%)",
                             }}
-                          />
-                          {isSearching && (
-                            <span
-                              className="position-absolute"
-                              style={{
-                                right: "10px",
-                                top: "50%",
-                                transform: "translateY(-50%)",
-                              }}
-                            >
-                              <i className="fas fa-spinner fa-spin"></i>
-                            </span>
-                          )}
-                        </div>
+                          >
+                            <i className="fas fa-spinner fa-spin"></i>
+                          </span>
+                        )}
                       </div>
-                    </Col>
+                    </div>
+                  </Col>
                 </Row>}
 
                 <div
@@ -3670,13 +3679,12 @@ const Index = forwardRef(
                                               );
                                             }}
                                             style={{
-                                              color: `${
-                                                sortOrder.key === column.key &&
+                                              color: `${sortOrder.key === column.key &&
                                                 sortOrder.sortOrder ===
-                                                  "ascending"
-                                                  ? "gray"
-                                                  : "lightGray"
-                                              }`,
+                                                "ascending"
+                                                ? "gray"
+                                                : "lightGray"
+                                                }`,
                                               fontSize: "14px",
                                               marginTop: "2px",
                                               cursor: "pointer",
@@ -3691,13 +3699,12 @@ const Index = forwardRef(
                                               );
                                             }}
                                             style={{
-                                              color: `${
-                                                sortOrder.key === column.key &&
+                                              color: `${sortOrder.key === column.key &&
                                                 sortOrder.sortOrder ===
-                                                  "descending"
-                                                  ? "gray"
-                                                  : "lightGray"
-                                              }`,
+                                                "descending"
+                                                ? "gray"
+                                                : "lightGray"
+                                                }`,
                                               marginTop: "-8px",
                                               fontSize: "14px",
                                               cursor: "pointer",
@@ -3728,9 +3735,8 @@ const Index = forwardRef(
                                         ref={provided.innerRef}
                                         {...provided.draggableProps}
                                         {...provided.dragHandleProps}
-                                        className={`hover ${
-                                          record.isIncluded && "selected"
-                                        }`}
+                                        className={`hover ${record.isIncluded && "selected"
+                                          }`}
                                       >
                                         {columns.map((column) => (
                                           <>
@@ -3740,9 +3746,9 @@ const Index = forwardRef(
                                             >
                                               {column.render
                                                 ? column.render(
-                                                    record[column.dataIndex],
-                                                    record
-                                                  )
+                                                  record[column.dataIndex],
+                                                  record
+                                                )
                                                 : record[column.dataIndex]}
                                             </td>
                                           </>
@@ -3764,18 +3770,17 @@ const Index = forwardRef(
                       id="customerTable"
                     >
                       <thead
-                        className={`table-light ${
-                          setStickHeader !== false ? "sticky-header" : ""
-                        }`}
+                        className={`table-light ${setStickHeader !== false ? "sticky-header" : ""
+                          }`}
                       >
                         <tr>
                           {columns.map((column) => (
                             <th
-                            // style={{
-                            //     ...column.style,
-                            //     zIndex: column?.sticky && 100,
-                            //     left: column?.sticky && 0,
-                            //   }}
+                              // style={{
+                              //     ...column.style,
+                              //     zIndex: column?.sticky && 100,
+                              //     left: column?.sticky && 0,
+                              //   }}
                               style={{
                                 ...column.style,
                                 zIndex: column?.sticky ? 100 : undefined,
@@ -3801,21 +3806,20 @@ const Index = forwardRef(
                                       onClick={() => {
                                         tableElement.title == "Import Events"
                                           ? sortByPropertyB(
-                                              "ascending",
-                                              column.key
-                                            )
+                                            "ascending",
+                                            column.key
+                                          )
                                           : sortByProperty(
-                                              "ascending",
-                                              column.key
-                                            );
+                                            "ascending",
+                                            column.key
+                                          );
                                       }}
                                       style={{
-                                        color: `${
-                                          sortOrder.key === column.key &&
+                                        color: `${sortOrder.key === column.key &&
                                           sortOrder.sortOrder === "ascending"
-                                            ? "gray"
-                                            : "lightGray"
-                                        }`,
+                                          ? "gray"
+                                          : "lightGray"
+                                          }`,
                                         fontSize: "14px",
                                         marginTop: "2px",
                                         cursor: "pointer",
@@ -3828,21 +3832,20 @@ const Index = forwardRef(
                                       onClick={() => {
                                         tableElement.title == "Import Events"
                                           ? sortByPropertyB(
-                                              "descending",
-                                              column.key
-                                            )
+                                            "descending",
+                                            column.key
+                                          )
                                           : sortByProperty(
-                                              "descending",
-                                              column.key
-                                            );
+                                            "descending",
+                                            column.key
+                                          );
                                       }}
                                       style={{
-                                        color: `${
-                                          sortOrder.key === column.key &&
+                                        color: `${sortOrder.key === column.key &&
                                           sortOrder.sortOrder === "descending"
-                                            ? "gray"
-                                            : "lightGray"
-                                        }`,
+                                          ? "gray"
+                                          : "lightGray"
+                                          }`,
                                         marginTop: "-8px",
                                         fontSize: "14px",
                                         cursor: "pointer",
@@ -3860,11 +3863,10 @@ const Index = forwardRef(
                           <React.Fragment key={index}>
                             <tr
                               onClick={() => toggleRow(index)}
-                              className={`${
-                                tableElement.title === "Event Markets"
-                                  ? "hover1"
-                                  : "hover"
-                              } ${record.isIncluded ? "selected" : ""}`}
+                              className={`${tableElement.title === "Event Markets"
+                                ? "hover1"
+                                : "hover"
+                                } ${record.isIncluded ? "selected" : ""}`}
                               style={{
                                 backgroundColor:
                                   tableElement.title === "Event Markets" &&
@@ -3890,9 +3892,9 @@ const Index = forwardRef(
                                 >
                                   {column.render
                                     ? column.render(
-                                        record[column.dataIndex],
-                                        record
-                                      )
+                                      record[column.dataIndex],
+                                      record
+                                    )
                                     : record[column.dataIndex]}
                                 </td>
                               ))}

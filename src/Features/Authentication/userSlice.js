@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axiosInstance, { setAuthToken } from '../axios';
 import { encryptData, removeStorageToken } from '../../Pages/Utility/encryptionUtils';
-import { getToken, isUserLogout } from '../../helpers/api_helper';
+import { getLoggedinUserName, getToken, isUserLogout } from '../../helpers/api_helper';
 import { ERROR, REMEMBER_ME_KEY, USER_DATA_KEY } from '../../components/Common/Const';
 import { updateToastData } from '../toasterSlice';
 
@@ -40,6 +40,7 @@ const userSlice = createSlice({
   name: 'user',
   initialState: {
     token: getToken(),
+    userName: getLoggedinUserName(),
     isLoading: false,
     error: null,
     isUserLogout: isUserLogout

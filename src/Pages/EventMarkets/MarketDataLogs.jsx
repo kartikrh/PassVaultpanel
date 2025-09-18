@@ -57,8 +57,9 @@ function MarketDataLogs() {
   const loadInitData = useSelector((state) => state.loadInit.loadInitData);
   let wrongRateRqstUrl = loadInitData.find(item => item.key === loadInit.WRONGRATEREQUESTURL)?.value;
   let wrongRateRqstKey = loadInitData.find(item => item.key === loadInit.WRONGRATEREQUESTXKEY)?.value;
-
-  const userDetails = JSON.parse(localStorage.getItem("userData") || "{}")
+  const userName = useSelector(
+      (state) => state.user.userName
+    );
 
   // useEffect(() => {
   //   if(!isEmpty(marketDetails)){
@@ -129,7 +130,7 @@ function MarketDataLogs() {
   };
 
   const sendWrongRateRequest = async (data) => {
-    if (!userDetails?.userName) {
+    if (!userName) {
       console.error("userDetails is missing, cannot send request.");
       dispatch(
         updateToastData({
@@ -148,7 +149,7 @@ function MarketDataLogs() {
         rate: data.rate !== "" ? data.rate : null,
         remark: data.remark,
         operationById: 0,
-        operationByName: userDetails.userName,
+        operationByName: userName,
       }
     try {
       const response = await axios.post(
