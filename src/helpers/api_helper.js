@@ -91,6 +91,18 @@ const getToken = () => {
 }
 
 
+const getLoggedinUserName = () => {
+  if (localStorage.getItem("authUser") === null) {
+    return null
+  }
+  const encryptedAuth = localStorage.getItem("authUser");
+  const decryptedAuth = decryptData(encryptedAuth);
+  if (!decryptedAuth.token) {
+    return null;
+  } else {
+    return decryptedAuth.userName;
+  }
+};
 const getLoggedinUser = () => {
   if (localStorage.getItem("authUser") === null) {
     return null
@@ -106,4 +118,4 @@ const getLoggedinUser = () => {
 
 const isUserLogout = JSON.parse(localStorage.getItem('loggedIn') || false);
 
-export { APIClient, setAuthorization, getLoggedinUser, getToken, isUserLogout };
+export { APIClient, setAuthorization, getLoggedinUser, getLoggedinUserName, getToken, isUserLogout };
