@@ -159,6 +159,20 @@ const Index = () => {
       style: { width: "10%" },
     },
     {
+      title: "Event Type",
+      dataIndex: "eventType",
+      key: "eventType",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
+      title: "Competition",
+      dataIndex: "competition",
+      key: "competition",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
       title: "Event Name",
       dataIndex: "eventName",
       key: "eventName",
