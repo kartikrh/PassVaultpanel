@@ -10,9 +10,8 @@ import {
   TAB_UNDO_LOGS,
 } from "../../../components/Common/Const";
 import { useSelector } from "react-redux";
-import { checkPermission, convertDateLocalToUTC, convertDateUtcFormat, convertDateUtcFormatWithoutSec, convertDateUTCToLocal2, convertDateUTCToLocalWithoutSec } from "../../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateLocalToUTC, convertDateUtcFormatWithoutSec, convertDateUTCToLocalWithoutSec } from "../../../components/Common/Reusables/reusableMethods";
 import { isEmpty } from "lodash";
-import { mapCommentaryStatus } from "../../Commentary/functions";
 const UNDO_REPORT_TYPE = [
   { label: "Commentary", value: 1 },
   { label: "User", value: 2 }
@@ -24,6 +23,7 @@ const Index = () => {
   document.title = "Undo Report";
   const [data, setData] = useState([]);
   const [reportType, setReportType] = useState(1);
+  const [reportTypeColumn, setReportTypeColumn] = useState(reportType);
   const [isLoading, setIsLoading] = useState(false);
   const [eventTypeId, setEventTypeId] = useState(null);
   const [competitionId, setCompetitionId] = useState(null);
@@ -33,6 +33,9 @@ const Index = () => {
     startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
     endDate: `${new Date().toISOString().split("T")[0]}T23:59:00`,
   });
+  const [eventTypes, setEventTypes] = useState([]);
+  const [competitions, setCompetitions] = useState([]);
+  const [commentary, setCommentary] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
@@ -54,8 +57,6 @@ const Index = () => {
       competitionId: data?.eventTypeId !== eventTypeId ? 0 : data?.competitionId || 0,
       commentaryId: (data?.eventTypeId !== eventTypeId || data?.competitionId !== competitionId) ? 0 : data?.commentaryId || 0,
       // createdById: data?.createdById || 0,
-      eventRefId: null,
-      createdById: null,
       type: reportType
     }
     if (commentaryId !== 0) {
@@ -81,38 +82,64 @@ const Index = () => {
         logsData.forEach((ele) => {
           logsDataIdList.push(ele?.id);
         });
-        const createdByListData = logsData.reduce((acc, item) => {
-          const key = `${item.createdById}-${item.createdBy}`;
-          if (!acc.seen.has(key)) {
-            acc.seen.add(key);
-            acc.result.push({ createdById: item.createdById, createdBy: item.createdBy });
-          }
-          return acc;
-        }, { seen: new Set(), result: [] }).result;
-        setCreatedByList(createdByListData);
         setData(logsData);
         setTotal(response?.result?.totalRecords || 0);
         setIsLoading(false);
       })
       .catch((error) => {
         setIsLoading(false);
-      });
+      }).finally(() => {
+        if (reportTypeColumn !== reportType) setReportTypeColumn(reportType)
+      })
+  };
+  
+  const fetchCreatedByListData = async () => {
+    await axiosInstance
+      .post(`/admin/list/userList`, { isActive: true })
+      .then((response) => {
+        const formattedList = response.result?.map(ele => { return { createdBy: ele.name, createdById: ele.userId } })
+        setCreatedByList(formattedList);
+      })
+      .catch((error) => { });
+  };
+  const fetchEventTypeData = async () => {
+    await axiosInstance
+      .post(`/admin/log/eventTypeList`, { isActive: true })
+      .then((response) => {
+        setEventTypes(response.result);
+      })
+      .catch((error) => { });
+  };
+  const fetchCompetitionData = async (value) => {
+    await axiosInstance
+      .post(`/admin/log/competitionListByEventTypeId`, {
+        eventTypeId: value,
+      })
+      .then((response) => {
+        setCompetitions(response.result);
+      })
+      .catch((error) => { });
+  };
+  const fetchCommentaryData = async (value) => {
+    await axiosInstance
+      .post(`/admin/log/getComByCompetition`, {
+        competitionId: value,
+      })
+      .then((response) => {
+        setCommentary(response.result);
+      })
+      .catch((error) => { });
   };
 
   useEffect(() => {
     if (commentaryId !== 0) {
       setEventTypeId(commentaryDetails.eventTypeId)
     }
+    fetchEventTypeData();
+    fetchCreatedByListData();
   }, [])
 
   const UserColumns = [
-    {
-      title: "User Id",
-      dataIndex: "createdById",
-      key: "createdById",
-      sort: true,
-      style: { width: "10%" },
-    },
     {
       title: "User Name",
       dataIndex: "createdBy",
@@ -152,9 +179,9 @@ const Index = () => {
       style: { width: "10%" },
     },
     {
-      title: "Event Ref Id",
-      dataIndex: "eventRefId",
-      key: "eventRefId",
+      title: "Commentary Id",
+      dataIndex: "commentaryId",
+      key: "commentaryId",
       sort: true,
       style: { width: "10%" },
     },
@@ -177,17 +204,6 @@ const Index = () => {
       dataIndex: "eventName",
       key: "eventName",
       sort: true,
-      style: { width: "10%" },
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      render: (text, record) => (
-        <span>{mapCommentaryStatus(text)}</span>
-      ),
-      key: "status",
-      sort: true,
-      style: { width: "10%" },
     },
     {
       title: "Total Undo",
@@ -207,6 +223,10 @@ const Index = () => {
 
   const tableElement = {
     title: "Undo Report",
+    eventTypeSelect: true,
+    competitionsSelect: true,
+    commentarySelect: true,
+    createdByIdSelect: true,
     resetButton: true,
     reloadButton: true,
     isServerPagination: true,
@@ -216,21 +236,36 @@ const Index = () => {
   };
 
   useEffect(() => {
+    fetchData();
+  }, [isSearch, currentPage, pageSize, reportType]);
+
+  useEffect(() => {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW) && !isEmpty(permissionObj)) {
       navigate("/dashboard");
     }
-    fetchData();
-  }, [isSearch, currentPage, pageSize, permissionObj]);
+  }, [permissionObj]);
+
 
   const handleReportType = (value) => {
     setReportType(value)
   }
 
   useEffect(() => {
-    if (reportType) {
-      fetchData()
+    if (!eventTypeId) {
+      setCompetitions([]);
+      setCommentary([]);
+    } else {
+      fetchCompetitionData(eventTypeId)
     }
-  }, [reportType])
+  }, [eventTypeId]);
+
+  useEffect(() => {
+    if (!competitionId) {
+      setCommentary([]);
+    } else {
+      fetchCommentaryData(competitionId)
+    }
+  }, [competitionId]);
 
   const handleReset = (value) => {
     const newDateRange = {
@@ -259,9 +294,12 @@ const Index = () => {
           {isLoading && <SpinnerModel />}
           <Table
             ref={finalizeRef}
-            columns={reportType === 1 ? CommentaryColumns : UserColumns}
+            columns={reportTypeColumn === 1 ? CommentaryColumns : UserColumns}
             dataSource={data}
             tableElement={tableElement}
+            eventTypes={eventTypes}
+            competitions={competitions}
+            commentary={commentary}
             createdByList={createdByList}
             reFetchData={fetchData}
             handleReset={handleReset}
