@@ -2985,6 +2985,12 @@ const Index = forwardRef(
                             {tableElement?.isReportTypeSelected ? (
                               <Select
                                 value={reportTypeOption.find((option) => option.value === reportType)}
+                                styles={{
+                                  control: (provided) => ({
+                                    ...provided,
+                                    width: 150,
+                                  }),
+                                }}
                                 onChange={(e) => updateReportType(e?.value)}
                                 options={reportTypeOption}
                                 placeholder="Report Type"
