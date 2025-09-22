@@ -264,7 +264,7 @@ const PlayerCommentary = () => {
                                       inningPlayers={inningPlayers}
                                       currentInnings={currentInnings}
                                       fetchData={fetchData}
-                                      bowlingStyle={bowlerType}
+                                      bowlingType={bowlerType}
                                     />
                                     <hr className="my-3" />
                                   </CardBody>
