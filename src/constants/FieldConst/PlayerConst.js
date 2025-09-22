@@ -42,7 +42,75 @@ export const PlayerFields = [
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
-
+    {
+        type: SELECT,
+        name: "playerTypeId",
+        label: "Player Type",
+        isRequired: true,
+        options: [{ label: "Select a Player Type", value: "0" }],
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
+    },
+    {
+        type: SWITCH,
+        name: "isLeftHandedBatting",
+        label: "Is Left Hand Batting",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
+    },
+    {
+        type: SELECT,
+        name: "bowlingStyle",
+        label: "Bowling Style",
+        options: [
+            { label: "Select a Bowling Style", value: "0" },
+            { label: "Pace", value: 1 },
+            { label: "Spin", value: 2 },
+        ],
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
+    },
+    {
+        type: SELECT,
+        name: "bowlingTypeId",
+        label: "Bowling Type",
+        isRequired: true,
+        options: [{ label: "Select a Bowling Type", value: "0" }],
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
+    },
+    {
+        type: SWITCH,
+        name: "isLeftArmFielding",
+        label: "Is Left Hand Bowling",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
+    },
+    {
+        type: SWITCH,
+        name: "isKipper",
+        label: "Is Keeper",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
+    },
+    {
+        type: MULTI_SELECT,
+        options: [],
+        showSelectAll: true,
+        name: "teamId",
+        label: "Select Team",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
+    },
+    {
+        type: SELECT,
+        options: [],
+        name: "homeTeamId",
+        label: "Home Team",
+        isRequired: true,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
+    },
     {
         type: TEXT,
         name: "batsmanAverage",
@@ -80,69 +148,6 @@ export const PlayerFields = [
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
-        type: SELECT,
-        name: "playerTypeId",
-        label: "Player Type",
-        options: [{ label: "Select a Player Type", value: "0" }],
-        labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 4, lg: 4 }
-    },
-    {
-        type: SELECT,
-        name: "bowlingTypeId",
-        label: "Bowling Style",
-        options: [{ label: "Select a Bowling Style", value: "0" }],
-        labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 4, lg: 4 }
-    },
-    {
-        type: SWITCH,
-        name: "isLeftArmFielding",
-        label: "Is Left Hand Bowling",
-        labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 4, lg: 4 }
-    },
-    {
-        type: SWITCH,
-        name: "isLeftHandedBatting",
-        label: "Is Left Hand Batting",
-        labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 4, lg: 4 }
-    },
-    {
-        type: SWITCH,
-        name: "isKipper",
-        label: "Is Keeper",
-        labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 4, lg: 4 }
-    },
-    {
-        type: SWITCH,
-        name: "isActive",
-        label: "Is Active",
-        defaultValue: true,
-        labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 4, lg: 4 }
-    },
-    {
-        type: MULTI_SELECT,
-        options: [],
-        showSelectAll: true,
-        name: "teamId",
-        label: "Select Team",
-        labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 4, lg: 4 },
-    },
-    {
-        type: SELECT,
-        options: [],
-        name: "homeTeamId",
-        label: "Home Team",
-        isRequired: true,
-        labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 4, lg: 4 }
-    },
-    {
         type: IMAGE,
         name: "image",
         label: "Player Image",
@@ -155,5 +160,13 @@ export const PlayerFields = [
         type: COUNTER,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 },
+    },
+    {
+        type: SWITCH,
+        name: "isActive",
+        label: "Is Active",
+        defaultValue: true,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
 ]
