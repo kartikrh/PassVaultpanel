@@ -39,10 +39,10 @@ const Index = () => {
   const [reqBodyData, setReqBodyData] = useState(null);
   const [isSearch, setIsSearch] = useState(true);
   const [cloneValues, setCloneValues] = useState({
-        eventName: "",
-        eventRefId: "",
-    });
-    const [dataIndexList, setDataIndexList] = useState([]);
+    eventName: "",
+    eventRefId: "",
+  });
+  const [dataIndexList, setDataIndexList] = useState([]);
   const [dateType, setDateType] = useState({ label: "Local Timezone", value: 1 });
   const [dateRange, setDateRange] = useState({
     startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
@@ -75,7 +75,7 @@ const Index = () => {
       commentaryId: (data?.eventTypeId !== eventTypeId || data?.competitionId !== competitionId) ? 0 : data?.commentaryId || 0,
       createdById: data?.createdById || 0,
     }
-    if(commentaryId !== 0) {
+    if (commentaryId !== 0) {
       payload = {
         ...data,
         page: currentPage == 0 ? 1 : currentPage,
@@ -93,7 +93,7 @@ const Index = () => {
     await axiosInstance
       .post(`/admin/log/undoLogs`, payload)
       .then((response) => {
-        const logsData = response?.result?.data?.sort((a,b)=>b?.id - a?.id);
+        const logsData = response?.result?.data?.sort((a, b) => b?.id - a?.id);
         let logsDataIdList = [];
         logsData.forEach((ele) => {
           logsDataIdList.push(ele?.id);
@@ -106,10 +106,10 @@ const Index = () => {
           }
           return acc;
         }, { seen: new Set(), result: [] }).result;
-        setCreatedByList(createdByListData);
+        // setCreatedByList(createdByListData);
         setDataIndexList(logsDataIdList)
         setData(logsData);
-        setTotal(response?.result?.totalRecords || 0); 
+        setTotal(response?.result?.totalRecords || 0);
         setCheckedList([]);
         setIsLoading(false);
       })
@@ -119,7 +119,7 @@ const Index = () => {
     if (data?.eventTypeId && latestValueFromTable) {
       fetchCompetitionData(data?.eventTypeId);
     }
-    if(data?.competitionId && latestValueFromTable) {
+    if (data?.competitionId && latestValueFromTable) {
       fetchCommentaryData(data?.competitionId);
     }
   };
@@ -129,23 +129,23 @@ const Index = () => {
       setEventTypeId(commentaryDetails.eventTypeId)
     }
   }, [])
-  
+
   useEffect(() => {
-    if(!eventTypeId) {
+    if (!eventTypeId) {
       setCompetitions([]);
       setCommentary([]);
     }
   }, [eventTypeId]);
-  
-  useEffect(()=>{
-    if(commentaryId !== 0 && commentaryDetails?.eventTypeId && commentaryDetails?.competitionId){
+
+  useEffect(() => {
+    if (commentaryId !== 0 && commentaryDetails?.eventTypeId && commentaryDetails?.competitionId) {
       setIsSearch(false)
       fetchCompetitionData(commentaryDetails?.eventTypeId);
       fetchCommentaryData(commentaryDetails?.competitionId);
     } else {
       setIsSearch(true)
     }
-  },[commentaryId, commentaryDetails?.eventTypeId, commentaryDetails?.competitionId])
+  }, [commentaryId, commentaryDetails?.eventTypeId, commentaryDetails?.competitionId])
 
   useEffect(() => {
     if (commentaryDetails?.eventTypeId && commentaryDetails?.competitionId && commentaryDetails?.commentaryId) {
@@ -153,9 +153,9 @@ const Index = () => {
       const competition = competitions.find(c => c.competitionId === commentaryDetails.competitionId)
       const commentaryData = commentary.find(c => c.commentaryId === commentaryDetails.commentaryId)
       setSelectedTableElements({
-        eventType: {value: event?.eventTypeId, label: event?.eventType},
-        competition: {value: competition?.competitionId, label: competition?.competition},
-        commentary: {value: commentaryData?.commentaryId, label: commentaryData && commentaryData?.eventName && commentaryData?.eventDate ? `${commentaryData.eventName} (${convertDateUTCToLocal2(commentaryData.eventDate, "index")})` : ""},
+        eventType: { value: event?.eventTypeId, label: event?.eventType },
+        competition: { value: competition?.competitionId, label: competition?.competition },
+        commentary: { value: commentaryData?.commentaryId, label: commentaryData && commentaryData?.eventName && commentaryData?.eventDate ? `${commentaryData.eventName} (${convertDateUTCToLocal2(commentaryData.eventDate, "index")})` : "" },
       });
     }
   }, [commentaryDetails.eventTypeId, commentaryDetails.competitionId, commentaryDetails.commentaryId, eventTypes, competitions, commentary]);
@@ -188,7 +188,15 @@ const Index = () => {
       })
       .catch((error) => { });
   };
-
+  const fetchCreatedByListData = async () => {
+    await axiosInstance
+      .post(`/admin/list/userList`, { isActive: true })
+      .then((response) => {
+        const formattedList = response.result?.map(ele => { return { createdBy: ele.name, createdById: ele.userId } })
+        setCreatedByList(formattedList);
+      })
+      .catch((error) => { });
+  };
   const handleSingleCheck = (e) => {
     let updateSingleCheck = [];
     if (checekedList.includes(e.id)) {
@@ -322,19 +330,19 @@ const Index = () => {
               {typeof value === "object" ? JSON.stringify(value) : value}{" "}
             </span>
           ));
-        return <div 
-        onClick={() => {
-                  setReqModelVisible(true);
-                  setReqBodyData(record?.requestBody);
-                }}
-        style={{ 
-          display: 'inline-block', 
-          maxWidth: '400px',
-          whiteSpace: 'nowrap', 
-          overflow: 'hidden', 
-          textOverflow: 'ellipsis',
-          cursor: "pointer" 
-        }}>{logItems}</div>;
+        return <div
+          onClick={() => {
+            setReqModelVisible(true);
+            setReqBodyData(record?.requestBody);
+          }}
+          style={{
+            display: 'inline-block',
+            maxWidth: '400px',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            cursor: "pointer"
+          }}>{logItems}</div>;
       },
       key: "requestBody",
       sort: true,
@@ -353,19 +361,19 @@ const Index = () => {
               {typeof value === "object" ? JSON.stringify(value) : value}{" "}
             </span>
           ));
-        return <div 
-        onClick={() => {
-                  setResModelVisible(true);
-                  setResBodyData(record?.response);
-                }}
-        style={{ 
-          display: 'inline-block', 
-          maxWidth: '400px',
-          whiteSpace: 'nowrap', 
-          overflow: 'hidden', 
-          textOverflow: 'ellipsis', 
-          cursor: "pointer"
-        }}>{logItems}</div>;
+        return <div
+          onClick={() => {
+            setResModelVisible(true);
+            setResBodyData(record?.response);
+          }}
+          style={{
+            display: 'inline-block',
+            maxWidth: '400px',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            cursor: "pointer"
+          }}>{logItems}</div>;
       },
       key: "response",
       sort: true,
@@ -391,10 +399,12 @@ const Index = () => {
       navigate("/dashboard");
     }
     fetchData();
-  },[isSearch, currentPage, pageSize, permissionObj]);
+  }, [isSearch, currentPage, pageSize, permissionObj]);
 
   useEffect(() => {
     fetchEventTypeData();
+    fetchCreatedByListData();
+
   }, []);
 
   const handleReset = (value) => {
@@ -404,10 +414,11 @@ const Index = () => {
     };
 
     setDateRange(newDateRange);
-    fetchData({ isActive: true,
-        startDate: convertDateLocalToUTC(newDateRange.startDate, "index"),
-        endDate: convertDateLocalToUTC(newDateRange.endDate, "index"),
-     });
+    fetchData({
+      isActive: true,
+      startDate: convertDateLocalToUTC(newDateRange.startDate, "index"),
+      endDate: convertDateLocalToUTC(newDateRange.endDate, "index"),
+    });
     setIsSearch(true)
     fetchEventTypeData();
   };

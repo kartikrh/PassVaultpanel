@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Breadcrumbs from "../../../components/Common/Breadcrumb";
 import Table from "../../../components/Common/Table";
 import { Container } from "reactstrap";
+import { Tooltip } from "antd";
 import SpinnerModel from "../../../components/Model/SpinnerModel";
 import axiosInstance from "../../../Features/axios";
 import { useNavigate } from "react-router-dom";
@@ -39,8 +40,6 @@ const Index = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
-  const commentaryId = +sessionStorage.getItem('undoLogsId') || 0;
-  const commentaryDetails = JSON.parse(sessionStorage.getItem('undoLogsDetails') || "{}");
   const [createdByList, setCreatedByList] = useState([]);
 
   const navigate = useNavigate();
@@ -59,14 +58,14 @@ const Index = () => {
       // createdById: data?.createdById || 0,
       type: reportType
     }
-    if (commentaryId !== 0) {
-      payload = {
-        ...data,
-        page: currentPage == 0 ? 1 : currentPage,
-        limit: pageSize,
-        commentaryId: commentaryId
-      };
-    }
+    // if (commentaryId !== 0) {
+    //   payload = {
+    //     ...data,
+    //     page: currentPage == 0 ? 1 : currentPage,
+    //     limit: pageSize,
+    //     commentaryId: commentaryId
+    //   };
+    // }
     if (isSearch) {
       payload = {
         ...payload,
@@ -92,7 +91,7 @@ const Index = () => {
         if (reportTypeColumn !== reportType) setReportTypeColumn(reportType)
       })
   };
-  
+
   const fetchCreatedByListData = async () => {
     await axiosInstance
       .post(`/admin/list/userList`, { isActive: true })
@@ -130,11 +129,15 @@ const Index = () => {
       })
       .catch((error) => { });
   };
-
+  const handleUndoLogsClick = (details) => {
+    const url = new URL(window.location.origin + "/undoLogs");
+    sessionStorage.setItem("undoLogsId", "" + details?.commentaryId);
+    sessionStorage.setItem("undoLogsDetails", "" + JSON.stringify(details));
+    window.open(url.href, "_blank");
+    sessionStorage.removeItem("undoLogsId");
+    sessionStorage.removeItem("undoLogsDetails");
+  };
   useEffect(() => {
-    if (commentaryId !== 0) {
-      setEventTypeId(commentaryDetails.eventTypeId)
-    }
     fetchEventTypeData();
     fetchCreatedByListData();
   }, [])
@@ -143,6 +146,7 @@ const Index = () => {
     {
       title: "User Name",
       dataIndex: "createdBy",
+      
       key: "createdBy",
       sort: true,
       style: { width: "10%" },
@@ -195,6 +199,24 @@ const Index = () => {
     {
       title: "Competition",
       dataIndex: "competition",
+      render: (text, record) => (
+        <Tooltip
+          title={"Check Logs"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
+          <div className="d-flex flex-column">
+            <span
+              style={{ cursor: "pointer" }}
+              onClick={() => {
+                handleUndoLogsClick({ eventTypeId: record.eventTypeId, competitionId: record.competitionId, commentaryId: record.commentaryId });
+              }}
+            >
+              {text}{record?.eventNo ? `(${record.eventNo})` : ""}
+            </span>
+          </div>
+        </Tooltip>
+      ),
       key: "competition",
       sort: true,
       style: { width: "10%" },
@@ -202,6 +224,24 @@ const Index = () => {
     {
       title: "Event Name",
       dataIndex: "eventName",
+      render: (text, record) => (
+        <Tooltip
+          title={"Check Logs"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
+          <div className="d-flex flex-column">
+            <span
+              style={{ cursor: "pointer" }}
+              onClick={() => {
+                handleUndoLogsClick({ eventTypeId: record.eventTypeId, competitionId: record.competitionId, commentaryId: record.commentaryId });
+              }}
+            >
+              {text}{record?.eventNo ? `(${record.eventNo})` : ""}
+            </span>
+          </div>
+        </Tooltip>
+      ),
       key: "eventName",
       sort: true,
     },
