@@ -2245,6 +2245,9 @@ const Index = forwardRef(
                                     });
                                   }
                                 }}
+                                isDisabled={
+                                  selectedTableElementsLogs?.createdById
+                                }
                                 options={createdByList?.map((item) => ({
                                   label: item?.createdBy,
                                   value: item?.createdById,

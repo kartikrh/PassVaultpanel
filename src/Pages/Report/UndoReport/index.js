@@ -137,6 +137,15 @@ const Index = () => {
     sessionStorage.removeItem("undoLogsId");
     sessionStorage.removeItem("undoLogsDetails");
   };
+
+  const handleUserUndoLogsClick = (details) => {
+    const url = new URL(window.location.origin + "/undoLogs");
+    sessionStorage.setItem("undoUserLogId", "" + details?.createdById);
+    sessionStorage.setItem("undoUserLogsDetails", "" + JSON.stringify(details)); // Fix typo
+    window.open(url.href, "_blank");
+    sessionStorage.removeItem("undoUserLogId");
+    sessionStorage.removeItem("undoUserLogsDetails");
+  };
   useEffect(() => {
     fetchEventTypeData();
     fetchCreatedByListData();
@@ -146,7 +155,24 @@ const Index = () => {
     {
       title: "User Name",
       dataIndex: "createdBy",
-      
+      render: (text, record) => (
+        <Tooltip
+          title={"Check Logs"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
+          <div className="d-flex flex-column">
+            <span
+              style={{ cursor: "pointer" }}
+              onClick={() => {
+                handleUserUndoLogsClick({ createdById: record.createdById, createdBy: record.createdBy });
+              }}
+            >
+              {text}{record?.eventNo ? `(${record.eventNo})` : ""}
+            </span>
+          </div>
+        </Tooltip>
+      ),
       key: "createdBy",
       sort: true,
       style: { width: "10%" },
