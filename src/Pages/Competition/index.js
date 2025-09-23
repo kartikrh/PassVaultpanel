@@ -17,6 +17,8 @@ import {
   PERMISSION_EDIT,
   PERMISSION_VIEW,
   SUCCESS,
+  TAB_COMMENTARY,
+  TAB_COMMENTARY_LIST,
   TAB_COMPETITION,
 } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
@@ -30,9 +32,12 @@ import Item from "antd/es/list/Item";
 
 const Index = () => {
   const pageName = TAB_COMPETITION;
+  const CommentaryListPage = TAB_COMMENTARY_LIST
+  const CommentaryPage = TAB_COMMENTARY
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   document.title = "Competitions";
+  const didInitialFetch = useRef(false);
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
   const [checekedList, setCheckedList] = useState([]);
@@ -49,12 +54,68 @@ const Index = () => {
   const [marketTemplateRecord, setMarketTemplateTimeRecord] = useState({});
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  const [selectedTableElements, setSelectedTableElements] = useState({
+    eventType: null,
+  });
+  const [filledDropdownData, setFilledDropdownData] = useState(false);
+  const [competitions, setCompetitions] = useState([]);
   const [changeStatusModelVisible, setChangeStatusModelVisible] =
     useState(false);
   const [selectedCompetitionRecord, setSelectedCompetitionRecord] = useState(
     {}
   );
+  const [userRefData, setUserRefData] = useState(false);
+  const EventTypeId = +sessionStorage.getItem('CompetitionEventTypeId') || 0;
+
+  const fetchUserPermission = () => {
+    const refData = JSON.parse(localStorage.getItem("refData"));
+    setUserRefData(refData);
+    fetchData(refData);
+  };
+  
+  useEffect(() => {
+    fetchUserPermission()
+  }, [])
+
+  useEffect(() => {
+      const objToSave = {};
+      let shouldFetchData = false;
+  
+      if (userRefData?.eventTypeId !== 0 && eventTypes && eventTypes.length > 0) {
+        const matchedEvent = eventTypes.find(
+          (item) => item.eventTypeId === userRefData?.eventTypeId
+        );
+        objToSave["eventType"] = {
+          label: matchedEvent?.eventType,
+          value: matchedEvent?.eventTypeId,
+        };
+      }
+  
+      if (competitions && competitions.length > 0) {
+        if (userRefData?.competitionId !== 0) {
+          const matchedCompetition = competitions.find(
+            (item) => item.competitionId === userRefData?.competitionId
+          );
+          if (matchedCompetition) {
+            objToSave["competition"] = {
+              label: matchedCompetition.competition,
+              value: matchedCompetition.competitionId,
+            };
+            shouldFetchData = true;
+          }
+        } else {
+          shouldFetchData = true;
+        }
+      }
+  
+      setFilledDropdownData(objToSave);
+  
+      // Use a ref to track if we've already fetched data
+      if (shouldFetchData && !didInitialFetch.current) {
+        fetchData();
+        didInitialFetch.current = true;
+      }
+    }, [eventTypes, competitions]);
 
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
@@ -72,12 +133,7 @@ const Index = () => {
         pickBy(
           {
             ...data,
-            // isTrending:
-            //   data?.isTrending !== undefined
-            //     ? data?.isTrending
-            //     : tableActions?.isTrending !== undefined
-            //     ? tableActions?.isTrending
-            //     : false,
+            eventTypeId: EventTypeId ? EventTypeId : data?.eventTypeId || 0,
           },
           (value) => value !== null
         )
@@ -112,6 +168,26 @@ const Index = () => {
         );
       });
   };
+
+  const fetchCompetitionData = async (value) => {
+      await axiosInstance
+        .post(`/admin/commentary/competitionListByEventTypeId`, {
+          eventTypeId: value,
+        })
+        .then((response) => {
+          setCompetitions(response.result);
+        })
+        .catch((error) => { });
+    };
+
+  useEffect(() => {
+      if(EventTypeId){
+        fetchCompetitionData(EventTypeId)
+      }
+      if(userRefData?.eventTypeId){
+        fetchCompetitionData(userRefData?.eventTypeId)
+      }
+    }, [EventTypeId, userRefData?.eventTypeId])
 
   const fetchEventTypeData = async () => {
     await axiosInstance
@@ -480,6 +556,45 @@ const Index = () => {
     }
   };
 
+  const commentaryPermission = checkPermission(permissionObj, CommentaryPage, PERMISSION_VIEW)
+  const commentaryListPermission = checkPermission(permissionObj, CommentaryListPage, PERMISSION_VIEW)
+    
+  const handleCommentaryClick = (details) => {
+    const navUrl = (commentaryPermission && commentaryListPermission) ? "/Commentary" : commentaryPermission ? "/Commentary" : commentaryListPermission ? "/CommentaryList" : ''
+    const url = new URL(window.location.origin + navUrl);
+    sessionStorage.setItem(
+      "commentaryCompetitionId",
+      "" + details?.competitionId
+    );
+    sessionStorage.setItem(
+      "commentaryEventTypeId",
+      "" + details?.eventTypeId
+    );
+    // sessionStorage.setItem(
+    //   "commentaryManualOddsMarketDetails",
+    //   "" + JSON.stringify(details)
+    // );
+    window.open(url.href, "_blank");
+    sessionStorage.removeItem("commentaryCompetitionId");
+    sessionStorage.removeItem("commentaryEventTypeId");
+    // sessionStorage.removeItem("commentaryManualOddsMarketDetails");
+  };
+
+  const handleEventClick = (details) => {
+    const url = new URL(window.location.origin + "/Events");
+    sessionStorage.setItem(
+      "EventCompetitionId",
+      "" + details?.competitionId
+    );
+    // sessionStorage.setItem(
+    //   "commentaryManualOddsMarketDetails",
+    //   "" + JSON.stringify(details)
+    // );
+    window.open(url.href, "_blank");
+    sessionStorage.removeItem("EventCompetitionId");
+    // sessionStorage.removeItem("commentaryManualOddsMarketDetails");
+  };
+
   //table columns
   const columns = [
     {
@@ -534,6 +649,28 @@ const Index = () => {
         ></i>
       ),
       style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "",
+      dataIndex: "",
+      key: "",
+      render: (text, record) => (
+      <Tooltip title={"Event"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+        <Button
+          color={"primary"}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handleEventClick(record)
+            // handlePermissions("isHighlight", record, record.isHighlight);
+          }}
+        >
+          E
+        </Button>
+      </Tooltip>
+      ),
+      sort: true,
+      style: { width: "10%" },
     },
     {
       title: "Image",
@@ -707,7 +844,7 @@ const Index = () => {
       key: "isActive",
       render: (text, record) => (
         <Tooltip
-          title={"Competition"}
+          title={"Active"}
           color={"#e8e8ea"}
           overlayInnerStyle={{ color: "#000" }}
         >
@@ -756,18 +893,24 @@ const Index = () => {
       title: "Trending",
       key: "isTrending",
       render: (text, record) => (
-        <Button
-          color={`${record.isTrending ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            handleIsTrending("isTrending", record, record.isTrending);
-          }}
+        <Tooltip
+          title={"Trending"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
         >
-          <i
-            className={`bx ${record.isTrending ? "bx-check" : "bx-block"}`}
-          ></i>
-        </Button>
+          <Button
+            color={`${record.isTrending ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleIsTrending("isTrending", record, record.isTrending);
+            }}
+          >
+            <i
+              className={`bx ${record.isTrending ? "bx-check" : "bx-block"}`}
+            ></i>
+          </Button>
+        </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -775,16 +918,22 @@ const Index = () => {
       title: "Men",
       key: "isMen",
       render: (text, record) => (
-        <Button
-          color={`${record?.isMen ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            handleIsMen("isMen", record, record?.isMen);
-          }}
+        <Tooltip
+          title={"Men"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
         >
-          <i className={`bx ${record.isMen ? "bx-check" : "bx-block"}`}></i>
-        </Button>
+          <Button
+            color={`${record?.isMen ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleIsMen("isMen", record, record?.isMen);
+            }}
+          >
+            <i className={`bx ${record.isMen ? "bx-check" : "bx-block"}`}></i>
+          </Button>
+        </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -792,18 +941,24 @@ const Index = () => {
       title: "Snap",
       key: "isEventSnap",
       render: (text, record) => (
-        <Button
-          color={`${record.isEventSnap ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            handleIsEventSnap("isEventSnap", record, record?.isEventSnap);
-          }}
+        <Tooltip
+          title={"Snap"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
         >
-          <i
-            className={`bx ${record.isEventSnap ? "bx-check" : "bx-block"}`}
-          ></i>
-        </Button>
+          <Button
+            color={`${record.isEventSnap ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleIsEventSnap("isEventSnap", record, record?.isEventSnap);
+            }}
+          >
+            <i
+              className={`bx ${record.isEventSnap ? "bx-check" : "bx-block"}`}
+            ></i>
+          </Button>
+        </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -811,18 +966,24 @@ const Index = () => {
       title: "Table",
       key: "isPointTable",
       render: (text, record) => (
-        <Button
-          color={`${record.isPointTable ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            handleIsPointTable("isPointTable", record, record?.isPointTable);
-          }}
+        <Tooltip
+          title={"Tabel"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
         >
-          <i
-            className={`bx ${record.isPointTable ? "bx-check" : "bx-block"}`}
-          ></i>
-        </Button>
+          <Button
+            color={`${record.isPointTable ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleIsPointTable("isPointTable", record, record?.isPointTable);
+            }}
+          >
+            <i
+              className={`bx ${record.isPointTable ? "bx-check" : "bx-block"}`}
+            ></i>
+          </Button>
+        </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -832,7 +993,7 @@ const Index = () => {
       render: (text, record) => (
         <>
           <Tooltip
-            title={"Snap"}
+            title={"Teams"}
             color={"#e8e8ea"}
             overlayInnerStyle={{ color: "#000" }}
           >
@@ -865,11 +1026,53 @@ const Index = () => {
       style: { width: "10%" },
       sort: true,
     },
+    (commentaryPermission || commentaryListPermission) &&
+    {
+      title: "",
+      dataIndex: "",
+      key: "",
+      render: (text, record) => {
+        
+        const isMatchingCompetition =
+          record?.competitionId === filledDropdownData?.competition?.value;
+          
+        if (userRefData.competitionId != 0 && !isMatchingCompetition) return null; 
+
+        return (
+          <Tooltip
+            title={"Commentary List"}
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            <Button
+              color={"primary"}
+              size="sm"
+              className="btn"
+              onClick={() => handleCommentaryClick(record)}
+            >
+              CL
+            </Button>
+          </Tooltip>
+        );
+      },
+      // sort: true,
+      style: { width: "10%" },
+    },
   ];
 
   const handleReset = (value) => {
     fetchData(value);
   };
+
+  useEffect(() => {
+      if (EventTypeId) {
+        const event = eventTypes.find(e => e.eventTypeId === EventTypeId)
+        setSelectedTableElements({
+          eventType: {value: event?.eventTypeId, label: event?.eventType},
+        });
+      }
+    }, [eventTypes,EventTypeId]);
+  
 
   //elements required
   const tableElement = {
@@ -936,6 +1139,7 @@ const Index = () => {
             singleCheck={checekedList}
             reFetchData={fetchData}
             handleReload={handleReload}
+            selectedTableElementsLogs={selectedTableElements}
             loadDataModelFunction={setLoadDataModelVisable}
             onAddNavigate={"/addCompetition"}
             handleReset={handleReset}
