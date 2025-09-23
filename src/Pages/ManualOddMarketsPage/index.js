@@ -23,6 +23,8 @@ import {
   convertDateUtcFormat,
   convertDateUTCToLocal2,
   convertDateLocalToUTC,
+  convertDateUTCToLocal2_24,
+  convertDateUtcFormat24,
 } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import CloseModal from "../EventMarkets/CloseModal";
@@ -629,8 +631,8 @@ const Index = () => {
       render: (text, record) => (
         <span style={{ cursor: "pointer" }}>
           {dateType?.value == 1
-            ? convertDateUTCToLocal2(text, "index")
-            : convertDateUtcFormat(text, "index")}
+            ? convertDateUTCToLocal2_24(text, "index")
+            : convertDateUtcFormat24(text, "index")}
         </span>
       ),
       key: "eventDate",

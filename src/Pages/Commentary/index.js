@@ -30,7 +30,9 @@ import {
   checkPermission,
   convertDateLocalToUTC,
   convertDateUTCToLocalWithoutSec,
+  convertDateUTCToLocalWithoutSec24,
   convertDateUtcFormatWithoutSec,
+  convertDateUtcFormatWithoutSec24,
 } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { ChnageMatchTypeModel } from "../../components/Model/ChangeMatchType";
@@ -1525,8 +1527,8 @@ const Index = () => {
       render: (text, record) => (
         <span>
           {dateType?.value == 1
-            ? convertDateUTCToLocalWithoutSec(text, "index")
-            : convertDateUtcFormatWithoutSec(text, "index")}
+            ? convertDateUTCToLocalWithoutSec24(text, "index")
+            : convertDateUtcFormatWithoutSec24(text, "index")}
         </span>
       ),
       key: "eventDate",
@@ -2952,7 +2954,6 @@ const Index = () => {
     fetchEventTypeData();
     fetchPythonAPIData();
   };
-
   return (
     <React.Fragment>
       <div className="page-content">

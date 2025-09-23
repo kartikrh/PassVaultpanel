@@ -12,7 +12,7 @@ import {
   TAB_ERROR_LOGS,
 } from "../../components/Common/Const";
 import { useSelector } from "react-redux";
-import { checkPermission, convertDateLocalToUTC, convertDateUtcFormat, convertDateUTCToLocal2 } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateLocalToUTC, convertDateUtcFormat, convertDateUtcFormat24, convertDateUTCToLocal2, convertDateUTCToLocal2_24 } from "../../components/Common/Reusables/reusableMethods";
 import RequestModal from "./RequestModal";
 import { isEmpty, isEqual } from "lodash";
 
@@ -154,8 +154,8 @@ const Index = () => {
       render: (text, record) => (
         <span>
           {dateType?.value == 1
-            ? convertDateUTCToLocal2(text, "index")
-            : convertDateUtcFormat(text, "index")
+            ? convertDateUTCToLocal2_24(text, "index")
+            : convertDateUtcFormat24(text, "index")
           }
         </span>
       ),

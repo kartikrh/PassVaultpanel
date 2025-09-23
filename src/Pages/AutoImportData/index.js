@@ -16,7 +16,7 @@ import {
   TAB_AUTO_IMPORT,
 } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
-import { checkPermission, convertDateLocalToUTC, convertDateUtcFormat, convertDateUTCToLocal2 } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateLocalToUTC, convertDateUtcFormat, convertDateUtcFormat24, convertDateUTCToLocal2, convertDateUTCToLocal2_24 } from "../../components/Common/Reusables/reusableMethods";
 import { isEmpty, isEqual } from "lodash";
 import { updateToastData } from "../../Features/toasterSlice";
 import { Tooltip } from "antd";
@@ -196,8 +196,8 @@ const Index = () => {
       render: (text, record) => (
         <span>
           {dateType?.value == 1
-            ? convertDateUTCToLocal2(text, "index")
-            : convertDateUtcFormat(text, "index")
+            ? convertDateUTCToLocal2_24(text, "index")
+            : convertDateUtcFormat24(text, "index")
           }
         </span>
       ),
@@ -277,8 +277,8 @@ const Index = () => {
       render: (text, record) => (
         <span>
           {dateType?.value == 1
-            ? convertDateUTCToLocal2(text, "index")
-            : convertDateUtcFormat(text, "index")
+            ? convertDateUTCToLocal2_24(text, "index")
+            : convertDateUtcFormat24(text, "index")
           }
         </span>
       ),

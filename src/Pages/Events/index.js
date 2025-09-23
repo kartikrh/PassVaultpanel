@@ -10,7 +10,7 @@ import axiosInstance from "../../Features/axios";
 import { isEmpty, isEqual } from "lodash";
 import { ERROR, MODULE_EVENTS, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, TAB_EVENT } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
-import { checkPermission, convertDateLocalToUTC, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateLocalToUTC, convertDateUTCToLocal, convertDateUTCToLocal24 } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import LoadDataModal from "../../components/Model/LoadDataModal";
 import moment from "moment";
@@ -254,7 +254,7 @@ const Index = () => {
       title: "Event Date",
       dataIndex: "eventDate",
       render: (text, record) => (
-        <span style={{ cursor: "pointer" }}>{convertDateUTCToLocal(text, 'index')}</span>
+        <span style={{ cursor: "pointer" }}>{convertDateUTCToLocal24(text, 'index')}</span>
       ),
       key: "eventDate",
       style: { width: "10%" },

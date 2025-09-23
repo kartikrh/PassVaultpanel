@@ -144,6 +144,21 @@ export const convertDateUTCToLocal2 = (UTCDate, page, format) => {
 
 }
 
+export const convertDateUTCToLocal2_24 = (UTCDate, page, format) => {
+  if (UTCDate) {
+    if (page === "index") {
+      return moment(UTCDate).local().format("DD/MM/YY, HH:mm:ss.SSS");
+    }
+    if (format) {
+      return moment(UTCDate)
+        .local()
+        .format(`${format.replace("hh", "HH").replace("h", "H")}.SSS`);
+    }
+    return moment(UTCDate).local().format("YYYY-MM-DDTHH:mm:ss.SSS");
+  }
+  return "";
+};
+
 export const convertDateUTCToLocal24 = (UTCDate, page, format) => {
   if (!UTCDate) return "";
 
@@ -178,16 +193,12 @@ export const convertDateUtcFormat24 = (UTCDate, page, format) => {
   if (!UTCDate) return "";
 
   if (page === "index") {
-    // 24-hour format with milliseconds (UTC)
     return moment.utc(UTCDate).format("DD/MM/YY, HH:mm:ss.SSS");
   }
 
   if (format) {
-    // Use provided format with 24-hour time
     return moment.utc(UTCDate).format(`${format}.SSS`);
   }
-
-  // Default ISO-like format in 24-hour time
   return moment.utc(UTCDate).format("YYYY-MM-DDTHH:mm:ss.SSS");
 };
 
@@ -202,6 +213,19 @@ export const convertDateUTCToLocalWithoutSec = (UTCDate, page, format) => {
   return "";
 }
 
+export const convertDateUTCToLocalWithoutSec24 = (UTCDate, page, format) => {
+  if (UTCDate) {
+    if (page === "index") {
+      return moment(UTCDate).local().format("DD/MM/YY, HH:mm");
+    }
+    if (format)
+      return moment(UTCDate).local().format(format.replace("ss", "").replace("hh", "HH"));
+
+    return moment(UTCDate).local().format("YYYY-MM-DDTHH:mm");
+  }
+  return "";
+};
+
 export const convertDateUtcFormatWithoutSec = (UTCDate, page, format) => {
   if (UTCDate) {
     if (page === 'index') {
@@ -211,6 +235,21 @@ export const convertDateUtcFormatWithoutSec = (UTCDate, page, format) => {
       return moment.utc(UTCDate).format(format.replace("ss", "")); // Removes seconds if present in custom format
     }
     return moment.utc(UTCDate).format("YYYY-MM-DDTHH:mm"); // Removed seconds
+  }
+  return "";
+};
+
+export const convertDateUtcFormatWithoutSec24 = (UTCDate, page, format) => {
+  if (UTCDate) {
+    if (page === "index") {
+      return moment.utc(UTCDate).format("DD/MM/YY, HH:mm");
+    }
+    if (format) {
+      return moment
+        .utc(UTCDate)
+        .format(format.replace("ss", "").replace("hh", "HH"));
+    }
+    return moment.utc(UTCDate).format("YYYY-MM-DDTHH:mm");
   }
   return "";
 };
