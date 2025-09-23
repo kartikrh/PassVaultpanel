@@ -159,8 +159,8 @@ const Index = () => {
     const data = latestValueFromTable || tableActions;
     let payload = {
       ...data,
-      eventTypeId: data?.eventTypeId || 0,
-      competitionId:
+      eventTypeId: EventTypeId ? EventTypeId :data?.eventTypeId || 0,
+      competitionId: EventCompetitionId ? EventCompetitionId :
         data?.eventTypeId !== eventTypeId ? 0 : data?.competitionId || 0,
     };
     if (!isEmpty(userRefData)) {
@@ -1829,7 +1829,7 @@ const Index = () => {
             setEventTypeId={setEventTypeId}
             setCompetitionId={setCompetitionId}
             dateType={dateType}
-            selectedTableElementsLogs={filledDropdownData?.competitionId != 0 || filledDropdownData?.eventTypeId != 0 ? filledDropdownData : selectedTableElements}
+            selectedTableElementsLogs={userRefData?.competitionId != 0 || userRefData?.eventTypeId != 0 ? filledDropdownData : selectedTableElements}
             setDateType={setDateType}
             isAddPermission={checkPermission(
               permissionObj,
