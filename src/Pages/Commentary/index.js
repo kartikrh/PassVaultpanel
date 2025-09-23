@@ -2952,6 +2952,7 @@ const Index = () => {
     fetchEventTypeData();
     fetchPythonAPIData();
   };
+
   return (
     <React.Fragment>
       <div className="page-content">
@@ -2986,7 +2987,7 @@ const Index = () => {
             dateType={dateType}
             setDateType={setDateType}
             // selectedTableElementsLogs={selectedTableElements}
-            selectedTableElementsLogs={filledDropdownData?.competitionId != 0 || filledDropdownData?.eventTypeId != 0 ? filledDropdownData : selectedTableElements}
+            selectedTableElementsLogs={userRefData?.competitionId != 0 || userRefData?.eventTypeId != 0 ? filledDropdownData : selectedTableElements}
             isAddPermission={checkPermission(
               permissionObj,
               pageName,
