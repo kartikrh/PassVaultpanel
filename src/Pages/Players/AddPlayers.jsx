@@ -49,6 +49,9 @@ function AddPlayer() {
   const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
   const [masterData, setMasterData] = useState({});
   const [disabledFields, setDisabledFields] = useState({});
+  const [dynamicPlayerConst, setDynamicPlayerConst] = useState([
+    ...PlayerFields,
+  ]);
   const { isSaved, isLoading, error } = useSelector(
     (state) => state.tabsData.player
   );
@@ -118,6 +121,14 @@ function AddPlayer() {
         }));
 
         const defaultTeam = teams.find((team) => team?.homeTeam == true);
+
+        setDynamicPlayerConst(
+          dynamicPlayerConst.map((field) => {
+            if (field.name === "homeTeamId")
+              return { ...field, isRequired: isEmpty(teams) ? false : true };
+            return field;
+          })
+        );
 
         setInitialEditData({
           ...response?.result,
@@ -258,6 +269,13 @@ function AddPlayer() {
           ),
         };
       });
+      setDynamicPlayerConst(
+        dynamicPlayerConst.map((field) => {
+          if (field.name === "homeTeamId")
+            return { ...field, isRequired: isEmpty(value) ? false : true };
+          return field;
+        })
+      );
     }
   };
 
@@ -332,7 +350,7 @@ function AddPlayer() {
                 </Row>
                 <FormBuilder
                   ref={finalizeRef}
-                  fields={PlayerFields}
+                  fields={dynamicPlayerConst}
                   editFormData={initialEditData}
                   masterData={masterData}
                   disabledFields={disabledFields}
