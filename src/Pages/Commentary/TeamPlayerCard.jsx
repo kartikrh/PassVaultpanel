@@ -14,7 +14,7 @@ import bat from '../../../src/assets/images/cricket-icons/cricket-bat.png';
 import allrounder from '../../../src/assets/images/cricket-icons/cricket.png';
 import keeper from '../../../src/assets/images/cricket-icons/game.png';
 
-const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, fetchData, currentInnings, bowlingStyle }) => {
+const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, fetchData, currentInnings, bowlingType }) => {
     const [commentaryTeamPlayers, setCommentaryTeamPlayers] = useState([]);
     const [nonCommentaryTeamPlayers, setNonCommentaryTeamPlayers] = useState([]);
     const [selectedPlayer, setSelectedPlayer] = useState(undefined);
@@ -96,7 +96,7 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
         setIsLoading(true);
         try {
             const playerDataArray = Object.keys(editedPlayers).map(commentaryPlayerId => {
-                let { batsmanAverage, batsmanStrikeRate, boundary, playerBallFaced, isInPlayingEleven, playerId, currentInnings, bowlingStyle } = editedPlayers[commentaryPlayerId];
+                let { batsmanAverage, batsmanStrikeRate, boundary, playerBallFaced, isInPlayingEleven, playerId, currentInnings, bowlingType } = editedPlayers[commentaryPlayerId];
                 if (!batsmanAverage) {
                     batsmanAverage = commentaryTeamPlayers.find((item) => +item.commentaryPlayerId === +commentaryPlayerId)?.batsmanAverage || 0
                 }
@@ -106,18 +106,18 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                 if (!boundary) {
                     boundary = commentaryTeamPlayers.find((item) => +item.commentaryPlayerId === +commentaryPlayerId)?.boundary || 0
                 }
-                if (!bowlingStyle) {
-                    bowlingStyle =
+                if (!bowlingType) {
+                    bowlingType =
                     commentaryTeamPlayers.find(
                         (item) => +item.commentaryPlayerId === +commentaryPlayerId
-                    )?.bowlingStyle || 0;
+                    )?.bowlingType || 0;
                 }
                 if (!playerBallFaced) {
                     playerBallFaced = commentaryTeamPlayers.find((item) => +item.commentaryPlayerId === +commentaryPlayerId)?.playerBallFaced || 0
                 }
                 isInPlayingEleven = Object.keys(updatedPlayingXiPlayer).includes(commentaryPlayerId) ? isInPlayingEleven :
                     commentaryTeamPlayers.find((item) => +item.commentaryPlayerId === +commentaryPlayerId)?.isInPlayingEleven || false
-                return { commentaryId, teamId: teamDetails?.teamId, playerId, batsmanAverage, batsmanStrikeRate, boundary, playerBallFaced, isInPlayingEleven, commentaryPlayerId: +commentaryPlayerId, currentInnings: +currentInnings, bowlingStyle };
+                return { commentaryId, teamId: teamDetails?.teamId, playerId, batsmanAverage, batsmanStrikeRate, boundary, playerBallFaced, isInPlayingEleven, commentaryPlayerId: +commentaryPlayerId, currentInnings: +currentInnings, bowlingType };
             });
             const payload = {
                 commentaryId,
@@ -152,7 +152,7 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
         batsmanAverage: newAvg,
         playerId: playerId,
         currentInnings: currentInnings,
-        bowlingStyle: prevState[commentaryPlayerId]?.bowlingStyle ?? originalPlayer?.bowlingStyle,
+        bowlingType: prevState[commentaryPlayerId]?.bowlingType ?? originalPlayer?.bowlingType,
         isInPlayingEleven:
           prevState[commentaryPlayerId]?.isInPlayingEleven ??
           updatedPlayingXiPlayer[commentaryPlayerId] ??
@@ -167,13 +167,13 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
     commentaryPlayerId,
     playerId,
     currentInnings,
-    bowlingStyleValue
+    bowlingTypeValue
   ) => {
     setEditedPlayers((prevState) => ({
       ...prevState,
       [commentaryPlayerId]: {
         ...prevState[commentaryPlayerId],
-        bowlingStyle: bowlingStyleValue,
+        bowlingType: bowlingTypeValue,
         playerId: playerId,
         currentInnings: currentInnings,
         isInPlayingEleven:
@@ -212,7 +212,7 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                 boundary: newBdry,
                 playerId: playerId,
                 currentInnings: currentInnings,
-                bowlingStyle: prevState[commentaryPlayerId]?.bowlingStyle ?? originalPlayer?.bowlingStyle,
+                bowlingType: prevState[commentaryPlayerId]?.bowlingType ?? originalPlayer?.bowlingType,
                 isInPlayingEleven: prevState[commentaryPlayerId]?.isInPlayingEleven ?? updatedPlayingXiPlayer[commentaryPlayerId] ?? commentaryTeamPlayers.find(p => p.commentaryPlayerId === commentaryPlayerId)?.isInPlayingEleven
             }
         }));
@@ -230,7 +230,7 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                 playerBallFaced: newPlayerBallFaced,
                 playerId: playerId,
                 currentInnings: currentInnings,
-                bowlingStyle: prevState[commentaryPlayerId]?.bowlingStyle ?? originalPlayer?.bowlingStyle,
+                bowlingType: prevState[commentaryPlayerId]?.bowlingType ?? originalPlayer?.bowlingType,
                 isInPlayingEleven: prevState[commentaryPlayerId]?.isInPlayingEleven ?? updatedPlayingXiPlayer[commentaryPlayerId] ?? commentaryTeamPlayers.find(p => p.commentaryPlayerId === commentaryPlayerId)?.isInPlayingEleven
             }
         }));
@@ -316,12 +316,12 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
       });
     }
   };
-  const getPlayerBowlingStyleValue = (player) => {
+  const getPlayerBowlingTypeValue = (player) => {
     const playerToCheck = editedPlayers[player.commentaryPlayerId]
       ? editedPlayers[player.commentaryPlayerId]
       : player;
-    const selectedValue = bowlingStyle?.filter(
-      (ele) => +ele.value === playerToCheck.bowlingStyle
+    const selectedValue = bowlingType?.filter(
+      (ele) => +ele.value === playerToCheck.bowlingType
     );
     // console.log("values: ", {
     //   selectedValue,
@@ -434,8 +434,8 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                     class="form-control"
                     classNamePrefix="filter-dropdown"
                     style={{ width: "60px" }}
-                    value={getPlayerBowlingStyleValue(player)}
-                    options={bowlingStyle}
+                    value={getPlayerBowlingTypeValue(player)}
+                    options={bowlingType}
                     onChange={(value) =>
                       handleBowlerStyleChange(
                         player.commentaryPlayerId,
