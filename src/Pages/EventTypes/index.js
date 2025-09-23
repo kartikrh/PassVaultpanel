@@ -10,7 +10,7 @@ import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
 import { isEqual, isEmpty } from "lodash";
-import { ERROR, MODULE_EVENT_TYPES, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, TAB_EVENT_TYPES } from "../../components/Common/Const";
+import { ERROR, MODULE_EVENT_TYPES, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, TAB_COMMENTARY, TAB_COMMENTARY_LIST, TAB_EVENT_TYPES } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
@@ -18,6 +18,8 @@ import LoadDataModal from "../../components/Model/LoadDataModal";
 
 const Index = () => {
   const pageName = TAB_EVENT_TYPES
+  const CommentaryListPage = TAB_COMMENTARY_LIST
+  const CommentaryPage = TAB_COMMENTARY
   const finalizeRef = useRef(null);
   const permissionObj = useSelector(state => state.auth?.tabPermissionList);
   document.title = "Event Types";
@@ -28,9 +30,65 @@ const Index = () => {
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
-
+  const didInitialFetch = useRef(false);
+  const [filledDropdownData, setFilledDropdownData] = useState(false);
+  const [eventTypes, setEventTypes] = useState([]);
+  const [userRefData, setUserRefData] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const fetchUserPermission = () => {
+    const refData = JSON.parse(localStorage.getItem("refData"));
+    setUserRefData(refData);
+    fetchData(refData);
+  };
+
+  useEffect(() => {
+    fetchUserPermission()
+    fetchEventTypeData()
+  }, [])
+
+  const fetchEventTypeData = async () => {
+    await axiosInstance
+      .post(`/admin/competition/eventTypeList`, {})
+      .then((response) => {
+        setEventTypes(response.result);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+
+  useEffect(() => {
+    const objToSave = {};
+    let shouldFetchData = false;
+
+    if (userRefData?.eventTypeId !== 0 && eventTypes && eventTypes.length > 0) {
+      const matchedEvent = eventTypes.find(
+        (item) => item.eventTypeId === userRefData?.eventTypeId
+      );
+      objToSave["eventType"] = {
+        label: matchedEvent?.eventType,
+        value: matchedEvent?.eventTypeId,
+      };
+    }
+
+    setFilledDropdownData(objToSave);
+
+    // Use a ref to track if we've already fetched data
+    if (shouldFetchData && !didInitialFetch.current) {
+      fetchData();
+      didInitialFetch.current = true;
+    }
+  }, [eventTypes]);
 
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
@@ -63,6 +121,40 @@ const Index = () => {
       updateSingleCheck = [...checekedList, e.eventTypeId];
     }
     setCheckedList(updateSingleCheck)
+  };
+
+  const handleCompetitionEventTypeClick = (details) => {
+    const url = new URL(window.location.origin + "/Competition");
+    sessionStorage.setItem(
+      "CompetitionEventTypeId",
+      "" + details?.eventTypeId
+    );
+    // sessionStorage.setItem(
+    //   "commentaryManualOddsMarketDetails",
+    //   "" + JSON.stringify(details)
+    // );
+    window.open(url.href, "_blank");
+    sessionStorage.removeItem("CompetitionEventTypeId");
+    // sessionStorage.removeItem("commentaryManualOddsMarketDetails");
+  };
+
+  const commentaryPermission = checkPermission(permissionObj, CommentaryPage, PERMISSION_VIEW)
+  const commentaryListPermission = checkPermission(permissionObj, CommentaryListPage, PERMISSION_VIEW)
+  
+  const handleCommentaryClick = (details) => {
+    const navUrl = (commentaryPermission && commentaryListPermission) ? "/Commentary" : commentaryPermission ? "/Commentary" : commentaryListPermission ? "/CommentaryList" : ''
+    const url = new URL(window.location.origin + navUrl);
+    sessionStorage.setItem(
+      "commentaryEventTypeId",
+      "" + details?.eventTypeId
+    );
+    // sessionStorage.setItem(
+    //   "commentaryManualOddsMarketDetails",
+    //   "" + JSON.stringify(details)
+    // );
+    window.open(url.href, "_blank");
+    sessionStorage.removeItem("commentaryEventTypeId");
+    // sessionStorage.removeItem("commentaryManualOddsMarketDetails");
   };
 
   //permissions function
@@ -243,7 +335,7 @@ const Index = () => {
       key: "isActive",
       dataIndex: "isActive",
       render: (text, record) => (
-      <Tooltip title={"Event Type"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+      <Tooltip title={"Active"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={`${text ? "primary" : "danger"}`}
           size="sm"
@@ -258,6 +350,59 @@ const Index = () => {
       </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "",
+      dataIndex: "",
+      key: "",
+      render: (text, record) => (
+      <Tooltip title={"Competition"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+        <Button
+          color={"primary"}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handleCompetitionEventTypeClick(record)
+            // handlePermissions("isHighlight", record, record.isHighlight);
+          }}
+        >
+          C
+        </Button>
+      </Tooltip>
+      ),
+      // sort: true,
+      style: { width: "10%" },
+    },
+    (commentaryPermission || commentaryListPermission) &&
+    {
+      title: "",
+      dataIndex: "",
+      key: "",
+      render: (text, record) => {
+        const isMatchingEvent =
+          record?.eventTypeId === filledDropdownData?.eventType?.value;
+          
+        if (userRefData.eventTypeId != 0 && !isMatchingEvent) return null; 
+
+        return (
+          <Tooltip
+            title={"Commentary List"}
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            <Button
+              color={"primary"}
+              size="sm"
+              className="btn"
+              onClick={() => handleCommentaryClick(record)}
+            >
+              CL
+            </Button>
+          </Tooltip>
+        );
+      },
+      // sort: true,
+      style: { width: "10%" },
     },
   ];
 
