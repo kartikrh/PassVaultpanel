@@ -499,3 +499,45 @@ export function getDynamicStep(rate) {
   if (rate >= 50 && rate < 100) return 5;
   return 0.01; // default fallback
 }
+
+export function roundToDynamicStep(value) {
+  const step = getDynamicStep(value);
+  return Math.ceil(value / step) * step;
+}
+
+export const GenericOffSymbolStatus = ({ text }) => {
+  return (
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100%",
+        fontSize: 10,
+        color: "#fff",
+        // paddingRight: 2,
+      }}
+    >
+      {" "}
+      {text}
+    </div>
+  );
+};
+export const GenericOnSymbolStatus = ({ text }) => {
+  return (
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100%",
+        fontSize: 10,
+        color: "#fff",
+        // paddingRight: 4,
+      }}
+    >
+      {" "}
+      {text}
+    </div>
+  );
+};
