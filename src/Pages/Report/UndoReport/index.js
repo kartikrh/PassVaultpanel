@@ -11,7 +11,7 @@ import {
   TAB_UNDO_LOGS,
 } from "../../../components/Common/Const";
 import { useSelector } from "react-redux";
-import { checkPermission, convertDateLocalToUTC, convertDateUtcFormatWithoutSec, convertDateUTCToLocalWithoutSec } from "../../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateLocalToUTC, convertDateUtcFormatWithoutSec, convertDateUtcFormatWithoutSec24, convertDateUTCToLocalWithoutSec, convertDateUTCToLocalWithoutSec24 } from "../../../components/Common/Reusables/reusableMethods";
 import { isEmpty } from "lodash";
 const UNDO_REPORT_TYPE = [
   { label: "Commentary", value: 1 },
@@ -173,8 +173,8 @@ const Index = () => {
       render: (text, record) => (
         <span>
           {dateType?.value == 1
-            ? convertDateUTCToLocalWithoutSec(text, "index")
-            : convertDateUtcFormatWithoutSec(text, "index")
+            ? convertDateUTCToLocalWithoutSec24(text, "index")
+            : convertDateUtcFormatWithoutSec24(text, "index")
           }
         </span>
       ),

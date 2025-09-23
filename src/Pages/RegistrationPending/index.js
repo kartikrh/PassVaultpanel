@@ -23,7 +23,9 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   checkPermission,
   convertDateUtcFormat,
+  convertDateUtcFormat24,
   convertDateUTCToLocal2,
+  convertDateUTCToLocal2_24,
   convertDateUTCToLocalWithoutSec,
 } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
@@ -262,8 +264,8 @@ const Index = () => {
       render: (text, record) => (
         <span>
           {dateType?.value == 1
-            ? convertDateUTCToLocal2(text, "index")
-            : convertDateUtcFormat(text, "index")}
+            ? convertDateUTCToLocal2_24(text, "index")
+            : convertDateUtcFormat24(text, "index")}
         </span>
       ),
       key: "eventDate",

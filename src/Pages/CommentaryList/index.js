@@ -26,6 +26,8 @@ import {
   convertDateUTCToLocalWithoutSec,
   convertDateLocalToUTC,
   convertDateUtcFormatWithoutSec,
+  convertDateUTCToLocalWithoutSec24,
+  convertDateUtcFormatWithoutSec24,
 } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { ChnageMatchTypeModel } from "../../components/Model/ChangeMatchType";
@@ -991,8 +993,8 @@ const Index = () => {
       render: (text, record) => (
         <span>
           {dateType?.value == 1
-            ? convertDateUTCToLocalWithoutSec(text, "index")
-            : convertDateUtcFormatWithoutSec(text, "index")}
+            ? convertDateUTCToLocalWithoutSec24(text, "index")
+            : convertDateUtcFormatWithoutSec24(text, "index")}
         </span>
       ),
       key: "eventDate",

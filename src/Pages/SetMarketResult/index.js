@@ -17,7 +17,9 @@ import {
   checkPermission,
   convertDateLocalToUTC,
   convertDateUtcFormatWithoutSec,
-  convertDateUTCToLocalWithoutSec
+  convertDateUtcFormatWithoutSec24,
+  convertDateUTCToLocalWithoutSec,
+  convertDateUTCToLocalWithoutSec24
 } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { ChangeMarketResultModel } from "../../components/Model/ChangeMarketResult";
@@ -351,8 +353,8 @@ const Index = () => {
       render: (text, record) => (
         <span style={{ cursor: "pointer" }}>
           {dateType?.value == 1
-            ? convertDateUTCToLocalWithoutSec(text, "index")
-            : convertDateUtcFormatWithoutSec(text, "index")}
+            ? convertDateUTCToLocalWithoutSec24(text, "index")
+            : convertDateUtcFormatWithoutSec24(text, "index")}
         </span>
       ),
       key: "eventDate",
