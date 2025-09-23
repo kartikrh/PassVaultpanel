@@ -35,6 +35,12 @@ const Index = () => {
     }T23:59`
   })
   const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
+  const [selectedTableElements, setSelectedTableElements] = useState({
+    eventType: null,
+    competition: null
+  });
+  const EventTypeId = +sessionStorage.getItem('CompetitionEventTypeId') || 0;
+  const EventCompetitionId = +sessionStorage.getItem('EventCompetitionId') || 0;
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -45,6 +51,8 @@ const Index = () => {
     await axiosInstance
       .post(`/admin/events/all`, {
         ...(value || tableActions),
+        eventTypeId: EventTypeId ? EventTypeId : (value?.eventTypeId || tableActions?.eventTypeId) || 0,
+        competitionId: EventCompetitionId ? EventCompetitionId : (value?.CompetitionId || tableActions?.CompetitionId) || 0,
         startDate: convertDateLocalToUTC(dateRange?.startDate, "index"),
         endDate: convertDateLocalToUTC(dateRange?.endDate, "index"),
       })
@@ -313,6 +321,17 @@ const Index = () => {
     fetchCompetitionData();
   }, [permissionObj]);
 
+  useEffect(() => {
+    if (EventTypeId && EventCompetitionId) {
+      const event = eventTypes.find(e => e.eventTypeId === EventTypeId)
+      const competition = competitions.find(c => c.competitionId === EventCompetitionId)
+      setSelectedTableElements({
+        eventType: {value: event?.eventTypeId, label: event?.eventType},
+        competition: {value: competition?.competitionId, label: competition?.competition},
+      });
+    }
+  }, [eventTypes, EventTypeId, EventCompetitionId, competitions]);
+
   const handleReload = (value) => {
     fetchData();
     // fetchEventTypeData();
@@ -341,6 +360,7 @@ const Index = () => {
             setCompetitionId={setCompetitionId}
             setDateRange = {setDateRange}
             dateRange = {dateRange}
+            selectedTableElementsLogs={selectedTableElements}
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
             isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
           />
