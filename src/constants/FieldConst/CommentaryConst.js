@@ -541,7 +541,7 @@ export const PitchDetailsFields = [
     },
     {
         name: "spineBowlingConniton",
-        label: "Spin Bowling Conniton",
+        label: "Spin Bowling Condition",
         // isRequired: true,
         defaultValue: "",
         labelColspan: { xs: 12, md: 2, lg: 2 },
