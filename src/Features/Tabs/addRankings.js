@@ -11,7 +11,11 @@ export const addIccRankingToDb = createAsyncThunk(
             dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
             return response?.result;
         } catch (error) {
-            dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+            if(error?.message == "body must have required property 'point'"){
+                dispatch(updateToastData({ data: "Point is Required", title: error?.title, type: ERROR }));
+            }else{
+                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+            }
             return rejectWithValue(error?.message);
         }
     }
