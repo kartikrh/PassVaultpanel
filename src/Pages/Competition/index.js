@@ -1088,7 +1088,6 @@ const Index = () => {
       dataIndex: "",
       key: "",
       render: (text, record) => {
-        console.log("refType", record)
         if (record.isPointTable && record.tpId) {
           return (
             <Tooltip
