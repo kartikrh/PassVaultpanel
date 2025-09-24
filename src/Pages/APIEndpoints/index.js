@@ -146,6 +146,8 @@ const Index = () => {
         return "insertPlayer";
       case 12:
         return "getSocketCount";
+      case 13:
+        return "getCompetitionInfo";
       default:
         return "Unknown";
     } 

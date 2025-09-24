@@ -1098,7 +1098,7 @@ const Index = () => {
             >
               <Button
                 size="sm"
-                color="primary"
+                // color="primary"
                 className="btn"
                 onClick={() => handleUpdate(record)}
               >
