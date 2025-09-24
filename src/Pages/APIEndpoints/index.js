@@ -144,6 +144,8 @@ const Index = () => {
         return "insertTeam";
       case 11:
         return "insertPlayer";
+      case 12:
+        return "getSocketCount";
       default:
         return "Unknown";
     } 
