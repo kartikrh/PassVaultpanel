@@ -3,13 +3,13 @@ import { Button } from 'reactstrap';
 import CustomInput from "../../components/Common/Reusables/CustomInput";
 import { getStatusColor, getStatusFontColor, OPEN_MARKET_STATUS } from "./CommentartConst";
 import "./CommentaryCss.css";
-import { generateOverUnderLineType, getDynamicStep } from "./functions";
+import { generateOverUnderLineType, getDynamicStep, roundToDynamicStep } from "./functions";
 import axiosInstance from "../../Features/axios";
 import { useDispatch, useSelector } from 'react-redux';
 import { updateToastData } from '../../Features/toasterSlice';
 import { ERROR, SUCCESS } from '../../components/Common/Const';
 
-const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadingTrue, loadingFalse }) => {
+const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadingTrue, loadingFalse, dismisalRoundOff }) => {
     const [localMarket, setLocalMarket] = useState(market);
     const [lockedRunners, setLockedRunners] = useState(new Set());
     const dispatch = useDispatch();
@@ -102,7 +102,7 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
                                     const newRunnerPercentage = Math.max(0.001, currentPercentage - (deltaPercentage * proportion));
 
                                     // Convert back to odds (line)
-                                    const newRunnerLine = 1 / newRunnerPercentage;
+                                    const newRunnerLine = dismisalRoundOff ? roundToDynamicStep(1 / newRunnerPercentage): 1 / newRunnerPercentage;
 
                                     return {
                                         ...runner,

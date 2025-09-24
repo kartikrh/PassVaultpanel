@@ -6,7 +6,7 @@ import { PERMISSION_VIEW, TAB_SCORING_LOGS } from "../../components/Common/Const
 import Table from "../../components/Common/Table";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
-import { checkPermission, convertDateLocalToUTC, convertDateUtcFormat, convertDateUTCToLocal2 } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateLocalToUTC, convertDateUtcFormat, convertDateUtcFormat24, convertDateUTCToLocal2, convertDateUTCToLocal2_24 } from "../../components/Common/Reusables/reusableMethods";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { mapCommentaryStatus } from "../Commentary/functions";
 import { isEmpty, isEqual } from "lodash";
@@ -236,8 +236,8 @@ useEffect(() => {
       render: (text, record) => (
         <span>
           {dateType?.value == 1
-            ? convertDateUTCToLocal2(text, "index")
-            : convertDateUtcFormat(text, "index")
+            ? convertDateUTCToLocal2_24(text, "index")
+            : convertDateUtcFormat24(text, "index")
           }
         </span>
       ),
@@ -288,7 +288,7 @@ useEffect(() => {
       dataIndex: "createdDate",
       render: (text, record) => (
         <span>
-          {convertDateUTCToLocal2(text, "index")}
+          {convertDateUTCToLocal2_24(text, "index")}
         </span>
       ),
       key: "createdDate",

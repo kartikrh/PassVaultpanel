@@ -11,7 +11,7 @@ import {
   TAB_UNDO_LOGS,
 } from "../../../components/Common/Const";
 import { useSelector } from "react-redux";
-import { checkPermission, convertDateLocalToUTC, convertDateUtcFormatWithoutSec, convertDateUTCToLocalWithoutSec } from "../../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateLocalToUTC, convertDateUtcFormatWithoutSec, convertDateUtcFormatWithoutSec24, convertDateUTCToLocalWithoutSec, convertDateUTCToLocalWithoutSec24 } from "../../../components/Common/Reusables/reusableMethods";
 import { isEmpty } from "lodash";
 const UNDO_REPORT_TYPE = [
   { label: "Commentary", value: 1 },
@@ -137,6 +137,15 @@ const Index = () => {
     sessionStorage.removeItem("undoLogsId");
     sessionStorage.removeItem("undoLogsDetails");
   };
+
+  const handleUserUndoLogsClick = (details) => {
+    const url = new URL(window.location.origin + "/undoLogs");
+    sessionStorage.setItem("undoUserLogId", "" + details?.createdById);
+    sessionStorage.setItem("undoUserLogsDetails", "" + JSON.stringify(details)); // Fix typo
+    window.open(url.href, "_blank");
+    sessionStorage.removeItem("undoUserLogId");
+    sessionStorage.removeItem("undoUserLogsDetails");
+  };
   useEffect(() => {
     fetchEventTypeData();
     fetchCreatedByListData();
@@ -146,7 +155,24 @@ const Index = () => {
     {
       title: "User Name",
       dataIndex: "createdBy",
-      
+      render: (text, record) => (
+        <Tooltip
+          title={"Check Logs"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
+          <div className="d-flex flex-column">
+            <span
+              style={{ cursor: "pointer" }}
+              onClick={() => {
+                handleUserUndoLogsClick({ createdById: record.createdById, createdBy: record.createdBy });
+              }}
+            >
+              {text}{record?.eventNo ? `(${record.eventNo})` : ""}
+            </span>
+          </div>
+        </Tooltip>
+      ),
       key: "createdBy",
       sort: true,
       style: { width: "10%" },
@@ -173,8 +199,8 @@ const Index = () => {
       render: (text, record) => (
         <span>
           {dateType?.value == 1
-            ? convertDateUTCToLocalWithoutSec(text, "index")
-            : convertDateUtcFormatWithoutSec(text, "index")
+            ? convertDateUTCToLocalWithoutSec24(text, "index")
+            : convertDateUtcFormatWithoutSec24(text, "index")
           }
         </span>
       ),
