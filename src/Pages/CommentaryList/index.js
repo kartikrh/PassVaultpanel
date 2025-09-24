@@ -26,6 +26,8 @@ import {
   convertDateUTCToLocalWithoutSec,
   convertDateLocalToUTC,
   convertDateUtcFormatWithoutSec,
+  convertDateUTCToLocalWithoutSec24,
+  convertDateUtcFormatWithoutSec24,
 } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { ChnageMatchTypeModel } from "../../components/Model/ChangeMatchType";
@@ -97,11 +99,61 @@ const Index = () => {
   const loadInitData = useSelector((state) => state.loadInit.loadInitData);
   const [updateDayModelVisible, setUpdateDayModelVisible] = useState(false);
   const [selectedCommentaryDay, setSelectedCommentaryDay] = useState({});
-
+  const [userRefData, setUserRefData] = useState(false);
+  const [filledDropdownData, setFilledDropdownData] = useState(false);
+  const [selectedTableElements, setSelectedTableElements] = useState({
+      eventType: null,
+      competition: null,
+      scoringType: null,
+      tpId: null
+    });
+  const didInitialFetch = useRef(false);
   let scorecardFrameUrl = null;
+
+  const EventTypeId = +sessionStorage.getItem('commentaryEventTypeId');
+  const EventCompetitionId = +sessionStorage.getItem('commentaryCompetitionId') || 0;
+
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const fetchUserPermission = () => {
+    const refData = JSON.parse(localStorage.getItem("refData"));
+    setUserRefData(refData);
+    fetchData(refData);
+  };
+
+  useEffect(() =>{
+    fetchUserPermission();
+  }, [])
+
+  useEffect(() => {
+    if (EventTypeId || EventCompetitionId) {
+      setSelectedTableElements(prev => {
+        const updated = { ...prev };
+
+        if (EventTypeId) {
+          const event = eventTypes.find(e => e.eventTypeId === EventTypeId);
+          // console.log("event", event);
+          updated.eventType = {
+            value: event?.eventTypeId,
+            label: event?.eventType,
+          };
+        }
+
+        if (EventCompetitionId) {
+          const competition = competitions.find(c => c.competitionId === EventCompetitionId);
+          updated.competition = {
+            value: competition?.competitionId,
+            label: competition?.competition,
+          };
+        }
+
+        return updated;
+      });
+    }
+  }, [eventTypes, EventTypeId, EventCompetitionId, competitions]);
+
 
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
@@ -109,10 +161,16 @@ const Index = () => {
     const data = latestValueFromTable || tableActions;
     let payload = {
       ...data,
-      eventTypeId: data?.eventTypeId || 0,
-      competitionId:
+      eventTypeId: EventTypeId ? EventTypeId :data?.eventTypeId || 0,
+      competitionId: EventCompetitionId ? EventCompetitionId :
         data?.eventTypeId !== eventTypeId ? 0 : data?.competitionId || 0,
     };
+    if (!isEmpty(userRefData)) {
+      if (userRefData.eventTypeId && userRefData.eventTypeId !== 0)
+        payload["eventTypeId"] = userRefData.eventTypeId;
+      if (userRefData.competitionId && userRefData.competitionId !== 0)
+        payload["competitionId"] = userRefData.competitionId;
+    }
     if (isSearch) {
       payload = {
         ...payload,
@@ -137,10 +195,56 @@ const Index = () => {
       .catch((error) => {
         setIsLoading(false);
       });
-    if (data?.eventTypeId && latestValueFromTable) {
-      fetchCompetitionData(data?.eventTypeId);
+    if ((latestValueFromTable?.eventTypeId || userRefData.eventTypeId) ) {
+      const valueToFetchFrom =
+        userRefData.eventTypeId && +userRefData.eventTypeId !== 0
+          ? userRefData.eventTypeId
+          : latestValueFromTable?.eventTypeId;
+      fetchCompetitionData(valueToFetchFrom);
     }
+    
   };
+
+  useEffect(() => {
+    const objToSave = {};
+    let shouldFetchData = false;
+
+    if (userRefData?.eventTypeId !== 0 && eventTypes && eventTypes.length > 0) {
+      const matchedEvent = eventTypes.find(
+        (item) => item.eventTypeId === userRefData?.eventTypeId
+      );
+      objToSave["eventType"] = {
+        label: matchedEvent.eventType,
+        value: matchedEvent.eventTypeId,
+      };
+    }
+
+    if (competitions && competitions.length > 0) {
+      if (userRefData?.competitionId !== 0) {
+        const matchedCompetition = competitions.find(
+          (item) => item.competitionId === userRefData?.competitionId
+        );
+        if (matchedCompetition) {
+          objToSave["competition"] = {
+            label: matchedCompetition.competition,
+            value: matchedCompetition.competitionId,
+          };
+          shouldFetchData = true;
+        }
+      } else {
+        shouldFetchData = true;
+      }
+    }
+
+    setFilledDropdownData(objToSave);
+
+    // Use a ref to track if we've already fetched data
+    if (shouldFetchData && !didInitialFetch.current) {
+      fetchData();
+      didInitialFetch.current = true;
+    }
+  }, [eventTypes, competitions]);
+
   const fetchEventTypeData = async () => {
     await axiosInstance
       .post(`/admin/commentary/eventTypeList`, { isActive: true })
@@ -889,8 +993,8 @@ const Index = () => {
       render: (text, record) => (
         <span>
           {dateType?.value == 1
-            ? convertDateUTCToLocalWithoutSec(text, "index")
-            : convertDateUtcFormatWithoutSec(text, "index")}
+            ? convertDateUTCToLocalWithoutSec24(text, "index")
+            : convertDateUtcFormatWithoutSec24(text, "index")}
         </span>
       ),
       key: "eventDate",
@@ -1727,6 +1831,7 @@ const Index = () => {
             setEventTypeId={setEventTypeId}
             setCompetitionId={setCompetitionId}
             dateType={dateType}
+            selectedTableElementsLogs={userRefData?.competitionId != 0 || userRefData?.eventTypeId != 0 ? filledDropdownData : selectedTableElements}
             setDateType={setDateType}
             isAddPermission={checkPermission(
               permissionObj,

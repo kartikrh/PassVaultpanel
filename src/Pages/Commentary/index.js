@@ -30,7 +30,9 @@ import {
   checkPermission,
   convertDateLocalToUTC,
   convertDateUTCToLocalWithoutSec,
+  convertDateUTCToLocalWithoutSec24,
   convertDateUtcFormatWithoutSec,
+  convertDateUtcFormatWithoutSec24,
 } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { ChnageMatchTypeModel } from "../../components/Model/ChangeMatchType";
@@ -133,6 +135,9 @@ const Index = () => {
   const [selectedCommentaryDay, setSelectedCommentaryDay] = useState({});
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
+  const EventTypeId = +sessionStorage.getItem('commentaryEventTypeId');
+  const EventCompetitionId = +sessionStorage.getItem('commentaryCompetitionId') || 0;
+
   useEffect(() => {
       const handleResize = () => setWindowWidth(window.innerWidth);
       window.addEventListener('resize', handleResize);
@@ -158,15 +163,43 @@ const Index = () => {
     </>
   );
 
+  useEffect(() => {
+      if (EventTypeId || EventCompetitionId) {
+        setSelectedTableElements(prev => {
+          const updated = { ...prev };
+
+          if (EventTypeId) {
+            const event = eventTypes.find(e => e.eventTypeId === EventTypeId);
+            // console.log("event", event);
+            updated.eventType = {
+              value: event?.eventTypeId,
+              label: event?.eventType,
+            };
+          }
+
+          if (EventCompetitionId) {
+            const competition = competitions.find(c => c.competitionId === EventCompetitionId);
+            updated.competition = {
+              value: competition?.competitionId,
+              label: competition?.competition,
+            };
+          }
+
+          return updated;
+        });
+      }
+    }, [eventTypes, EventTypeId, EventCompetitionId, competitions]);
+  
+
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
     let payload = {
       ...(latestValueFromTable || tableActions),
-      eventTypeId:
-        latestValueFromTable?.eventTypeId || tableActions?.eventTypeId || 0,
+      eventTypeId:EventTypeId ? EventTypeId : (latestValueFromTable?.eventTypeId || tableActions?.eventTypeId) || 0,
+        // latestValueFromTable?.eventTypeId || tableActions?.eventTypeId || 0,
       // competitionId: latestValueFromTable?.eventTypeId !== eventTypeId ? 0 : latestValueFromTable?.competitionId || 0,
-      competitionId:
+      competitionId: EventCompetitionId ? EventCompetitionId :
         latestValueFromTable?.eventTypeId == eventTypeId
           ? latestValueFromTable?.competitionId
           : tableActions?.eventTypeId == eventTypeId
@@ -203,7 +236,7 @@ const Index = () => {
       .catch((error) => {
         setIsLoading(false);
       });
-    if (latestValueFromTable?.eventTypeId || userRefData.eventTypeId) {
+    if ((latestValueFromTable?.eventTypeId || userRefData.eventTypeId) ) {
       const valueToFetchFrom =
         userRefData.eventTypeId && +userRefData.eventTypeId !== 0
           ? userRefData.eventTypeId
@@ -281,6 +314,13 @@ const Index = () => {
         );
       });
   };
+
+  useEffect(() => {
+    if(EventTypeId && !selectedTableElements.competition){
+      fetchCompetitionData(EventTypeId)
+    }
+  }, [EventTypeId])
+
   const handleLoadCommentary = async (e) => {
     setIsLoading(true);
     await axiosInstance
@@ -1487,8 +1527,8 @@ const Index = () => {
       render: (text, record) => (
         <span>
           {dateType?.value == 1
-            ? convertDateUTCToLocalWithoutSec(text, "index")
-            : convertDateUtcFormatWithoutSec(text, "index")}
+            ? convertDateUTCToLocalWithoutSec24(text, "index")
+            : convertDateUtcFormatWithoutSec24(text, "index")}
         </span>
       ),
       key: "eventDate",
@@ -2947,7 +2987,8 @@ const Index = () => {
             setCompetitionId={setCompetitionId}
             dateType={dateType}
             setDateType={setDateType}
-            selectedTableElementsLogs={filledDropdownData}
+            // selectedTableElementsLogs={selectedTableElements}
+            selectedTableElementsLogs={userRefData?.competitionId != 0 || userRefData?.eventTypeId != 0 ? filledDropdownData : selectedTableElements}
             isAddPermission={checkPermission(
               permissionObj,
               pageName,

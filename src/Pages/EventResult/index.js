@@ -15,7 +15,7 @@ import {
 } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
 import { isEqual } from "lodash";
-import { checkPermission, convertDateLocalToUTC, convertDateUTCToLocal2 } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateLocalToUTC, convertDateUTCToLocal2, convertDateUTCToLocal2_24 } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 
 const Index = () => {
@@ -260,7 +260,7 @@ const Index = () => {
       dataIndex: "eventDate",
       render: (text, record) => (
         <span>
-          {convertDateUTCToLocal2(text, "index")}
+          {convertDateUTCToLocal2_24(text, "index")}
         </span>
       ),
       key: "eventDate",

@@ -12,7 +12,7 @@ import {
   TAB_UNDO_LOGS,
 } from "../../components/Common/Const";
 import { useSelector } from "react-redux";
-import { checkPermission, convertDateLocalToUTC, convertDateUtcFormat, convertDateUTCToLocal2 } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateLocalToUTC, convertDateUtcFormat, convertDateUtcFormat24, convertDateUTCToLocal2, convertDateUTCToLocal2_24 } from "../../components/Common/Reusables/reusableMethods";
 import ResponseModal from "./ResponseModal";
 import RequestModal from "./RequestModal";
 import { mapCommentaryStatus } from "../Commentary/functions";
@@ -55,9 +55,12 @@ const Index = () => {
     eventType: null,
     competition: null,
     commentary: null,
+    createdById: null
   });
   const commentaryId = +sessionStorage.getItem('undoLogsId') || 0;
+  const createdUserId = +sessionStorage.getItem('undoUserLogId') || 0;
   const commentaryDetails = JSON.parse(sessionStorage.getItem('undoLogsDetails') || "{}");
+  const userDetailsToFind = JSON.parse(sessionStorage.getItem('undoUserLogsDetails') || "{}"); // Fix typo
   const [createdByList, setCreatedByList] = useState([]);
 
   const navigate = useNavigate();
@@ -83,6 +86,14 @@ const Index = () => {
         commentaryId: commentaryId
       };
     }
+    if (createdUserId !== 0) {
+      payload = {
+        ...data,
+        ...payload,
+        createdById: createdUserId
+      };
+    }
+
     if (isSearch) {
       payload = {
         ...payload,
@@ -98,15 +109,6 @@ const Index = () => {
         logsData.forEach((ele) => {
           logsDataIdList.push(ele?.id);
         });
-        const createdByListData = logsData.reduce((acc, item) => {
-          const key = `${item.createdById}-${item.createdBy}`;
-          if (!acc.seen.has(key)) {
-            acc.seen.add(key);
-            acc.result.push({ createdById: item.createdById, createdBy: item.createdBy });
-          }
-          return acc;
-        }, { seen: new Set(), result: [] }).result;
-        // setCreatedByList(createdByListData);
         setDataIndexList(logsDataIdList)
         setData(logsData);
         setTotal(response?.result?.totalRecords || 0);
@@ -148,16 +150,21 @@ const Index = () => {
   }, [commentaryId, commentaryDetails?.eventTypeId, commentaryDetails?.competitionId])
 
   useEffect(() => {
+    const objectToSave = {}
     if (commentaryDetails?.eventTypeId && commentaryDetails?.competitionId && commentaryDetails?.commentaryId) {
       const event = eventTypes.find(e => e.eventTypeId === commentaryDetails.eventTypeId)
       const competition = competitions.find(c => c.competitionId === commentaryDetails.competitionId)
       const commentaryData = commentary.find(c => c.commentaryId === commentaryDetails.commentaryId)
-      setSelectedTableElements({
-        eventType: { value: event?.eventTypeId, label: event?.eventType },
-        competition: { value: competition?.competitionId, label: competition?.competition },
-        commentary: { value: commentaryData?.commentaryId, label: commentaryData && commentaryData?.eventName && commentaryData?.eventDate ? `${commentaryData.eventName} (${convertDateUTCToLocal2(commentaryData.eventDate, "index")})` : "" },
-      });
+
+      objectToSave['eventType'] = { value: event?.eventTypeId, label: event?.eventType }
+      objectToSave['competition'] = { value: competition?.competitionId, label: competition?.competition }
+      objectToSave['commentary'] = { value: commentaryData?.commentaryId, label: commentaryData && commentaryData?.eventName && commentaryData?.eventDate ? `${commentaryData.eventName} (${convertDateUTCToLocal2(commentaryData.eventDate, "index")})` : "" }
     }
+    if (createdUserId && createdUserId !== 0 && userDetailsToFind.createdById && userDetailsToFind.createdBy) {
+      objectToSave['createdById'] = { value: userDetailsToFind?.createdById, label: userDetailsToFind.createdBy }
+    }
+    if (!isEmpty(objectToSave))
+      setSelectedTableElements(objectToSave);
   }, [commentaryDetails.eventTypeId, commentaryDetails.competitionId, commentaryDetails.commentaryId, eventTypes, competitions, commentary]);
 
   const fetchEventTypeData = async () => {
@@ -270,8 +277,8 @@ const Index = () => {
       render: (text, record) => (
         <span>
           {dateType?.value == 1
-            ? convertDateUTCToLocal2(text, "index")
-            : convertDateUtcFormat(text, "index")
+            ? convertDateUTCToLocal2_24(text, "index")
+            : convertDateUtcFormat24(text, "index")
           }
         </span>
       ),
@@ -404,7 +411,6 @@ const Index = () => {
   useEffect(() => {
     fetchEventTypeData();
     fetchCreatedByListData();
-
   }, []);
 
   const handleReset = (value) => {
@@ -427,6 +433,15 @@ const Index = () => {
     fetchData();
     // fetchEventTypeData();
   };
+
+  useEffect(() => {
+    return () => {
+      sessionStorage.removeItem("undoUserLogId");
+      sessionStorage.removeItem("undoUserLogsDetails");
+      sessionStorage.removeItem("undoLogsId");
+      sessionStorage.removeItem("undoLogsDetails");
+    };
+  }, []);
 
   return (
     <React.Fragment>
