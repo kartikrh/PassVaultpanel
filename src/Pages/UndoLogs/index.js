@@ -158,7 +158,7 @@ const Index = () => {
 
       objectToSave['eventType'] = { value: event?.eventTypeId, label: event?.eventType }
       objectToSave['competition'] = { value: competition?.competitionId, label: competition?.competition }
-      objectToSave['commentary'] = { value: commentaryData?.commentaryId, label: commentaryData && commentaryData?.eventName && commentaryData?.eventDate ? `${commentaryData.eventName} (${convertDateUTCToLocal2(commentaryData.eventDate, "index")})` : "" }
+      objectToSave['commentary'] = { value: commentaryData?.commentaryId, label: commentaryData && commentaryData?.eventName && commentaryData?.eventDate ? `${commentaryData.eventName} (${convertDateUTCToLocal2_24(commentaryData.eventDate, "index")})` : "" }
     }
     if (createdUserId && createdUserId !== 0 && userDetailsToFind.createdById && userDetailsToFind.createdBy) {
       objectToSave['createdById'] = { value: userDetailsToFind?.createdById, label: userDetailsToFind.createdBy }
