@@ -13,6 +13,7 @@ import {
   convertDateUtcFormat24,
   convertDateUTCToLocal2,
   convertDateUTCToLocal24,
+  convertDateUTCToLocal2_24,
 } from "../../components/Common/Reusables/reusableMethods";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import NestedTable from "./NestedTable";
@@ -501,8 +502,8 @@ function MarketDataLogs() {
       render: (text) => (
         <span style={{ cursor: "pointer" }}>
           {dateType?.value == 1
-            ? convertDateUTCToLocal2(text, "index")
-            : convertDateUtcFormat(text, "index")}
+            ? convertDateUTCToLocal2_24(text, "index")
+            : convertDateUtcFormat24(text, "index")}
         </span>
       ),
       key: "createdDate",
@@ -642,7 +643,7 @@ function MarketDataLogs() {
   // ];
 
   const MarketDetailsDate = marketDetails?.eventDate
-    ? convertDateUTCToLocal2(marketDetails.eventDate, "index")
+    ? convertDateUTCToLocal2_24(marketDetails.eventDate, "index")
     : marketDetails?.eventDay && marketDetails?.eventTime
     ? `${marketDetails?.eventDay} ${marketDetails?.eventTime}`
     : "";
