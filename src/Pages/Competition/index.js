@@ -1088,7 +1088,6 @@ const Index = () => {
       dataIndex: "",
       key: "",
       render: (text, record) => {
-        console.log("refType", record)
         if (record.isPointTable && record.tpId) {
           return (
             <Tooltip
@@ -1098,7 +1097,7 @@ const Index = () => {
             >
               <Button
                 size="sm"
-                color="primary"
+                // color="primary"
                 className="btn"
                 onClick={() => handleUpdate(record)}
               >
