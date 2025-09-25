@@ -219,7 +219,7 @@ const Index = () => {
       sort: true,
       style: { width: "10%" },
       render:(text, record) => (
-        <div>{text == 1 ? "Cricket" : text == 2 ? "Competition" : text == 3 ? "Match" : text == 4 ? "Team" : text == 5 ? "Player" : ""}</div>
+        <div>{text == 1 ? "Cricket" : text == 2 ? "Competition" : text == 3 ? "Match" : text == 4 ? "Team" : text == 5 ? "Player" : text == 7 ? "Tournament Team Points Update" : ""}</div>
         ),
     },
     {

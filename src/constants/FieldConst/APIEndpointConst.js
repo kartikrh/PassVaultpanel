@@ -41,6 +41,7 @@ export const APIEndpointConst = [
       { label: "insertTeam", value: 10 },
       { label: "insertPlayer", value: 11 },
       { label: "getSocketCount", value: 12 },
+      { label: "getCompetitionInfo", value: 13 },
     ],
     isRequired: true,
     type: SELECT,
