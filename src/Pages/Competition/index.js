@@ -510,6 +510,31 @@ const Index = () => {
         );
       });
   };
+  const handleUpdate = async (e) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/tournamentTeamPoints/import`, {"refId" : e.tpId, "refType": 7 , "sourceId": 3})
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
 
   const handleTournament = (details) => {
     const url = new URL(window.location.origin + "/tournamentTeamPoints");
@@ -967,7 +992,7 @@ const Index = () => {
       key: "isPointTable",
       render: (text, record) => (
         <Tooltip
-          title={"Tabel"}
+          title={"Table"}
           color={"#e8e8ea"}
           overlayInnerStyle={{ color: "#000" }}
         >
@@ -1056,6 +1081,34 @@ const Index = () => {
         );
       },
       // sort: true,
+      style: { width: "10%" },
+    },
+    {
+      title: "",
+      dataIndex: "",
+      key: "",
+      render: (text, record) => {
+        if (record.isPointTable && record.tpId) {
+          return (
+            <Tooltip
+              title="Update"
+              color="#e8e8ea"
+              overlayInnerStyle={{ color: "#000" }}
+            >
+              <Button
+                size="sm"
+                // color="primary"
+                className="btn"
+                onClick={() => handleUpdate(record)}
+              >
+                Up
+              </Button>
+            </Tooltip>
+          );
+        }
+        return null; // render nothing if condition fails
+      },
+
       style: { width: "10%" },
     },
   ];
