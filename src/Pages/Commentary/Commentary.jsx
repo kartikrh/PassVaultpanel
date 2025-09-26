@@ -9,12 +9,13 @@ import PlayerImage from "../../components/Common/Reusables/PlayerImage"
 import { isEmpty } from "lodash"
 import SegmentedSwitch from "../../components/Common/Reusables/SegmentSwitch"
 import { Avatar } from '@mui/material';
+import ReactSelect from "react-select";
 
 export const CommentaryScreen = ({
     refId, teamDetails, onPitchPlayers, _onPitchPlayers, updateRuns, changePlayer, changeOver, updateExtras, onWicketClick,
     onUndoClick, changeStrike, endInnings, isLoading, changeBowler, updateDisplayStatus, showPaneltyRuns,
     overBalls, anyPopup, handleRetiredHurt = {}, target, partnerships, commentaryId, handleWheelShowToggle, handleRemainingBallsShowToggle, isRemainingBallsShow, isWheelShow, overHistory,
-    players, currentOver, currentInnings, isPredict, isPredictToggle, setIsPredictToggle, allteams, fetchData, isSaving, isAnyPopupOpen, overTypeOption, overTypeValue, onOverTypeChange, handleDefaultOverSwitch, isDefaultOverType }) => {
+    players, currentOver, currentInnings, isPredict, isPredictToggle, setIsPredictToggle, allteams, fetchData, isSaving, isAnyPopupOpen, overTypeOption, overTypeValue, onOverTypeChange, handleDefaultOverSwitch, isDefaultOverType, bowlingTypes, onBowlingTypeChange }) => {
     const [actionPopup, setActionPopup] = useState(undefined);
     const isDarkTheme = document.body.getAttribute('data-theme') === 'dark';
 
@@ -387,7 +388,7 @@ export const CommentaryScreen = ({
                 </Row>
 
                 <Row className="Bowler-header">
-                    <Col className={"d-flex align-items-center gap-1"} xs={12} md={12} lg={12}>
+                    <Col className={"d-flex align-items-center gap-1"} xs={12} md={6} lg={6}>
                         <span >
                             {onPitchPlayers[CURRENT_BOWLER]?.jerseyPlayerImage ?
                                 <img src={onPitchPlayers[CURRENT_BOWLER]?.jerseyPlayerImage} className="avatar-xs" 
@@ -406,6 +407,40 @@ export const CommentaryScreen = ({
                         <span>{parseFloat(onPitchPlayers[CURRENT_BOWLER]?.bowlerOver || 0).toFixed(1) || 0}-{onPitchPlayers[CURRENT_BOWLER]?.bowlerMaidenOver || 0}
                             -{onPitchPlayers[CURRENT_BOWLER]?.bowlerRun || 0}-{onPitchPlayers[CURRENT_BOWLER]?.bowlerTotalWicket || 0}</span>
                         <button onClick={changeBowler} className=" text-right change-button">C</button>
+                    </Col>
+                    <Col className={"d-flex align-items-center gap-1"} xs={12} md={6} lg={6}>
+                        <ReactSelect
+                            classNamePrefix="filter-dropdown"
+                            id="bowlingType"
+                            name="bowlingType"
+                            placeholder="Select Bowling Type"
+                            value={
+                                onPitchPlayers[CURRENT_BOWLER]?.bowlingType
+                                    ? {
+                                        label: bowlingTypes.find(
+                                        (item) =>
+                                            item.bowlingTypeId ==
+                                            onPitchPlayers[CURRENT_BOWLER]?.bowlingType
+                                        )?.bowlingType,
+                                        value: onPitchPlayers[CURRENT_BOWLER]?.bowlingType,
+                                    }
+                                    : null
+                            }
+                            options={bowlingTypes?.map(element=>{
+                                return {
+                                    "label":element.bowlingType,
+                                    "value":element.bowlingTypeId
+                                }
+                            })}
+                            styles={{
+                                container: (base) => ({
+                                    ...base,
+                                    width: 250,
+                                }),
+                            }}
+                            onChange={onBowlingTypeChange}
+                            required
+                        />
                     </Col>
                 </Row>
                 <Row className={(isLoading || isSaving || isAnyPopupOpen) ? "disable-button" : ""} >
