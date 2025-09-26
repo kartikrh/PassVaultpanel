@@ -618,6 +618,49 @@ const Commentary = (props) => {
         setSaveToDb(true)
         // console.log("updatesRuns", currentPartnership)
     }
+
+    const onBowlingTypeChange = async (selected) => {
+        if (!selected) return;
+
+        const updatedBowler = {
+            ...onPitchPlayers[CURRENT_BOWLER],
+            bowlingType: selected.value,
+        };
+
+        const payload = {
+            commentaryId: commentaryDetails.commentaryId,
+            commentaryPlayerId: updatedBowler?.commentaryPlayerId,
+            bowlingType: updatedBowler?.bowlingType,
+        };
+
+        await axiosInstance
+            .post(`/admin/commentary/bowlingTypeChange`, payload)
+            .then((response) => {
+                 const updatedPlayers = {
+                    ...onPitchPlayers,
+                    [CURRENT_BOWLER]: updatedBowler,
+                };
+                setOnPitchPlayers(updatedPlayers);
+                // _setOnPitchPlayers(updatedPlayers);
+                dispatch(
+                    updateToastData({
+                        data: response?.message,
+                        title: response?.title,
+                        type: SUCCESS,
+                    })
+                );
+            })
+            .catch((error) => {
+                dispatch(
+                    updateToastData({
+                        data: error?.message,
+                        title: error?.title,
+                        type: ERROR,
+                    })
+                );
+            });
+    };
+
     const updateExtras = (type, runs, isBoundary = false) => {
         setIsUndoingLastOver(false)
         setCurrentBall({})
@@ -2838,6 +2881,8 @@ const Commentary = (props) => {
                 onOverTypeChange={handleOverTypeChange}
                 handleDefaultOverSwitch={handleDefaultOverSwitch}
                 isDefaultOverType={isDetaultOverType}
+                bowlingTypes={props.data.commentaryData?.bowlingStyles}
+                onBowlingTypeChange={onBowlingTypeChange}
             />}
         {!props?.isNewUi && !(isCommentaryBallLoading || inningsChangePopup || superOverModal || showRretiredHurt || isPaneltyPopup || props.isDataLoading ||
             winnerAnnouncement || showUpdateInnings || completeMatchModal || superOverModal || showCricketFieldModal) &&
