@@ -263,6 +263,9 @@ const FormBuilder = forwardRef(
         // ) {
         //   errors[field.name] = fieldErrors[field.name];
         // }
+        if (field.type === DATE_TIME_PICKER &&new Date(field.name == "endDate") && new Date(field.name == "startDate") && formData.startDate > formData.endDate) {
+          errors['endDate'] = "To should be greater than from"
+        }
       });
 
       setFieldErrors(errors);
@@ -337,6 +340,9 @@ const FormBuilder = forwardRef(
           field.regexErrorMessage || "Regex is not correct in this field";
       } else {
         delete errors[field.name];
+      }
+      if (field.type === DATE_TIME_PICKER &&new Date(field.name == "endDate") && new Date(field.name == "startDate") && formData.startDate > formData.endDate) {
+        errors['endDate'] = "To should be greater than from"
       }
       // setFormData((prevFormData) => ({
       //   ...prevFormData,
