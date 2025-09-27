@@ -18,6 +18,12 @@ export const CommentaryScreen = ({
     players, currentOver, currentInnings, isPredict, isPredictToggle, setIsPredictToggle, allteams, fetchData, isSaving, isAnyPopupOpen, overTypeOption, overTypeValue, onOverTypeChange, handleDefaultOverSwitch, isDefaultOverType, bowlingTypes, onBowlingTypeChange }) => {
     const [actionPopup, setActionPopup] = useState(undefined);
     const isDarkTheme = document.body.getAttribute('data-theme') === 'dark';
+    
+    useEffect(() => {
+        if(currentInnings == 0){
+            handleRemainingBallsShowToggle()
+        }
+    }, [currentInnings])
 
     const OffSymbolStatus = () => {
         return (
