@@ -20,8 +20,8 @@ export const CommentaryScreen = ({
     const isDarkTheme = document.body.getAttribute('data-theme') === 'dark';
     
     useEffect(() => {
-        if(currentInnings == 0){
-            handleRemainingBallsShowToggle()
+        if(currentInnings == 0 && isRemainingBallsShow == true){
+            handleRemainingBallsShowToggle(false)
         }
     }, [currentInnings])
 
