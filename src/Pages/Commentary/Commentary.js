@@ -2504,8 +2504,8 @@ const Commentary = (props) => {
                 );
             });
     };
-    const handleRemainingBallsShowToggle = () => {
-        setIsRemainingBallsShow(!isRemainingBallsShow)
+    const handleRemainingBallsShowToggle = (value) => {
+        setIsRemainingBallsShow(value ? value : !isRemainingBallsShow)
     }
     const handleOverTypeChange = async (overTypeValue, overTypeName) => {
         await axiosInstance
