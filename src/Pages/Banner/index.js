@@ -38,7 +38,6 @@ const Index = () => {
     useState(false);
   const [checekedList, setCheckedList] = useState([]);
   const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
