@@ -14,6 +14,7 @@ import { updateToastData } from "../../Features/toasterSlice";
 import { ChangeActionTypeModel } from "../../components/Model/ChangeActionType";
 import { Tooltip } from "antd";
 import LoadDataModal from "../../components/Model/LoadDataModal";
+import axios from "axios";
 
 const Index = () => {
   const pageName = TAB_ClientSocket
@@ -27,6 +28,7 @@ const Index = () => {
   const [checekedList, setCheckedList] = useState([]); const [isLoading, setIsLoading] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
+  const [viewCounts, setViewCounts] = useState({});
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -103,6 +105,29 @@ const Index = () => {
       .then((response) => {
         fetchData();
         dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+      });
+  };
+
+  const fetchViewCount = async (url, clientSocketId) => {
+    setIsLoading(true);
+    await axios
+      .post(`${url}/api/socketClientsCountV1`,"",
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+      .then((response) => {
+        const count = response?.data?.result?.totalCount ?? 0;
+        setViewCounts((prev) => ({
+          ...prev,
+          [clientSocketId]: count,
+        }));
+        setIsLoading(false);
       })
       .catch((error) => {
         setIsLoading(false);
@@ -299,6 +324,29 @@ const Index = () => {
           }}
         >
           <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
+        </Button>
+      </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "View Count",
+      key: "viewCount",
+      render: (text, record) => (
+      <Tooltip title={"View Count"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+        <Button
+          color={
+            viewCounts[record.clientSocketId] !== undefined
+              ? "info"
+              : "primary"
+          }
+          size="sm"
+          className="btn"
+          onClick={() => !viewCounts[record.clientSocketId] && fetchViewCount(record?.url, record?.clientSocketId)}
+        >
+           {viewCounts[record.clientSocketId] !== undefined
+            ? `Count: ${viewCounts[record.clientSocketId]}`
+            : "View Count"}
         </Button>
       </Tooltip>
       ),
