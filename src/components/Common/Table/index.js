@@ -159,7 +159,7 @@ const Index = forwardRef(
     ref
   ) => {
     const globalPageSize = localStorage.getItem("pageSize");
-    const globalDateType = localStorage.getItem("DateType")
+    const globalDateType = JSON.parse(localStorage.getItem("DateType"))
     document.title = `${tableElement?.title}`;
     const [data, setData] = useState(dataSource);
     const [tableActions, setTableActions] = useState(
