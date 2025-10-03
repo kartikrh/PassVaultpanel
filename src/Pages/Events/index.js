@@ -52,7 +52,7 @@ const Index = () => {
       .post(`/admin/events/all`, {
         ...(value || tableActions),
         eventTypeId: EventTypeId ? EventTypeId : (value?.eventTypeId || tableActions?.eventTypeId) || 0,
-        competitionId: EventCompetitionId ? EventCompetitionId : (value?.CompetitionId || tableActions?.CompetitionId) || 0,
+        competitionId: EventCompetitionId ? EventCompetitionId : (value?.competitionId || tableActions?.competitionId) || 0,
         startDate: convertDateLocalToUTC(dateRange?.startDate, "index"),
         endDate: convertDateLocalToUTC(dateRange?.endDate, "index"),
       })

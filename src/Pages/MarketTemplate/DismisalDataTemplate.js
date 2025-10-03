@@ -384,7 +384,7 @@ function DismissalDataComponent() {
                         </tr>
                     </thead>
                     <tbody>
-                        {runners.map(runner => (
+                        {runners.sort((a,b) => a.marketTemplateRunnerId - b.marketTemplateRunnerId).map(runner => (
                             <tr key={runner.marketTemplateRunnerId}>
                                 <td style={{
                                     fontWeight: isRowHighlighted(runner.marketTemplateRunnerId) ? '700' : 'bold',
@@ -394,6 +394,7 @@ function DismissalDataComponent() {
                                 }}>
                                     <strong>{runner.runner}</strong>
                                 </td>
+                                {/* {console.log("runner", runner.marketTemplateRunnerId, runner.runner)} */}
                                 {bowlingStyles.map(bowlingStyle => (
                                     <td
                                         key={bowlingStyle.bowlingTypeId}
