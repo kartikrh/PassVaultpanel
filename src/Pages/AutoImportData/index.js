@@ -24,6 +24,7 @@ import { Button } from "reactstrap";
 
 const Index = () => {
   const globalPageSize = localStorage.getItem("pageSize")
+  const globalDateType = JSON.parse(localStorage.getItem("DateType"))
   const pageName = TAB_AUTO_IMPORT;
   const dispatch = useDispatch();
   const finalizeRef = useRef(null);
@@ -40,7 +41,7 @@ const Index = () => {
   const [eventTypeId, setEventTypeId] = useState(null);
   const [competitionId, setCompetitionId] = useState(null);
   const [isSearch, setIsSearch] = useState(true);
-  const [dateType, setDateType] = useState({ label: "Local Timezone", value: 1 });
+  const [dateType, setDateType] = useState(globalDateType || { label: "Local Timezone", value: 1 });
   const [dateRange, setDateRange] = useState({
     startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
     endDate: `${new Date().toISOString().split("T")[0]}T23:59:00`,

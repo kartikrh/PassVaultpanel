@@ -15,6 +15,7 @@ function ScoringLogs() {
   const pageName = TAB_SCORING_LOGS;
   const finalizeRef = useRef(null);
   document.title = "Score Access Logs";
+  const globalDateType = JSON.parse(localStorage.getItem("DateType"))
   const [data, setData] = useState([]);
   const [checekedList, setCheckedList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -25,7 +26,7 @@ function ScoringLogs() {
   const [eventTypeId, setEventTypeId] = useState(null);
   const [competitionId, setCompetitionId] = useState(null);
   const [isSearch, setIsSearch] = useState(true);
-  const [dateType, setDateType] = useState({ label: "Local Timezone", value: 1 });
+  const [dateType, setDateType] = useState(globalDateType || { label: "Local Timezone", value: 1 });
   const [cloneValues, setCloneValues] = useState({
         eventName: "",
         eventRefId: "",
