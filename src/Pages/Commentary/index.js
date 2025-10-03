@@ -60,6 +60,7 @@ const Index = () => {
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   document.title = "Commentary";
   const globalDateType = JSON.parse(localStorage.getItem("DateType"))
+  console.log("globalDateType", globalDateType)
   const [selectedTableElements, setSelectedTableElements] = useState({
     eventType: null,
     competition: null,

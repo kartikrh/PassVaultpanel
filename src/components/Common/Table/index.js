@@ -159,7 +159,10 @@ const Index = forwardRef(
     ref
   ) => {
     const globalPageSize = localStorage.getItem("pageSize");
-    const globalDateType = JSON.parse(localStorage.getItem("DateType"))
+    const globalDateType = JSON.parse(localStorage.getItem("DateType") || {
+      label: "Local Timezone",
+      value: 1,
+    })
     document.title = `${tableElement?.title}`;
     const [data, setData] = useState(dataSource);
     const [tableActions, setTableActions] = useState(
@@ -2641,6 +2644,7 @@ const Index = forwardRef(
                                 }),
                               }}
                               onChange={(e) => {
+                                  console.log("e", e)
                                   localStorage.setItem("DateType", JSON.stringify(e))
                                   setDateType(e)
                                 }
