@@ -150,8 +150,9 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
     const handleSave = async () => {
         loadingTrue();
         try {
-            const response = await axiosInstance.post("/admin/eventMarket/updateMarketRate", {
-                eventMarket: [localMarket]
+            const response = await axiosInstance.post("/admin/eventMarket/updateMarketRateV1", {
+                eventMarket: [localMarket],
+                action: "SAVE_ALL",
             });
             if (response.success) {
                 onUpdate(localMarket);
@@ -168,7 +169,7 @@ const MultiRunnerMarket = ({ market, onUpdate, teams, handleSingleAction, loadin
     const handleAction = async (key, value) => {
         loadingTrue();
         try {
-            const response = await axiosInstance.post("/admin/eventMarket/updateMarketRate", {
+            const response = await axiosInstance.post("/admin/eventMarket/updateMarketRateV1", {
                 eventMarket: [{ ...localMarket, [key]: value }],
                 action: key.toUpperCase()
             });

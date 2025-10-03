@@ -219,6 +219,7 @@ const Index = () => {
     { label: "Connect", value: 1 },
     { label: "Disconnect", value: 2 },
   ];
+  
   //table columns
   const columns = [
     {
