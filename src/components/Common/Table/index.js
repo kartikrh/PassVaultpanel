@@ -2644,6 +2644,7 @@ const Index = forwardRef(
                                 }),
                               }}
                               onChange={(e) => {
+                                  console.log("e", e)
                                   localStorage.setItem("DateType", JSON.stringify(e))
                                   setDateType(e)
                                 }

@@ -46,6 +46,7 @@ const Index = () => {
         eventRefId: "",
     });
   const [dateType, setDateType] = useState(globalDateType || { label: "Local Timezone", value: 1 });
+  console.log("globalDateType", globalDateType)
   const [dateRange, setDateRange] = useState({
     startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
     endDate: `${new Date().toISOString().split("T")[0]}T23:59:00`,
