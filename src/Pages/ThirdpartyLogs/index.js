@@ -20,6 +20,7 @@ const Index = () => {
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   document.title = "Thirdparty Logs";
+  const globalDateType = JSON.parse(localStorage.getItem("DateType"))
   const [data, setData] = useState([]);
   const [cloneValues, setCloneValues] = useState({
         eventName: "",
@@ -31,7 +32,7 @@ const Index = () => {
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [isSearch, setIsSearch] = useState(true);
-  const [dateType, setDateType] = useState({ label: "Local Timezone", value: 1 });
+  const [dateType, setDateType] = useState(globalDateType || { label: "Local Timezone", value: 1 });
   const [dateRange, setDateRange] = useState({
     startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
     endDate: `${new Date().toISOString().split("T")[0]}T23:59:00`,

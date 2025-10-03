@@ -57,6 +57,7 @@ const Index = () => {
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   document.title = "Commentary History";
+  const globalDateType = JSON.parse(localStorage.getItem("DateType"))
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
   const [dateRange, setDateRange] = useState(() => getDateRange(5));
@@ -78,7 +79,7 @@ const Index = () => {
   const [eventRefModelVisible, setEventRefModelVisible] = useState(false);
   const [selectedEventRef, setSelectedEventRef] = useState({});
   const [selectedPythonCommentary, setSelectedPythonCommentary] = useState({});
-  const [dateType, setDateType] = useState({
+  const [dateType, setDateType] = useState(globalDateType || {
     label: "Local Timezone",
     value: 1,
   });

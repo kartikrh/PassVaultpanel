@@ -17,6 +17,7 @@ function EventMarketLogs() {
   const pageName = TAB_EVENTMARKET_LOGS;
   const finalizeRef = useRef(null);
   document.title = "Event Market Logs";
+  const globalDateType = JSON.parse(localStorage.getItem("DateType"))
   const [data, setData] = useState([]);
   const [checekedList, setCheckedList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -31,7 +32,7 @@ function EventMarketLogs() {
   const [reqModelVisible, setReqModelVisible] = useState(false);
   const [resModelVisible, setResModelVisible] = useState(false);
   const [resBodyData, setResBodyData] = useState({});
-  const [dateType, setDateType] = useState({ label: "Local Timezone", value: 1 });
+  const [dateType, setDateType] = useState(globalDateType || { label: "Local Timezone", value: 1 });
   const [cloneValues, setCloneValues] = useState({
         eventName: "",
         eventRefId: "",

@@ -35,6 +35,7 @@ import CloseModel from "./CloseModel";
 
 const Index = () => {
   const pageName = TAB_EVENT_MARKETS;
+  const globalDateType = JSON.parse(localStorage.getItem("DateType"))
   const commentaryId = +sessionStorage.getItem("commentaryEventMarketId") || 0;
   const commentaryDetails = JSON.parse(
     sessionStorage.getItem("commentaryEventMarketDetails") || "{}"
@@ -70,7 +71,7 @@ const Index = () => {
   const [categories, setCategories] = useState([]);
   const [delay, setDelay] = useState(null);
   const [isSearch, setIsSearch] = useState(false);
-  const [dateType, setDateType] = useState({
+  const [dateType, setDateType] = useState(globalDateType || {
     label: "Local Timezone",
     value: 1,
   });

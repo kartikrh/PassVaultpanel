@@ -30,6 +30,7 @@ const isSquadOptions = [
 export default function ImportEntityEvent() {
   const pageName = TAB_IMPORT_ENTITYEVENTIMPORT;
   document.title = "Entity Event Import";
+  const globalDateType = JSON.parse(localStorage.getItem("DateType"))
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   const navigate = useNavigate();
@@ -53,7 +54,7 @@ export default function ImportEntityEvent() {
   const [pageSize, setPageSize] = useState(globalPageSize);
   const [total, setTotal] = useState(0);
   const [permissionChecked, setPermissionChecked] = useState(false);
-  const [dateType, setDateType] = useState({ label: "Local Timezone", value: 'IST: +5:30' });
+  const [dateType, setDateType] = useState(globalDateType || { label: "Local Timezone", value: 'IST: +5:30' });
   const [dateRange, setDateRange] = useState({
     startDate: `${today.toISOString().split("T")[0]}T00:00:00`,
     endDate: `${oneMonthLater.toISOString().split("T")[0]}T23:59:00`,
@@ -492,7 +493,7 @@ export default function ImportEntityEvent() {
       startDate: `${today.toISOString().split("T")[0]}T00:00:00`,
       endDate: `${oneMonthLater.toISOString().split("T")[0]}T23:59:00`,
     })
-    setDateType({ label: "Local Timezone", value: 'IST: +5:30' })
+    setDateType({ label: "Local Timezone", value: 1 })
     setIsSquadSelectedOption(true)
     setCurrentPage(0);
     setIsFilter((pre) => !pre)
@@ -820,11 +821,15 @@ export default function ImportEntityEvent() {
                       width: 140,
                     }),
                   }}
-                  onChange={(e) => setDateType(e)}
+                  onChange={(e) => {localStorage.setItem("DateType", JSON.stringify(e));setDateType(e)}}
                   options={[
-                    { label: "Local Timezone", value: 'IST: +5:30' },
-                    { label: "UTC Timezone", value: 'UTC: 00:00' },
+                    { label: "Local Timezone", value: 1 },
+                    { label: "UTC Timezone", value: 2 },
                   ]}
+                  // options={[
+                  //   { label: "Local Timezone", value: 'IST: +5:30' },
+                  //   { label: "UTC Timezone", value: 'UTC: 00:00' },
+                  // ]}
                   classNamePrefix="filter-dropdown"
                 />
                 <Select
