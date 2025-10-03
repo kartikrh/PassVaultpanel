@@ -8,7 +8,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
 import { isEmpty, isEqual } from "lodash";
-import { ERROR, MODULE_EVENTS, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, TAB_EVENT } from "../../components/Common/Const";
+import { ERROR, MODULE_EVENTS, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, TAB_COMMENTARY, TAB_COMMENTARY_LIST, TAB_EVENT } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission, convertDateLocalToUTC, convertDateUTCToLocal, convertDateUTCToLocal24 } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
@@ -18,9 +18,13 @@ import { Tooltip } from "antd";
 
 const Index = () => {
   const pageName = TAB_EVENT
+  const CommentaryListPage = TAB_COMMENTARY_LIST
+  const CommentaryPage = TAB_COMMENTARY
   const finalizeRef = useRef(null);
+  const didInitialFetch = useRef(false);
   const permissionObj = useSelector(state => state.auth?.tabPermissionList); document.title = "Events";
   const [data, setData] = useState([]);
+  const [filledDropdownData, setFilledDropdownData] = useState(false);
   const [dataIndexList, setDataIndexList] = useState([]);
   const [checekedList, setCheckedList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -39,8 +43,12 @@ const Index = () => {
     eventType: null,
     competition: null
   });
+  const [userRefData, setUserRefData] = useState(false);
   const EventTypeId = +sessionStorage.getItem('CompetitionEventTypeId') || 0;
   const EventCompetitionId = +sessionStorage.getItem('EventCompetitionId') || 0;
+
+  const commentaryPermission = checkPermission(permissionObj, CommentaryPage, PERMISSION_VIEW)
+  const commentaryListPermission = checkPermission(permissionObj, CommentaryListPage, PERMISSION_VIEW)
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -184,6 +192,28 @@ const Index = () => {
     fetchData(value)
     fetchCompetitionData()
   }
+
+  const handleCommentaryClick = (details) => {
+    const navUrl = (commentaryPermission && commentaryListPermission) ? "/Commentary" : commentaryPermission ? "/Commentary" : commentaryListPermission ? "/CommentaryList" : ''
+    const url = new URL(window.location.origin + navUrl);
+    sessionStorage.setItem(
+      "commentaryCompetitionId",
+      "" + details?.competitionId
+    );
+    sessionStorage.setItem(
+      "commentaryEventTypeId",
+      "" + details?.eventTypeId
+    );
+    // sessionStorage.setItem(
+    //   "commentaryManualOddsMarketDetails",
+    //   "" + JSON.stringify(details)
+    // );
+    window.open(url.href, "_blank");
+    sessionStorage.removeItem("commentaryCompetitionId");
+    sessionStorage.removeItem("commentaryEventTypeId");
+    // sessionStorage.removeItem("commentaryManualOddsMarketDetails");
+  };
+
   const columns = [
     {
       title: (
@@ -232,13 +262,44 @@ const Index = () => {
       ),
       style: { width: "2%", textAlign: "center" },
     },
+    (commentaryPermission || commentaryListPermission) &&
+      {
+        title: "",
+        dataIndex: "",
+        key: "",
+        render: (text, record) => {
+          // const isMatchingCompetition =
+          //   record?.competitionId === filledDropdownData?.competition?.value;
+            
+          // if (userRefData.competitionId != 0 && !isMatchingCompetition) return null; 
+  
+          return (
+            <Tooltip
+              title={"Commentary List"}
+              color={"#e8e8ea"}
+              overlayInnerStyle={{ color: "#000" }}
+            >
+              <Button
+                color={"primary"}
+                size="sm"
+                className="btn"
+                onClick={() => handleCommentaryClick(record)}
+              >
+                CL
+              </Button>
+            </Tooltip>
+          );
+        },
+        // sort: true,
+        style: { width: "10%" },
+      },
     {
-      title: "Event Name",
-      dataIndex: "eventName",
-      // render: (text, record) => (
-      //   <span style={{ cursor: "pointer" }}>{text}</span>
-      // ),
-      key: "eventName",
+      title: "Event Date",
+      dataIndex: "eventDate",
+      render: (text, record) => (
+        <span style={{ cursor: "pointer" }}>{convertDateUTCToLocal24(text, 'index')}</span>
+      ),
+      key: "eventDate",
       style: { width: "10%" },
     },
     {
@@ -251,25 +312,18 @@ const Index = () => {
       style: { width: "10%" },
     },
     {
-      title: "Event Date",
-      dataIndex: "eventDate",
-      render: (text, record) => (
-        <span style={{ cursor: "pointer" }}>{convertDateUTCToLocal24(text, 'index')}</span>
-      ),
-      key: "eventDate",
-      style: { width: "10%" },
-    },
-    {
-      title: "Venue",
-      dataIndex: "venue",
-      key: "venue",
-      render: (text, record) => text ? text : "N/A",
-      style: { width: "10%" },
-    },
-    {
       title: "Reference Id",
       dataIndex: "refId",
       key: "refId",
+      style: { width: "10%" },
+    },
+    {
+      title: "Event Name",
+      dataIndex: "eventName",
+      // render: (text, record) => (
+      //   <span style={{ cursor: "pointer" }}>{text}</span>
+      // ),
+      key: "eventName",
       style: { width: "10%" },
     },
     {
@@ -277,6 +331,13 @@ const Index = () => {
       dataIndex: "competition",
       key: "competition",
       style: { width: "40%" },
+    },
+    {
+      title: "Venue",
+      dataIndex: "venue",
+      key: "venue",
+      render: (text, record) => text ? text : "N/A",
+      style: { width: "10%" },
     },
     {
       title: "Active",
@@ -320,6 +381,46 @@ const Index = () => {
     fetchEventTypeData();
     fetchCompetitionData();
   }, [permissionObj]);
+
+  useEffect(() => {
+    const objToSave = {};
+    let shouldFetchData = false;
+
+    if (userRefData?.eventTypeId !== 0 && eventTypes && eventTypes.length > 0) {
+      const matchedEvent = eventTypes.find(
+        (item) => item.eventTypeId === userRefData?.eventTypeId
+      );
+      objToSave["eventType"] = {
+        label: matchedEvent?.eventType,
+        value: matchedEvent?.eventTypeId,
+      };
+    }
+
+    if (competitions && competitions.length > 0) {
+      if (userRefData?.competitionId !== 0) {
+        const matchedCompetition = competitions.find(
+          (item) => item.competitionId === userRefData?.competitionId
+        );
+        if (matchedCompetition) {
+          objToSave["competition"] = {
+            label: matchedCompetition.competition,
+            value: matchedCompetition.competitionId,
+          };
+          shouldFetchData = true;
+        }
+      } else {
+        shouldFetchData = true;
+      }
+    }
+
+    setFilledDropdownData(objToSave);
+
+    // Use a ref to track if we've already fetched data
+    if (shouldFetchData && !didInitialFetch.current) {
+      fetchData();
+      didInitialFetch.current = true;
+    }
+  }, [eventTypes, competitions]);
 
   useEffect(() => {
     if (EventTypeId && EventCompetitionId) {
