@@ -343,6 +343,7 @@ const Index = () => {
               : "primary"
           }
           style={{ minWidth: "70px" }}
+          disabled={!record?.isActive}
           size="sm"
           className="btn"
           onClick={() => fetchViewCount(record?.url, record?.clientSocketId)}
