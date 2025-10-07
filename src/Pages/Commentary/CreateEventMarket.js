@@ -636,19 +636,31 @@ export const CreateEventMarket = () => {
                 return;
             }
 
+            // setSelectedMarkets(prev => {
+            //     const sectionSelections = prev[sectionKey] || [];
+            //     const updatedSelections = [...sectionSelections];
+
+            //     // If deselecting the current index, deselect all subsequent indexes
+            //     if (updatedSelections[index]) {
+            //         for (let i = index; i < updatedSelections.length; i++) {
+            //             updatedSelections[i] = false;
+            //         }
+            //     } else {
+            //         updatedSelections[index] = true; // Select the clicked index
+            //     }
+                // console.log("done")
+            //     return {
+            //         ...prev,
+            //         [sectionKey]: updatedSelections
+            //     };
+            // });
+
             setSelectedMarkets(prev => {
                 const sectionSelections = prev[sectionKey] || [];
                 const updatedSelections = [...sectionSelections];
 
-                // If deselecting the current index, deselect all subsequent indexes
-                if (updatedSelections[index]) {
-                    for (let i = index; i < updatedSelections.length; i++) {
-                        updatedSelections[i] = false;
-                    }
-                } else {
-                    updatedSelections[index] = true; // Select the clicked index
-                }
-
+                // Toggle only the clicked index
+                updatedSelections[index] = !updatedSelections[index];
                 return {
                     ...prev,
                     [sectionKey]: updatedSelections

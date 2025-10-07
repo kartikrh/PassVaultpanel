@@ -358,6 +358,15 @@ const Index = () => {
       ),
       style: { width: "2%", textAlign: "center" },
     },
+    {
+      title: "Full Name",
+      dataIndex: "createdBy",
+      // render: (text, record) => (
+      //   <span style={{ cursor: "pointer" }}>{text}</span>
+      // ),
+      key: "createdBy",
+      style: { width: "10%", textAlign: "center"},
+    },
   ];
 
   //elements required
