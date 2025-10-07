@@ -19,6 +19,7 @@ import { checkPermission } from "../../components/Common/Reusables/reusableMetho
 import { updateToastData } from "../../Features/toasterSlice";
 import { loadInit } from "../../config";
 import ImportModel from "./ImportModel";
+import axios from "axios";
 
 export default function ImportEntityTeam() {
   const pageName = TAB_IMPORT_ENTITYTEAMIMPORT;
@@ -60,13 +61,16 @@ export default function ImportEntityTeam() {
     finalizeRef.current.getTableAction();
 
     try {
-      const response = await axiosInstance.post(`${entitySportUrl}/admin/v3/teams`, {
-        page: currentPage === 0 ? 1 : currentPage,
-        limit: pageSize,
+      const params = {
+        paged: currentPage === 0 ? 1 : currentPage,
+        per_page: pageSize,
+      }
+      const response = await axios.get(`${entitySportUrl}/team/list`, {
+        params
       });
 
-      const items = response?.result?.response?.items;
-      const totalItems = response?.result?.response?.total_items;
+      const items = response?.data?.result?.items;
+      const totalItems = response?.data?.result?.total_items;
 
       const apiData = Array.isArray(items) ? items : [];
       const totalCount = +totalItems || apiData.length;

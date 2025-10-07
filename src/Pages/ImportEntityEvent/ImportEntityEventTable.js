@@ -20,6 +20,7 @@ import { checkPermission } from "../../components/Common/Reusables/reusableMetho
 import { updateToastData } from "../../Features/toasterSlice";
 import { loadInit } from "../../config";
 import MatchCard from "./MatchCard";
+import axios from "axios";
 
 const isSquadOptions = [
       { value: null, label: "Select Squad" },
@@ -172,7 +173,7 @@ export default function ImportEntityEvent() {
 
     setIsLoading(true);
     let endpoint = "";
-    let payload = {};
+    let params = {};
 
     try {
       switch (selectedLevel.level) {
@@ -181,13 +182,13 @@ export default function ImportEntityEvent() {
             setIsLoading(false);
             return;
           }
-          endpoint = `${entitySportUrl}/admin/v3/matches`;
-          payload = {
+          endpoint = `${entitySportUrl}/match/list`;
+          params = {
             start_date: formatToYYYYMMDD(dateRange.startDate), 
             end_date: formatToYYYYMMDD(dateRange.endDate), 
             // sid: +selectedLevel.seasonId,
-            page: currentPage == 0 ? 1 : currentPage,
-            limit: pageSize,
+            paged: currentPage == 0 ? 1 : currentPage,
+            per_page: pageSize,
             timezone: dateType.value,
             pre_squad: isSquadSelectedOption 
           };
@@ -196,10 +197,10 @@ export default function ImportEntityEvent() {
             selectedFilter.status !== null &&
             selectedFilter.status !== undefined
           ) {
-            payload.status = selectedFilter.status;
+            params.status = selectedFilter.status;
           }
           if (selectedFormateOption) {
-            payload.format = selectedFormateOption;
+            params.format = selectedFormateOption;
           }
           break;
         case "competitionMatches":
@@ -207,11 +208,11 @@ export default function ImportEntityEvent() {
             setIsLoading(false);
             return;
           }
-          endpoint = `${entitySportUrl}/admin/v3/matches`;
-          payload = {
+          endpoint = `${entitySportUrl}/match/list`;
+          params = {
             cid: selectedLevel.competitionId,
-            page: currentPage == 0 ? 1 : currentPage,
-            limit: pageSize,
+            paged: currentPage == 0 ? 1 : currentPage,
+            per_page: pageSize,
           };
           //client-side filtering in Matches
           break;
@@ -220,10 +221,10 @@ export default function ImportEntityEvent() {
           return;
       }
 
-      const response = await axiosInstance.post(endpoint, payload);
+      const response = await axios.get(endpoint, { params });
 
-      const items = response?.result?.response?.items;
-      const totalItems = response?.result?.response?.total_items;
+      const items = response?.data?.result?.items;
+      const totalItems = response?.data?.result?.total_items;
 
       let apiData = Array.isArray(items) ? items : [];
       let totalCount = +totalItems || apiData.length;
@@ -288,15 +289,18 @@ export default function ImportEntityEvent() {
   const fetchMatchDetails = async (matchId) => {
     setIsLoading(true);
     try {
-      const response = await axiosInstance.post(
-        `${entitySportUrl}/admin/v3/matches/info`,
-        {
+      const params = {
           mid: +matchId,
+        }
+      const response = await axios.get(
+        `${entitySportUrl}/match/${matchId}/info`,
+        {
+          params
         }
       );
 
-      if (response?.result) {
-        setMatchData(response.result);
+      if (response?.data?.result) {
+        setMatchData(response?.data?.result);
         setMatchModalVisible(true);
       } else {
         dispatch(
