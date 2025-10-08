@@ -18,6 +18,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { loadInit } from "../../config";
+import axios from "axios";
 
 export default function ImportEntityPlayer() {
   const pageName = TAB_IMPORT_ENTITYPLAYERIMPORT;
@@ -60,15 +61,18 @@ export default function ImportEntityPlayer() {
     finalizeRef.current.getTableAction();
 
     try {
-      const response = await axiosInstance.post(`${entitySportUrl}/admin/v3/players/search`, {
-        page: currentPage === 0 ? 1 : currentPage,
-        limit: pageSize,
+      const params = {
+        paged: currentPage === 0 ? 1 : currentPage,
+        per_page: pageSize,
         country: selectedCountry?.value || null,
         // search: "",
+      }
+      const response = await axios.get(`${entitySportUrl}/player/search`, {
+        params
       });
 
-      const items = response?.result?.response?.items;
-      const totalItems = response?.result?.response?.total_items;
+      const items = response?.data?.result?.items;
+      const totalItems = response?.data?.result?.total_items;
 
       const apiData = Array.isArray(items) ? items : [];
       const totalCount = +totalItems || apiData.length;

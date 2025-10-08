@@ -168,6 +168,12 @@ export default function ImportEntityEvent() {
     return `${year}-${month}-${day}`;
   }
 
+  function makeDateRangeParam(range) {
+    const start = formatToYYYYMMDD(range.startDate);
+    const end = formatToYYYYMMDD(range.endDate);
+    return `${start}_${end}`; // yyyy-mm-dd_yyyy-mm-dd
+  }
+
   const fetchData = useCallback(async () => {
     if (!permissionChecked) return;
 
@@ -184,8 +190,9 @@ export default function ImportEntityEvent() {
           }
           endpoint = `${entitySportUrl}/match/list`;
           params = {
-            start_date: formatToYYYYMMDD(dateRange.startDate), 
-            end_date: formatToYYYYMMDD(dateRange.endDate), 
+            date: makeDateRangeParam(dateRange),
+            // start_date: formatToYYYYMMDD(dateRange.startDate),
+            // end_date: formatToYYYYMMDD(dateRange.endDate),
             // sid: +selectedLevel.seasonId,
             paged: currentPage == 0 ? 1 : currentPage,
             per_page: pageSize,
@@ -208,7 +215,7 @@ export default function ImportEntityEvent() {
             setIsLoading(false);
             return;
           }
-          endpoint = `${entitySportUrl}/match/list`;
+          endpoint = `${entitySportUrl}/competition/${selectedLevel?.competitionId}/matches`;
           params = {
             cid: selectedLevel.competitionId,
             paged: currentPage == 0 ? 1 : currentPage,
@@ -497,7 +504,8 @@ export default function ImportEntityEvent() {
       startDate: `${today.toISOString().split("T")[0]}T00:00:00`,
       endDate: `${oneMonthLater.toISOString().split("T")[0]}T23:59:00`,
     })
-    setDateType({ label: "Local Timezone", value: 1 })
+    // setDateType({ label: "Local Timezone", value: 1 })
+    setDateType({ label: "Local Timezone", value: "IST: +5:30" });
     setIsSquadSelectedOption(true)
     setCurrentPage(0);
     setIsFilter((pre) => !pre)
@@ -826,14 +834,14 @@ export default function ImportEntityEvent() {
                     }),
                   }}
                   onChange={(e) => {localStorage.setItem("DateType", JSON.stringify(e));setDateType(e)}}
-                  options={[
-                    { label: "Local Timezone", value: 1 },
-                    { label: "UTC Timezone", value: 2 },
-                  ]}
                   // options={[
-                  //   { label: "Local Timezone", value: 'IST: +5:30' },
-                  //   { label: "UTC Timezone", value: 'UTC: 00:00' },
+                  //   { label: "Local Timezone", value: 1 },
+                  //   { label: "UTC Timezone", value: 2 },
                   // ]}
+                  options={[
+                    { label: "Local Timezone", value: 'IST: +5:30' },
+                    { label: "UTC Timezone", value: 'UTC: 00:00' },
+                  ]}
                   classNamePrefix="filter-dropdown"
                 />
                 <Select
