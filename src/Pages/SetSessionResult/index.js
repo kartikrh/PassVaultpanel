@@ -39,6 +39,7 @@ const Index = () => {
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   document.title = TAB_SET_SESSION_RESULT;
+  const globalDateType = JSON.parse(localStorage.getItem("DateType"))
   const [data, setData] = useState([]);
   const [eventTypes, setEventTypes] = useState([]);
   const [competitionList, setCompetitionList] = useState([]);
@@ -62,7 +63,7 @@ const Index = () => {
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [dataIndexList, setDataIndexList] = useState([]);
   const [resultModelVisable, setResultModelVisable] = useState(false);
-  const [dateType, setDateType] = useState({
+  const [dateType, setDateType] = useState( globalDateType || {
     label: "Local Timezone",
     value: 1,
   });

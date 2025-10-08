@@ -213,6 +213,7 @@ const Index = () => {
     navigate("/addClientSocket", { state: { userId: id } });
   };
   const handleReset = (value) => {
+    setViewCounts({});
     fetchData(value)
   }
   const actionTypeOptions = [
@@ -331,23 +332,25 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "View Count",
-      key: "viewCount",
+      title: "Viewers",
+      key: "viewers",
       render: (text, record) => (
-      <Tooltip title={"View Count"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+      <Tooltip title={"Viewers"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
           color={
             viewCounts[record.clientSocketId] !== undefined
               ? "info"
               : "primary"
           }
+          style={{ minWidth: "70px" }}
+          disabled={!record?.isActive}
           size="sm"
           className="btn"
-          onClick={() => !viewCounts[record.clientSocketId] && fetchViewCount(record?.url, record?.clientSocketId)}
+          onClick={() => fetchViewCount(record?.url, record?.clientSocketId)}
         >
            {viewCounts[record.clientSocketId] !== undefined
-            ? `Count: ${viewCounts[record.clientSocketId]}`
-            : "View Count"}
+            ? `V: ${viewCounts[record.clientSocketId]}`
+            : "Viewers"}
         </Button>
       </Tooltip>
       ),
@@ -373,6 +376,7 @@ const Index = () => {
   }, [permissionObj]);
 
   const handleReload = (value) => {
+    setViewCounts({});
     fetchData();
   };
   return (

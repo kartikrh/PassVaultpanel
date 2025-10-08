@@ -159,6 +159,10 @@ const Index = forwardRef(
     ref
   ) => {
     const globalPageSize = localStorage.getItem("pageSize");
+    const globalDateType = localStorage.getItem("DateType") || {
+      label: "Local Timezone",
+      value: 1,
+    }
     document.title = `${tableElement?.title}`;
     const [data, setData] = useState(dataSource);
     const [tableActions, setTableActions] = useState(
@@ -1068,7 +1072,7 @@ const Index = forwardRef(
         handleCustomReset();
         return;
       }
-      dateType && setDateType({ label: 'Local Timezone', value: 1 })
+      dateType && setDateType(globalDateType || { label: 'Local Timezone', value: 1 })
       setSearchTerm("");
       setTableActions({
         isActive: true,
@@ -2639,7 +2643,12 @@ const Index = forwardRef(
                                   width: 200,
                                 }),
                               }}
-                              onChange={(e) => setDateType(e)}
+                              onChange={(e) => {
+                                  console.log("e", e)
+                                  localStorage.setItem("DateType", JSON.stringify(e))
+                                  setDateType(e)
+                                }
+                              }
                               options={[
                                 { label: "Local Timezone", value: 1 },
                                 { label: "UTC Timezone", value: 2 },
@@ -2977,7 +2986,11 @@ const Index = forwardRef(
                                     width: 200,
                                   }),
                                 }}
-                                onChange={(e) => setDateType(e)}
+                                onChange={(e) => {
+                                  
+                                  localStorage.setItem("DateType", JSON.stringify(e))
+                                  setDateType(e)
+                                }}
                                 options={[
                                   { label: "Local Timezone", value: 1 },
                                   { label: "UTC Timezone", value: 2 },

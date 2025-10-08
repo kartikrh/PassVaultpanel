@@ -35,6 +35,7 @@ const Index = () => {
   const commentaryDetails = JSON.parse(
     sessionStorage.getItem("closeMarketDetails") || "{}"
   );
+  const globalDateType = JSON.parse(localStorage.getItem("DateType"))
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   document.title = TAB_EVENT_MARKETS;
@@ -60,7 +61,7 @@ const Index = () => {
   const [selectedMarketType, setSelectedMarketType] = useState(null);
   const [categories, setCategories] = useState([]);
   const [isSearch, setIsSearch] = useState(false);
-  const [dateType, setDateType] = useState({
+  const [dateType, setDateType] = useState( globalDateType || {
     label: "Local Timezone",
     value: 1,
   });

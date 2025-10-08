@@ -8,7 +8,7 @@ import {
 import moment from "moment";
 
 const MatchCard = ({ matchData, onClose }) => {
-  if (!matchData || !matchData.response || !matchData.response.match_info) {
+  if (!matchData || !matchData.match_info) {
     return null;
   }
 
@@ -30,7 +30,7 @@ const MatchCard = ({ matchData, onClose }) => {
     umpires,
     weather,
     pitch,
-  } = matchData.response.match_info;
+  } = matchData.match_info;
 
   // Status color mapping
   const getStatusColor = (status) => {

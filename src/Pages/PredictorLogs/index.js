@@ -24,6 +24,7 @@ const Index = () => {
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   document.title = "Predictor Logs";
+  const globalDateType = JSON.parse(localStorage.getItem("DateType"))
   const [data, setData] = useState([]);
   const [checekedList, setCheckedList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -44,7 +45,8 @@ const Index = () => {
         eventName: "",
         eventRefId: "",
     });
-  const [dateType, setDateType] = useState({ label: "Local Timezone", value: 1 });
+  const [dateType, setDateType] = useState(globalDateType || { label: "Local Timezone", value: 1 });
+  console.log("globalDateType", globalDateType)
   const [dateRange, setDateRange] = useState({
     startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
     endDate: `${new Date().toISOString().split("T")[0]}T23:59:00`,
