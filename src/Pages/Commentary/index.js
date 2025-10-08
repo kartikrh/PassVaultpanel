@@ -59,6 +59,8 @@ const Index = () => {
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   document.title = "Commentary";
+  const globalDateType = JSON.parse(localStorage.getItem("DateType"))
+  console.log("globalDateType", globalDateType)
   const [selectedTableElements, setSelectedTableElements] = useState({
     eventType: null,
     competition: null,
@@ -91,7 +93,7 @@ const Index = () => {
     eventRefId: "",
   });
   const [isSearch, setIsSearch] = useState(true);
-  const [dateType, setDateType] = useState({
+  const [dateType, setDateType] = useState(globalDateType || {
     label: "Local Timezone",
     value: 1,
   });

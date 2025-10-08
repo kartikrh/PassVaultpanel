@@ -20,6 +20,7 @@ import { checkPermission } from "../../components/Common/Reusables/reusableMetho
 import { updateToastData } from "../../Features/toasterSlice";
 import { loadInit } from "../../config";
 import MatchCard from "./MatchCard";
+import axios from "axios";
 
 const isSquadOptions = [
       { value: null, label: "Select Squad" },
@@ -30,6 +31,7 @@ const isSquadOptions = [
 export default function ImportEntityEvent() {
   const pageName = TAB_IMPORT_ENTITYEVENTIMPORT;
   document.title = "Entity Event Import";
+  const globalDateType = JSON.parse(localStorage.getItem("DateType"))
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   const navigate = useNavigate();
@@ -53,7 +55,7 @@ export default function ImportEntityEvent() {
   const [pageSize, setPageSize] = useState(globalPageSize);
   const [total, setTotal] = useState(0);
   const [permissionChecked, setPermissionChecked] = useState(false);
-  const [dateType, setDateType] = useState({ label: "Local Timezone", value: 'IST: +5:30' });
+  const [dateType, setDateType] = useState(globalDateType || { label: "Local Timezone", value: 'IST: +5:30' });
   const [dateRange, setDateRange] = useState({
     startDate: `${today.toISOString().split("T")[0]}T00:00:00`,
     endDate: `${oneMonthLater.toISOString().split("T")[0]}T23:59:00`,
@@ -166,12 +168,18 @@ export default function ImportEntityEvent() {
     return `${year}-${month}-${day}`;
   }
 
+  function makeDateRangeParam(range) {
+    const start = formatToYYYYMMDD(range.startDate);
+    const end = formatToYYYYMMDD(range.endDate);
+    return `${start}_${end}`; // yyyy-mm-dd_yyyy-mm-dd
+  }
+
   const fetchData = useCallback(async () => {
     if (!permissionChecked) return;
 
     setIsLoading(true);
     let endpoint = "";
-    let payload = {};
+    let params = {};
 
     try {
       switch (selectedLevel.level) {
@@ -180,13 +188,14 @@ export default function ImportEntityEvent() {
             setIsLoading(false);
             return;
           }
-          endpoint = `${entitySportUrl}/admin/v3/matches`;
-          payload = {
-            start_date: formatToYYYYMMDD(dateRange.startDate), 
-            end_date: formatToYYYYMMDD(dateRange.endDate), 
+          endpoint = `${entitySportUrl}/match/list`;
+          params = {
+            date: makeDateRangeParam(dateRange),
+            // start_date: formatToYYYYMMDD(dateRange.startDate),
+            // end_date: formatToYYYYMMDD(dateRange.endDate),
             // sid: +selectedLevel.seasonId,
-            page: currentPage == 0 ? 1 : currentPage,
-            limit: pageSize,
+            paged: currentPage == 0 ? 1 : currentPage,
+            per_page: pageSize,
             timezone: dateType.value,
             pre_squad: isSquadSelectedOption 
           };
@@ -195,10 +204,10 @@ export default function ImportEntityEvent() {
             selectedFilter.status !== null &&
             selectedFilter.status !== undefined
           ) {
-            payload.status = selectedFilter.status;
+            params.status = selectedFilter.status;
           }
           if (selectedFormateOption) {
-            payload.format = selectedFormateOption;
+            params.format = selectedFormateOption;
           }
           break;
         case "competitionMatches":
@@ -206,11 +215,11 @@ export default function ImportEntityEvent() {
             setIsLoading(false);
             return;
           }
-          endpoint = `${entitySportUrl}/admin/v3/matches`;
-          payload = {
+          endpoint = `${entitySportUrl}/competition/${selectedLevel?.competitionId}/matches`;
+          params = {
             cid: selectedLevel.competitionId,
-            page: currentPage == 0 ? 1 : currentPage,
-            limit: pageSize,
+            paged: currentPage == 0 ? 1 : currentPage,
+            per_page: pageSize,
           };
           //client-side filtering in Matches
           break;
@@ -219,10 +228,10 @@ export default function ImportEntityEvent() {
           return;
       }
 
-      const response = await axiosInstance.post(endpoint, payload);
+      const response = await axios.get(endpoint, { params });
 
-      const items = response?.result?.response?.items;
-      const totalItems = response?.result?.response?.total_items;
+      const items = response?.data?.result?.items;
+      const totalItems = response?.data?.result?.total_items;
 
       let apiData = Array.isArray(items) ? items : [];
       let totalCount = +totalItems || apiData.length;
@@ -287,15 +296,18 @@ export default function ImportEntityEvent() {
   const fetchMatchDetails = async (matchId) => {
     setIsLoading(true);
     try {
-      const response = await axiosInstance.post(
-        `${entitySportUrl}/admin/v3/matches/info`,
-        {
+      const params = {
           mid: +matchId,
+        }
+      const response = await axios.get(
+        `${entitySportUrl}/match/${matchId}/info`,
+        {
+          params
         }
       );
 
-      if (response?.result) {
-        setMatchData(response.result);
+      if (response?.data?.result) {
+        setMatchData(response?.data?.result);
         setMatchModalVisible(true);
       } else {
         dispatch(
@@ -492,7 +504,8 @@ export default function ImportEntityEvent() {
       startDate: `${today.toISOString().split("T")[0]}T00:00:00`,
       endDate: `${oneMonthLater.toISOString().split("T")[0]}T23:59:00`,
     })
-    setDateType({ label: "Local Timezone", value: 'IST: +5:30' })
+    // setDateType({ label: "Local Timezone", value: 1 })
+    setDateType({ label: "Local Timezone", value: "IST: +5:30" });
     setIsSquadSelectedOption(true)
     setCurrentPage(0);
     setIsFilter((pre) => !pre)
@@ -820,7 +833,11 @@ export default function ImportEntityEvent() {
                       width: 140,
                     }),
                   }}
-                  onChange={(e) => setDateType(e)}
+                  onChange={(e) => {localStorage.setItem("DateType", JSON.stringify(e));setDateType(e)}}
+                  // options={[
+                  //   { label: "Local Timezone", value: 1 },
+                  //   { label: "UTC Timezone", value: 2 },
+                  // ]}
                   options={[
                     { label: "Local Timezone", value: 'IST: +5:30' },
                     { label: "UTC Timezone", value: 'UTC: 00:00' },

@@ -50,6 +50,7 @@ const Index = () => {
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   document.title = "Commentary List";
+  const globalDateType = JSON.parse(localStorage.getItem("DateType"))
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
   const [cloneModelVisible, setCloneModelVisible] = useState(false);
@@ -68,7 +69,7 @@ const Index = () => {
     eventRefId: "",
   });
   const [isSearch, setIsSearch] = useState(true);
-  const [dateType, setDateType] = useState({
+  const [dateType, setDateType] = useState(globalDateType || {
     label: "Local Timezone",
     value: 1,
   });

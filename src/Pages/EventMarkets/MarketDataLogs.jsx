@@ -35,6 +35,7 @@ function MarketDataLogs() {
   const pageName = TAB_EVENT_MARKETS;
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   document.title = "Market Data Logs";
+  const globalDateType = JSON.parse(localStorage.getItem("DateType"))
   const [category, setCategory] = useState(null);
   const [checekedList, setCheckedList] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
@@ -46,7 +47,7 @@ function MarketDataLogs() {
   const [total, setTotal] = useState(0);
   const [dateModelVisable, setDateModelVisable] = useState(false);
   const [datePriceValues, setDatePriceValues] = useState([]);
-  const [dateType, setDateType] = useState({
+  const [dateType, setDateType] = useState(globalDateType || {
     label: "Local Timezone",
     value: 1,
   });

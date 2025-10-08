@@ -149,6 +149,8 @@ function AddCommentary() {
                 "isVirtual": true,
                 "isPredictMarket": true,
                 "competitionId": true,
+                "team1Players": true,
+                "team2Players": true,
             };
 
             if (initialEditData?.commentaryStatus != 1) {

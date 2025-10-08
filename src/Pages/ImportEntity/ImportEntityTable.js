@@ -20,6 +20,7 @@ import { checkPermission } from "../../components/Common/Reusables/reusableMetho
 import { updateToastData } from "../../Features/toasterSlice";
 import { loadInit } from "../../config";
 import MatchCard from "./MatchCard";
+import axios from "axios";
 
 
 export default function ImportEntity() {
@@ -148,7 +149,7 @@ export default function ImportEntity() {
 
     setIsLoading(true);
     let endpoint = "";
-    let payload = {};
+    let params = {};
 
     try {
       switch (selectedLevel.level) {
@@ -157,18 +158,18 @@ export default function ImportEntity() {
             setIsLoading(false);
             return;
           }
-          endpoint = `${entitySportUrl}/admin/v3/competitions`;
-          payload = {
+          endpoint = `${entitySportUrl}/competition/list`;
+          params = {
             sid: +selectedLevel.seasonId,
-            page: currentPage == 0 ? 1 : currentPage,
-            limit: pageSize,
+            paged: currentPage == 0 ? 1 : currentPage,
+            per_page: pageSize,
           };
           //status filter if selected - server-side filtering for competitions
           if (
             selectedFilter.status !== null &&
             selectedFilter.status !== undefined
           ) {
-            payload.status = selectedFilter.status;
+            params.status = selectedFilter.status;
           }
           break;
         case "competitionMatches":
@@ -176,11 +177,11 @@ export default function ImportEntity() {
             setIsLoading(false);
             return;
           }
-          endpoint = `${entitySportUrl}/admin/v3/competitions/matches`;
-          payload = {
+          endpoint = `${entitySportUrl}/competition/${selectedLevel?.competitionId}/matches`;
+          params = {
             cid: selectedLevel.competitionId,
-            page: currentPage == 0 ? 1 : currentPage,
-            limit: pageSize,
+            paged: currentPage == 0 ? 1 : currentPage,
+            per_page: pageSize,
           };
           //client-side filtering in Matches
           break;
@@ -189,10 +190,10 @@ export default function ImportEntity() {
           return;
       }
 
-      const response = await axiosInstance.post(endpoint, payload);
+      const response = await axios.get(endpoint, { params });
 
-      const items = response?.result?.response?.items;
-      const totalItems = response?.result?.response?.total_items;
+      const items = response?.data?.result?.items;
+      const totalItems = response?.data?.result?.total_items;
 
       let apiData = Array.isArray(items) ? items : [];
       let totalCount = +totalItems || apiData.length;
@@ -309,15 +310,16 @@ export default function ImportEntity() {
   const fetchMatchDetails = async (matchId) => {
     setIsLoading(true);
     try {
-      const response = await axiosInstance.post(
-        `${entitySportUrl}/admin/v3/matches/info`,
-        {
-          mid: +matchId,
-        }
+      const params = {
+        mid: +matchId,
+      }
+      const response = await axios.get(
+        `${entitySportUrl}/match/${matchId}/info`,
+        { params }
       );
 
-      if (response?.result) {
-        setMatchData(response.result);
+      if (response?.data?.result) {
+        setMatchData(response?.data?.result);
         setMatchModalVisible(true);
       } else {
         dispatch(

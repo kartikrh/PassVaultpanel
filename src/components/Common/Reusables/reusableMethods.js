@@ -164,16 +164,16 @@ export const convertDateUTCToLocal24 = (UTCDate, page, format) => {
 
   if (page === "index") {
     // 24-hour format with milliseconds
-    return moment(UTCDate).local().format("DD/MM/YY, HH:mm:ss.SSS");
+    return moment(UTCDate).local().format("DD/MM/YY, HH:mm");
   }
 
   if (format) {
     // Use provided format, ensure 24-hour format by using HH (not hh)
-    return moment(UTCDate).local().format(`${format}.SSS`);
+    return moment(UTCDate).local().format(`${format}`);
   }
 
   // Default: ISO-like format in 24-hour time with milliseconds
-  return moment(UTCDate).local().format("YYYY-MM-DDTHH:mm:ss.SSS");
+  return moment(UTCDate).local().format("YYYY-MM-DDTHH:mm");
 };
 
 export const convertDateUtcFormat = (UTCDate, page, format) => {
