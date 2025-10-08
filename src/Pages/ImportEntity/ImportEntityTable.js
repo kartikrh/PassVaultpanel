@@ -318,8 +318,8 @@ export default function ImportEntity() {
         { params }
       );
 
-      if (response?.result) {
-        setMatchData(response.result);
+      if (response?.data?.result) {
+        setMatchData(response?.data?.result);
         setMatchModalVisible(true);
       } else {
         dispatch(
