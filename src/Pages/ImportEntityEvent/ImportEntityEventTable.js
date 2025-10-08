@@ -22,11 +22,11 @@ import { loadInit } from "../../config";
 import MatchCard from "./MatchCard";
 import axios from "axios";
 
-const isSquadOptions = [
-      { value: null, label: "Select Squad" },
-      { value: true, label: "true" },
-      { value: false, label: "false" },
-    ];
+// const isSquadOptions = [
+//       { value: null, label: "Select Squad" },
+//       { value: true, label: "true" },
+//       { value: false, label: "false" },
+//     ];
 
 export default function ImportEntityEvent() {
   const pageName = TAB_IMPORT_ENTITYEVENTIMPORT;
@@ -61,8 +61,8 @@ export default function ImportEntityEvent() {
     endDate: `${oneMonthLater.toISOString().split("T")[0]}T23:59:00`,
   });
   const [statusOptionsforMatch, setStatusOptionsforMatch] = useState([]);
-  const [statusOptions, setStatusOptions] = useState([]);
-  const [isSquadSelectedOption, setIsSquadSelectedOption] = useState(true);
+  // const [statusOptions, setStatusOptions] = useState([]);
+  // const [isSquadSelectedOption, setIsSquadSelectedOption] = useState(true);
 
   // Initialize filter based on level
   const getDefaultFilter = (level) => {
@@ -197,7 +197,7 @@ export default function ImportEntityEvent() {
             paged: currentPage == 0 ? 1 : currentPage,
             per_page: pageSize,
             timezone: dateType.value,
-            pre_squad: isSquadSelectedOption 
+            // pre_squad: isSquadSelectedOption 
           };
           //status filter if selected - server-side filtering for Entity Event Import
           if (
@@ -506,7 +506,7 @@ export default function ImportEntityEvent() {
     })
     // setDateType({ label: "Local Timezone", value: 1 })
     setDateType({ label: "Local Timezone", value: "IST: +5:30" });
-    setIsSquadSelectedOption(true)
+    // setIsSquadSelectedOption(true)
     setCurrentPage(0);
     setIsFilter((pre) => !pre)
   };
@@ -844,7 +844,7 @@ export default function ImportEntityEvent() {
                   ]}
                   classNamePrefix="filter-dropdown"
                 />
-                <Select
+                {/* <Select
                   styles={{
                     control: (provided) => ({ ...provided, width: 140 }),
                   }}
@@ -853,7 +853,7 @@ export default function ImportEntityEvent() {
                   options={isSquadOptions}
                   placeholder="Is Squad"
                   classNamePrefix="filter-dropdown"
-                />
+                /> */}
                 <button
                 // color="success"
                   className="btn btn-primary"
