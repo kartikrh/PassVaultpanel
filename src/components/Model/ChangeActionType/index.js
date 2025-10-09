@@ -9,6 +9,7 @@ export const ChangeActionTypeModel = ({
   setSelectedClientSocket,
   handleChange,
   singleCheck,
+  isEntity = false
 }) => {
   const [selectedClientSocketVals, setSelectedClientSocketVals] = useState({});
   useEffect(() => {
@@ -58,10 +59,17 @@ export const ChangeActionTypeModel = ({
               }}
               options={actionTypeOptions}
               onChange={(e) => {
-                setSelectedClientSocket({
-                  actionType: e?.value,
-                  clientSocketId: selectedClientSocket?.clientSocketId,
-                });
+                setSelectedClientSocket(
+                  isEntity
+                  ? {
+                      actionType: e?.value,
+                      entitySocketId: selectedClientSocket.entitySocketId,
+                    }
+                  : {
+                      actionType: e?.value,
+                      clientSocketId: selectedClientSocket.clientSocketId,
+                    }
+                );
               }}
               required={true}
             />
