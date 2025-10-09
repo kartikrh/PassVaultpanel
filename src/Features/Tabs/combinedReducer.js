@@ -28,6 +28,7 @@ import eventMarketSlice from "./eventMarketSlice";
 import addVendorSlice from "./addVendorSlice";
 import displayStatusSlice from "./displayStatusSlice";
 import clientSocketSlice from "./clientSocketSlice";
+import entitySocketSlice from "./entitySocketSlice";
 import bannerSlice from "./bannerSlice";
 import manualEventSlice from "./manualEventSlice";
 import addApiSlice from "./addApiSlice";
@@ -75,6 +76,7 @@ const rootReducer = combineReducers({
   vendors: addVendorSlice,
   displayStatus: displayStatusSlice,
   clientSocket: clientSocketSlice,
+  entitySocket: entitySocketSlice,
   banner: bannerSlice,
   manualEvent: manualEventSlice,
   apis: addApiSlice,
