@@ -490,6 +490,45 @@ const Index = () => {
       ),
       style: { width: "10%", textAlign: "center" },
     },
+    {
+      render: (text, record) => (
+        <>
+          <Tooltip
+            title={"View Status Logs"}
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            <Button
+              // color="primary"
+              size="sm"
+              className="btn slBtn"
+              onClick={() => {
+                handleSL(record);
+              }}
+            >
+              SL
+            </Button>
+          </Tooltip>{" "}
+          <Tooltip
+            title={"View Data Logs"}
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            <Button
+              // color="primary"
+              size="sm"
+              className="btn dsBtn"
+              onClick={() => {
+                handleDS(record);
+              }}
+            >
+              DS
+            </Button>
+          </Tooltip>
+        </>
+      ),
+      style: { width: "10%", textAlign: "center" },
+    },
   ];
 
   //elements required
@@ -563,6 +602,26 @@ const Index = () => {
       setEventList([]);
     }
   }, [competitionId]);
+
+  const handleDS = (details) => {
+    const url = new URL(window.location.origin + "/marketDataLogs");
+    sessionStorage.setItem("eventMarketDataLogId", "" + details?.eventMarketId);
+    sessionStorage.setItem(
+      "eventMarketDataLogDetails",
+      "" + JSON.stringify(details)
+    );
+    window.open(url.href, "_blank");
+  };
+
+  const handleSL = (details) => {
+    const url = new URL(window.location.origin + "/marketLogs");
+    sessionStorage.setItem("eventMarketLogId", "" + details?.eventMarketId);
+    sessionStorage.setItem(
+      "eventMarketLogDetails",
+      "" + JSON.stringify(details)
+    );
+    window.open(url.href, "_blank");
+  };
 
   return (
     <React.Fragment>
