@@ -608,6 +608,10 @@ const Index = () => {
   const handleEventClick = (details) => {
     const url = new URL(window.location.origin + "/Events");
     sessionStorage.setItem(
+      "CompetitionEventTypeId",
+      "" + details?.eventTypeId
+    );
+    sessionStorage.setItem(
       "EventCompetitionId",
       "" + details?.competitionId
     );
@@ -617,6 +621,7 @@ const Index = () => {
     // );
     window.open(url.href, "_blank");
     sessionStorage.removeItem("EventCompetitionId");
+    sessionStorage.removeItem("CompetitionEventTypeId");
     // sessionStorage.removeItem("commentaryManualOddsMarketDetails");
   };
 
@@ -675,6 +680,38 @@ const Index = () => {
       ),
       style: { width: "2%", textAlign: "center" },
     },
+    (commentaryPermission || commentaryListPermission) &&
+    {
+      title: "",
+      dataIndex: "",
+      key: "",
+      render: (text, record) => {
+        
+        const isMatchingCompetition =
+          record?.competitionId === filledDropdownData?.competition?.value;
+          
+        if (userRefData.competitionId != 0 && !isMatchingCompetition) return null; 
+
+        return (
+          <Tooltip
+            title={"Commentary List"}
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            <Button
+              color={"primary"}
+              size="sm"
+              className="btn"
+              onClick={() => handleCommentaryClick(record)}
+            >
+              CL
+            </Button>
+          </Tooltip>
+        );
+      },
+      // sort: true,
+      style: { width: "10%" },
+    },
     {
       title: "",
       dataIndex: "",
@@ -694,7 +731,6 @@ const Index = () => {
         </Button>
       </Tooltip>
       ),
-      sort: true,
       style: { width: "10%" },
     },
     {
@@ -1051,38 +1087,7 @@ const Index = () => {
       style: { width: "10%" },
       sort: true,
     },
-    (commentaryPermission || commentaryListPermission) &&
-    {
-      title: "",
-      dataIndex: "",
-      key: "",
-      render: (text, record) => {
-        
-        const isMatchingCompetition =
-          record?.competitionId === filledDropdownData?.competition?.value;
-          
-        if (userRefData.competitionId != 0 && !isMatchingCompetition) return null; 
-
-        return (
-          <Tooltip
-            title={"Commentary List"}
-            color={"#e8e8ea"}
-            overlayInnerStyle={{ color: "#000" }}
-          >
-            <Button
-              color={"primary"}
-              size="sm"
-              className="btn"
-              onClick={() => handleCommentaryClick(record)}
-            >
-              CL
-            </Button>
-          </Tooltip>
-        );
-      },
-      // sort: true,
-      style: { width: "10%" },
-    },
+    
     {
       title: "",
       dataIndex: "",
