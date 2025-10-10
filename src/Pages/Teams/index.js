@@ -386,6 +386,7 @@ const Index = () => {
     await axiosInstance
       .post(`/admin/team/importUpdate`, {teamIds: checekedList})
       .then((response) => {
+        fetchData()
         dispatch(
           updateToastData({
             data: response.result,
