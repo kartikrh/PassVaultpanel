@@ -381,6 +381,32 @@ const Index = () => {
     loadData: true,
   };
 
+  const updatedImportData = async () => {
+    setIsLoading(true)
+    await axiosInstance
+      .post(`/admin/team/importUpdate`, {teamIds: checekedList})
+      .then((response) => {
+        dispatch(
+          updateToastData({
+            data: response.result,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+
   useEffect(() => {
     if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard")
@@ -420,6 +446,16 @@ const Index = () => {
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
             isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
             manualExcel={downloadExcelColumn}
+            renderCustomFilter={() => {
+              return <>
+                <Button
+                  onClick={() => updatedImportData()}
+                    className="btn border"
+                >
+                    Update
+                </Button>
+              </>
+            }}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
