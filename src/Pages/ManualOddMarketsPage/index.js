@@ -768,6 +768,45 @@ const Index = () => {
       style: { width: "5%", textAlign: "center" },
     },
     {
+      render: (text, record) => (
+        <>
+          <Tooltip
+            title={"View Status Logs"}
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            <Button
+              // color="primary"
+              size="sm"
+              className="btn slBtn"
+              onClick={() => {
+                handleSL(record);
+              }}
+            >
+              SL
+            </Button>
+          </Tooltip>{" "}
+          <Tooltip
+            title={"View Data Logs"}
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            <Button
+              // color="primary"
+              size="sm"
+              className="btn dsBtn"
+              onClick={() => {
+                handleDS(record);
+              }}
+            >
+              DS
+            </Button>
+          </Tooltip>
+        </>
+      ),
+      style: { width: "10%", textAlign: "center" },
+    },
+    {
       title: "Result",
       dataIndex: "result",
       key: "result",
