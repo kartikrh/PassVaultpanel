@@ -109,6 +109,7 @@ const Index = forwardRef(
       createdTypeList,
       selectedClientSocket,
       setSelectedClientSocket,
+      isEntitySocket=false,
       handleClientSocketChange,
       actionTypeOptions,
       handleReset,
@@ -2403,10 +2404,17 @@ const Index = forwardRef(
                                   }}
                                   onChange={(e) => {
                                     setSearchTerm("");
-                                    setSelectedClientSocket({
-                                      actionType: e?.value,
-                                      clientSocketId: singleCheck,
-                                    });
+                                    setSelectedClientSocket(
+                                      isEntitySocket ?
+                                      {
+                                        actionType: e?.value,
+                                        entitySocketId: singleCheck,
+                                      } : 
+                                      {
+                                        actionType: e?.value,
+                                        clientSocketId: singleCheck,
+                                      }
+                                    );
                                   }}
                                   options={actionTypeOptions}
                                   classNamePrefix="filter-dropdown"
@@ -2644,7 +2652,6 @@ const Index = forwardRef(
                                 }),
                               }}
                               onChange={(e) => {
-                                  console.log("e", e)
                                   localStorage.setItem("DateType", JSON.stringify(e))
                                   setDateType(e)
                                 }

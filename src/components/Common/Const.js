@@ -41,6 +41,7 @@ export const TAB_CARD_TYPE = "Card Type";
 export const TAB_COUNTRY_CODE = "Country Code";
 export const TAB_CLIENT = "Client";
 export const TAB_ClientSocket = "ClientSocket";
+export const TAB_EntitySocket = "EntitySocket";
 export const TAB_COMMENTARY = "Commentary";
 export const TAB_COMMENTARY_HISTORY = "Commentary History";
 export const TAB_COMMENTARY_LIST = "Commentary List";
@@ -211,5 +212,6 @@ export const MODULE_WHITE_LABEL_SHOW_HIDE = 40;
 export const MODULE_VENUE = 41;
 export const MODULE_SINGLE_COMMENTARY = 42;
 export const MODULE_PYTHON_API = 43;
+export const MODULE_ENTITY_SOCKET = 44;
 
 export const LOG_ROCKET_TO_INCLUDE_ONLY = "CHG";
