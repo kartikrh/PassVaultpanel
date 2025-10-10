@@ -148,6 +148,16 @@ const Index = () => {
         return "getSocketCount";
       case 13:
         return "getCompetitionInfo";
+      case 14:
+        return "getTeamDataByIdFromEntity";
+      case 15:
+        return "getPlayerDataByIdFromEntity";
+      case 16:
+        return "getMatchDataByIdFromEntity";
+      case 17:
+        return "getCompetitionMatchDataByIdFromEntity";
+      case 18:
+        return "getCompetitionSquadDataByIdFromEntity";
       default:
         return "Unknown";
     } 
