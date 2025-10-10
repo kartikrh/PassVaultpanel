@@ -29,7 +29,7 @@ import { updateToastData } from "../../Features/toasterSlice";
 import axiosInstance from "../../Features/axios";
 import TeamPlayerCard from "./TeamPlayerCard";
 import { isEmpty } from "lodash";
-import { element } from "prop-types";
+import { Tooltip } from "antd";
 
 const PlayerCommentary = () => {
   const pageName = TAB_COMMENTARY;
@@ -49,6 +49,9 @@ const PlayerCommentary = () => {
   const dispatch = useDispatch();
   const [commentaryData, setCommentaryData] = useState(null);
   const [openAccordions, setOpenAccordions] = useState("");
+  const [updateAllInnings, setUpdateAllInnings] = useState(false);
+  const [dataRefreshKey, setDataRefreshKey] = useState(0);
+
   useEffect(() => {
     if (
       !checkPermission(permissionObj, pageName, PERMISSION_VIEW) &&
@@ -111,6 +114,7 @@ const PlayerCommentary = () => {
         setApiResponse(response?.result || {});
         //setTeams(response?.result?.commentaryTeams);
         setIsDataLoading(false);
+        setDataRefreshKey(prev => prev + 1);
         // console.log("data:", commentaryDetailsData);
       })
       .catch((error) => {
@@ -166,9 +170,29 @@ const PlayerCommentary = () => {
                       page="updatecp"
                     />
                   </Col>
-                  <Col className="mt-3 mt-lg-3 mt-md-3">
+                  <Col className="mt-3 mt-lg-3 mt-md-3 d-flex justify-content-end align-items-center">
+                    {commentaryData?.totalInnings > 1 && (
+                      <Tooltip
+                        title={"Update Player in All Innings"}
+                        color={"#e8e8ea"}
+                        overlayInnerStyle={{ color: "#000" }}
+                      >
+                        <div className="form-check form-switch form-switch-lg me-3">
+                          <input
+                            className="form-check-input"
+                            type="checkbox"
+                            id="updateAllInningsToggle"
+                            checked={updateAllInnings}
+                            onChange={(e) => setUpdateAllInnings(e.target.checked)}
+                          />
+                          {/* <label className="form-check-label" htmlFor="updateAllInningsToggle">
+                            Update All Innings
+                          </label> */}
+                        </div>
+                      </Tooltip>
+                    )}
                     <button
-                      className="btn btn-danger text-right"
+                      className="btn btn-danger"
                       onClick={handleBackClick}
                     >
                       Back
@@ -258,6 +282,7 @@ const PlayerCommentary = () => {
                                       <h6> Innings : {currentInnings}</h6>
                                     ) : null}
                                     <TeamPlayerCard
+                                      key={`${teamDetails.teamId}-${inningKey}-${dataRefreshKey}`}
                                       commentaryId={commentaryId}
                                       eventRefId={commentaryDetails?.eventRefId}
                                       teamDetails={teamDetails}
@@ -265,6 +290,8 @@ const PlayerCommentary = () => {
                                       currentInnings={currentInnings}
                                       fetchData={fetchData}
                                       bowlingType={bowlerType}
+                                      allTeamPlayers={teams}
+                                      updateAllInnings={updateAllInnings}
                                     />
                                     <hr className="my-3" />
                                   </CardBody>

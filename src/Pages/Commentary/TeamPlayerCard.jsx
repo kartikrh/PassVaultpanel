@@ -14,7 +14,7 @@ import bat from '../../../src/assets/images/cricket-icons/cricket-bat.png';
 import allrounder from '../../../src/assets/images/cricket-icons/cricket.png';
 import keeper from '../../../src/assets/images/cricket-icons/game.png';
 
-const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, fetchData, currentInnings, bowlingType }) => {
+const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, fetchData, currentInnings, bowlingType, updateAllInnings, allTeamPlayers }) => {
     const [commentaryTeamPlayers, setCommentaryTeamPlayers] = useState([]);
     const [nonCommentaryTeamPlayers, setNonCommentaryTeamPlayers] = useState([]);
     const [selectedPlayer, setSelectedPlayer] = useState(undefined);
@@ -234,20 +234,86 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                 isInPlayingEleven: prevState[commentaryPlayerId]?.isInPlayingEleven ?? updatedPlayingXiPlayer[commentaryPlayerId] ?? commentaryTeamPlayers.find(p => p.commentaryPlayerId === commentaryPlayerId)?.isInPlayingEleven
             }
         }));
-    };
+  };
 
-    const handlePlayingXiChange = (commentaryPlayerId, playerId, currentInnings, isPlayXi) => {
-        setEditedPlayers(prevState => ({
-            ...prevState,
-            [commentaryPlayerId]: {
-                ...prevState[commentaryPlayerId],
-                playerId: playerId,
-                currentInnings: currentInnings,
+  const handlePlayingXiChange = async (commentaryPlayerId, playerId, currentInnings, isPlayXi) => {
+    if (updateAllInnings && allTeamPlayers) {
+      // setIsLoading(true);
+      // Find all innings for this team and player
+      const playerDataArray = [];
+
+      allTeamPlayers.forEach(team => {
+        if (team.teamId === teamDetails.teamId && team.commentaryTeamPlayers) {
+          Object.keys(team.commentaryTeamPlayers).forEach(inningKey => {
+            const players = team.commentaryTeamPlayers[inningKey];
+            const matchingPlayer = players.find(p => p.playerId === playerId);
+
+            if (matchingPlayer) {
+              playerDataArray.push({
+                commentaryId,
+                teamId: teamDetails.teamId,
+                playerId: matchingPlayer.playerId,
+                batsmanAverage: matchingPlayer.batsmanAverage || 0,
+                batsmanStrikeRate: matchingPlayer.batsmanStrikeRate || 0,
+                boundary: matchingPlayer.boundary || 0,
+                playerBallFaced: matchingPlayer.playerBallFaced || 0,
                 isInPlayingEleven: isPlayXi,
+                commentaryPlayerId: matchingPlayer.commentaryPlayerId,
+                currentInnings: matchingPlayer.currentInnings,
+                bowlingType: matchingPlayer.bowlingType || 0
+              });
             }
-        }));
-        setUpdatedPlayingXi(prevState => ({ ...prevState, [commentaryPlayerId]: isPlayXi }))
-    };
+          });
+        }
+      });
+
+      if (playerDataArray.length > 0) {
+        try {
+          const payload = {
+            commentaryId,
+            eventRefId,
+            playerDataArray,
+          };
+          await axiosInstance.post("/admin/commentary/updateTeamPlayer", payload);
+
+          fetchData(commentaryId);
+          // setIsLoading(false);
+        } catch (error) {
+          dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+          // setIsLoading(false);
+        }
+      }
+    } else {
+      const originalPlayer = commentaryTeamPlayers.find(
+        (p) => p.commentaryPlayerId === commentaryPlayerId
+      );
+      // Existing functionality
+      setEditedPlayers(prevState => ({
+        ...prevState,
+        [commentaryPlayerId]: {
+          ...prevState[commentaryPlayerId],
+          playerId: playerId,
+          currentInnings: currentInnings,
+          isInPlayingEleven: isPlayXi,
+          bowlingType: prevState[commentaryPlayerId]?.bowlingType ?? originalPlayer?.bowlingType,
+        }
+      }));
+      setUpdatedPlayingXi(prevState => ({ ...prevState, [commentaryPlayerId]: isPlayXi }));
+    }
+  };
+
+  // const handlePlayingXiChange = (commentaryPlayerId, playerId, currentInnings, isPlayXi) => {
+  //     setEditedPlayers(prevState => ({
+  //         ...prevState,
+  //         [commentaryPlayerId]: {
+  //             ...prevState[commentaryPlayerId],
+  //             playerId: playerId,
+  //             currentInnings: currentInnings,
+  //             isInPlayingEleven: isPlayXi,
+  //         }
+  //     }));
+  //     setUpdatedPlayingXi(prevState => ({ ...prevState, [commentaryPlayerId]: isPlayXi }))
+  // };
 
     useEffect(() => {
         if (!isEmpty(commentaryTeamPlayers)) {
@@ -296,11 +362,15 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
     isChecked
   ) => {
     if (isChecked) {
+      const originalPlayer = commentaryTeamPlayers.find(
+        (p) => p.commentaryPlayerId === commentaryPlayerId
+      );
       setEditedPlayers((prevState) => ({
         ...prevState,
         [commentaryPlayerId]: {
           playerId: playerId,
           currentInnings: currentInnings,
+          bowlingType: prevState[commentaryPlayerId]?.bowlingType ?? originalPlayer?.bowlingType,
           isInPlayingEleven:
             updatedPlayingXiPlayer[commentaryPlayerId] ??
             commentaryTeamPlayers.find(
