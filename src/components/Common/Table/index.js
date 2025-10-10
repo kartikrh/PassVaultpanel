@@ -685,7 +685,7 @@ const Index = forwardRef(
         const updatedData = dataSource.filter((val) => {
           const found = Object.values(val).some((value) => {
             if (typeof value === "string" || value instanceof String || typeof value === "number") {
-              return value.toString().toLowerCase().includes(searchTerm.toLowerCase());
+              return value.toString().toLowerCase().includes(searchTerm.toString().toLowerCase());
             }
             return false;
           });
@@ -1012,7 +1012,7 @@ const Index = forwardRef(
         }
         setData(sliced);
       } else if (isPagination) {
-        if (searchTerm.length > 2) {
+        if (searchTerm.length > 2 || playerSearch) {
           handleSearchFilter()
           dataSource = searchedData
         }

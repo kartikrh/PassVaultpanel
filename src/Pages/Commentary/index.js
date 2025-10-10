@@ -60,7 +60,6 @@ const Index = () => {
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   document.title = "Commentary";
   const globalDateType = JSON.parse(localStorage.getItem("DateType"))
-  console.log("globalDateType", globalDateType)
   const [selectedTableElements, setSelectedTableElements] = useState({
     eventType: null,
     competition: null,
@@ -138,6 +137,7 @@ const Index = () => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   const EventTypeId = +sessionStorage.getItem('commentaryEventTypeId');
+  const EventRefId = +sessionStorage.getItem('commentaryEventRefId');
   const EventCompetitionId = +sessionStorage.getItem('commentaryCompetitionId') || 0;
 
   useEffect(() => {
@@ -2989,6 +2989,7 @@ const Index = () => {
             setCompetitionId={setCompetitionId}
             dateType={dateType}
             setDateType={setDateType}
+            playerSearch = {EventRefId}
             // selectedTableElementsLogs={selectedTableElements}
             selectedTableElementsLogs={userRefData?.competitionId != 0 || userRefData?.eventTypeId != 0 ? filledDropdownData : selectedTableElements}
             isAddPermission={checkPermission(
