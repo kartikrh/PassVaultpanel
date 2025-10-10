@@ -76,6 +76,7 @@ import Vendor from "../Pages/Vendor";
 import DisplayStatus from "../Pages/DisplayStatus";
 import AddDisplayStatus from "../Pages/DisplayStatus/AddDisplayStatus.jsx";
 import ClientSocket from "../Pages/ClientSocket";
+import EntitySocket from "../Pages/EntitySocket";
 import ThirdPartyApi from "../Pages/ThirdPartyApi";
 // Import Authentication pages
 import Login from "../Pages/Authentication/Login";
@@ -110,6 +111,7 @@ import AutoImportData from "../Pages/AutoImportData";
 import AddVendor from "../Pages/Vendor/AddVendor.js";
 import VendorIpList from "../Pages/Vendor/VendorIpList.js";
 import AddClientSocket from "../Pages/ClientSocket/AddClientSocket.jsx";
+import AddEventSocket from "../Pages/EntitySocket/AddEntitySocket.jsx";
 import AddBanner from "../Pages/Banner/AddBanner.jsx";
 import AddAPI from "../Pages/API/AddAPI.jsx";
 import AddAPIEndpoint from "../Pages/APIEndpoints/AddAPIEndpoint.jsx";
@@ -292,8 +294,10 @@ const authProtectedRoutes = [
   { path: "/displaystatus", component: <DisplayStatus /> },
   { path: "/addDisplayStatus", component: <AddDisplayStatus /> },
   { path: "/clientSocket", component: <ClientSocket /> },
+  { path: "/entitySocket", component: <EntitySocket /> },
   { path: "/thirdPartyApi", component: <ThirdPartyApi /> },
   { path: "/addClientSocket", component: <AddClientSocket /> },
+  { path: "/addEntitySocket", component: <AddEventSocket /> },
   { path: "/banner", component: <Banner /> },
   { path: "/addBanner", component: <AddBanner /> },
   { path: "/apis", component: <API /> },
