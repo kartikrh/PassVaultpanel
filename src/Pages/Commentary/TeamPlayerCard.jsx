@@ -481,6 +481,7 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                       )
                     }
                   />
+                  <span className="ms-5">{index + 1}</span>
                 </div>
                 <div className="col-1">{imageRender(player?.playerType)}</div>
                 <div className="col-1">
