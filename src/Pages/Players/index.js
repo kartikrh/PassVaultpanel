@@ -207,6 +207,35 @@ const Index = () => {
   const handleReset = (value) => {
     fetchData(value)
   }
+
+  // console.log("playerIds", checekedList)
+  const updatedImportData = async () => {
+      setIsLoading(true)
+      await axiosInstance
+        .post(`/admin/player/importUpdate`, {playerIds: checekedList})
+        .then((response) => {
+          fetchData()
+          dispatch(
+            updateToastData({
+              data: response.result,
+              title: response?.title,
+              type: SUCCESS,
+            })
+          );
+          setIsLoading(false);
+        })
+        .catch((error) => {
+          setIsLoading(false);
+          dispatch(
+            updateToastData({
+              data: error?.message,
+              title: error?.title,
+              type: ERROR,
+            })
+          );
+        });
+    };
+
   //table columns
   const columns = [
     {
@@ -604,6 +633,16 @@ const Index = () => {
             teams={teams}
             manualExcel={downloadExcelColumn}
             playerSearch = {playerSearch}
+            renderCustomFilter={() => {
+              return <>
+                <Button
+                  onClick={() => updatedImportData()}
+                    className="btn border"
+                >
+                    Update
+                </Button>
+              </>
+            }}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
