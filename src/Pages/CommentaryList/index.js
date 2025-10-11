@@ -207,6 +207,12 @@ const Index = () => {
   };
 
   useEffect(() => {
+    if(EventTypeId && !selectedTableElements.competition){
+      fetchCompetitionData(EventTypeId)
+    }
+  }, [EventTypeId])
+
+  useEffect(() => {
     const objToSave = {};
     let shouldFetchData = false;
 
