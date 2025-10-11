@@ -50,9 +50,9 @@ function AddEntitySocket() {
   useEffect(() => {
     if (entitySocketId !== "0") {
       fetchData(entitySocketId);
-      setDisabledFields({
-        url: true,
-      });
+      // setDisabledFields({
+      //   url: true,
+      // });
     }
   }, [entitySocketId]);
 

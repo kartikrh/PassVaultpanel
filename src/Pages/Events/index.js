@@ -204,6 +204,10 @@ const Index = () => {
       "commentaryEventTypeId",
       "" + details?.eventTypeId
     );
+    sessionStorage.setItem(
+      "commentaryEventRefId",
+      "" + details?.eventId
+    );
     // sessionStorage.setItem(
     //   "commentaryManualOddsMarketDetails",
     //   "" + JSON.stringify(details)
@@ -211,6 +215,7 @@ const Index = () => {
     window.open(url.href, "_blank");
     sessionStorage.removeItem("commentaryCompetitionId");
     sessionStorage.removeItem("commentaryEventTypeId");
+    sessionStorage.removeItem("commentaryEventRefId");
     // sessionStorage.removeItem("commentaryManualOddsMarketDetails");
   };
 
@@ -432,13 +437,20 @@ const Index = () => {
   }, [eventTypes, competitions]);
 
   useEffect(() => {
-    if (EventTypeId && EventCompetitionId) {
-      const event = eventTypes.find(e => e.eventTypeId === EventTypeId)
-      const competition = competitions.find(c => c.competitionId === EventCompetitionId)
-      setSelectedTableElements({
-        eventType: {value: event?.eventTypeId, label: event?.eventType},
-        competition: {value: competition?.competitionId, label: competition?.competition},
-      });
+    if (EventTypeId) {
+      const event = eventTypes.find(e => e.eventTypeId === EventTypeId);
+      setSelectedTableElements(prev => ({
+        ...prev,
+        eventType: { value: event?.eventTypeId, label: event?.eventType },
+      }));
+    }
+
+    if (EventCompetitionId) {
+      const competition = competitions.find(c => c.competitionId === EventCompetitionId);
+      setSelectedTableElements(prev => ({
+        ...prev,
+        competition: { value: competition?.competitionId, label: competition?.competition },
+      }));
     }
   }, [eventTypes, EventTypeId, EventCompetitionId, competitions]);
 

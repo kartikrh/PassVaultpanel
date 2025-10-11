@@ -12,7 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { ChangeActionTypeModel } from "../../components/Model/ChangeActionType";
-import { Tooltip } from "antd";
+import { Avatar, Tooltip } from "antd";
 import LoadDataModal from "../../components/Model/LoadDataModal";
 import axios from "axios";
 
@@ -270,6 +270,84 @@ const Index = () => {
         }}
       ></i>,
       style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Player Image",
+      dataIndex: "defaultPlayerImage",
+      printType: "ignore",
+      render: (text, record) => (
+        // <img src={process.env.REACT_APP_BASE_URL+text}/>
+        <div className="flex-shrink-0">
+          {text ? (
+            <div className=""
+            >
+              <img
+                className="avatar-sm "
+                alt=""
+                src={text}
+              />
+            </div>
+          ) : (
+            <Avatar src="#" alt="ET">
+              Image
+            </Avatar>
+          )}
+        </div>
+      ),
+      key: "tabName",
+      style: { width: "10%", textAlign: "left" },
+    },
+    {
+      title: "Team Image",
+      dataIndex: "defaultTeamImage",
+      printType: "ignore",
+      render: (text, record) => (
+        // <img src={process.env.REACT_APP_BASE_URL+text}/>
+        <div className="flex-shrink-0">
+          {text ? (
+            <div className=""
+            >
+              <img
+                className="avatar-sm "
+                alt=""
+                src={text}
+              />
+            </div>
+          ) : (
+            <Avatar src="#" alt="ET">
+              Image
+            </Avatar>
+          )}
+        </div>
+      ),
+      key: "tabName",
+      style: { width: "10%", textAlign: "left" },
+    },
+    {
+      title: "Jersey Image",
+      dataIndex: "defaultJerseyImage",
+      printType: "ignore",
+      render: (text, record) => (
+        // <img src={process.env.REACT_APP_BASE_URL+text}/>
+        <div className="flex-shrink-0">
+          {text ? (
+            <div className=""
+            >
+              <img
+                className="avatar-sm"
+                alt=""
+                src={text}
+              />
+            </div>
+          ) : (
+            <Avatar src="#" alt="ET">
+              Image
+            </Avatar>
+          )}
+        </div>
+      ),
+      key: "tabName",
+      style: { width: "10%", textAlign: "left" },
     },
     {
       title: "Server",
