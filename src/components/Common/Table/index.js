@@ -155,7 +155,8 @@ const Index = forwardRef(
       dateTypeTitle,
       reportType,
       reportTypeOption,
-      updateReportType
+      updateReportType,
+      defaultCommentrayStatus
     },
     ref
   ) => {
@@ -213,6 +214,16 @@ const Index = forwardRef(
         setCurrentPage(0);
       }
     }, [data, filteredData]);
+
+    useEffect(() => {
+      if(defaultCommentrayStatus){
+        handleTableActions("commentaryStatus", defaultCommentrayStatus);
+        setSelectedTableElements({
+          ...selectedTableElements,
+          commentaryStatus: defaultCommentrayStatus,
+        });
+      }
+    }, [])
 
     const debouncedHandleSearchFilter = useCallback(
       debounce((searchValue) => {
@@ -2299,6 +2310,7 @@ const Index = forwardRef(
                             <Select
                               value={selectedTableElements?.commentaryStatus}
                               placeholder="Commentary Status"
+                              isDisabled={defaultCommentrayStatus}
                               styles={{
                                 control: (provided) => ({
                                   ...provided,

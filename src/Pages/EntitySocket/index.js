@@ -274,7 +274,7 @@ const Index = () => {
     {
       title: "Player Image",
       dataIndex: "defaultPlayerImage",
-      printType: "ignore",
+      // printType: "ignore",
       render: (text, record) => (
         // <img src={process.env.REACT_APP_BASE_URL+text}/>
         <div className="flex-shrink-0">
@@ -294,13 +294,12 @@ const Index = () => {
           )}
         </div>
       ),
-      key: "tabName",
+      // key: "tabName",
       style: { width: "10%", textAlign: "left" },
     },
     {
       title: "Team Image",
       dataIndex: "defaultTeamImage",
-      printType: "ignore",
       render: (text, record) => (
         // <img src={process.env.REACT_APP_BASE_URL+text}/>
         <div className="flex-shrink-0">
@@ -320,13 +319,13 @@ const Index = () => {
           )}
         </div>
       ),
-      key: "tabName",
+      // key: "tabName",
       style: { width: "10%", textAlign: "left" },
     },
     {
       title: "Jersey Image",
       dataIndex: "defaultJerseyImage",
-      printType: "ignore",
+      // printType: "ignore",
       render: (text, record) => (
         // <img src={process.env.REACT_APP_BASE_URL+text}/>
         <div className="flex-shrink-0">
@@ -346,7 +345,7 @@ const Index = () => {
           )}
         </div>
       ),
-      key: "tabName",
+      // key: "tabName",
       style: { width: "10%", textAlign: "left" },
     },
     {
