@@ -206,7 +206,7 @@ const Index = () => {
     );
     sessionStorage.setItem(
       "commentaryEventRefId",
-      "" + details?.eventId
+      "" + details?.refId
     );
     // sessionStorage.setItem(
     //   "commentaryManualOddsMarketDetails",

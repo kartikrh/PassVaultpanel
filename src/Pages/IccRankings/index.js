@@ -155,6 +155,7 @@ const Index = () => {
     await axiosInstance
       .get(`/admin/iccRanking/import`)
       .then((response) => {
+        fetchData()
         dispatch(
           updateToastData({
             data: response.result,
