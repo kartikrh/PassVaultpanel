@@ -78,6 +78,9 @@ const Index = forwardRef(
       loadDataModelFunction,
       importDataMethod,
       importDataName,
+      showBrokenOnly,
+      isCheckingImages,
+      handleBrokenImageToggle,
       openDataProvider,
       loadClientModelFunction,
       loadSignalRToggleFunction,
@@ -109,7 +112,7 @@ const Index = forwardRef(
       createdTypeList,
       selectedClientSocket,
       setSelectedClientSocket,
-      isEntitySocket=false,
+      isEntitySocket = false,
       handleClientSocketChange,
       actionTypeOptions,
       handleReset,
@@ -156,7 +159,9 @@ const Index = forwardRef(
       reportType,
       reportTypeOption,
       updateReportType,
-      defaultCommentrayStatus
+      defaultCommentrayStatus,
+      setParentCurrentPage,
+      setParentPageSize
     },
     ref
   ) => {
@@ -224,6 +229,17 @@ const Index = forwardRef(
         });
       }
     }, [])
+    useEffect(() => {
+      if (setParentCurrentPage) {
+        setParentCurrentPage(currentPage);
+      }
+    }, [currentPage])
+
+    useEffect(() => {
+      if (setParentPageSize) {
+        setParentPageSize(pageSize);
+      }
+    }, [pageSize])
 
     const debouncedHandleSearchFilter = useCallback(
       debounce((searchValue) => {
@@ -2418,14 +2434,14 @@ const Index = forwardRef(
                                     setSearchTerm("");
                                     setSelectedClientSocket(
                                       isEntitySocket ?
-                                      {
-                                        actionType: e?.value,
-                                        entitySocketId: singleCheck,
-                                      } : 
-                                      {
-                                        actionType: e?.value,
-                                        clientSocketId: singleCheck,
-                                      }
+                                        {
+                                          actionType: e?.value,
+                                          entitySocketId: singleCheck,
+                                        } :
+                                        {
+                                          actionType: e?.value,
+                                          clientSocketId: singleCheck,
+                                        }
                                     );
                                   }}
                                   options={actionTypeOptions}
@@ -2664,9 +2680,9 @@ const Index = forwardRef(
                                 }),
                               }}
                               onChange={(e) => {
-                                  localStorage.setItem("DateType", JSON.stringify(e))
-                                  setDateType(e)
-                                }
+                                localStorage.setItem("DateType", JSON.stringify(e))
+                                setDateType(e)
+                              }
                               }
                               options={[
                                 { label: "Local Timezone", value: 1 },
@@ -2713,6 +2729,21 @@ const Index = forwardRef(
                        
                       </Col> */}
                       <Col className="col-sm-auto ms-auto d-flex">
+                        {tableElement?.showBrokenImageButton && (
+                          <Button
+                            color={showBrokenOnly ? "warning" : "secondary"}
+                            onClick={handleBrokenImageToggle}
+                            disabled={isCheckingImages}
+                            className="d-flex align-items-center gap-2 mx-3"
+                          >
+                            <>
+                              {/* <i className={showBrokenOnly ? "ri-eye-off-line" : "ri-image-line"}></i> */}
+                              {/* {showBrokenOnly ? `Broken Images (${brokenImages?.length || 0})` : "Show Broken"} */}
+                              <i className="ri-image-line"></i>
+                              {showBrokenOnly ? "Show All" : "Show Broken"}
+                            </>
+                          </Button>
+                        )}
                         {tableElement?.importData && (
                           <Button
                             color="success"
@@ -3006,7 +3037,7 @@ const Index = forwardRef(
                                   }),
                                 }}
                                 onChange={(e) => {
-                                  
+
                                   localStorage.setItem("DateType", JSON.stringify(e))
                                   setDateType(e)
                                 }}
