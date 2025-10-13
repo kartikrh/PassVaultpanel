@@ -976,6 +976,9 @@ const Index = forwardRef(
 
       setData(sortedData);
     };
+    useEffect(() => {
+      dataSource = searchedData
+    }, [searchedData])
     const optionGroup = [
       {
         label: "Picnic",
@@ -1023,7 +1026,7 @@ const Index = forwardRef(
         }
         setData(sliced);
       } else if (isPagination) {
-        if (searchTerm.length > 2 || playerSearch) {
+        if (searchTerm.toString().length > 2 || playerSearch) {
           handleSearchFilter()
           dataSource = searchedData
         }
@@ -1729,7 +1732,7 @@ const Index = forwardRef(
                               />
                             </div>
                           ) : null}
-                          {renderCustomFilter && renderCustomFilter()}
+                          {/* {renderCustomFilter && renderCustomFilter()} */}
                           {tableElement?.rateSourceListSelect ? (
                             <div className="">
                               <Select
@@ -2306,6 +2309,7 @@ const Index = forwardRef(
                               classNamePrefix="filter-dropdown"
                             />
                           ) : null}
+                          {renderCustomFilter && renderCustomFilter()}
                           {tableElement?.commentaryStatus ? (
                             <Select
                               value={selectedTableElements?.commentaryStatus}
@@ -3481,7 +3485,7 @@ const Index = forwardRef(
                       {Number(currentPage) != 0 &&
                         Number((Number(currentPage) - 1) * pageSize) + 1 >
                         (tableElement.title === "Tabs"
-                          ? serverTotal : searchTerm.length > 2 ? searchedData.length
+                          ? serverTotal : searchTerm.toString().length > 2 ? searchedData.length
                             : dataSource?.length) ==
                         false ? (
                         <span>
@@ -3492,7 +3496,7 @@ const Index = forwardRef(
                               const totalEntries =
                                 tableElement.title === "Tabs"
                                   ? serverTotal
-                                  : searchTerm.length > 2
+                                  : searchTerm.toString().length > 2
                                     ? searchedData.length
                                     : dataSource?.length;
 
@@ -3505,7 +3509,7 @@ const Index = forwardRef(
                           {
                             tableElement.title === "Tabs"
                               ? serverTotal
-                              : searchTerm.length > 2
+                              : searchTerm.toString().length > 2
                                 ? searchedData.length
                                 : dataSource?.length
                           } entries
@@ -3513,7 +3517,7 @@ const Index = forwardRef(
 
                       ) : Number((Number(currentPage) - 1) * pageSize) + 1 >
                         (tableElement.title === "Tabs"
-                          ? serverTotal : searchTerm.length > 2 ? searchedData.length
+                          ? serverTotal : searchTerm.toString().length > 2 ? searchedData.length
                             : dataSource?.length) ? (
                         <span>
                           Showing{" "}
@@ -3523,7 +3527,7 @@ const Index = forwardRef(
                               const totalEntries =
                                 tableElement.title === "Tabs"
                                   ? serverTotal
-                                  : searchTerm.length > 2
+                                  : searchTerm.toString().length > 2
                                     ? searchedData.length
                                     : dataSource?.length;
 
@@ -3536,7 +3540,7 @@ const Index = forwardRef(
                           {
                             tableElement.title === "Tabs"
                               ? serverTotal
-                              : searchTerm.length > 2
+                              : searchTerm.toString().length > 2
                                 ? searchedData.length
                                 : dataSource?.length
                           } entries
@@ -3550,21 +3554,21 @@ const Index = forwardRef(
                               const totalEntries =
                                 tableElement.title === "Tabs"
                                   ? serverTotal
-                                  : searchTerm.length > 2
+                                  : searchTerm.toString().length > 2
                                     ? searchedData.length
                                     : dataSource?.length;
 
-                              const calculatedEnd = searchTerm.length > 2
+                              const calculatedEnd = searchTerm.toString().length > 2
                                 ? (currentPage + 1) * pageSize
                                 : currentPage * pageSize + data.length;
-
+                              
                               return pageSize > totalEntries ? totalEntries : calculatedEnd;
                             })()
                           } of{" "}
                           {
                             tableElement.title === "Tabs"
                               ? serverTotal
-                              : searchTerm.length > 2
+                              : searchTerm.toString().length > 2
                                 ? searchedData.length
                                 : dataSource?.length
                           } entries

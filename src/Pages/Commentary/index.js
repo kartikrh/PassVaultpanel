@@ -166,31 +166,31 @@ const Index = () => {
   );
 
   useEffect(() => {
-      if (EventTypeId || EventCompetitionId) {
-        setSelectedTableElements(prev => {
-          const updated = { ...prev };
+    if (EventTypeId || EventCompetitionId) {
+      setSelectedTableElements(prev => {
+        const updated = { ...prev };
 
-          if (EventTypeId) {
-            const event = eventTypes.find(e => e.eventTypeId === EventTypeId);
-            // console.log("event", event);
-            updated.eventType = {
-              value: event?.eventTypeId,
-              label: event?.eventType,
-            };
-          }
+        if (EventTypeId) {
+          const event = eventTypes.find(e => e.eventTypeId === EventTypeId);
+          // console.log("event", event);
+          updated.eventType = {
+            value: event?.eventTypeId,
+            label: event?.eventType,
+          };
+        }
 
-          if (EventCompetitionId) {
-            const competition = competitions.find(c => c.competitionId === EventCompetitionId);
-            updated.competition = {
-              value: competition?.competitionId,
-              label: competition?.competition,
-            };
-          }
+        if (EventCompetitionId) {
+          const competition = competitions.find(c => c.competitionId === EventCompetitionId);
+          updated.competition = {
+            value: competition?.competitionId,
+            label: competition?.competition,
+          };
+        }
 
-          return updated;
-        });
-      }
-    }, [eventTypes, EventTypeId, EventCompetitionId, competitions]);
+        return updated;
+      });
+    }
+  }, [eventTypes, EventTypeId, EventCompetitionId, competitions]);
   
 
   const fetchData = async (latestValueFromTable) => {
