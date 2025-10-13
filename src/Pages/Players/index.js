@@ -20,6 +20,7 @@ import GenerateModal from "./GenerateModal";
 
 const Index = () => {
   const pageName = TAB_PLAYERS
+  const globalPageSize = localStorage.getItem("pageSize")
   const PlayerTeamId = +sessionStorage.getItem('PlayerTeamId');
   const PlayerEventTypeId = +sessionStorage.getItem('PlayerEventTypeId');
 
@@ -670,6 +671,30 @@ const Index = () => {
       setImportExportPlayerHistoryModelVisable(true)
     }
   }
+
+  const handleBrokenImageToggle = async () => {
+    const newShowBrokenOnly = !showBrokenOnly;
+
+    if (newShowBrokenOnly && !hasCheckedImages ) {
+      setIsCheckingImages(true);
+      const brokenTeamIds = await checkBrokenPlayerImages(data);
+      setIsCheckingImages(false);
+      if (brokenTeamIds.length === 0) {
+        dispatch(
+          updateToastData({
+            data: "No player found with broken image",
+            title: "Info",
+            type: "info",
+          })
+        );
+        return;
+      }
+      setBrokenImagePlayers(brokenTeamIds);
+      setHasCheckedImages(true);
+    } 
+    setShowBrokenOnly(newShowBrokenOnly);
+  };
+  
   return (
     <React.Fragment>
       <div className="page-content">
