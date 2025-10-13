@@ -738,7 +738,7 @@ const Index = () => {
             handleReset={handleReset}
             reFetchData={fetchData}
             handleReload={handleReload}
-            electedTableElementsLogs={selectedTableElements}
+            selectedTableElementsLogs={selectedTableElements}
             loadDataModelFunction={setLoadDataModelVisable}
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
             isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
