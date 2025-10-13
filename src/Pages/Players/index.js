@@ -694,7 +694,7 @@ const Index = () => {
     } 
     setShowBrokenOnly(newShowBrokenOnly);
   };
-  
+
   return (
     <React.Fragment>
       <div className="page-content">
@@ -714,6 +714,7 @@ const Index = () => {
             handleReset={handleReset}
             reFetchData={fetchData}
             handleReload={handleReload}
+            electedTableElementsLogs={selectedTableElements}
             loadDataModelFunction={setLoadDataModelVisable}
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
             isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
