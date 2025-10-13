@@ -8,18 +8,19 @@ import DeleteTabModel from "../../components/Model/DeleteModel";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
 import { useLocation, useNavigate } from "react-router-dom";
-import { isEqual, isEmpty } from "lodash";
+import { isEqual, isEmpty, set } from "lodash";
 import { TAB_PLAYERS, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, ERROR, MODULE_PLAYERS, } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
-import {ImportExportModel} from '../../components/Model/ImportExportModel';
-import {UploadPlayerHistoryModal} from '../../components/Model/PlayerModal/UploadPlayerHistoryModal ';
+import { ImportExportModel } from '../../components/Model/ImportExportModel';
+import { UploadPlayerHistoryModal } from '../../components/Model/PlayerModal/UploadPlayerHistoryModal ';
 import LoadDataModal from "../../components/Model/LoadDataModal";
 import GenerateModal from "./GenerateModal";
 
 const Index = () => {
   const pageName = TAB_PLAYERS
+  const globalPageSize = localStorage.getItem("pageSize")
   const finalizeRef = useRef(null);
   const permissionObj = useSelector(state => state.auth?.tabPermissionList);
   document.title = TAB_PLAYERS;
@@ -38,6 +39,12 @@ const Index = () => {
   const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
   const location = useLocation();
   const [playerSearch, setPlayerSearch] = useState(location.state?.playerName || '');
+  const [showBrokenOnly, setShowBrokenOnly] = useState(false);
+  const [brokenImagePlayers, setBrokenImagePlayers] = useState([]);
+  const [pageSize, setPageSize] = useState(globalPageSize || 10);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasCheckedImages, setHasCheckedImages] = useState(false);
+  const [isCheckingImages, setIsCheckingImages] = useState(false);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -67,6 +74,9 @@ const Index = () => {
         setData(apiData);
         setDataIndexList(apiDataIdList)
         setCheckedList([])
+        setHasCheckedImages(false);
+        setShowBrokenOnly(false);
+        setBrokenImagePlayers([]);
         setIsLoading(false);
       })
       .catch((error) => {
@@ -94,6 +104,49 @@ const Index = () => {
       })
       .catch((error) => { });
   };
+
+  const checkBrokenPlayerImages = async (players) => {
+    const newCurrentPage = currentPage > 0 ? currentPage : 1;
+    const startIndex = (newCurrentPage - 1) * pageSize;
+    const endIndex = +startIndex + +pageSize;
+    const currentPagePlayers = players.slice(startIndex, endIndex);
+
+    const validPlayers = currentPagePlayers.filter(
+      (player) => player.image && player.image.trim() !== ""
+    );
+
+    const brokenImages = await Promise.all(
+      validPlayers.map(async (player) => {
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+          const res = await fetch(player.image, {
+            method: "HEAD",
+            signal: controller.signal
+          });
+
+          clearTimeout(timeoutId);
+          return res.ok ? null : player.playerId;
+        } catch (err) {
+          return player.playerId;
+        }
+      })
+    );
+
+    const brokenPlayerIds = brokenImages.filter((id) => id !== null);
+    setBrokenImagePlayers(brokenPlayerIds);
+    return brokenPlayerIds;
+  };
+
+  const getFilteredData = () => {
+    if (showBrokenOnly && brokenImagePlayers.length > 0) {
+      // console.log("Broken Image Players:", brokenImagePlayers);
+      return data.filter(player => brokenImagePlayers.includes(player.playerId));
+    }
+    return data;
+  };
+
   //checkbox function
   const handleSingleCheck = (e) => {
     let updateSingleCheck = []
@@ -320,7 +373,7 @@ const Index = () => {
       title: "Player Name",
       dataIndex: "playerName",
       render: (text, record) => (
-        <span 
+        <span
           className="cursor-pointer"
           onClick={() => {
             handlePlayerClick(record);
@@ -511,6 +564,7 @@ const Index = () => {
     loadData: true,
     importExport: true,
     teamsList: true,
+    showBrokenImageButton: true,
   };
 
   useEffect(() => {
@@ -607,6 +661,29 @@ const Index = () => {
       setImportExportPlayerHistoryModelVisable(true)
     }
   }
+  const handleBrokenImageToggle = async () => {
+    const newShowBrokenOnly = !showBrokenOnly;
+
+    if (newShowBrokenOnly && !hasCheckedImages ) {
+      setIsCheckingImages(true);
+      const brokenTeamIds = await checkBrokenPlayerImages(data);
+      setIsCheckingImages(false);
+      if (brokenTeamIds.length === 0) {
+        dispatch(
+          updateToastData({
+            data: "No player found with broken image",
+            title: "Info",
+            type: "info",
+          })
+        );
+        return;
+      }
+      setBrokenImagePlayers(brokenTeamIds);
+      setHasCheckedImages(true);
+    } 
+    setShowBrokenOnly(newShowBrokenOnly);
+  };
+
   return (
     <React.Fragment>
       <div className="page-content">
@@ -616,7 +693,7 @@ const Index = () => {
           <Table
             ref={finalizeRef}
             columns={columns}
-            dataSource={data}
+            dataSource={getFilteredData()}
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
@@ -643,6 +720,12 @@ const Index = () => {
                 </Button>
               </>
             }}
+            showBrokenOnly={showBrokenOnly}
+            // brokenImages={brokenImagePlayers}
+            isCheckingImages={isCheckingImages}
+            handleBrokenImageToggle={handleBrokenImageToggle}
+            setParentPageSize={setPageSize}
+            setParentCurrentPage={setCurrentPage}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
