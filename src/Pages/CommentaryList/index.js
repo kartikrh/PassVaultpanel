@@ -47,6 +47,11 @@ import { loadInit } from "../../config";
 
 const Index = () => {
   const pageName = TAB_COMMENTARY_LIST;
+
+  const EventTypeId = +sessionStorage.getItem('commentaryEventTypeId');
+  const EventRefId = +sessionStorage.getItem('commentaryEventRefId');
+  const EventCompetitionId = +sessionStorage.getItem('commentaryCompetitionId') || 0;
+
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   document.title = "Commentary List";
@@ -68,7 +73,7 @@ const Index = () => {
     eventName: "",
     eventRefId: "",
   });
-  const [isSearch, setIsSearch] = useState(true);
+  const [isSearch, setIsSearch] = useState(EventRefId ? false : true);
   const [dateType, setDateType] = useState(globalDateType || {
     label: "Local Timezone",
     value: 1,
@@ -110,10 +115,6 @@ const Index = () => {
     });
   const didInitialFetch = useRef(false);
   let scorecardFrameUrl = null;
-
-  const EventTypeId = +sessionStorage.getItem('commentaryEventTypeId');
-  const EventCompetitionId = +sessionStorage.getItem('commentaryCompetitionId') || 0;
-
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -205,6 +206,12 @@ const Index = () => {
     }
     
   };
+
+  useEffect(() => {
+    if(EventTypeId && !selectedTableElements.competition){
+      fetchCompetitionData(EventTypeId)
+    }
+  }, [EventTypeId])
 
   useEffect(() => {
     const objToSave = {};
@@ -1818,6 +1825,11 @@ const Index = () => {
             columns={updatedColumns}
             dataSource={data}
             tableElement={tableElement}
+            defaultCommentrayStatus={EventRefId && {
+                label: "All",
+                value: 0,
+              }
+            }
             closeModelFunction={setCloseModelVisible}
             cancelModelFunction={setCancelModelVisible}
             cloneModelFunction={setCloneModelVisible}

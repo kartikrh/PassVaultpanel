@@ -56,6 +56,10 @@ import PredictMarketPasswordModal from "../../components/Model/PredictMarketPass
 
 const Index = () => {
   const pageName = TAB_COMMENTARY;
+  const EventTypeId = +sessionStorage.getItem('commentaryEventTypeId');
+  const EventRefId = +sessionStorage.getItem('commentaryEventRefId');
+  const EventCompetitionId = +sessionStorage.getItem('commentaryCompetitionId') || 0;
+
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   document.title = "Commentary";
@@ -91,7 +95,7 @@ const Index = () => {
     eventName: "",
     eventRefId: "",
   });
-  const [isSearch, setIsSearch] = useState(true);
+  const [isSearch, setIsSearch] = useState(EventRefId ? false : true);
   const [dateType, setDateType] = useState(globalDateType || {
     label: "Local Timezone",
     value: 1,
@@ -136,10 +140,6 @@ const Index = () => {
   const [selectedCommentaryDay, setSelectedCommentaryDay] = useState({});
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
-  const EventTypeId = +sessionStorage.getItem('commentaryEventTypeId');
-  const EventRefId = +sessionStorage.getItem('commentaryEventRefId');
-  const EventCompetitionId = +sessionStorage.getItem('commentaryCompetitionId') || 0;
-
   useEffect(() => {
       const handleResize = () => setWindowWidth(window.innerWidth);
       window.addEventListener('resize', handleResize);
@@ -166,31 +166,31 @@ const Index = () => {
   );
 
   useEffect(() => {
-      if (EventTypeId || EventCompetitionId) {
-        setSelectedTableElements(prev => {
-          const updated = { ...prev };
+    if (EventTypeId || EventCompetitionId) {
+      setSelectedTableElements(prev => {
+        const updated = { ...prev };
 
-          if (EventTypeId) {
-            const event = eventTypes.find(e => e.eventTypeId === EventTypeId);
-            // console.log("event", event);
-            updated.eventType = {
-              value: event?.eventTypeId,
-              label: event?.eventType,
-            };
-          }
+        if (EventTypeId) {
+          const event = eventTypes.find(e => e.eventTypeId === EventTypeId);
+          // console.log("event", event);
+          updated.eventType = {
+            value: event?.eventTypeId,
+            label: event?.eventType,
+          };
+        }
 
-          if (EventCompetitionId) {
-            const competition = competitions.find(c => c.competitionId === EventCompetitionId);
-            updated.competition = {
-              value: competition?.competitionId,
-              label: competition?.competition,
-            };
-          }
+        if (EventCompetitionId) {
+          const competition = competitions.find(c => c.competitionId === EventCompetitionId);
+          updated.competition = {
+            value: competition?.competitionId,
+            label: competition?.competition,
+          };
+        }
 
-          return updated;
-        });
-      }
-    }, [eventTypes, EventTypeId, EventCompetitionId, competitions]);
+        return updated;
+      });
+    }
+  }, [eventTypes, EventTypeId, EventCompetitionId, competitions]);
   
 
   const fetchData = async (latestValueFromTable) => {
@@ -2967,6 +2967,11 @@ const Index = () => {
             columns={updatedColumns}
             dataSource={data}
             tableElement={tableElement}
+            defaultCommentrayStatus={EventRefId && {
+                label: "All",
+                value: 0,
+              }
+            }
             deleteModelFunction={setDeleteModelVisable}
             loadModelFunction={setLoadModelVisable}
             suspendModelFunction={setSuspendModelVisable}

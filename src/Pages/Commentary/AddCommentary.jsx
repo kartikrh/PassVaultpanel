@@ -153,10 +153,10 @@ function AddCommentary() {
                 "team2Players": true,
             };
 
-            if (initialEditData?.commentaryStatus != 1) {
+            // if (initialEditData?.commentaryStatus != 1) {
                 disabled["team1Id"] = true;
                 disabled["team2Id"] = true;
-            }
+            // }
 
             setDisabledFields(disabled);
         }
