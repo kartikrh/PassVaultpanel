@@ -23,15 +23,21 @@ const Index = () => {
   document.title = "Teams";
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
-  const [checekedList, setCheckedList] = useState([]); const [isLoading, setIsLoading] = useState(false);
+  const [checekedList, setCheckedList] = useState([]); 
+  const [isLoading, setIsLoading] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [eventTypes, setEventTypes] = useState([]);
   const [eventTypeId, setEventTypeId] = useState(null);
   const [competitionId, setCompetitionId] = useState(null);
   const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
   const [pageSize, setPageSize] = useState(globalPageSize || 10);
+  const [currentPage, setCurrentPage] = useState(1);
   const [generateModalData, setGenerateModalData] = useState(null);
   const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
+  const [showBrokenOnly, setShowBrokenOnly] = useState(false);
+  const [brokenImageTeams, setBrokenImageTeams] = useState([]);
+  const [hasCheckedImages, setHasCheckedImages] = useState(false);
+  const [isCheckingImages, setIsCheckingImages] = useState(false);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -52,7 +58,10 @@ const Index = () => {
         })
         setData(apiData);
         setDataIndexList(apiDataIdList)
-        setCheckedList([])
+        setCheckedList([]);
+        setHasCheckedImages(false);
+        setShowBrokenOnly(false);
+        setBrokenImageTeams([]); // or setBrokenImagePlayers([])
         setIsLoading(false);
       })
       .catch((error) => {
@@ -68,6 +77,64 @@ const Index = () => {
         setIsLoading(false);
       })
       .catch((error) => { });
+  };
+
+  const checkBrokenImages = async (teams) => {
+    // setIsCheckingImages(true);
+    const newCurrentPage = currentPage > 0 ? currentPage : 1;
+    const startIndex = (newCurrentPage - 1) * pageSize;
+    const endIndex = +startIndex + +pageSize;
+    const currentPageTeams = teams.slice(startIndex, endIndex);
+    const validImages = currentPageTeams.filter(
+      (team) => (team.image && team.image.trim() !== "") || (team.jersey && team.jersey.trim() !== "")
+    );
+
+    const brokenImages = await Promise.all(
+      validImages.map(async (team) => {
+        const results = { teamId: team.teamId, imageBroken: false, jerseyBroken: false };
+
+        // Check team image
+        const checkImageWithTimeout = async (url) => {
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 5000);
+
+          try {
+            const res = await fetch(url, {
+              method: "HEAD",
+              signal: controller.signal
+            });
+            clearTimeout(timeout);
+            return !res.ok;
+          } catch (err) {
+            clearTimeout(timeout);
+            return true; // Treat timeout/error as broken
+          }
+        };
+
+        if (team.image && team.image.trim() !== "") {
+          results.imageBroken = await checkImageWithTimeout(team.image);
+        }
+
+        if (team.jersey && team.jersey.trim() !== "") {
+          results.jerseyBroken = await checkImageWithTimeout(team.jersey);
+        }
+
+        return results.imageBroken || results.jerseyBroken ? team.teamId : null;
+      })
+    );
+
+    const brokenTeamIds = brokenImages.filter((id) => id !== null);
+    setBrokenImageTeams(brokenTeamIds);
+    // setIsCheckingImages(false);
+    return brokenTeamIds;
+  };
+
+  const getFilteredData = () => {
+    if (showBrokenOnly && brokenImageTeams.length > 0) {
+      // console.log("Broken Image Teams:", brokenImageTeams);
+      return data.filter(team => brokenImageTeams.includes(team.teamId));
+    }
+    return data;
   };
 
   const handleSingleCheck = (e) => {
@@ -431,6 +498,7 @@ const Index = () => {
     resetButton: true,
     reloadButton: true,
     loadData: true,
+    showBrokenImageButton: true,
   };
 
   const updatedImportData = async () => {
@@ -473,6 +541,30 @@ const Index = () => {
     // fetchEventTypeData()
   };
 
+const handleBrokenImageToggle = async () => {
+  const newShowBrokenOnly = !showBrokenOnly;
+
+  if (newShowBrokenOnly && !hasCheckedImages) {
+    setIsCheckingImages(true); 
+    const brokenTeamIds = await checkBrokenImages(data);
+    setIsCheckingImages(false); 
+    if (brokenTeamIds.length === 0) {
+      dispatch(
+        updateToastData({
+          data: "No team found with broken image",
+          title: "Info",
+          type: "info",
+        })
+      );
+      return;
+    }
+    setBrokenImageTeams(brokenTeamIds);
+    setHasCheckedImages(true);
+  } 
+  setShowBrokenOnly(newShowBrokenOnly);
+};
+
+  // console.log("-------------------------", currentPage, pageSize)
   return (
     <React.Fragment>
       <div className="page-content">
@@ -482,7 +574,8 @@ const Index = () => {
           <Table
             ref={finalizeRef}
             columns={columns}
-            dataSource={data}
+            // dataSource={data}
+            dataSource={getFilteredData()}
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
@@ -492,8 +585,6 @@ const Index = () => {
             eventTypes={eventTypes}
             setEventTypeId={setEventTypeId}
             onAddNavigate={"/addTeams"}
-            setServerPageSize={setPageSize}
-            serverPageSize={pageSize}
             reFetchData={fetchData}
             setCompetitionId={setCompetitionId}
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
@@ -509,6 +600,12 @@ const Index = () => {
                 </Button>
               </>
             }}
+            showBrokenOnly={showBrokenOnly}
+            // brokenImages={brokenImageTeams}
+            isCheckingImages={isCheckingImages} 
+            handleBrokenImageToggle={handleBrokenImageToggle}
+            setParentPageSize={setPageSize}
+            setParentCurrentPage={setCurrentPage}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
