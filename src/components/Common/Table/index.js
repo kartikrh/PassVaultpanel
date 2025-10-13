@@ -78,6 +78,9 @@ const Index = forwardRef(
       loadDataModelFunction,
       importDataMethod,
       importDataName,
+      showBrokenOnly,
+      isCheckingImages,
+      handleBrokenImageToggle,
       openDataProvider,
       loadClientModelFunction,
       loadSignalRToggleFunction,
@@ -109,7 +112,7 @@ const Index = forwardRef(
       createdTypeList,
       selectedClientSocket,
       setSelectedClientSocket,
-      isEntitySocket=false,
+      isEntitySocket = false,
       handleClientSocketChange,
       actionTypeOptions,
       handleReset,
@@ -155,7 +158,10 @@ const Index = forwardRef(
       dateTypeTitle,
       reportType,
       reportTypeOption,
-      updateReportType
+      updateReportType,
+      defaultCommentrayStatus,
+      setParentCurrentPage,
+      setParentPageSize
     },
     ref
   ) => {
@@ -213,6 +219,27 @@ const Index = forwardRef(
         setCurrentPage(0);
       }
     }, [data, filteredData]);
+
+    useEffect(() => {
+      if(defaultCommentrayStatus){
+        handleTableActions("commentaryStatus", defaultCommentrayStatus);
+        setSelectedTableElements({
+          ...selectedTableElements,
+          commentaryStatus: defaultCommentrayStatus,
+        });
+      }
+    }, [])
+    useEffect(() => {
+      if (setParentCurrentPage) {
+        setParentCurrentPage(currentPage);
+      }
+    }, [currentPage])
+
+    useEffect(() => {
+      if (setParentPageSize) {
+        setParentPageSize(pageSize);
+      }
+    }, [pageSize])
 
     const debouncedHandleSearchFilter = useCallback(
       debounce((searchValue) => {
@@ -965,6 +992,9 @@ const Index = forwardRef(
 
       setData(sortedData);
     };
+    useEffect(() => {
+      dataSource = searchedData
+    }, [searchedData])
     const optionGroup = [
       {
         label: "Picnic",
@@ -1012,7 +1042,7 @@ const Index = forwardRef(
         }
         setData(sliced);
       } else if (isPagination) {
-        if (searchTerm.length > 2 || playerSearch) {
+        if (searchTerm.toString().length > 2 || playerSearch) {
           handleSearchFilter()
           dataSource = searchedData
         }
@@ -1718,7 +1748,7 @@ const Index = forwardRef(
                               />
                             </div>
                           ) : null}
-                          {renderCustomFilter && renderCustomFilter()}
+                          {/* {renderCustomFilter && renderCustomFilter()} */}
                           {tableElement?.rateSourceListSelect ? (
                             <div className="">
                               <Select
@@ -2295,10 +2325,12 @@ const Index = forwardRef(
                               classNamePrefix="filter-dropdown"
                             />
                           ) : null}
+                          {renderCustomFilter && renderCustomFilter()}
                           {tableElement?.commentaryStatus ? (
                             <Select
                               value={selectedTableElements?.commentaryStatus}
                               placeholder="Commentary Status"
+                              isDisabled={defaultCommentrayStatus}
                               styles={{
                                 control: (provided) => ({
                                   ...provided,
@@ -2406,14 +2438,14 @@ const Index = forwardRef(
                                     setSearchTerm("");
                                     setSelectedClientSocket(
                                       isEntitySocket ?
-                                      {
-                                        actionType: e?.value,
-                                        entitySocketId: singleCheck,
-                                      } : 
-                                      {
-                                        actionType: e?.value,
-                                        clientSocketId: singleCheck,
-                                      }
+                                        {
+                                          actionType: e?.value,
+                                          entitySocketId: singleCheck,
+                                        } :
+                                        {
+                                          actionType: e?.value,
+                                          clientSocketId: singleCheck,
+                                        }
                                     );
                                   }}
                                   options={actionTypeOptions}
@@ -2652,9 +2684,9 @@ const Index = forwardRef(
                                 }),
                               }}
                               onChange={(e) => {
-                                  localStorage.setItem("DateType", JSON.stringify(e))
-                                  setDateType(e)
-                                }
+                                localStorage.setItem("DateType", JSON.stringify(e))
+                                setDateType(e)
+                              }
                               }
                               options={[
                                 { label: "Local Timezone", value: 1 },
@@ -2701,6 +2733,21 @@ const Index = forwardRef(
                        
                       </Col> */}
                       <Col className="col-sm-auto ms-auto d-flex">
+                        {tableElement?.showBrokenImageButton && (
+                          <Button
+                            color={showBrokenOnly ? "warning" : "secondary"}
+                            onClick={handleBrokenImageToggle}
+                            disabled={isCheckingImages}
+                            className="d-flex align-items-center gap-2 mx-3"
+                          >
+                            <>
+                              {/* <i className={showBrokenOnly ? "ri-eye-off-line" : "ri-image-line"}></i> */}
+                              {/* {showBrokenOnly ? `Broken Images (${brokenImages?.length || 0})` : "Show Broken"} */}
+                              <i className="ri-image-line"></i>
+                              {showBrokenOnly ? "Show All" : "Show Broken"}
+                            </>
+                          </Button>
+                        )}
                         {tableElement?.importData && (
                           <Button
                             color="success"
@@ -2994,7 +3041,7 @@ const Index = forwardRef(
                                   }),
                                 }}
                                 onChange={(e) => {
-                                  
+
                                   localStorage.setItem("DateType", JSON.stringify(e))
                                   setDateType(e)
                                 }}
@@ -3469,7 +3516,7 @@ const Index = forwardRef(
                       {Number(currentPage) != 0 &&
                         Number((Number(currentPage) - 1) * pageSize) + 1 >
                         (tableElement.title === "Tabs"
-                          ? serverTotal : searchTerm.length > 2 ? searchedData.length
+                          ? serverTotal : searchTerm.toString().length > 2 ? searchedData.length
                             : dataSource?.length) ==
                         false ? (
                         <span>
@@ -3480,7 +3527,7 @@ const Index = forwardRef(
                               const totalEntries =
                                 tableElement.title === "Tabs"
                                   ? serverTotal
-                                  : searchTerm.length > 2
+                                  : searchTerm.toString().length > 2
                                     ? searchedData.length
                                     : dataSource?.length;
 
@@ -3493,7 +3540,7 @@ const Index = forwardRef(
                           {
                             tableElement.title === "Tabs"
                               ? serverTotal
-                              : searchTerm.length > 2
+                              : searchTerm.toString().length > 2
                                 ? searchedData.length
                                 : dataSource?.length
                           } entries
@@ -3501,7 +3548,7 @@ const Index = forwardRef(
 
                       ) : Number((Number(currentPage) - 1) * pageSize) + 1 >
                         (tableElement.title === "Tabs"
-                          ? serverTotal : searchTerm.length > 2 ? searchedData.length
+                          ? serverTotal : searchTerm.toString().length > 2 ? searchedData.length
                             : dataSource?.length) ? (
                         <span>
                           Showing{" "}
@@ -3511,7 +3558,7 @@ const Index = forwardRef(
                               const totalEntries =
                                 tableElement.title === "Tabs"
                                   ? serverTotal
-                                  : searchTerm.length > 2
+                                  : searchTerm.toString().length > 2
                                     ? searchedData.length
                                     : dataSource?.length;
 
@@ -3524,7 +3571,7 @@ const Index = forwardRef(
                           {
                             tableElement.title === "Tabs"
                               ? serverTotal
-                              : searchTerm.length > 2
+                              : searchTerm.toString().length > 2
                                 ? searchedData.length
                                 : dataSource?.length
                           } entries
@@ -3538,21 +3585,21 @@ const Index = forwardRef(
                               const totalEntries =
                                 tableElement.title === "Tabs"
                                   ? serverTotal
-                                  : searchTerm.length > 2
+                                  : searchTerm.toString().length > 2
                                     ? searchedData.length
                                     : dataSource?.length;
 
-                              const calculatedEnd = searchTerm.length > 2
+                              const calculatedEnd = searchTerm.toString().length > 2
                                 ? (currentPage + 1) * pageSize
                                 : currentPage * pageSize + data.length;
-
+                              
                               return pageSize > totalEntries ? totalEntries : calculatedEnd;
                             })()
                           } of{" "}
                           {
                             tableElement.title === "Tabs"
                               ? serverTotal
-                              : searchTerm.length > 2
+                              : searchTerm.toString().length > 2
                                 ? searchedData.length
                                 : dataSource?.length
                           } entries
