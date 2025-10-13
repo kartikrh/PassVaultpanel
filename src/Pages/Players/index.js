@@ -156,6 +156,31 @@ const Index = () => {
     return data;
   };
 
+  useEffect(() => {
+    if (PlayerTeamId || PlayerEventTypeId) {
+      setSelectedTableElements(prev => {
+        const updated = { ...prev };
+
+        if (PlayerEventTypeId) {
+          const event = eventTypes.find(e => e.eventTypeId === PlayerEventTypeId);
+          updated.eventType = {
+            value: event?.eventTypeId,
+            label: event?.eventType,
+          };
+        }
+        if (PlayerTeamId) {
+          const team = teams.find(c => c.teamId === PlayerTeamId);
+          updated.team = {
+            value: team?.teamId,
+            label: team?.teamName,
+          };
+        }
+
+        return updated;
+      });
+    }
+  }, [eventTypes, PlayerEventTypeId, PlayerTeamId, teams]);
+
   //checkbox function
   const handleSingleCheck = (e) => {
     let updateSingleCheck = []
@@ -709,7 +734,6 @@ const Index = () => {
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
             eventTypes={eventTypes}
-            selectedTableElementsLogs={selectedTableElements}
             onAddNavigate={"/addPlayer"}
             handleReset={handleReset}
             reFetchData={fetchData}
