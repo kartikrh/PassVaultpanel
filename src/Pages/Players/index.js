@@ -20,7 +20,13 @@ import GenerateModal from "./GenerateModal";
 
 const Index = () => {
   const pageName = TAB_PLAYERS
-  const globalPageSize = localStorage.getItem("pageSize")
+  const PlayerTeamId = +sessionStorage.getItem('PlayerTeamId');
+  const PlayerEventTypeId = +sessionStorage.getItem('PlayerEventTypeId');
+
+  const [selectedTableElements, setSelectedTableElements] = useState({
+      eventType: null,
+      team: null
+    });
   const finalizeRef = useRef(null);
   const permissionObj = useSelector(state => state.auth?.tabPermissionList);
   document.title = TAB_PLAYERS;
@@ -63,6 +69,8 @@ const Index = () => {
     const tableActions = finalizeRef.current.getTableAction()
     await axiosInstance
       .post(`/admin/player/all`, {
+        eventtypeId: PlayerEventTypeId ? PlayerEventTypeId : latestValueFromTable?.eventtypeId || tableActions?.eventTypeId,
+        teamId: PlayerTeamId ? PlayerTeamId : latestValueFromTable?.teamId || tableActions?.teamId,
         ...(latestValueFromTable || tableActions)
       })
       .then((response) => {
@@ -571,6 +579,7 @@ const Index = () => {
     if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard")
     }
+    console.log("sfs")
     fetchData();
     fetchEventTypeData()
     fetchTeamsData()
@@ -661,29 +670,6 @@ const Index = () => {
       setImportExportPlayerHistoryModelVisable(true)
     }
   }
-  const handleBrokenImageToggle = async () => {
-    const newShowBrokenOnly = !showBrokenOnly;
-
-    if (newShowBrokenOnly && !hasCheckedImages ) {
-      setIsCheckingImages(true);
-      const brokenTeamIds = await checkBrokenPlayerImages(data);
-      setIsCheckingImages(false);
-      if (brokenTeamIds.length === 0) {
-        dispatch(
-          updateToastData({
-            data: "No player found with broken image",
-            title: "Info",
-            type: "info",
-          })
-        );
-        return;
-      }
-      setBrokenImagePlayers(brokenTeamIds);
-      setHasCheckedImages(true);
-    } 
-    setShowBrokenOnly(newShowBrokenOnly);
-  };
-
   return (
     <React.Fragment>
       <div className="page-content">
@@ -698,6 +684,7 @@ const Index = () => {
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
             eventTypes={eventTypes}
+            selectedTableElementsLogs={selectedTableElements}
             onAddNavigate={"/addPlayer"}
             handleReset={handleReset}
             reFetchData={fetchData}

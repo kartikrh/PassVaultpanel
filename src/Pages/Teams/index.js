@@ -205,6 +205,28 @@ const Index = () => {
   const handleReset = (value) => {
     fetchData(value)
   }
+
+  const handlePlayerClick = (details) => {
+    console.log("players", details)
+    const url = new URL(window.location.origin + '/Players');
+    sessionStorage.setItem(
+      "PlayerTeamId",
+      "" + details?.teamId
+    );
+    sessionStorage.setItem(
+      "PlayerEventTypeId",
+      "" + details?.eventTypeId
+    );
+    // sessionStorage.setItem(
+    //   "commentaryManualOddsMarketDetails",
+    //   "" + JSON.stringify(details)
+    // );
+    window.open(url.href, "_blank");
+    sessionStorage.removeItem("PlayerTeamId");
+    sessionStorage.removeItem("PlayerEventTypeId");
+    // sessionStorage.removeItem("commentaryManualOddsMarketDetails");
+  };
+
   //table columns
   const columns = [
     {
@@ -298,6 +320,36 @@ const Index = () => {
       ),
       key: "jersey",
       style: { width: "10%", textAlign: "left" },
+    },
+    {
+      title: "",
+      dataIndex: "",
+      key: "",
+      render: (text, record) => {
+        // const isMatchingCompetition =
+        //   record?.competitionId === filledDropdownData?.competition?.value;
+          
+        // if (userRefData.competitionId != 0 && !isMatchingCompetition) return null; 
+
+        return (
+          <Tooltip
+            title={"Players"}
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            <Button
+              color={"primary"}
+              size="sm"
+              className="btn"
+              onClick={() => handlePlayerClick(record)}
+            >
+              P
+            </Button>
+          </Tooltip>
+        );
+      },
+      style: { width: "5%" },
+      // sort: true,
     },
     {
       title: "Team Name",
