@@ -1103,7 +1103,10 @@ const Index = forwardRef(
         handleCustomReset();
         return;
       }
-      dateType && setDateType(globalDateType || { label: 'Local Timezone', value: 1 })
+      if(dateType.value == 2){
+        localStorage.setItem("DateType", JSON.stringify({ label: 'Local Timezone', value: 1 }))
+        setDateType({ label: 'Local Timezone', value: 1 })
+      } 
       setSearchTerm("");
       setTableActions({
         isActive: true,

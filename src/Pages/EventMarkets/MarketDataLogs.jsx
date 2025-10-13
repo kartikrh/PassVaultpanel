@@ -296,8 +296,8 @@ function MarketDataLogs() {
       render: (text, record) => (
         <span>
           {dateType?.value == 1
-            ? convertDateUTCToLocal24(text, "index")
-            // ? convertDateUTCToLocal2(text, "index")
+            // ? convertDateUTCToLocal24(text, "index")
+            ? convertDateUTCToLocal2_24(text, "index")
             : convertDateUtcFormat24(text, "index")
           }
         </span>
@@ -644,7 +644,7 @@ function MarketDataLogs() {
   // ];
 
   const MarketDetailsDate = marketDetails?.eventDate
-    ? convertDateUTCToLocal2_24(marketDetails.eventDate, "index")
+    ? convertDateUTCToLocal24(marketDetails.eventDate, "index")
     : marketDetails?.eventDay && marketDetails?.eventTime
     ? `${marketDetails?.eventDay} ${marketDetails?.eventTime}`
     : "";
