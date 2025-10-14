@@ -27,7 +27,7 @@ const Index = ({
           setDeleteAllModelVisable(false);
         }}
       >
-        {(domain === "uatpanel.deployed.live" || domain === "localhost") ? "UAT " : ""}Delete All Commentary in 
+        {(domain === "uatpanel.deployed.live" || domain === "localhost") ? "UAT " : ""}Delete All Commentary
         {/* TODO, do we need to add teh screen name also like delete tabs or delete Penelty run */}
       </ModalHeader>
       <div className="tablelist-form">
