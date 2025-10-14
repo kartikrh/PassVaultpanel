@@ -86,6 +86,7 @@ const Index = () => {
   });
   const [pageSize, setPageSize] = useState(globalPageSize || 10);
   const [currentPage, setCurrentPage] = useState(1);
+  const [tableSearchedData, setTableSearchedData] = useState([]);
 
   const [selectedTableElements, setSelectedTableElements] = useState({
     eventType: null,
@@ -556,11 +557,20 @@ const Index = () => {
   ];
 
   //checkbox select
-  const handleSelectAllClick = () => {
+  const getSelectedItemsData = () => {
     const newCurrentPage = currentPage > 0 ? currentPage : 1;
     const startIndex = (newCurrentPage - 1) * pageSize;
     const endIndex = +startIndex + +pageSize;
-    const currentItems = dataIndexList.slice(startIndex, endIndex);
+
+    const sourceList = tableSearchedData && tableSearchedData.length > 0
+      ? tableSearchedData.map(item => item.eventMarketId)
+      : dataIndexList;
+
+    return sourceList.slice(startIndex, endIndex);
+  };
+
+  const handleSelectAllClick = () => {
+    const currentItems = getSelectedItemsData();
     setCheckedList(
       isEqual(checekedList?.sort(), currentItems?.sort())
         ? []
@@ -569,14 +579,16 @@ const Index = () => {
   };
 
   const checkIfAllSelected = () => {
-    const newCurrentPage = currentPage > 0 ? currentPage : 1;
-    const startIndex = (newCurrentPage - 1) * pageSize;
-    const endIndex = +startIndex + +pageSize;
-    const currentItems = dataIndexList.slice(startIndex, endIndex);
-    // console.log(`currentItems: `, currentItems);
+    const currentItems = getSelectedItemsData();
     return data?.length > 0 &&
       isEqual(checekedList?.sort(), currentItems?.sort());
   };
+
+  const handleTableSearchedDataChange = (data) => {
+    setTableSearchedData(data);
+    setCheckedList([]);
+  };
+
   const handleCurrentPageChange = (page) => {
     setCurrentPage(page);
     setCheckedList([]);
@@ -1162,6 +1174,7 @@ const Index = () => {
             setSelectedMarketType={setSelectedMarketType}
             setParentPageSize={handlePageSizeChange}
             setParentCurrentPage={handleCurrentPageChange}
+            setParentSearchedData={handleTableSearchedDataChange}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

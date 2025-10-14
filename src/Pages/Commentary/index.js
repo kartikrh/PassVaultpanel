@@ -142,6 +142,7 @@ const Index = () => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [pageSize, setPageSize] = useState(globalPageSize || 10);
   const [currentPage, setCurrentPage] = useState(1);
+  const [tableSearchedData, setTableSearchedData] = useState([]);
 
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
@@ -1446,11 +1447,20 @@ const Index = () => {
   };
 
   //checkbox select
-  const handleSelectAllClick = () => {
+  const getSelectedItemsData = () => {
     const newCurrentPage = currentPage > 0 ? currentPage : 1;
     const startIndex = (newCurrentPage - 1) * pageSize;
     const endIndex = +startIndex + +pageSize;
-    const currentItems = dataIndexList.slice(startIndex, endIndex);
+
+    const sourceList = tableSearchedData && tableSearchedData.length > 0 
+      ? tableSearchedData.map(item => item.commentaryId)
+      : dataIndexList;
+    
+    return sourceList.slice(startIndex, endIndex);
+  };
+
+  const handleSelectAllClick = () => {
+    const currentItems = getSelectedItemsData();
     setCheckedList(
       isEqual(checekedList?.sort(), currentItems?.sort())
         ? []
@@ -1459,14 +1469,16 @@ const Index = () => {
   };
 
   const checkIfAllSelected = () => {
-    const newCurrentPage = currentPage > 0 ? currentPage : 1;
-    const startIndex = (newCurrentPage - 1) * pageSize;
-    const endIndex = +startIndex + +pageSize;
-    const currentItems = dataIndexList.slice(startIndex, endIndex);
-    // console.log(`currentItems: `, currentItems);
-   return data?.length > 0 &&
+    const currentItems = getSelectedItemsData();
+    return data?.length > 0 &&
       isEqual(checekedList?.sort(), currentItems?.sort());
   };
+
+  const handleTableSearchedDataChange = (data) => {
+    setTableSearchedData(data);
+    setCheckedList([]);
+  };
+
   const handleCurrentPageChange = (page) => {
     setCurrentPage(page);
     setCheckedList([]);
@@ -1489,17 +1501,17 @@ const Index = () => {
             value="option1"
             checked={checkIfAllSelected()}
             onChange={handleSelectAllClick}
-            // checked={
-            //   data?.length > 0 &&
-            //   isEqual(checekedList?.sort(), dataIndexList?.sort())
-            // }
-            // onChange={() => {
-            //   setCheckedList(
-            //     isEqual(checekedList?.sort(), dataIndexList?.sort())
-            //       ? []
-            //       : dataIndexList
-            //   );
-            // }}
+          // checked={
+          //   data?.length > 0 &&
+          //   isEqual(checekedList?.sort(), dataIndexList?.sort())
+          // }
+          // onChange={() => {
+          //   setCheckedList(
+          //     isEqual(checekedList?.sort(), dataIndexList?.sort())
+          //       ? []
+          //       : dataIndexList
+          //   );
+          // }}
           />
         </div>
       ),
@@ -3033,6 +3045,7 @@ const Index = () => {
             playerSearch={EventRefId}
             setParentPageSize={handlePageSizeChange}
             setParentCurrentPage={handleCurrentPageChange}
+            setParentSearchedData={handleTableSearchedDataChange}
             // selectedTableElementsLogs={selectedTableElements}
             selectedTableElementsLogs={userRefData?.competitionId != 0 || userRefData?.eventTypeId != 0 ? filledDropdownData : selectedTableElements}
             isAddPermission={checkPermission(
