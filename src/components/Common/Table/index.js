@@ -3740,7 +3740,8 @@ const Index = forwardRef(
                                       className="d-flex flex-row justify-content-between"
                                       style={{
                                         visibility:
-                                          column?.key === "select" && "hidden",
+                                           column?.key === "hidden",
+                                          // column?.key === "select" && "hidden",
                                       }}
                                     >
                                       <span>{column.title}</span>
@@ -3869,7 +3870,8 @@ const Index = forwardRef(
                                 className="d-flex flex-row justify-content-between"
                                 style={{
                                   visibility:
-                                    column?.key === "select" && "hidden",
+                                    column?.key === "hidden",
+                                    // column?.key === "select" && "hidden",
                                 }}
                               >
                                 <span>{column.title}</span>

@@ -35,6 +35,7 @@ const Index = () => {
   const commentaryDetails = JSON.parse(
     sessionStorage.getItem("closeMarketDetails") || "{}"
   );
+  const globalPageSize = localStorage.getItem("pageSize");
   const globalDateType = JSON.parse(localStorage.getItem("DateType"))
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
@@ -78,6 +79,8 @@ const Index = () => {
     competition: null,
     eventName: null,
   });
+  const [pageSize, setPageSize] = useState(globalPageSize || 10);
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     if (commentaryId !== 0) {
@@ -316,6 +319,38 @@ const Index = () => {
       rateSourceRefId: 2,
     },
   ];
+
+  const handleSelectAllClick = () => {
+    const newCurrentPage = currentPage > 0 ? currentPage : 1;
+    const startIndex = (newCurrentPage - 1) * pageSize;
+    const endIndex = +startIndex + +pageSize;
+    const currentItems = dataIndexList.slice(startIndex, endIndex);
+    setCheckedList(
+      isEqual(checekedList?.sort(), currentItems?.sort())
+        ? []
+        : currentItems
+    );
+  };
+
+  const checkIfAllSelected = () => {
+    const newCurrentPage = currentPage > 0 ? currentPage : 1;
+    const startIndex = (newCurrentPage - 1) * pageSize;
+    const endIndex = +startIndex + +pageSize;
+    const currentItems = dataIndexList.slice(startIndex, endIndex);
+    // console.log(`currentItems: `, currentItems);
+    return data?.length > 0 &&
+      isEqual(checekedList?.sort(), currentItems?.sort())
+  };
+  const  handleCurrentPageChange = (page) => {
+    setCurrentPage(page);
+    setCheckedList([])
+  };
+
+  const handlePageSizeChange = (size) => {
+    setPageSize(size);
+    setCheckedList([])
+  };
+
   //table columns
   const columns = [
     {
@@ -326,17 +361,19 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={
-              data?.length > 0 &&
-              isEqual(checekedList?.sort(), dataIndexList?.sort())
-            }
-            onChange={() => {
-              setCheckedList(
-                isEqual(checekedList?.sort(), dataIndexList?.sort())
-                  ? []
-                  : dataIndexList
-              );
-            }}
+            checked={checkIfAllSelected()}
+            onChange={handleSelectAllClick}
+            // checked={
+            //   data?.length > 0 &&
+            //   isEqual(checekedList?.sort(), dataIndexList?.sort())
+            // }
+            // onChange={() => {
+            //   setCheckedList(
+            //     isEqual(checekedList?.sort(), dataIndexList?.sort())
+            //       ? []
+            //       : dataIndexList
+            //   );
+            // }}
           />
         </div>
       ),
@@ -658,6 +695,8 @@ const Index = () => {
             marketTypes={mtAndCategories?.marketTypes || []}
             categories={categories}
             setSelectedMarketType={setSelectedMarketType}
+            setParentPageSize={handlePageSizeChange}
+            setParentCurrentPage={handleCurrentPageChange}
           />
         </Container>
         <CancelModal
