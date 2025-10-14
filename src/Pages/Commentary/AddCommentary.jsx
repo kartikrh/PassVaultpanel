@@ -753,7 +753,7 @@ function AddCommentary() {
                 data: `Please fill all the required fields in ${formName} form`,
                 type: ERROR,
             }));
-            // if (typeof setActiveTab === "function") setActiveTab(firstInvalidIndex);
+            setactiveTab(firstInvalidIndex + 1);
             return;
         }
 
