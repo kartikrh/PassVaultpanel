@@ -7,10 +7,12 @@ const Index = ({
   handleDeleteAll,
   singleCheck,
 }) => {
+  const domain = window.location.hostname
   const [modal_delete, setmodal_delete] = useState(true);
   function tog_deleteAll() {
     setmodal_delete(!modal_delete);
   }
+  console.log("domain", domain)
   return (
     <Modal
       isOpen={deleteAllModelVisable}
