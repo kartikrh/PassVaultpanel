@@ -523,6 +523,7 @@ function AddCommentary() {
             .then(async (response) => {
                 updateScreenData = {
                     ...response?.result,
+                    scoringType: !response?.result?.scoringType ? 1 : response.result.scoringType,
                     team1Players: formatMultiSelectDataPlayers(response?.result?.team1Players),
                     team2Players: formatMultiSelectDataPlayers(response?.result?.team2Players),
                     eventDate: convertDateLocalToUTC(response?.result?.eventDate),
