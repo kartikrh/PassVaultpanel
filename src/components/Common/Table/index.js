@@ -3378,7 +3378,7 @@ const Index = forwardRef(
                         }
                       }}
                       options={tournamentList?.map((item) => ({
-                        label: item?.competition,
+                        label: `${item?.competition} - ${convertDateUTCToLocal(item?.startDate, "index")}`,
                         value: item?.competitionId,
                         compRefId: item?.competitionRefId
                       }))}
