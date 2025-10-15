@@ -736,6 +736,27 @@ function AddCommentary() {
         const dataToSave4 = finalizeRef4.current.finalizeData()
         const dataToSave5 = finalizeRef5.current.finalizeData()
 
+        const refs = [
+            { data: dataToSave1, name: "Match Details" },
+            { data: dataToSave2, name: "Team Details" },
+            { data: dataToSave3, name: "Extra Info" },
+            { data: dataToSave4, name: "Weather Details" },
+            { data: dataToSave5, name: "Pitch Details" },
+        ];
+
+        const firstInvalidIndex = refs.findIndex(r => !r.data);
+
+        if (firstInvalidIndex !== -1) {
+            const formName = refs[firstInvalidIndex].name;
+            dispatch(updateToastData({
+                title: `Missing Required Fields : ${formName}`,
+                data: `Please fill all the required fields in ${formName} form`,
+                type: ERROR,
+            }));
+            setactiveTab(firstInvalidIndex + 1);
+            return;
+        }
+
         // Filter each dataToSave to only include fields from their respective tabs
         const filteredDataToSave1 = {};
         const filteredDataToSave2 = {};
