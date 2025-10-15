@@ -752,17 +752,28 @@ const TournamentTeamPoints = () => {
                         <tbody>
                           {groupItems.sort((a, b) => {
                             const runRateColumn = columns.find(col => col.title === "Run Rate");
-                            if (!runRateColumn) return 0;
+                            const pointColumn = columns.find(col => col.title === "Points");
 
-                            const key = runRateColumn.dataIndex;
+                            if (!runRateColumn || !pointColumn) return 0;
 
-                            const valA = parseFloat(a[key]) || 0;
-                            const valB = parseFloat(b[key]) || 0;
+                            const runRateKey = runRateColumn.dataIndex;
+                            const pointKey = pointColumn.dataIndex;
 
-                            return valB - valA;
+                            const pointsA = parseFloat(a[pointKey]) || 0;
+                            const pointsB = parseFloat(b[pointKey]) || 0;
+
+                            // First, compare points
+                            if (pointsB !== pointsA) {
+                              return pointsB - pointsA; // higher points first
+                            }
+
+                            // If points are the same, compare run rate
+                            const runRateA = parseFloat(a[runRateKey]) || 0;
+                            const runRateB = parseFloat(b[runRateKey]) || 0;
+
+                            return runRateB - runRateA; // higher run rate first
                           }).map((item, index) => (
                             <tr key={item.id || index}>
-
                               {columns.map((column, colIndex) => (
                                 <td className="p-2" key={colIndex} style={column.style}>
                                   {column.render

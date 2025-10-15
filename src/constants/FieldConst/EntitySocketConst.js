@@ -85,7 +85,13 @@ export const EntitySocketFields = [
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 },
     },
-    
+    {
+        type: IMAGE,
+        name: "defaultPlayerJerseyImage",
+        label: "Player Jersey Image",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
+    },
     {
         name: "isAutoScoreUpdate",
         label: "Is Auto Score Update",

@@ -295,7 +295,7 @@ const Index = () => {
         </div>
       ),
       // key: "tabName",
-      style: { width: "10%", textAlign: "left" },
+      style: { width: "10%", textAlign: "center" },
     },
     {
       title: "Team Image",
@@ -320,7 +320,7 @@ const Index = () => {
         </div>
       ),
       // key: "tabName",
-      style: { width: "10%", textAlign: "left" },
+      style: { width: "10%", textAlign: "center" },
     },
     {
       title: "Jersey Image",
@@ -346,7 +346,33 @@ const Index = () => {
         </div>
       ),
       // key: "tabName",
-      style: { width: "10%", textAlign: "left" },
+      style: { width: "10%", textAlign: "center" },
+    },
+    {
+      title: "Player Jersey Image",
+      dataIndex: "defaultPlayerJerseyImage",
+      // printType: "ignore",
+      render: (text, record) => (
+        // <img src={process.env.REACT_APP_BASE_URL+text}/>
+        <div className="flex-shrink-0">
+          {text ? (
+            <div className=""
+            >
+              <img
+                className="avatar-sm"
+                alt=""
+                src={text}
+              />
+            </div>
+          ) : (
+            <Avatar src="#" alt="ET">
+              Image
+            </Avatar>
+          )}
+        </div>
+      ),
+      // key: "tabName",
+      style: { width: "10%", textAlign: "center" },
     },
     {
       title: "Server",
