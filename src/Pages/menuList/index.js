@@ -240,24 +240,24 @@ const Index = () => {
 
   const columnsMenuTypes = [
     {
-      title: (
-        <div className="form-check">
-          <input
-            className="form-check-input"
-            type="checkbox"
-            name="chk_child"
-            value="option1"
-            checked={data?.length > 0 && isEqual(checekedList?.sort(), dataIndexList?.sort())}
-            onChange={() => {
-              setCheckedList(
-                isEqual(checekedList?.sort(), dataIndexList?.sort())
-                  ? []
-                  : dataIndexList
-              );
-            }}
-          />
-        </div>
-      ),
+      // title: (
+      //   <div className="form-check">
+      //     <input
+      //       className="form-check-input"
+      //       type="checkbox"
+      //       name="chk_child"
+      //       value="option1"
+      //       checked={data?.length > 0 && isEqual(checekedList?.sort(), dataIndexList?.sort())}
+      //       onChange={() => {
+      //         setCheckedList(
+      //           isEqual(checekedList?.sort(), dataIndexList?.sort())
+      //             ? []
+      //             : dataIndexList
+      //         );
+      //       }}
+      //     />
+      //   </div>
+      // ),
       render: (text, record) => (
         <div className="form-check d-flex align-items-center justify-between">
           <input
@@ -374,27 +374,27 @@ const Index = () => {
 
   const columnsMenuItems = [
     {
-      title: (
-        <div className="form-check">
-          <input
-            className="form-check-input"
-            type="checkbox"
-            name="chk_child"
-            value="option1"
-            checked={
-              data?.length > 0 &&
-              isEqual(checekedList?.sort(), dataIndexList?.sort())
-            }
-            onChange={() => {
-              setCheckedList(
-                isEqual(checekedList?.sort(), dataIndexList?.sort())
-                  ? []
-                  : dataIndexList
-              );
-            }}
-          />
-        </div>
-      ),
+      // title: (
+      //   <div className="form-check">
+      //     <input
+      //       className="form-check-input"
+      //       type="checkbox"
+      //       name="chk_child"
+      //       value="option1"
+      //       checked={
+      //         data?.length > 0 &&
+      //         isEqual(checekedList?.sort(), dataIndexList?.sort())
+      //       }
+      //       onChange={() => {
+      //         setCheckedList(
+      //           isEqual(checekedList?.sort(), dataIndexList?.sort())
+      //             ? []
+      //             : dataIndexList
+      //         );
+      //       }}
+      //     />
+      //   </div>
+      // ),
       render: (text, record) => (
         <div className="form-check d-flex align-items-center justify-between">
           <input

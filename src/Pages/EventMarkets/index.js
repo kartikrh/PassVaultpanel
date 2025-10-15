@@ -35,6 +35,7 @@ import CloseModel from "./CloseModel";
 
 const Index = () => {
   const pageName = TAB_EVENT_MARKETS;
+  const globalPageSize = localStorage.getItem("pageSize")
   const globalDateType = JSON.parse(localStorage.getItem("DateType"))
   const commentaryId = +sessionStorage.getItem("commentaryEventMarketId") || 0;
   const commentaryDetails = JSON.parse(
@@ -83,6 +84,9 @@ const Index = () => {
     rateSourceRefId: 1,
     rateSourceType: "Ratesource",
   });
+  const [pageSize, setPageSize] = useState(globalPageSize || 10);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [tableSearchedData, setTableSearchedData] = useState([]);
 
   const [selectedTableElements, setSelectedTableElements] = useState({
     eventType: null,
@@ -530,6 +534,51 @@ const Index = () => {
       rateSourceRefId: 2,
     },
   ];
+
+  //checkbox select
+  const getSelectedItemsData = () => {
+    const newCurrentPage = currentPage > 0 ? currentPage : 1;
+    const startIndex = (newCurrentPage - 1) * pageSize;
+    const endIndex = +startIndex + +pageSize;
+
+    const sourceList = tableSearchedData && tableSearchedData.length > 0
+      ? tableSearchedData.map(item => item.eventMarketId)
+      : dataIndexList;
+
+    return sourceList.slice(startIndex, endIndex);
+  };
+
+  //checkbox select
+  const handleSelectAllClick = () => {
+    const currentItems = getSelectedItemsData();
+    setCheckedList(
+      isEqual(checekedList?.sort(), currentItems?.sort())
+        ? []
+        : currentItems
+    );
+  };
+
+  const checkIfAllSelected = () => {
+    const currentItems = getSelectedItemsData();
+    return data?.length > 0 &&
+      isEqual(checekedList?.sort(), currentItems?.sort());
+  };
+
+  const handleTableSearchedDataChange = (data) => {
+    setTableSearchedData(data);
+    setCheckedList([]);
+  };
+
+  const handleCurrentPageChange = (page) => {
+    setCurrentPage(page);
+    setCheckedList([]);
+  };
+
+  const handlePageSizeChange = (size) => {
+    setPageSize(size);
+    setCheckedList([]);
+  };
+
   //table columns
   const columns = [
     {
@@ -540,17 +589,19 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={
-              data?.length > 0 &&
-              isEqual(checekedList?.sort(), dataIndexList?.sort())
-            }
-            onChange={() => {
-              setCheckedList(
-                isEqual(checekedList?.sort(), dataIndexList?.sort())
-                  ? []
-                  : dataIndexList
-              );
-            }}
+            checked={checkIfAllSelected()}
+            onChange={handleSelectAllClick}
+            // checked={
+            //   data?.length > 0 &&
+            //   isEqual(checekedList?.sort(), dataIndexList?.sort())
+            // }
+            // onChange={() => {
+            //   setCheckedList(
+            //     isEqual(checekedList?.sort(), dataIndexList?.sort())
+            //       ? []
+            //       : dataIndexList
+            //   );
+            // }}
           />
         </div>
       ),
@@ -1078,6 +1129,9 @@ const Index = () => {
             marketTypes={mtAndCategories?.marketTypes || []}
             categories={categories}
             setSelectedMarketType={setSelectedMarketType}
+            setParentPageSize={handlePageSizeChange}
+            setParentCurrentPage={handleCurrentPageChange}
+            setParentSearchedData={handleTableSearchedDataChange}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
