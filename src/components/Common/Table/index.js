@@ -161,7 +161,8 @@ const Index = forwardRef(
       updateReportType,
       defaultCommentrayStatus,
       setParentCurrentPage,
-      setParentPageSize
+      setParentPageSize,
+      setParentSearchedData,
     },
     ref
   ) => {
@@ -229,6 +230,7 @@ const Index = forwardRef(
         });
       }
     }, [])
+    
     useEffect(() => {
       if (setParentCurrentPage) {
         setParentCurrentPage(currentPage);
@@ -240,6 +242,12 @@ const Index = forwardRef(
         setParentPageSize(pageSize);
       }
     }, [pageSize])
+
+    useEffect(() => {
+      if (!isEmpty(searchedData) && setParentSearchedData) {
+        setParentSearchedData(searchedData);
+      }
+    }, [searchedData])
 
     const debouncedHandleSearchFilter = useCallback(
       debounce((searchValue) => {
@@ -718,8 +726,8 @@ const Index = forwardRef(
           });
           return found === true;
         });
-        setSearchedData(updatedData)
         if (searchTerm.length <= 2) {
+          setSearchedData([]);
           if (tableElement.title !== "Dashboard") {
             setTotal(dataSource.length);
             const sliced = dataSource.slice(
@@ -732,6 +740,7 @@ const Index = forwardRef(
             setFilteredData(dataSource)
           }
         } else {
+          setSearchedData(updatedData)
           setTotal(updatedData.length);
           const sliced = updatedData.slice(
             (currentPage == 1 ? currentPage - 1 : currentPage == 0 ? currentPage : currentPage - 1) * pageSize,
@@ -3378,7 +3387,7 @@ const Index = forwardRef(
                         }
                       }}
                       options={tournamentList?.map((item) => ({
-                        label: item?.competition,
+                        label: `${item?.competition} - ${convertDateUTCToLocal(item?.startDate, "index")}`,
                         value: item?.competitionId,
                         compRefId: item?.competitionRefId
                       }))}
@@ -3743,7 +3752,8 @@ const Index = forwardRef(
                                       className="d-flex flex-row justify-content-between"
                                       style={{
                                         visibility:
-                                          column?.key === "select" && "hidden",
+                                           column?.key === "hidden",
+                                          // column?.key === "select" && "hidden",
                                       }}
                                     >
                                       <span>{column.title}</span>
@@ -3872,7 +3882,8 @@ const Index = forwardRef(
                                 className="d-flex flex-row justify-content-between"
                                 style={{
                                   visibility:
-                                    column?.key === "select" && "hidden",
+                                    column?.key === "hidden",
+                                    // column?.key === "select" && "hidden",
                                 }}
                               >
                                 <span>{column.title}</span>

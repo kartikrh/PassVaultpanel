@@ -56,6 +56,7 @@ import PredictMarketPasswordModal from "../../components/Model/PredictMarketPass
 
 const Index = () => {
   const pageName = TAB_COMMENTARY;
+  const globalPageSize = localStorage.getItem("pageSize");
   const EventTypeId = +sessionStorage.getItem('commentaryEventTypeId');
   const EventRefId = +sessionStorage.getItem('commentaryEventRefId');
   const EventCompetitionId = +sessionStorage.getItem('commentaryCompetitionId') || 0;
@@ -139,11 +140,14 @@ const Index = () => {
   const [updateDayModelVisible, setUpdateDayModelVisible] = useState(false);
   const [selectedCommentaryDay, setSelectedCommentaryDay] = useState({});
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [pageSize, setPageSize] = useState(globalPageSize || 10);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [tableSearchedData, setTableSearchedData] = useState([]);
 
   useEffect(() => {
-      const handleResize = () => setWindowWidth(window.innerWidth);
-      window.addEventListener('resize', handleResize);
-      return () => window.removeEventListener('resize', handleResize);
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
     // }
   }, []);
 
@@ -191,7 +195,7 @@ const Index = () => {
       });
     }
   }, [eventTypes, EventTypeId, EventCompetitionId, competitions]);
-  
+
 
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
@@ -199,7 +203,7 @@ const Index = () => {
     let payload = {
       ...(latestValueFromTable || tableActions),
       eventTypeId:EventTypeId ? EventTypeId : (latestValueFromTable?.eventTypeId || tableActions?.eventTypeId) || 0,
-        // latestValueFromTable?.eventTypeId || tableActions?.eventTypeId || 0,
+      // latestValueFromTable?.eventTypeId || tableActions?.eventTypeId || 0,
       // competitionId: latestValueFromTable?.eventTypeId !== eventTypeId ? 0 : latestValueFromTable?.competitionId || 0,
       competitionId: EventCompetitionId ? EventCompetitionId :
         latestValueFromTable?.eventTypeId == eventTypeId
@@ -1442,6 +1446,48 @@ const Index = () => {
     }
   };
 
+  //checkbox select
+  const getSelectedItemsData = () => {
+    const newCurrentPage = currentPage > 0 ? currentPage : 1;
+    const startIndex = (newCurrentPage - 1) * pageSize;
+    const endIndex = +startIndex + +pageSize;
+
+    const sourceList = tableSearchedData && tableSearchedData.length > 0 
+      ? tableSearchedData.map(item => item.commentaryId)
+      : dataIndexList;
+    
+    return sourceList.slice(startIndex, endIndex);
+  };
+
+  const handleSelectAllClick = () => {
+    const currentItems = getSelectedItemsData();
+    setCheckedList(
+      isEqual(checekedList?.sort(), currentItems?.sort())
+        ? []
+        : currentItems
+    );
+  };
+
+  const checkIfAllSelected = () => {
+    const currentItems = getSelectedItemsData();
+    return data?.length > 0 &&
+      isEqual(checekedList?.sort(), currentItems?.sort());
+  };
+
+  const handleTableSearchedDataChange = (data) => {
+    setTableSearchedData(data);
+    setCheckedList([]);
+  };
+
+  const handleCurrentPageChange = (page) => {
+    setCurrentPage(page);
+    setCheckedList([]);
+  };
+
+  const handlePageSizeChange = (size) => {
+    setPageSize(size);
+    setCheckedList([]);
+  };
 
   //table columns
   const columns = [
@@ -1453,17 +1499,19 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={
-              data?.length > 0 &&
-              isEqual(checekedList?.sort(), dataIndexList?.sort())
-            }
-            onChange={() => {
-              setCheckedList(
-                isEqual(checekedList?.sort(), dataIndexList?.sort())
-                  ? []
-                  : dataIndexList
-              );
-            }}
+            checked={checkIfAllSelected()}
+            onChange={handleSelectAllClick}
+          // checked={
+          //   data?.length > 0 &&
+          //   isEqual(checekedList?.sort(), dataIndexList?.sort())
+          // }
+          // onChange={() => {
+          //   setCheckedList(
+          //     isEqual(checekedList?.sort(), dataIndexList?.sort())
+          //       ? []
+          //       : dataIndexList
+          //   );
+          // }}
           />
         </div>
       ),
@@ -1681,36 +1729,36 @@ const Index = () => {
       dataIndex: "matchType",
       render: (text, record) => (
         <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-        {record?.streamingUrl && (
-          <Tooltip
-            title="Watch TV"
-            color={"#e8e8ea"}
-            overlayInnerStyle={{ color: "#000" }}
+          {record?.streamingUrl && (
+            <Tooltip
+              title="Watch TV"
+              color={"#e8e8ea"}
+              overlayInnerStyle={{ color: "#000" }}
+            >
+              <i
+                className="bx bxs-tv"
+                role="button"
+                onClick={() => openVideoIframe(record)}
+                style={{ cursor: "pointer", fontSize: "18px" }}
+              ></i>
+            </Tooltip>
+          )}
+          <span
+            onClick={() => {
+              setChangeModelVisible(true);
+              setSelectedCommentary(record);
+            }}
+            style={{ cursor: "pointer" }}
           >
-            <i
-              className="bx bxs-tv"
-              role="button"
-              onClick={() => openVideoIframe(record)}
-              style={{ cursor: "pointer", fontSize: "18px" }}
-            ></i>
-          </Tooltip>
-        )}
-        <span
-          onClick={() => {
-            setChangeModelVisible(true);
-            setSelectedCommentary(record);
-          }}
-          style={{ cursor: "pointer" }}
-        >
-          {text}{" "}
-          <Tooltip
-            title="Edit Match Type"
-            color={"#e8e8ea"}
-            overlayInnerStyle={{ color: "#000" }}
-          >
-            {<a className="bx bx-edit-alt"></a>}
-          </Tooltip>
-        </span>
+            {text}{" "}
+            <Tooltip
+              title="Edit Match Type"
+              color={"#e8e8ea"}
+              overlayInnerStyle={{ color: "#000" }}
+            >
+              {<a className="bx bx-edit-alt"></a>}
+            </Tooltip>
+          </span>
         </div>
       ),
       key: "matchType",
@@ -2968,9 +3016,9 @@ const Index = () => {
             dataSource={data}
             tableElement={tableElement}
             defaultCommentrayStatus={EventRefId && {
-                label: "All",
-                value: 0,
-              }
+              label: "All",
+              value: 0,
+            }
             }
             deleteModelFunction={setDeleteModelVisable}
             loadModelFunction={setLoadModelVisable}
@@ -2994,7 +3042,10 @@ const Index = () => {
             setCompetitionId={setCompetitionId}
             dateType={dateType}
             setDateType={setDateType}
-            playerSearch = {EventRefId}
+            playerSearch={EventRefId}
+            setParentPageSize={handlePageSizeChange}
+            setParentCurrentPage={handleCurrentPageChange}
+            setParentSearchedData={handleTableSearchedDataChange}
             // selectedTableElementsLogs={selectedTableElements}
             selectedTableElementsLogs={userRefData?.competitionId != 0 || userRefData?.eventTypeId != 0 ? filledDropdownData : selectedTableElements}
             isAddPermission={checkPermission(
