@@ -38,6 +38,7 @@ const Index = () => {
   const [brokenImageTeams, setBrokenImageTeams] = useState([]);
   const [hasCheckedImages, setHasCheckedImages] = useState(false);
   const [isCheckingImages, setIsCheckingImages] = useState(false);
+  const [tableSearchedData, setTableSearchedData] = useState([]);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -227,6 +228,49 @@ const Index = () => {
     // sessionStorage.removeItem("commentaryManualOddsMarketDetails");
   };
 
+  //checkbox select
+  const getSelectedItemsData = () => {
+    const newCurrentPage = currentPage > 0 ? currentPage : 1;
+    const startIndex = (newCurrentPage - 1) * pageSize;
+    const endIndex = +startIndex + +pageSize;
+
+    const sourceList = tableSearchedData && tableSearchedData.length > 0
+      ? tableSearchedData.map(item => item.teamId)
+      : dataIndexList;
+
+    return sourceList.slice(startIndex, endIndex);
+  };
+
+  const handleSelectAllClick = () => {
+    const currentItems = getSelectedItemsData();
+    setCheckedList(
+      isEqual(checekedList?.sort(), currentItems?.sort())
+        ? []
+        : currentItems
+    );
+  };
+
+  const checkIfAllSelected = () => {
+    const currentItems = getSelectedItemsData();
+    return data?.length > 0 &&
+      isEqual(checekedList?.sort(), currentItems?.sort());
+  };
+
+  const handleTableSearchedDataChange = (data) => {
+    setTableSearchedData(data);
+    setCheckedList([]);
+  };
+
+  const handleCurrentPageChange = (page) => {
+    setCurrentPage(page);
+    setCheckedList([]);
+  };
+
+  const handlePageSizeChange = (size) => {
+    setPageSize(size);
+    setCheckedList([]);
+  };
+
   //table columns
   const columns = [
     {
@@ -237,11 +281,14 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={data?.length > 0 && isEqual(checekedList?.sort(), dataIndexList?.sort())}
-            onChange={() => {
-              setCheckedList(isEqual(checekedList?.sort(), dataIndexList?.sort()) ? [] : dataIndexList
-              )
-            }}
+            checked={checkIfAllSelected()}
+            onChange={handleSelectAllClick}
+            // indeterminate={
+            // checked={data?.length > 0 && isEqual(checekedList?.sort(), dataIndexList?.sort())}
+            // onChange={() => {
+            //   setCheckedList(isEqual(checekedList?.sort(), dataIndexList?.sort()) ? [] : dataIndexList
+            //   )
+            // }}
           />
         </div>
       ),
@@ -606,6 +653,7 @@ const handleBrokenImageToggle = async () => {
             handleBrokenImageToggle={handleBrokenImageToggle}
             setParentPageSize={setPageSize}
             setParentCurrentPage={setCurrentPage}
+            setParentSearchedData={handleTableSearchedDataChange}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
