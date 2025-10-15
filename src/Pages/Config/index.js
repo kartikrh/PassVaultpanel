@@ -6,6 +6,7 @@ import { Container } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
+import PlayerImageUpdateModel from "../../components/Model/PlayerImageUpdateModel";
 import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
 import { isEmpty, isEqual } from "lodash";
@@ -27,6 +28,7 @@ const Index = () => {
   const [dataIndexList, setDataIndexList] = useState([]);
   const [checekedList, setCheckedList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isPlayerImageUpdateModule, setIsPlayerImageUpdateModule] = useState(false);
   const [deleteAllModelVisable, setDeleteAllModelVisable] = useState(false);
   // const [loadPanelModelVisable, setLoadPanelModelVisable] = useState(false);
   // const [loadClientModelVisable, setLoadClientModelVisable] = useState(false);
@@ -134,6 +136,35 @@ const Index = () => {
         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
       });
   };
+  const handleUpdatePlayerJersy = async (e) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/player/mergeImageV2`)
+      .then((response) => {
+        fetchData();
+        setIsPlayerImageUpdateModule(false);
+        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+      });
+  };
+  const handleUpdatePlayerJersyForAllPlayers = async (e) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/player/mergeImageV1`)
+      .then((response) => {
+        fetchData();
+        setIsPlayerImageUpdateModule(false);
+        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+      });
+  };
+
   //load client data
   const handleLoadClientData = async (e) => {
     setIsLoading(true);
@@ -160,6 +191,33 @@ const Index = () => {
           })
         );
       });
+  };
+  const playerImageUpdate = async (e) => {
+    setIsPlayerImageUpdateModule(true)
+    // setIsLoading(true);
+    // await axiosInstance
+    //   .post(`/loadClientData`)
+    //   .then((response) => {
+    //     fetchData();
+    //     // setLoadClientModelVisable(false);
+    //     dispatch(
+    //       updateToastData({
+    //         data: response?.message,
+    //         title: response?.title,
+    //         type: SUCCESS,
+    //       })
+    //     );
+    //   })
+    //   .catch((error) => {
+    //     setIsLoading(false);
+    //     dispatch(
+    //       updateToastData({
+    //         data: error?.message,
+    //         title: error?.title,
+    //         type: ERROR,
+    //       })
+    //     );
+    //   });
   };
   //load panel data
   const handleLoadPanelData = async (e) => {
@@ -442,6 +500,7 @@ const Index = () => {
             deleteModelFunction={setDeleteModelVisable}
             loadPanelModelFunction={handleLoadPanelData} 
             loadClientModelFunction={handleLoadClientData}
+            playerImageUpdateFunction={playerImageUpdate}
             loadSignalRToggleFunction={handleSignalRToggle}
             isSignalRStarted={isSignalRStarted}
             singleCheck={checekedList}
@@ -476,6 +535,14 @@ const Index = () => {
             setDeleteModelVisable={setDeleteModelVisable}
             handleDelete={handleDelete}
             singleCheck={checekedList}
+          />
+          <PlayerImageUpdateModel
+            isPlayerImageUpdateModule={isPlayerImageUpdateModule}
+            setIsPlayerImageUpdateModule={setIsPlayerImageUpdateModule}
+            // handleDelete={handleDelete}
+            // singleCheck={checekedList}
+            handleV2 = {handleUpdatePlayerJersy}
+            handleV1 = {handleUpdatePlayerJersyForAllPlayers}
           />
           <TabModel
             addModelVisable={addModelVisable}

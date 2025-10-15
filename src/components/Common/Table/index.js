@@ -83,6 +83,7 @@ const Index = forwardRef(
       handleBrokenImageToggle,
       openDataProvider,
       loadClientModelFunction,
+      playerImageUpdateFunction,
       loadSignalRToggleFunction,
       datePriceModelFunction,
       isSignalRStarted,
@@ -2816,6 +2817,18 @@ const Index = forwardRef(
                           >
                             <i className="ri-refresh-line"></i>
                             Load Client Data
+                          </Button>
+                        )}
+                        {isDeleteAllPermission && (
+                          <Button
+                            // color="warning"
+                            onClick={() => {
+                              playerImageUpdateFunction();
+                            }}
+                            className="d-flex align-items-center gap-1 playerImageUpdate"
+                          >
+                            {/* <i className="ri-refresh-line"></i> */}
+                            Player Image Update
                           </Button>
                         )}
                         {isDeleteAllPermission && (
