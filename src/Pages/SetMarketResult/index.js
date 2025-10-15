@@ -31,6 +31,9 @@ import ResultSelectedModel from "./ResultSelectedModel";
 
 const Index = () => {
   const pageName = TAB_SET_MARKETS_RESULT;
+  const globalPageSize = localStorage.getItem("pageSize");
+  const [pageSize, setPageSize] = useState(globalPageSize || 10);
+  const [currentPage, setCurrentPage] = useState(1);
   const commentaryId = +sessionStorage.getItem("marketResultId") || 0;
   const commentaryDetails = JSON.parse(
     sessionStorage.getItem("marketResultDetails") || "{}"
@@ -63,6 +66,7 @@ const Index = () => {
   const [dataIndexList, setDataIndexList] = useState([]);
   const [resultModelVisable, setResultModelVisable] = useState(false);
   const [categories, setCategories] = useState([]);
+  const [tableSearchedData, setTableSearchedData] = useState([]);
   const [dateType, setDateType] = useState(globalDateType || {
     label: "Local Timezone",
     value: 1,
@@ -326,6 +330,50 @@ const Index = () => {
     );
     window.open(url.href, "_blank");
   };
+
+  //checkbox select
+  const getSelectedItemsData = () => {
+    const newCurrentPage = currentPage > 0 ? currentPage : 1;
+    const startIndex = (newCurrentPage - 1) * pageSize;
+    const endIndex = +startIndex + +pageSize;
+
+    const sourceList = tableSearchedData && tableSearchedData.length > 0
+      ? tableSearchedData.map(item => item.eventMarketId)
+      : dataIndexList;
+
+    return sourceList.slice(startIndex, endIndex);
+  };
+
+  const handleSelectAllClick = () => {
+    const currentItems = getSelectedItemsData();
+    setCheckedList(
+      isEqual(checekedList?.sort(), currentItems?.sort())
+        ? []
+        : currentItems
+    );
+  };
+
+  const checkIfAllSelected = () => {
+    const currentItems = getSelectedItemsData();
+    return data?.length > 0 &&
+      isEqual(checekedList?.sort(), currentItems?.sort());
+  };
+
+  const handleTableSearchedDataChange = (data) => {
+    setTableSearchedData(data);
+    setCheckedList([]);
+  };
+
+  const handleCurrentPageChange = (page) => {
+    setCurrentPage(page);
+    setCheckedList([]);
+  };
+
+  const handlePageSizeChange = (size) => {
+    setPageSize(size);
+    setCheckedList([]);
+  };
+
   //table columns
   const columns = [
     {
@@ -336,17 +384,19 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={
-              data?.length > 0 &&
-              isEqual(checekedList?.sort(), dataIndexList?.sort())
-            }
-            onChange={() => {
-              setCheckedList(
-                isEqual(checekedList?.sort(), dataIndexList?.sort())
-                  ? []
-                  : dataIndexList
-              );
-            }}
+            checked={checkIfAllSelected()}
+            onChange={handleSelectAllClick}
+            // checked={
+            //   data?.length > 0 &&
+            //   isEqual(checekedList?.sort(), dataIndexList?.sort())
+            // }
+            // onChange={() => {
+            //   setCheckedList(
+            //     isEqual(checekedList?.sort(), dataIndexList?.sort())
+            //       ? []
+            //       : dataIndexList
+            //   );
+            // }}
           />
         </div>
       ),
@@ -737,6 +787,9 @@ const Index = () => {
             marketTypes={mtAndCategories?.marketTypes || []}
             categories={categories}
             setSelectedMarketType={setSelectedMarketType}
+            setParentPageSize={handlePageSizeChange}
+            setParentCurrentPage={handleCurrentPageChange}
+            setParentSearchedData={handleTableSearchedDataChange}
           />
           {resultModelVisible && (
             <ChangeMarketResultModel

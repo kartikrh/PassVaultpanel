@@ -68,6 +68,10 @@ const Index = () => {
     selectedEntity: undefined,
   });
   const [initialLoadDone, setInitialLoadDone] = useState(false);
+  const globalPageSize = localStorage.getItem("pageSize");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(globalPageSize || 10);
+  const [tableSearchedData, setTableSearchedData] = useState([]);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -346,6 +350,49 @@ const Index = () => {
       });
   };
 
+  //checkbox select
+  const getSelectedItemsData = () => {
+    const newCurrentPage = currentPage > 0 ? currentPage : 1;
+    const startIndex = (newCurrentPage - 1) * pageSize;
+    const endIndex = +startIndex + +pageSize;
+
+    const sourceList = tableSearchedData && tableSearchedData.length > 0
+      ? tableSearchedData.map(item => item.matchTypeId)
+      : dataIndexList;
+
+    return sourceList.slice(startIndex, endIndex);
+  };
+
+  const handleSelectAllClick = () => {
+    const currentItems = getSelectedItemsData();
+    setCheckedList(
+      isEqual(checekedList?.sort(), currentItems?.sort())
+        ? []
+        : currentItems
+    );
+  };
+
+  const checkIfAllSelected = () => {
+    const currentItems = getSelectedItemsData();
+    return data?.length > 0 &&
+      isEqual(checekedList?.sort(), currentItems?.sort());
+  };
+
+  const handleTableSearchedDataChange = (data) => {
+    setTableSearchedData(data);
+    setCheckedList([]);
+  };
+
+  const handleCurrentPageChange = (page) => {
+    setCurrentPage(page);
+    setCheckedList([]);
+  };
+
+  const handlePageSizeChange = (size) => {
+    setPageSize(size);
+    setCheckedList([]);
+  };
+
   const columns = [
     {
       title: (
@@ -355,17 +402,19 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={
-              data?.length > 0 &&
-              isEqual(checekedList?.sort(), dataIndexList?.sort())
-            }
-            onChange={() => {
-              setCheckedList(
-                isEqual(checekedList?.sort(), dataIndexList?.sort())
-                  ? []
-                  : dataIndexList
-              );
-            }}
+            checked={checkIfAllSelected()}
+            onChange={handleSelectAllClick}
+            // checked={
+            //   data?.length > 0 &&
+            //   isEqual(checekedList?.sort(), dataIndexList?.sort())
+            // }
+            // onChange={() => {
+            //   setCheckedList(
+            //     isEqual(checekedList?.sort(), dataIndexList?.sort())
+            //       ? []
+            //       : dataIndexList
+            //   );
+            // }}
           />
         </div>
       ),
@@ -582,6 +631,9 @@ const Index = () => {
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
             onAddNavigate={"/addMatchType"}
+            setParentCurrentPage={handleCurrentPageChange}
+            setParentPageSize={handlePageSizeChange}
+            setParentSearchedData={handleTableSearchedDataChange}
             isAddPermission={checkPermission(
               permissionObj,
               pageName,
