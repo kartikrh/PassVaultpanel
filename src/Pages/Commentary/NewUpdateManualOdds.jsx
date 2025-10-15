@@ -2790,7 +2790,7 @@ export const NewUpdateManualOdds = () => {
             // console.log("Cleaning up ball status handler");
             socket.off(UPDATE_BALL_STATUS, handleBallStatusFromSocket);
         };
-    }, [socket, abOpen, abSuspend, runners, marketStatus]);
+    }, [socket, abOpen, abSuspend, runners, marketStatus, savedPrices]);
 
     useEffect(() => {
         if (!socket || !rateSourceRefID.length) return;
