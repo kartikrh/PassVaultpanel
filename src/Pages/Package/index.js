@@ -33,6 +33,10 @@ const Index = () => {
   const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
   const [generateModalData, setGenerateModalData] = useState(null);
   const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
+  const globalPageSize = localStorage.getItem("pageSize");
+  const [tableSearchedData, setTableSearchedData] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(globalPageSize || 10);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -57,7 +61,7 @@ const Index = () => {
         const apiData = response?.result?.sort((a, b) => a?.id - b?.id);
         let apiDataIdList = [];
         apiData.forEach(ele => {
-          apiDataIdList.push(ele?.playerId)
+          apiDataIdList.push(ele?.id)
         })
         setData(apiData);
         setDataIndexList(apiDataIdList)
@@ -168,29 +172,75 @@ const Index = () => {
   };
   const handleReset = (value) => {
     fetchData(value)
-  }
+  };
+
+  //checkbox select
+  const getSelectedItemsData = () => {
+    const newCurrentPage = currentPage > 0 ? currentPage : 1;
+    const startIndex = (newCurrentPage - 1) * pageSize;
+    const endIndex = +startIndex + +pageSize;
+
+    const sourceList = tableSearchedData && tableSearchedData.length > 0
+      ? tableSearchedData.map(item => item.id)
+      : dataIndexList;
+
+    return sourceList.slice(startIndex, endIndex);
+  };
+
+  const handleSelectAllClick = () => {
+    const currentItems = getSelectedItemsData();
+    setCheckedList(
+      isEqual(checekedList?.sort(), currentItems?.sort())
+        ? []
+        : currentItems
+    );
+  };
+
+  const checkIfAllSelected = () => {
+    const currentItems = getSelectedItemsData();
+    return data?.length > 0 &&
+      isEqual(checekedList?.sort(), currentItems?.sort());
+  };
+
+  const handleTableSearchedDataChange = (data) => {
+    setTableSearchedData(data);
+    setCheckedList([]);
+  };
+
+  const handleCurrentPageChange = (page) => {
+    setCurrentPage(page);
+    setCheckedList([]);
+  };
+
+  const handlePageSizeChange = (size) => {
+    setPageSize(size);
+    setCheckedList([]);
+  };
+
   //table columns
   const columns = [
     {
-      // title: (
-      //   <div className="form-check">
-      //     <input
-      //       className="form-check-input"
-      //       type="checkbox"
-      //       name="chk_child"
-      //       value="option1"
-      //       checked={data?.length > 0 && isEqual(checekedList?.sort(), dataIndexList?.sort())}
-      //       onChange={() => {
-      //         setCheckedList(
-      //           isEqual(checekedList?.sort(),
-      //             dataIndexList?.sort())
-      //             ? []
-      //             : dataIndexList
-      //         )
-      //       }}
-      //     />
-      //   </div>
-      // ),
+      title: (
+        <div className="form-check">
+          <input
+            className="form-check-input"
+            type="checkbox"
+            name="chk_child"
+            value="option1"
+            checked={checkIfAllSelected()}
+            onChange={handleSelectAllClick}
+            // checked={data?.length > 0 && isEqual(checekedList?.sort(), dataIndexList?.sort())}
+            // onChange={() => {
+            //   setCheckedList(
+            //     isEqual(checekedList?.sort(),
+            //       dataIndexList?.sort())
+            //       ? []
+            //       : dataIndexList
+            //   )
+            // }}
+          />
+        </div>
+      ),
       render: (text, record) => (
         <div className="form-check d-flex align-items-center justify-between">
           <input
@@ -508,6 +558,9 @@ const Index = () => {
             setImportExportModelVisable={setImportExportModelVisable}
             handlePlayerHistoryModalPopUp={handlePlayerHistoryModalPopUp}
             teams={teams}
+            setParentCurrentPage={handleCurrentPageChange}
+            setParentPageSize={handlePageSizeChange}
+            setParentSearchedData={handleTableSearchedDataChange}
             // manualExcel={downloadExcelColumn}
           />
           <DeleteTabModel
