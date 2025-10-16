@@ -218,9 +218,9 @@ const Index = () => {
   const checkIfAllSelected = () => {
     const currentItems = getSelectedItemsData();
     return data?.length > 0 &&
+      checekedList?.length > 0 &&
       isEqual(checekedList?.sort(), currentItems?.sort());
   };
-
   const handleTableSearchedDataChange = (data) => {
     setTableSearchedData(data);
     setCheckedList([]);
@@ -247,7 +247,6 @@ const Index = () => {
             value="option1"
             checked={checkIfAllSelected()}
             onChange={handleSelectAllClick}
-            // indeterminate={
             // checked={
             //   data?.length > 0 &&
             //   isEqual(checekedList?.sort(), dataIndexList?.sort())
