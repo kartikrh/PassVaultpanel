@@ -315,6 +315,7 @@ const Index = () => {
   const checkIfAllSelected = () => {
     const currentItems = getSelectedItemsData();
     return data?.length > 0 &&
+      checekedList?.length > 0 &&
       isEqual(checekedList?.sort(), currentItems?.sort());
   };
 
