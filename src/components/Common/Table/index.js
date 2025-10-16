@@ -1113,7 +1113,7 @@ const Index = forwardRef(
         handleCustomReset();
         return;
       }
-      if(dateType.value == 2){
+      if(dateType?.value == 2){
         localStorage.setItem("DateType", JSON.stringify({ label: 'Local Timezone', value: 1 }))
         setDateType({ label: 'Local Timezone', value: 1 })
       } 
