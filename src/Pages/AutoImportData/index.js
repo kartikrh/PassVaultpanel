@@ -59,6 +59,7 @@ const Index = () => {
     competition: null,
     commentary: null,
   });
+  const [tableSearchedData, setTableSearchedData] = useState([]);
 
   const navigate = useNavigate();
 
@@ -128,30 +129,59 @@ const Index = () => {
         );
       });
   };
+
+  //checkbox select
+  const getSelectedItemsData = () => {
+    return tableSearchedData && tableSearchedData.length > 0
+      ? tableSearchedData.map(item => item.id)
+      : dataIndexList;
+  };
+
+  const handleSelectAllClick = () => {
+    const currentItems = getSelectedItemsData();
+    setCheckedList(
+      isEqual(checekedList?.sort(), currentItems?.sort())
+        ? []
+        : currentItems
+    );
+  };
+
+  const checkIfAllSelected = () => {
+    const currentItems = getSelectedItemsData();
+    return data?.length > 0 &&
+      isEqual(checekedList?.sort(), currentItems?.sort());
+  };
+  const handleTableSearchedDataChange = (data) => {
+    setTableSearchedData(data);
+    setCheckedList([]);
+  };
+
   //table columns
   const columns = [
     {
-      // title: (
-      //   <div className="form-check">
-      //     <input
-      //       className="form-check-input"
-      //       type="checkbox"
-      //       name="chk_child"
-      //       value="option1"
-      //       checked={
-      //         data?.length > 0 &&
-      //         isEqual(checekedList?.sort(), dataIndexList?.sort())
-      //       }
-      //       onChange={() => {
-      //         setCheckedList(
-      //           isEqual(checekedList?.sort(), dataIndexList?.sort())
-      //             ? []
-      //             : dataIndexList
-      //         );
-      //       }}
-      //     />
-      //   </div>
-      // ),
+      title: (
+        <div className="form-check">
+          <input
+            className="form-check-input"
+            type="checkbox"
+            name="chk_child"
+            value="option1"
+            checked={checkIfAllSelected()}
+            onChange={handleSelectAllClick}
+            // checked={
+            //   data?.length > 0 &&
+            //   isEqual(checekedList?.sort(), dataIndexList?.sort())
+            // }
+            // onChange={() => {
+            //   setCheckedList(
+            //     isEqual(checekedList?.sort(), dataIndexList?.sort())
+            //       ? []
+            //       : dataIndexList
+            //   );
+            // }}
+          />
+        </div>
+      ),
       render: (text, record) => (
         <div className={`form-check d-flex align-items-center justify-between ${
           checekedList.includes(record.id) ? "selected-row" : ""
@@ -411,8 +441,19 @@ const Index = () => {
             serverCurrentPage={currentPage}
             serverPageSize={pageSize}
             serverTotal={total}
-            setServerCurrentPage={setCurrentPage}
-            setServerPageSize={setPageSize}
+            // setServerCurrentPage={setCurrentPage}
+            // setServerPageSize={setPageSize}
+            setServerCurrentPage={(value) => {
+              setCheckedList([]);
+              setTableSearchedData([]);
+              setCurrentPage(value);
+            }}
+            setServerPageSize={(value) => {
+              setCheckedList([]);
+              setTableSearchedData([]);
+              setPageSize(value);
+            }}
+            setParentSearchedData={handleTableSearchedDataChange}
             isSearch={isSearch}
             setIsSearch={setIsSearch}
             setEventTypeId={setEventTypeId}
