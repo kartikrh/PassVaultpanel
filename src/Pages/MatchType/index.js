@@ -27,7 +27,7 @@ import Select from "react-select";
 import LoadDataModal from "../../components/Model/LoadDataModal";
 
 const ENTITY_OPTIONS = [
-  { label: " ", value: 0 },
+  { label: "Select Entity", value: 0 },
   { label: "ODI (One Day International)", value: 1 },
   { label: "TEST", value: 2 },
   { label: "T20I(Twenty20 International)", value: 3 },
@@ -254,18 +254,18 @@ const Index = () => {
     setSelectedFilter(filterDataToUpdate);
 
     const apiPayload = {};
-
-    if (value && value.value === 0) {
-      return;
-    }
+    // if (value && value.value === 0) {
+    //   return;
+    // }
     if (
       filterDataToUpdate.selectedEntity &&
-      filterDataToUpdate.selectedEntity.value !== 0
+      filterDataToUpdate.selectedEntity.value
     ) {
       apiPayload.entityEnum = filterDataToUpdate.selectedEntity.value;
     }
 
     fetchData(apiPayload);
+    setCurrentPage(0)
   };
 
   const handleReload = () => {
@@ -644,6 +644,7 @@ const Index = () => {
               pageName,
               PERMISSION_DELETE
             )}
+            parentCurrentPage={currentPage}
             renderCustomFilter={() => (
               <div className="d-flex align-items-center">
                 <Select

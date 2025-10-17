@@ -592,6 +592,7 @@ const Index = () => {
   const handleFilterChange = (key, value) => {
     const filterDataToUpdate = { ...selectedFilter, [key]: value };
     setSelectedFilter(filterDataToUpdate);
+    setCurrentPage(0)
   };
   return (
     <React.Fragment>
@@ -615,6 +616,7 @@ const Index = () => {
             onAddNavigate={"/addRanking"}
             handleReset={handleReset}
             setParentPageSize={handlePageSizeChange}
+            parentCurrentPage={currentPage}
             setParentCurrentPage={handleCurrentPageChange}
             setParentSearchedData={handleTableSearchedDataChange}
             isAddPermission={checkPermission(
@@ -638,7 +640,10 @@ const Index = () => {
                       ? typeOptions.find((option) => option.value === typeSelectedOption)
                       : null
                   }
-                  onChange={(e) => setTypeSelectedOption(e?.value)}
+                  onChange={(e) => {
+                    setTypeSelectedOption(e?.value)
+                    setCurrentPage(0)
+                  }}
                   options={typeOptions}
                   placeholder="Type"
                   classNamePrefix="filter-dropdown"
@@ -652,7 +657,11 @@ const Index = () => {
                       ? genderOptions.find((option) => option.value === genderSelectedOption)
                       : null
                   }
-                  onChange={(e) => setGenderSelectedOption(e?.value)}
+                  onChange={(e) => {
+                      setGenderSelectedOption(e?.value)
+                      setCurrentPage(0)
+                    }
+                  }
                   options={genderOptions}
                   placeholder="Gender"
                   classNamePrefix="filter-dropdown"
@@ -667,7 +676,7 @@ const Index = () => {
                       ? playerTypeOptions.find((option) => option.value === playerTypeSelectedOption)
                       : null
                   }
-                  onChange={(e) => setPlayerTypeSelectedOption(e?.value)}
+                  onChange={(e) => {setPlayerTypeSelectedOption(e?.value);setCurrentPage(0)}}
                   options={playerTypeOptions}
                   placeholder="Player Type"
                   classNamePrefix="filter-dropdown"

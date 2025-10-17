@@ -164,6 +164,7 @@ const Index = forwardRef(
       setParentCurrentPage,
       setParentPageSize,
       setParentSearchedData,
+      parentCurrentPage
     },
     ref
   ) => {
@@ -181,7 +182,7 @@ const Index = forwardRef(
     );
     const [total, setTotal] = useState(dataSource?.length);
     const [pageSize, setPageSize] = useState(globalPageSize || 10);
-    const [currentPage, setCurrentPage] = useState(0);
+    const [currentPage, setCurrentPage] = useState(parentCurrentPage || 0);
     const [filteredData, setFilteredData] = useState([]);
     const [searchedData, setSearchedData] = useState([]);
     const [searchTerm, setSearchTerm] = useState(playerSearch || "");
@@ -221,6 +222,10 @@ const Index = forwardRef(
         setCurrentPage(0);
       }
     }, [data, filteredData]);
+
+    useEffect(() =>{
+      setCurrentPage(parentCurrentPage)
+    }, [parentCurrentPage])
 
     useEffect(() => {
       if(defaultCommentrayStatus){
@@ -1787,6 +1792,7 @@ const Index = forwardRef(
                                       rateSourceType: e?.label,
                                       rateSourceRefId: e?.value,
                                     });
+                                    setCurrentPage(0)
                                   }
                                 }}
                                 options={rateSourceList?.map((item) => ({
