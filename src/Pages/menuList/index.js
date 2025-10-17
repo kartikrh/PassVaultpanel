@@ -46,6 +46,10 @@ const Index = () => {
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [checekedList, setCheckedList] = useState([]);
   const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
+  const globalPageSize = localStorage.getItem("pageSize");
+  const [tableSearchedData, setTableSearchedData] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(globalPageSize || 10);
 
   // const [addModelVisable, setAddModelVisable] = useState(false);
   // const [level, setLevel] = useState(0);
@@ -238,26 +242,82 @@ const Index = () => {
     dispatch(setSelectedMenuType(value));
   };
 
+  //checkbox select
+  const getSelectedItemsData = () => {
+    const newCurrentPage = currentPage > 0 ? currentPage : 1;
+    const startIndex = (newCurrentPage - 1) * pageSize;
+    const endIndex = +startIndex + +pageSize;
+
+    let sourceList;
+
+    if (tableSearchedData && tableSearchedData.length > 0) {
+      // Extract IDs based on selectedMenuType level - matching dataIndexList logic
+      sourceList = tableSearchedData.map(item => {
+        return +selectedMenuType?.level === 0
+          ? item?.menuTypeId
+          : item?.displayOrder; 
+      });
+    } else {
+      sourceList = dataIndexList;
+    }
+
+    return sourceList.slice(startIndex, endIndex);
+  };
+
+  const handleSelectAllClick = () => {
+    const currentItems = getSelectedItemsData();
+    setCheckedList(
+      isEqual(checekedList?.sort(), currentItems?.sort())
+        ? []
+        : currentItems
+    );
+  };
+
+  const checkIfAllSelected = () => {
+    const currentItems = getSelectedItemsData();
+    return data?.length > 0 &&
+      checekedList?.length > 0 &&
+      isEqual(checekedList?.sort(), currentItems?.sort());
+  };
+  console.log("checekedList: ", checekedList);
+
+  const handleTableSearchedDataChange = (data) => {
+    setTableSearchedData(data);
+    setCheckedList([]);
+  };
+
+  const handleCurrentPageChange = (page) => {
+    setCurrentPage(page);
+    setCheckedList([]);
+  };
+
+  const handlePageSizeChange = (size) => {
+    setPageSize(size);
+    setCheckedList([]);
+  };
+
   const columnsMenuTypes = [
     {
-      // title: (
-      //   <div className="form-check">
-      //     <input
-      //       className="form-check-input"
-      //       type="checkbox"
-      //       name="chk_child"
-      //       value="option1"
-      //       checked={data?.length > 0 && isEqual(checekedList?.sort(), dataIndexList?.sort())}
-      //       onChange={() => {
-      //         setCheckedList(
-      //           isEqual(checekedList?.sort(), dataIndexList?.sort())
-      //             ? []
-      //             : dataIndexList
-      //         );
-      //       }}
-      //     />
-      //   </div>
-      // ),
+      title: (
+        <div className="form-check">
+          <input
+            className="form-check-input"
+            type="checkbox"
+            name="chk_child"
+            value="option1"
+            checked={checkIfAllSelected()}
+            onChange={handleSelectAllClick}
+            // checked={data?.length > 0 && isEqual(checekedList?.sort(), dataIndexList?.sort())}
+            // onChange={() => {
+            //   setCheckedList(
+            //     isEqual(checekedList?.sort(), dataIndexList?.sort())
+            //       ? []
+            //       : dataIndexList
+            //   );
+            // }}
+          />
+        </div>
+      ),
       render: (text, record) => (
         <div className="form-check d-flex align-items-center justify-between">
           <input
@@ -374,27 +434,29 @@ const Index = () => {
 
   const columnsMenuItems = [
     {
-      // title: (
-      //   <div className="form-check">
-      //     <input
-      //       className="form-check-input"
-      //       type="checkbox"
-      //       name="chk_child"
-      //       value="option1"
-      //       checked={
-      //         data?.length > 0 &&
-      //         isEqual(checekedList?.sort(), dataIndexList?.sort())
-      //       }
-      //       onChange={() => {
-      //         setCheckedList(
-      //           isEqual(checekedList?.sort(), dataIndexList?.sort())
-      //             ? []
-      //             : dataIndexList
-      //         );
-      //       }}
-      //     />
-      //   </div>
-      // ),
+      title: (
+        <div className="form-check">
+          <input
+            className="form-check-input"
+            type="checkbox"
+            name="chk_child"
+            value="option1"
+            checked={checkIfAllSelected()}
+            onChange={handleSelectAllClick}
+            // checked={
+            //   data?.length > 0 &&
+            //   isEqual(checekedList?.sort(), dataIndexList?.sort())
+            // }
+            // onChange={() => {
+            //   setCheckedList(
+            //     isEqual(checekedList?.sort(), dataIndexList?.sort())
+            //       ? []
+            //       : dataIndexList
+            //   );
+            // }}
+          />
+        </div>
+      ),
       render: (text, record) => (
         <div className="form-check d-flex align-items-center justify-between">
           <input
@@ -570,6 +632,9 @@ const Index = () => {
             )}
             breadCrumbs={selectedMenuTypeHistory}
             onBreadCrumbsClick={handleBreadCrumbsClick}
+            setParentCurrentPage={handleCurrentPageChange}
+            setParentPageSize={handlePageSizeChange}
+            setParentSearchedData={handleTableSearchedDataChange}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

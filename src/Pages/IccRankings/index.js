@@ -31,9 +31,14 @@ import { ChangeStatusModel } from "../../components/Model/ChangeStatusModel";
 import Item from "antd/es/list/Item";
 
   const typeOptions = [
-      { label: "Select Type", value: "0" },
+      { label: "Select Type", value: 0 },
       { label: "Team", value: 1 },
       { label: "Player", value: 2 },
+  ]
+  const genderOptions = [
+      { label: "Select Gender", value: 0 },
+      { label: "Men", value: 1 },
+      { label: "Women", value: 2 },
   ]
   const playerTypeOptions = [
       { label: "Select Type", value: "0" },
@@ -60,10 +65,11 @@ const Index = () => {
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [eventTypes, setEventTypes] = useState([]);
   const [matchTypes, setMatchTypes] = useState([]);
-  const [matchTypeList, setMatchTypeList] = useState([]);
-  const [sportList, setSportList] = useState([]);
+  const [matchTypeList, setMatchTypeList] = useState([{ label: "Select Gender", value: 0 }]);
+  const [sportList, setSportList] = useState([{ label: "Select Sport", value: 0 }]);
   const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
   const [typeSelectedOption, setTypeSelectedOption] = useState(undefined);
+  const [genderSelectedOption, setGenderSelectedOption] = useState(undefined);
   const [playerTypeSelectedOption, setPlayerTypeSelectedOption] = useState(undefined);
   const [selectedFilter, setSelectedFilter] = useState({
       // isActive: true,
@@ -85,6 +91,9 @@ const Index = () => {
       sportId: selectedFilter?.sportId?.value,
       matchTypeId: selectedFilter?.matchTypeId?.value,
       type: typeSelectedOption,
+      ...(genderSelectedOption !== undefined && {
+        isMen: genderSelectedOption == 1 ? true : false,
+      }),
       playerTypeId: playerTypeSelectedOption
     }
     await axiosInstance
@@ -315,6 +324,7 @@ const Index = () => {
   const checkIfAllSelected = () => {
     const currentItems = getSelectedItemsData();
     return data?.length > 0 &&
+      checekedList?.length > 0 &&
       isEqual(checekedList?.sort(), currentItems?.sort());
   };
 
@@ -402,6 +412,7 @@ const Index = () => {
         </div>
       ),
       key: "type",
+      sort: true,
       style: { width: "10%", /* textAlign: "center" */ },
     },
     {
@@ -411,6 +422,7 @@ const Index = () => {
         <span style={{ cursor: "pointer" }}>{getLabelByValue(text, sportList)}</span>
       ),
       key: "sportId",
+      sort: true,
       style: { width: "10%",/*  textAlign: "center" */ },
     },
     {
@@ -420,7 +432,7 @@ const Index = () => {
         return <span>{getLabelByValue(text, matchTypeList)}</span>;
       },
       key: "matchTypeId",
-    //   sort: true,
+      sort: true,
       style: { width: "10%" },
     },
     {
@@ -428,7 +440,7 @@ const Index = () => {
       dataIndex: "playerName",
       render: (text, record) => <span>{text}</span>,
       key: "playerName",
-    //   sort: true,
+      sort: true,
       style: { width: "10%" },
     },
     {
@@ -436,13 +448,17 @@ const Index = () => {
       dataIndex: "teamName",
       render: (text, record) => <span>{text}</span>,
       key: "teamName",
-    //   sort: true,
+      sort: true,
       style: { width: "10%" },
     },
     {
-      title: "Point",
-      dataIndex: "point",
-      key: "point",
+      title: "Gender",
+      dataIndex: "isMen",
+      render: (text, record) => {
+        return<span>{text == true ? "Men" : "women"}</span>
+      },
+      key: "isMen",
+      sort: true,
       style: { width: "10%" },
     },
     
@@ -450,6 +466,7 @@ const Index = () => {
       title: "Rank",
       key: "rank",
       key: "rank",
+      sort: true,
       render: (text, record) => <span>{record.rank}</span>,
       style: { width: "2%", textAlign: "center" },
     },
@@ -459,6 +476,7 @@ const Index = () => {
       key: "preRank",
       render: (text, record) => <span>{record.preRank}</span>,
       style: { width: "2%", textAlign: "center" },
+      sort: true,
     },
     {
       title: "Active",
@@ -488,13 +506,13 @@ const Index = () => {
   ];
 
   const handleReset = (value) => {
-    
     setSelectedFilter({
       matchTypeId: undefined,
       sportId: undefined
     })
     setTypeSelectedOption(undefined)
     setPlayerTypeSelectedOption(undefined)
+    setGenderSelectedOption(undefined)
   };
 
   //elements required
@@ -518,7 +536,7 @@ const Index = () => {
 
   useEffect(() =>{
     fetchData();
-  }, [typeSelectedOption, selectedFilter, playerTypeSelectedOption])
+  }, [typeSelectedOption, selectedFilter, playerTypeSelectedOption, genderSelectedOption])
 
   const handleReload = (value) => {
     fetchData();
@@ -530,11 +548,13 @@ const Index = () => {
     await axiosInstance
       .post("/admin/list/matchTypeList", {})
       .then((response) => {
-        setMatchTypeList(
-          response.result?.map((item) => {
-            return { label: item.matchType, value: item.matchTypeId };
-          })
-        );
+        setMatchTypeList((prev) => [
+        ...prev,
+        ...(response.result?.map((item) => ({
+          label: item.matchType,
+          value: item.matchTypeId,
+        })) || []),
+      ]);
       })
       .catch((error) => {
         dispatch(
@@ -551,11 +571,13 @@ const Index = () => {
     await axiosInstance
       .post("/admin/list/eventTypeList", {})
       .then((response) => {
-        setSportList(
-          response.result?.map((item) => {
-            return { label: item.eventType, value: item.eventTypeId };
-          })
-        );
+        setSportList((prev) => [
+          ...prev,
+          ...(response.result?.map((item) => ({
+            label: item.eventType,
+            value: item.eventTypeId,
+          })) || []),
+        ]);
       })
       .catch((error) => {
         dispatch(
@@ -620,6 +642,20 @@ const Index = () => {
                   onChange={(e) => setTypeSelectedOption(e?.value)}
                   options={typeOptions}
                   placeholder="Type"
+                  classNamePrefix="filter-dropdown"
+                />
+                <Select
+                  styles={{
+                    control: (provided) => ({ ...provided, width: 140 }),
+                  }}
+                  value={
+                    genderSelectedOption
+                      ? genderOptions.find((option) => option.value === genderSelectedOption)
+                      : null
+                  }
+                  onChange={(e) => setGenderSelectedOption(e?.value)}
+                  options={genderOptions}
+                  placeholder="Gender"
                   classNamePrefix="filter-dropdown"
                 />
                 <Select
