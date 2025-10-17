@@ -480,6 +480,12 @@ const Index = () => {
       style: { width: "30%" },
     },
     {
+      title: "Country",
+      dataIndex: "countryName",
+      key: "countryName",
+      style: { width: "30%" },
+    },
+    {
       title: "Active",
       key: "isActive",
       render: (text, record) => (
