@@ -116,6 +116,23 @@ const Index = () => {
       });
   };
 
+  const handleUpdateView = async (pType, record, cState) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/clientSocket/updateView`, {
+        clientSocketId: record.clientSocketId,
+        [pType]: cState ? false : true,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+      });
+  };
+
   const fetchViewCount = async (url, clientSocketId) => {
     setIsLoading(true);
     await axios
@@ -376,6 +393,25 @@ const Index = () => {
           }}
         >
           <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
+        </Button>
+      </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "View",
+      key: "isUpdateView",
+      render: (text, record) => (
+      <Tooltip title={"Update View"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+        <Button
+          color={`${record.isUpdateView ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handleUpdateView("isUpdateView", record, record.isUpdateView);
+          }}
+        >
+          <i className={`bx ${record.isUpdateView ? "bx-check" : "bx-block"}`}></i>
         </Button>
       </Tooltip>
       ),
