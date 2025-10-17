@@ -1075,6 +1075,10 @@ const Index = forwardRef(
           );
         } else {
           const pageToJump = possibleNoOfPages - 1;
+          if (setParentCurrentPage) {
+            setParentCurrentPage(pageToJump + 1); 
+          }
+          setCurrentPage(pageToJump + 1);
           sliced = dataSource.slice(
             pageToJump * pageSize,
             Number(pageToJump * pageSize) + Number(pageSize)

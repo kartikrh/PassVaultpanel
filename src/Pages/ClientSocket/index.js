@@ -29,6 +29,10 @@ const Index = () => {
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
   const [viewCounts, setViewCounts] = useState({});
+  const globalPageSize = localStorage.getItem("pageSize");
+  const [tableSearchedData, setTableSearchedData] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(globalPageSize || 10);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -99,6 +103,23 @@ const Index = () => {
     setIsLoading(true);
     await axiosInstance
       .post(`/admin/clientSocket/activeInactive`, {
+        clientSocketId: record.clientSocketId,
+        [pType]: cState ? false : true,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+      });
+  };
+
+  const handleUpdateView = async (pType, record, cState) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/clientSocket/updateView`, {
         clientSocketId: record.clientSocketId,
         [pType]: cState ? false : true,
       })
@@ -220,25 +241,71 @@ const Index = () => {
     { label: "Connect", value: 1 },
     { label: "Disconnect", value: 2 },
   ];
-  
+
+  //checkbox select
+  const getSelectedItemsData = () => {
+    const newCurrentPage = currentPage > 0 ? currentPage : 1;
+    const startIndex = (newCurrentPage - 1) * pageSize;
+    const endIndex = +startIndex + +pageSize;
+
+    const sourceList = tableSearchedData && tableSearchedData.length > 0
+      ? tableSearchedData.map(item => item.clientSocketId)
+      : dataIndexList;
+
+    return sourceList.slice(startIndex, endIndex);
+  };
+
+  const handleSelectAllClick = () => {
+    const currentItems = getSelectedItemsData();
+    setCheckedList(
+      isEqual(checekedList?.sort(), currentItems?.sort())
+        ? []
+        : currentItems
+    );
+  };
+
+  const checkIfAllSelected = () => {
+    const currentItems = getSelectedItemsData();
+    return data?.length > 0 &&
+      checekedList?.length > 0 &&
+      isEqual(checekedList?.sort(), currentItems?.sort());
+  };
+
+  const handleTableSearchedDataChange = (data) => {
+    setTableSearchedData(data);
+    setCheckedList([]);
+  };
+
+  const handleCurrentPageChange = (page) => {
+    setCurrentPage(page);
+    setCheckedList([]);
+  };
+
+  const handlePageSizeChange = (size) => {
+    setPageSize(size);
+    setCheckedList([]);
+  };
+
   //table columns
   const columns = [
     {
-      // title: (
-      //   <div className="form-check">
-      //     <input
-      //       className="form-check-input"
-      //       type="checkbox"
-      //       name="chk_child"
-      //       value="option1"
-      //       checked={data?.length > 0 && isEqual(checekedList?.sort(), dataIndexList?.sort())}
-      //       onChange={() => {
-      //         setCheckedList(isEqual(checekedList?.sort(), dataIndexList?.sort()) ? [] : dataIndexList
-      //         )
-      //       }}
-      //     />
-      //   </div>
-      // ),
+      title: (
+        <div className="form-check">
+          <input
+            className="form-check-input"
+            type="checkbox"
+            name="chk_child"
+            value="option1"
+            checked={checkIfAllSelected()}
+            onChange={handleSelectAllClick}
+            // checked={data?.length > 0 && isEqual(checekedList?.sort(), dataIndexList?.sort())}
+            // onChange={() => {
+            //   setCheckedList(isEqual(checekedList?.sort(), dataIndexList?.sort()) ? [] : dataIndexList
+            //   )
+            // }}
+          />
+        </div>
+      ),
       render: (text, record) => (
         <div className="form-check d-flex align-items-center justify-between">
           <input
@@ -332,6 +399,25 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
+      title: "View",
+      key: "isUpdateView",
+      render: (text, record) => (
+      <Tooltip title={"Update View"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+        <Button
+          color={`${record.isUpdateView ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handleUpdateView("isUpdateView", record, record.isUpdateView);
+          }}
+        >
+          <i className={`bx ${record.isUpdateView ? "bx-check" : "bx-block"}`}></i>
+        </Button>
+      </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
       title: "Viewers",
       key: "viewers",
       render: (text, record) => (
@@ -403,6 +489,9 @@ const Index = () => {
             actionTypeOptions={actionTypeOptions}
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
             isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
+            setParentCurrentPage={handleCurrentPageChange}
+            setParentPageSize={handlePageSizeChange}
+            setParentSearchedData={handleTableSearchedDataChange}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
