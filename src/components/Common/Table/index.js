@@ -1070,6 +1070,10 @@ const Index = forwardRef(
           );
         } else {
           const pageToJump = possibleNoOfPages - 1;
+          if (setParentCurrentPage) {
+            setParentCurrentPage(pageToJump + 1); 
+          }
+          setCurrentPage(pageToJump + 1);
           sliced = dataSource.slice(
             pageToJump * pageSize,
             Number(pageToJump * pageSize) + Number(pageSize)
@@ -1113,7 +1117,7 @@ const Index = forwardRef(
         handleCustomReset();
         return;
       }
-      if(dateType.value == 2){
+      if(dateType?.value == 2){
         localStorage.setItem("DateType", JSON.stringify({ label: 'Local Timezone', value: 1 }))
         setDateType({ label: 'Local Timezone', value: 1 })
       } 

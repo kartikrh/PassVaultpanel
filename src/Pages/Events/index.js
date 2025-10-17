@@ -46,6 +46,10 @@ const Index = () => {
   const [userRefData, setUserRefData] = useState(false);
   const EventTypeId = +sessionStorage.getItem('CompetitionEventTypeId') || 0;
   const EventCompetitionId = +sessionStorage.getItem('EventCompetitionId') || 0;
+  const globalPageSize = localStorage.getItem("pageSize");
+  const [tableSearchedData, setTableSearchedData] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(globalPageSize || 10);
 
   const commentaryPermission = checkPermission(permissionObj, CommentaryPage, PERMISSION_VIEW)
   const commentaryListPermission = checkPermission(permissionObj, CommentaryListPage, PERMISSION_VIEW)
@@ -219,23 +223,69 @@ const Index = () => {
     // sessionStorage.removeItem("commentaryManualOddsMarketDetails");
   };
 
+  //checkbox select
+  const getSelectedItemsData = () => {
+    const newCurrentPage = currentPage > 0 ? currentPage : 1;
+    const startIndex = (newCurrentPage - 1) * pageSize;
+    const endIndex = +startIndex + +pageSize;
+
+    const sourceList = tableSearchedData && tableSearchedData.length > 0
+      ? tableSearchedData.map(item => item.eventId)
+      : dataIndexList;
+
+    return sourceList.slice(startIndex, endIndex);
+  };
+
+  const handleSelectAllClick = () => {
+    const currentItems = getSelectedItemsData();
+    setCheckedList(
+      isEqual(checekedList?.sort(), currentItems?.sort())
+        ? []
+        : currentItems
+    );
+  };
+
+  const checkIfAllSelected = () => {
+    const currentItems = getSelectedItemsData();
+    return data?.length > 0 &&
+      checekedList?.length > 0 &&
+      isEqual(checekedList?.sort(), currentItems?.sort());
+  };
+
+  const handleTableSearchedDataChange = (data) => {
+    setTableSearchedData(data);
+    setCheckedList([]);
+  };
+
+  const handleCurrentPageChange = (page) => {
+    setCurrentPage(page);
+    setCheckedList([]);
+  };
+
+  const handlePageSizeChange = (size) => {
+    setPageSize(size);
+    setCheckedList([]);
+  };
+
   const columns = [
     {
-      // title: (
-      //   <div className="form-check">
-      //     <input
-      //       className="form-check-input"
-      //       type="checkbox"
-      //       name="chk_child"
-      //       value="option1"
-      //       checked={data?.length > 0 && isEqual(checekedList?.sort(), dataIndexList?.sort())}
-      //       onChange={() => {
-      //         setCheckedList(isEqual(checekedList?.sort(), dataIndexList?.sort()) ? [] : dataIndexList
-      //         )
-      //       }}
-      //     />
-      //   </div>
-      // ),
+      title: (
+        <div className="form-check">
+          <input
+            className="form-check-input"
+            type="checkbox"
+            name="chk_child"
+            value="option1"
+            checked={checkIfAllSelected()}
+            onChange={handleSelectAllClick}
+            // checked={data?.length > 0 && isEqual(checekedList?.sort(), dataIndexList?.sort())}
+            // onChange={() => {
+            //   setCheckedList(isEqual(checekedList?.sort(), dataIndexList?.sort()) ? [] : dataIndexList
+            //   )
+            // }}
+          />
+        </div>
+      ),
       render: (text, record) => (
         <div className="form-check d-flex align-items-center justify-between">
           <input
@@ -485,6 +535,9 @@ const Index = () => {
             selectedTableElementsLogs={selectedTableElements}
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
             isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
+            setParentCurrentPage={handleCurrentPageChange}
+            setParentPageSize={handlePageSizeChange}
+            setParentSearchedData={handleTableSearchedDataChange}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

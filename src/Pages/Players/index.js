@@ -349,6 +349,7 @@ const Index = () => {
   const checkIfAllSelected = () => {
     const currentItems = getSelectedItemsData();
     return data?.length > 0 &&
+      checekedList?.length > 0 &&
       isEqual(checekedList?.sort(), currentItems?.sort());
   };
 
@@ -476,6 +477,12 @@ const Index = () => {
       dataIndex: "eventType",
       key: "eventType",
 
+      style: { width: "30%" },
+    },
+    {
+      title: "Country",
+      dataIndex: "countryName",
+      key: "countryName",
       style: { width: "30%" },
     },
     {

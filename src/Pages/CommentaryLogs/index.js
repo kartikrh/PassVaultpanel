@@ -47,12 +47,13 @@ const Index = () => {
     endDate: `${new Date().toISOString().split("T")[0]}T23:59:00`,
   });
   const [cloneValues, setCloneValues] = useState({
-      eventName: "",
-      eventRefId: "",
+    eventName: "",
+    eventRefId: "",
   });
   const [dataIndexList, setDataIndexList] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(globalPageSize || 10);
+  const [tableSearchedData, setTableSearchedData] = useState([]);
   const [total, setTotal] = useState(0);
   const [selectedTableElements, setSelectedTableElements] = useState({
     eventType: null,
@@ -101,7 +102,7 @@ const Index = () => {
         });
         setDataIndexList(logsDataIdList);
         setData(logsData);
-        setTotal(response?.result?.totalRecords || 0); 
+        setTotal(response?.result?.totalRecords || 0);
         setCheckedList([]);
         setIsLoading(false);
       })
@@ -116,18 +117,18 @@ const Index = () => {
     }
   };
   useEffect(() => {
-      if (commentaryId !== 0) {
-        setEventTypeId(commentaryDetails.eventTypeId)
-      }
+    if (commentaryId !== 0) {
+      setEventTypeId(commentaryDetails.eventTypeId)
+    }
   }, [])
 
   useEffect(() => {
     if(!eventTypeId) {
-        setCompetitions([]);
-        setCommentary([]);
-      }
-    }, [eventTypeId]);
-  
+      setCompetitions([]);
+      setCommentary([]);
+    }
+  }, [eventTypeId]);
+
   useEffect(()=>{
     if(commentaryId !== 0 && commentaryDetails?.eventTypeId && commentaryDetails?.competitionId){
       setIsSearch(false)
@@ -179,34 +180,76 @@ const Index = () => {
       })
       .catch((error) => { });
   };
+
+  //checkbox select
+  const getSelectedItemsData = () => {
+    // if (tableElement?.isServerPagination) {
+      return tableSearchedData && tableSearchedData.length > 0
+        ? tableSearchedData.map(item => item.id)
+        : dataIndexList;
+    // }
+    
+    // // For client-side pagination
+    // const newCurrentPage = currentPage > 0 ? currentPage : 1;
+    // const startIndex = (newCurrentPage - 1) * pageSize;
+    // const endIndex = +startIndex + +pageSize;
+
+    // const sourceList = tableSearchedData && tableSearchedData.length > 0
+    //   ? tableSearchedData.map(item => item.id)
+    //   : dataIndexList;
+
+    // return sourceList.slice(startIndex, endIndex);
+  };
+
+  const handleSelectAllClick = () => {
+    const currentItems = getSelectedItemsData();
+    setCheckedList(
+      isEqual(checekedList?.sort(), currentItems?.sort())
+        ? []
+        : currentItems
+    );
+  };
+  
+  const checkIfAllSelected = () => {
+    const currentItems = getSelectedItemsData();
+    return data?.length > 0 &&
+      checekedList?.length > 0 &&
+      isEqual(checekedList?.sort(), currentItems?.sort());
+  };
+  const handleTableSearchedDataChange = (data) => {
+    setTableSearchedData(data);
+    setCheckedList([]);
+  };
+
   //table columns
   const columns = [
     {
-      // title: (
-      //   <div className="form-check">
-      //     <input
-      //       className="form-check-input"
-      //       type="checkbox"
-      //       name="chk_child"
-      //       value="option1"
-      //       checked={
-      //         data?.length > 0 &&
-      //         isEqual(checekedList?.sort(), dataIndexList?.sort())
-      //       }
-      //       onChange={() => {
-      //         setCheckedList(
-      //           isEqual(checekedList?.sort(), dataIndexList?.sort())
-      //             ? []
-      //             : dataIndexList
-      //         );
-      //       }}
-      //     />
-      //   </div>
-      // ),
+      title: (
+        <div className="form-check">
+          <input
+            className="form-check-input"
+            type="checkbox"
+            name="chk_child"
+            value="option1"
+            checked={checkIfAllSelected()}
+            onChange={handleSelectAllClick}
+          // checked={
+          //   data?.length > 0 &&
+          //   isEqual(checekedList?.sort(), dataIndexList?.sort())
+          // }
+          // onChange={() => {
+          //   setCheckedList(
+          //     isEqual(checekedList?.sort(), dataIndexList?.sort())
+          //       ? []
+          //       : dataIndexList
+          //   );
+          // }}
+          />
+        </div>
+      ),
       render: (text, record) => (
-        <div className={`form-check d-flex align-items-center justify-between ${
-          checekedList.includes(record.id) ? "selected-row" : ""
-        }`}>
+        <div className={`form-check d-flex align-items-center justify-between ${checekedList.includes(record.id) ? "selected-row" : ""
+          }`}>
           <input
             className="form-check-input"
             type="checkbox"
@@ -264,22 +307,22 @@ const Index = () => {
               {typeof value === "object" ? JSON.stringify(value) : value}{" "}
             </span>
           ));
-        return <div 
-        onClick={() => {
-                  setReqModelVisible(true);
+        return <div
+          onClick={() => {
+            setReqModelVisible(true);
                   setReqBodyData({requestBody :record?.requestBody,id:record?.id,
                     eventName:record?.eventName,
                     eventRefId:record?.eventRefId
                     ,createdDate:record?.createdDate});
-                }}
-        style={{ 
-          display: 'inline-block', 
-          maxWidth: '400px',
-          whiteSpace: 'nowrap', 
-          overflow: 'hidden', 
-          textOverflow: 'ellipsis',
-          cursor: "pointer" 
-        }}>{logItems}</div>;
+          }}
+          style={{
+            display: 'inline-block',
+            maxWidth: '400px',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            cursor: "pointer"
+          }}>{logItems}</div>;
       },
       key: "requestBody",
       sort: true,
@@ -298,23 +341,23 @@ const Index = () => {
               {typeof value === "object" ? JSON.stringify(value) : value}{" "}
             </span>
           ));
-        return <div 
-        onClick={() => {
-                  setResModelVisible(true);
-                  setResBodyData({
+        return <div
+          onClick={() => {
+            setResModelVisible(true);
+            setResBodyData({
                     response :record?.response,id:record?.id,
                     eventName:record?.eventName,
                     eventRefId:record?.eventRefId,
                     createdDate:record?.createdDate});
-                }}
-        style={{ 
-          display: 'inline-block', 
-          maxWidth: '400px',
-          whiteSpace: 'nowrap', 
-          overflow: 'hidden', 
-          textOverflow: 'ellipsis', 
-          cursor: "pointer"
-        }}>{logItems}</div>;
+          }}
+          style={{
+            display: 'inline-block',
+            maxWidth: '400px',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            cursor: "pointer"
+          }}>{logItems}</div>;
       },
       key: "response",
       sort: true,
@@ -455,14 +498,23 @@ const Index = () => {
             serverCurrentPage={currentPage}
             serverPageSize={pageSize}
             serverTotal={total}
-            setServerCurrentPage={setCurrentPage}
-            setServerPageSize={setPageSize}
+            setServerCurrentPage={(value) => {
+              setCheckedList([]);
+              setTableSearchedData([]);
+              setCurrentPage(value);
+            }}
+            setServerPageSize={(value) => {
+              setCheckedList([]);
+              setTableSearchedData([]);
+              setPageSize(value);
+            }}
             isSearch={isSearch}
             setIsSearch={setIsSearch}
             setEventTypeId={setEventTypeId}
             setCompetitionId={setCompetitionId}
             dateType={dateType}
             setDateType={setDateType}
+            setParentSearchedData={handleTableSearchedDataChange}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
