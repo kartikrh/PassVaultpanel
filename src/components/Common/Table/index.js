@@ -1740,8 +1740,8 @@ const Index = forwardRef(
                           {tableElement?.displayTypeDropDown ? (
                             <div className="">
                               <Select
-                                value={selectedTableElements?.display}
-                                placeholder="Select Event Type"
+                                value={selectedTableElements?.displayType}
+                                placeholder="Display Type"
                                 styles={{
                                   control: (provided) => ({
                                     ...provided,
