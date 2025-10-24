@@ -720,7 +720,7 @@ export default function ImportEntity() {
     reloadButton: true,
   };
   // console.log("Length: ", data?.length||0)
-  const customPageSizeOptions = ["10", "20", "50", "100"];
+  const customPageSizeOptions = ["10", "20", "50"];
   return (
     <React.Fragment>
       <div className="page-content">
