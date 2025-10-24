@@ -2761,19 +2761,21 @@ const Index = forwardRef(
                       </Col> */}
                       <Col className="col-sm-auto ms-auto d-flex">
                         {tableElement?.showBrokenImageButton && (
-                          <Button
-                            color={showBrokenOnly ? "warning" : "secondary"}
-                            onClick={handleBrokenImageToggle}
-                            disabled={isCheckingImages}
-                            className="d-flex align-items-center gap-2 mx-3"
-                          >
-                            <>
-                              {/* <i className={showBrokenOnly ? "ri-eye-off-line" : "ri-image-line"}></i> */}
-                              {/* {showBrokenOnly ? `Broken Images (${brokenImages?.length || 0})` : "Show Broken"} */}
-                              <i className="ri-image-line"></i>
-                              {showBrokenOnly ? "Show All" : "Show Broken"}
-                            </>
-                          </Button>
+                          <Tooltip title={`Show ${tableElement.title} without image`} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+                            <Button
+                              color={showBrokenOnly ? "warning" : "secondary"}
+                              onClick={handleBrokenImageToggle}
+                              disabled={isCheckingImages}
+                              className="d-flex align-items-center gap-2 mx-3"
+                            >
+                              <>
+                                {/* <i className={showBrokenOnly ? "ri-eye-off-line" : "ri-image-line"}></i> */}
+                                {/* {showBrokenOnly ? `Broken Images (${brokenImages?.length || 0})` : "Show Broken"} */}
+                                <i className="ri-image-line"></i>
+                                {showBrokenOnly ? "Show All" : "Show Broken"}
+                              </>
+                            </Button>
+                          </Tooltip>
                         )}
                         {tableElement?.importData && (
                           <Button
