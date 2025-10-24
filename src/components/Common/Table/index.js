@@ -156,6 +156,7 @@ const Index = forwardRef(
       pythonApis,
       customPageSizeOptions,
       playerSearch,
+      setSearch,
       dateTypeTitle,
       reportType,
       reportTypeOption,
@@ -212,7 +213,7 @@ const Index = forwardRef(
       setData(filteredData);
     }, [filteredData]);
     useEffect(() => {
-      if (dataSource) setSearchTerm(playerSearch || "");
+      if (dataSource && tableElement.title !== "Entity Player Import") setSearchTerm(playerSearch || "");
     }, [dataSource]);
     useEffect(() => {
       if (data.length == 0 && filteredData.length == 0) {
@@ -712,7 +713,10 @@ const Index = forwardRef(
           setFilteredData(updatedData);
           setTotal(updatedData.length);
         }
-      } else {
+      } else if (tableElement.title == "Entity Player Import"){
+          setSearch(searchTerm)
+      }
+      else {
         // const updatedData = dataSource.filter((val) => {
         //   // console.log("val", val)
         //   const found = Object.values(val).some((value) => {
