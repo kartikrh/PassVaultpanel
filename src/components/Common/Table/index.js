@@ -665,7 +665,7 @@ const Index = forwardRef(
         const updatedData = data.filter((val) => {
           const found = Object.values(val).some((value) => {
             if (typeof value === "string" || value instanceof String) {
-              return value.toLowerCase().includes(searchTerm.toLowerCase());
+              return value.toLowerCase().includes(searchTerm.trim().toLowerCase());
             }
             return false;
           });
@@ -685,7 +685,7 @@ const Index = forwardRef(
           if (marketIDFlag) {
             const found = Object.values(val).some((value) => {
               if (typeof value === "string" || value instanceof String) {
-                return value.toLowerCase().includes(searchTerm.toLowerCase());
+                return value.toLowerCase().includes(searchTerm.trim().toLowerCase());
               }
               return false;
             });
@@ -695,7 +695,7 @@ const Index = forwardRef(
             const firstObject = first[0];
             const found = Object.values(firstObject).some((value) => {
               if (typeof value === "string" || value instanceof String) {
-                return value.toLowerCase().includes(searchTerm.toLowerCase());
+                return value.toLowerCase().includes(searchTerm.trim().toLowerCase());
               }
               return false;
             });
@@ -730,7 +730,7 @@ const Index = forwardRef(
         const updatedData = dataSource.filter((val) => {
           const found = Object.values(val).some((value) => {
             if (typeof value === "string" || value instanceof String || typeof value === "number") {
-              return value.toString().toLowerCase().includes(searchTerm.toString().toLowerCase());
+              return value.toString().toLowerCase().includes(searchTerm.toString().trim().toLowerCase());
             }
             return false;
           });
@@ -3532,7 +3532,7 @@ const Index = forwardRef(
                             placeholder="Search Min. 2 characters"
                             value={searchTerm}
                             onChange={(e) => {
-                              setSearchTerm(e.target.value);
+                              setSearchTerm(e.target.value.toString().trim());
                             }}
                           />
                           {isSearching && (
@@ -3701,7 +3701,7 @@ const Index = forwardRef(
                             placeholder="Search Min. 2 characters"
                             value={searchTerm}
                             onChange={(e) => {
-                              setSearchTerm(e.target.value);
+                              setSearchTerm(e.target.value.toString().trim());
                             }}
                           />
                           {isSearching && (
@@ -3739,7 +3739,7 @@ const Index = forwardRef(
                           placeholder="Search Min. 2 characters"
                           value={searchTerm}
                           onChange={(e) => {
-                            setSearchTerm(e.target.value);
+                            setSearchTerm(e.target.value.toString().trim());
                           }}
                         />
                         {isSearching && (
