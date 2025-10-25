@@ -356,6 +356,8 @@ const PlayerHistory = () => {
           countOf6: +item?.countOf6,
           catchCount: +item?.catchCount,
           stumpCount: +item?.stumpCount,
+          fastest50Balls: +item?.fastest50Balls,
+          fastest100Balls: +item?.fastest100Balls,
         };
       });
     try {
@@ -490,6 +492,9 @@ const PlayerHistory = () => {
           wickets4: +item?.wickets4,
           wickets5: +item?.wickets5,
           wickets10: +item?.wickets10,
+          overCount: +item?.overCount,
+          hattrickCount: +item?.hattrickCount,
+          expensiveOverRuns: +item?.expensiveOverRuns,
         };
       });
     try {
@@ -652,6 +657,7 @@ const PlayerHistory = () => {
     {
       title: "Mat",
       dataIndex: "matchCount",
+      tooltip: "Total Matches",
       render: (text, record, index) => (
         <>
           <Input
@@ -671,6 +677,7 @@ const PlayerHistory = () => {
     {
       title: "Inns",
       dataIndex: "inningsCount",
+      tooltip: "Total Innings",
       render: (text, record, index) => (
         <>
           <Input
@@ -690,6 +697,7 @@ const PlayerHistory = () => {
     {
       title: "NO",
       dataIndex: "notOut",
+      tooltip: "Not Outs",
       render: (text, record, index) => (
         <>
           <Input
@@ -709,6 +717,7 @@ const PlayerHistory = () => {
     {
       title: "Runs",
       dataIndex: "totalRuns",
+      tooltip: "Total RUns",
       render: (text, record, index) => (
         <>
           <Input
@@ -728,6 +737,7 @@ const PlayerHistory = () => {
     {
       title: "HS",
       dataIndex: "highestScore",
+      tooltip: "Highest Score",
       render: (text, record, index) => (
         <>
           <Input
@@ -747,6 +757,7 @@ const PlayerHistory = () => {
     {
       title: "Ave",
       dataIndex: "average",
+      tooltip: "Average",
       render: (text, record, index) => (
         <>
           <Input
@@ -766,6 +777,7 @@ const PlayerHistory = () => {
     {
       title: "BF",
       dataIndex: "ballsFacedCount",
+      tooltip: "Balls Faced",
       render: (text, record, index) => (
         <>
           <Input
@@ -785,6 +797,7 @@ const PlayerHistory = () => {
     {
       title: "SR",
       dataIndex: "strikeRate",
+      tooltip: "Strike Rate",
       render: (text, record, index) => (
         <>
           <Input
@@ -804,6 +817,7 @@ const PlayerHistory = () => {
     {
       title: "100s",
       dataIndex: "countOf100",
+      tooltip: "Total 100s",
       render: (text, record, index) => (
         <>
           <Input
@@ -823,6 +837,7 @@ const PlayerHistory = () => {
     {
       title: "50s",
       dataIndex: "countOf50",
+      tooltip: "Total 50s",
       render: (text, record, index) => (
         <>
           <Input
@@ -842,6 +857,7 @@ const PlayerHistory = () => {
     {
       title: "4s",
       dataIndex: "countOf4",
+      tooltip: "Total 4s",
       render: (text, record, index) => (
         <>
           <Input
@@ -861,6 +877,7 @@ const PlayerHistory = () => {
     {
       title: "6s",
       dataIndex: "countOf6",
+      tooltip: "Total 6s",
       render: (text, record, index) => (
         <>
           <Input
@@ -880,6 +897,7 @@ const PlayerHistory = () => {
     {
       title: "Ct",
       dataIndex: "catchCount",
+      tooltip: "Catches",
       render: (text, record, index) => (
         <>
           <Input
@@ -899,6 +917,7 @@ const PlayerHistory = () => {
     {
       title: "St",
       dataIndex: "stumpCount",
+      tooltip: "Stumps",
       render: (text, record, index) => (
         <>
           <Input
@@ -913,6 +932,66 @@ const PlayerHistory = () => {
         </>
       ),
       key: "stumpCount",
+      style: { width: "5%" },
+    },
+    {
+      title: "OC",
+      dataIndex: "outCount",
+      tooltip: "Total Outs",
+      render: (text, record, index) => (
+        <>
+          <Input
+            className="form-control small-text-fields"
+            type="text"
+            value={text != null ? text : ""}
+            onChange={(e) =>
+              handleBattingValueChange(index, "outCount", e.target.value)
+            }
+          />
+          <span className="text-danger">{record?.error?.outCount}</span>
+        </>
+      ),
+      key: "outCount",
+      style: { width: "3%" },
+    },
+    {
+      title: "F-50",
+      dataIndex: "fastest50Balls",
+      tooltip: "Fastest 50",
+      render: (text, record, index) => (
+        <>
+          <Input
+            className="form-control small-text-fields"
+            type="text"
+            value={text != null ? text : ""}
+            onChange={(e) =>
+              handleBattingValueChange(index, "fastest50Balls", e.target.value)
+            }
+          />
+          <span className="text-danger">{record?.error?.fastest50Balls}</span>
+        </>
+      ),
+      key: "fastest50Balls",
+      style: { width: "5%" },
+    },
+    {
+      title: "F-100",
+      dataIndex: "fastest100Balls",
+      tooltip: "Fastest 100",
+      render: (text, record, index) => (
+        <>
+          <Input
+            className="form-control small-text-fields"
+            type="text"
+            value={text != null ? text : ""}
+            onChange={(e) =>
+              handleBattingValueChange(index, "fastest100Balls", e.target.value)
+            }
+          />
+          <span className="text-danger">{record?.error?.fastest100Balls}</span>
+        </>
+      ),
+      key: "fastest100Balls",
       style: { width: "5%" },
     },
   ];
@@ -982,6 +1061,7 @@ const PlayerHistory = () => {
     },
     {
       title: "Mat",
+      tooltip: "Total Matches",
       dataIndex: "bowlerPlayedMatchCount",
       render: (text, record, index) => (
         <>
@@ -1008,6 +1088,7 @@ const PlayerHistory = () => {
     {
       title: "Inns",
       dataIndex: "bowlerPlayedInningsCount",
+      tooltip: "Total Innings",
       render: (text, record, index) => (
         <>
           <Input
@@ -1033,6 +1114,7 @@ const PlayerHistory = () => {
     {
       title: "Balls",
       dataIndex: "ballCount",
+      tooltip: "Total Balls",
       render: (text, record, index) => (
         <>
           <Input
@@ -1052,6 +1134,7 @@ const PlayerHistory = () => {
     {
       title: "Runs",
       dataIndex: "runsFromBowler",
+      tooltip: "Total Runs",
       render: (text, record, index) => (
         <>
           <Input
@@ -1071,6 +1154,7 @@ const PlayerHistory = () => {
     {
       title: "Wkts",
       dataIndex: "wicketsCount",
+      tooltip: "Total Wickets",
       render: (text, record, index) => (
         <>
           <Input
@@ -1090,6 +1174,7 @@ const PlayerHistory = () => {
     {
       title: "BBI",
       dataIndex: "bestBowlingInInnings",
+      tooltip: "Best Bowling Innings",
       render: (text, record, index) => (
         <>
           <Input
@@ -1115,6 +1200,7 @@ const PlayerHistory = () => {
     {
       title: "BBM",
       dataIndex: "bestBowlingInMatch",
+      tooltip: "Best Bowling Matches",
       render: (text, record, index) => (
         <>
           <Input
@@ -1140,6 +1226,7 @@ const PlayerHistory = () => {
     {
       title: "Ave",
       dataIndex: "bowlerAverage",
+      tooltip: "Average",
       render: (text, record, index) => (
         <>
           <Input
@@ -1159,6 +1246,7 @@ const PlayerHistory = () => {
     {
       title: "Econ",
       dataIndex: "economy",
+      tooltip: "Economy",
       render: (text, record, index) => (
         <>
           <Input
@@ -1178,6 +1266,7 @@ const PlayerHistory = () => {
     {
       title: "SR",
       dataIndex: "bowlerStrikeRate",
+      tooltip: "Strike Rate",
       render: (text, record, index) => (
         <>
           <Input
@@ -1201,6 +1290,7 @@ const PlayerHistory = () => {
     {
       title: "4w",
       dataIndex: "wickets4",
+      tooltip: "4 wickets",
       render: (text, record, index) => (
         <>
           <Input
@@ -1220,6 +1310,7 @@ const PlayerHistory = () => {
     {
       title: "5w",
       dataIndex: "wickets5",
+      tooltip: "5 wickets",
       render: (text, record, index) => (
         <>
           <Input
@@ -1239,6 +1330,7 @@ const PlayerHistory = () => {
     {
       title: "10w",
       dataIndex: "wickets10",
+      tooltip: "10 wickets",
       render: (text, record, index) => (
         <>
           <Input
@@ -1253,6 +1345,66 @@ const PlayerHistory = () => {
         </>
       ),
       key: "wickets10",
+      style: { width: "5%" },
+    },
+    {
+      title: "OV",
+      dataIndex: "overCount",
+      tooltip: "Over Count",
+      render: (text, record, index) => (
+        <>
+          <Input
+            className="form-control small-text-fields"
+            type="text"
+            value={text != null ? text : ""}
+            onChange={(e) =>
+              handleBowlingValueChange(index, "overCount", e.target.value)
+            }
+          />
+          <span className="text-danger">{record?.error?.overCount}</span>
+        </>
+      ),
+      key: "overCount",
+      style: { width: "5%" },
+    },
+    {
+      title: "HC",
+      dataIndex: "hattrickCount",
+      tooltip: "Hattrick Count",
+      render: (text, record, index) => (
+        <>
+          <Input
+            className="form-control small-text-fields"
+            type="text"
+            value={text != null ? text : ""}
+            onChange={(e) =>
+              handleBowlingValueChange(index, "hattrickCount", e.target.value)
+            }
+          />
+          <span className="text-danger">{record?.error?.hattrickCount}</span>
+        </>
+      ),
+      key: "hattrickCount",
+      style: { width: "5%" },
+    },
+    {
+      title: "E OV",
+      dataIndex: "expensiveOverRuns",
+      tooltip: "Expensive Over Runs",
+      render: (text, record, index) => (
+        <>
+          <Input
+            className="form-control small-text-fields"
+            type="text"
+            value={text != null ? text : ""}
+            onChange={(e) =>
+              handleBowlingValueChange(index, "expensiveOverRuns", e.target.value)
+            }
+          />
+          <span className="text-danger">{record?.error?.expensiveOverRuns}</span>
+        </>
+      ),
+      key: "expensiveOverRuns",
       style: { width: "5%" },
     },
   ];
@@ -1296,7 +1448,9 @@ const PlayerHistory = () => {
                 <tr>
                   {battingColumns.map((column, index) => (
                     <th className="px-2 py-0" key={index} style={column.style}>
-                      {column.title}
+                      <Tooltip title={column.tooltip} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+                        {column.title}
+                      </Tooltip>
                     </th>
                   ))}
                 </tr>
@@ -1360,7 +1514,9 @@ const PlayerHistory = () => {
                 <tr>
                   {bowlingColumns.map((column, index) => (
                     <th className="px-2 py-0" key={index} style={column.style}>
-                      {column.title}
+                      <Tooltip title={column.tooltip} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+                        {column.title}
+                      </Tooltip>
                     </th>
                   ))}
                 </tr>
