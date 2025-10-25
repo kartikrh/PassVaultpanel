@@ -640,7 +640,7 @@ const handleBrokenImageToggle = async () => {
             manualExcel={downloadExcelColumn}
             renderCustomFilter={() => {
               return <>
-                <Tooltip title={"Update team statistics"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+                <Tooltip title={"Update team"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
                   <Button
                     onClick={() => updatedImportData()}
                       className="btn border"
