@@ -41,6 +41,9 @@ export const CompetitionFields = [
     label: "logo",
     parentclassName: "",
     type: IMAGE,
+    isValidateImage: true,        
+    validateWidth:279,
+    validateHeight:376  
   },
   {
     name: "matchTypeId",
