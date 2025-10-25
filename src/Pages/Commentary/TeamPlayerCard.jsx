@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, CardBody, CardHeader, Col, Row } from 'reactstrap';
+import { Button, Card, CardBody, CardHeader, Col, Row, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import Select from "react-select";
 import axiosInstance from '../../Features/axios';
 import { updateToastData } from '../../Features/toasterSlice';
 import { useDispatch } from 'react-redux';
-import { ERROR } from '../../components/Common/Const';
+import { ERROR, SUCCESS } from '../../components/Common/Const';
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import "./CommentaryCss.css";
 import { isEmpty } from 'lodash';
@@ -14,13 +14,17 @@ import bat from '../../../src/assets/images/cricket-icons/cricket-bat.png';
 import allrounder from '../../../src/assets/images/cricket-icons/cricket.png';
 import keeper from '../../../src/assets/images/cricket-icons/game.png';
 
-const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, fetchData, currentInnings, bowlingType, updateAllInnings, allTeamPlayers }) => {
+const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, fetchData, currentInnings, bowlingType, updateAllInnings, allTeamPlayers, commentaryData }) => {
     const [commentaryTeamPlayers, setCommentaryTeamPlayers] = useState([]);
     const [nonCommentaryTeamPlayers, setNonCommentaryTeamPlayers] = useState([]);
     const [selectedPlayer, setSelectedPlayer] = useState(undefined);
     const [isLoading, setIsLoading] = useState(false);
     const [editedPlayers, setEditedPlayers] = useState({});
     const [updatedPlayingXiPlayer, setUpdatedPlayingXi] = useState({});
+    const [showInningsModal, setShowInningsModal] = useState(false);
+    const [inningstoAddPlayer, setInningstoAddPlayer] = useState([]);
+    const [pendingPlayerData, setPendingPlayerData] = useState(null);
+    const [currentInningsIndex, setCurrentInningsIndex] = useState(0);
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -42,9 +46,15 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                 .then((response) => {
                     setCommentaryTeamPlayers(prev => [...prev, { teamId: teamDetails?.teamId, playerId: selectedPlayer?.value, playerName: nonCommentaryTeamPlayers[playerIndex]?.playerName }])
                     setNonCommentaryTeamPlayers(prev => [...prev.slice(0, playerIndex), ...prev.slice(playerIndex + 1)])
+                    // Check for other innings only if totalInnings > 1
+                    if (commentaryData?.totalInnings > 1) {
+                        checkAndShowInningsModal(selectedPlayer?.value, nonCommentaryTeamPlayers[playerIndex]?.playerName);
+                    }
                     setSelectedPlayer(undefined);
-                    fetchData(commentaryId);
-                    setIsLoading(false);
+                    if (commentaryData?.totalInnings <= 1) {
+                        fetchData(commentaryId);
+                    }
+                    setIsLoading(false);                    
                 })
                 .catch((error) => {
                     dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
@@ -53,25 +63,223 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
         }
     }
 
-    const handleDeletePlayer = async (playerId) => {
-        const playerIndex = commentaryTeamPlayers.findIndex(player => player.playerId === playerId)
-        if (playerIndex !== -1) {
-            const commentaryPlayerId = commentaryTeamPlayers[playerIndex].commentaryPlayerId;
-            setIsLoading(true);
-            await axiosInstance
-                .post("/admin/commentary/deleteTeamPlayer", { commentaryId, commentaryPlayerId })
-                .then((response) => {
-                    // commentaryId, teamId: teamDetails?.teamId, playerId: playerId
-                    setIsLoading(false);
-                    setNonCommentaryTeamPlayers(prev => [...prev, { teamId: teamDetails?.teamId, playerId: playerId, playerName: commentaryTeamPlayers[playerIndex]?.playerName }])
-                    setCommentaryTeamPlayers(prev => [...prev.slice(0, playerIndex), ...prev.slice(playerIndex + 1)])
-                })
-                .catch((error) => {
-                    dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-                    setIsLoading(false);
-                });
-        }
+  const checkAndShowInningsModal = (playerId, playerName) => {
+    const currentTeamData = allTeamPlayers?.find(team => team.teamId === teamDetails?.teamId);
+
+    if (!currentTeamData?.commentaryTeamPlayers) {
+      return;
     }
+
+    const allInningsKeys = Object.keys(currentTeamData.commentaryTeamPlayers);
+
+    // Find innings where this player is NOT present
+    const inningsWithoutPlayer = [];
+
+    allInningsKeys.forEach(inningKey => {
+      const inningNumber = inningKey.replace('currentInnings', '');
+      const playersInInning = currentTeamData.commentaryTeamPlayers[inningKey];
+
+      // Skip the current innings
+      if (parseInt(inningNumber) === parseInt(currentInnings)) {
+        return;
+      }
+
+      // Check if player exists in this innings
+      const playerExists = playersInInning?.some(player => player.playerId === playerId);
+
+      if (!playerExists) {
+        inningsWithoutPlayer.push(inningNumber);
+      }
+    });
+
+    // Show modal only if player is not present in other innings
+    if (inningsWithoutPlayer.length > 0) {
+      setInningstoAddPlayer(inningsWithoutPlayer);
+      setPendingPlayerData({ playerId, playerName });
+      setCurrentInningsIndex(0); 
+      setShowInningsModal(true);
+    } else { fetchData(commentaryId)}
+  };
+
+  const handleAddToOtherInnings = async () => {
+    if (!pendingPlayerData || inningstoAddPlayer.length === 0) {
+      return;
+    }
+
+    const currentInningsToAdd = inningstoAddPlayer[currentInningsIndex];
+
+    try {
+      // Add player to only the current innings acted upon
+      await axiosInstance.post("/admin/commentary/addTeamPlayer", {
+        commentaryId,
+        teamId: teamDetails?.teamId,
+        playerId: pendingPlayerData.playerId,
+        currentInnings: parseInt(currentInningsToAdd)
+      });
+
+      dispatch(updateToastData({
+        data: `Player added to innings ${currentInningsToAdd}`,
+        title: "Success",
+        type: SUCCESS
+      }));
+
+      // Move to next innings
+      const nextIndex = currentInningsIndex + 1;
+
+      if (nextIndex < inningstoAddPlayer.length) {
+        // More innings to process, show modal for next innings
+        setCurrentInningsIndex(nextIndex);
+      } else {
+        // No more innings, close modal and refresh
+        setShowInningsModal(false);
+        setInningstoAddPlayer([]);
+        setPendingPlayerData(null);
+        setCurrentInningsIndex(0);
+        fetchData(commentaryId);
+      }
+    } catch (error) {
+      dispatch(updateToastData({
+        data: error?.message || "Failed to add player to innings",
+        title: error?.title || "Error",
+        type: ERROR
+      }));
+    }
+  };
+
+  const handleCloseInningsModal = () => {
+    // Move to next innings without adding
+    const nextIndex = currentInningsIndex + 1;
+
+    if (nextIndex < inningstoAddPlayer.length) {
+      // More innings to process, show modal for next innings
+      setCurrentInningsIndex(nextIndex);
+    } else {
+      // No more innings, close modal and refresh
+      setShowInningsModal(false);
+      setInningstoAddPlayer([]);
+      setPendingPlayerData(null);
+      setCurrentInningsIndex(0);
+      fetchData(commentaryId);
+    }
+  };
+
+    // const handleDeletePlayer = async (playerId) => {
+    //     const playerIndex = commentaryTeamPlayers.findIndex(player => player.playerId === playerId)
+    //     if (playerIndex !== -1) {
+    //         const commentaryPlayerId = commentaryTeamPlayers[playerIndex].commentaryPlayerId;
+    //         setIsLoading(true);
+    //         await axiosInstance
+    //             .post("/admin/commentary/deleteTeamPlayer", { commentaryId, commentaryPlayerId })
+    //             .then((response) => {
+    //                 // commentaryId, teamId: teamDetails?.teamId, playerId: playerId
+    //                 setIsLoading(false);
+    //                 setNonCommentaryTeamPlayers(prev => [...prev, { teamId: teamDetails?.teamId, playerId: playerId, playerName: commentaryTeamPlayers[playerIndex]?.playerName }])
+    //                 setCommentaryTeamPlayers(prev => [...prev.slice(0, playerIndex), ...prev.slice(playerIndex + 1)])
+    //             })
+    //             .catch((error) => {
+    //                 dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+    //                 setIsLoading(false);
+    //             });
+    //     }
+    // }
+
+  const handleDeletePlayer = async (playerId) => {
+    if (updateAllInnings && allTeamPlayers) {
+      // Delete player from all innings
+      setIsLoading(true);
+
+      try {
+        const commentaryPlayerIdsToDelete = [];
+        const skippedInningsPlayerActive = [];
+
+        allTeamPlayers.forEach(team => {
+          if (team.teamId === teamDetails.teamId && team.commentaryTeamPlayers) {
+            Object.keys(team.commentaryTeamPlayers).forEach(inningKey => {
+              const players = team.commentaryTeamPlayers[inningKey];
+              const matchingPlayer = players.find(p => p.playerId === playerId);
+
+              if (matchingPlayer && matchingPlayer.commentaryPlayerId) {
+                const canDelete = !(
+                  matchingPlayer.isPlay ||
+                  matchingPlayer.isBatterOut ||
+                  matchingPlayer.onStrike === true ||
+                  matchingPlayer.onStrike === false ||
+                  matchingPlayer.isBatterRetir
+                );
+                if (canDelete) {
+                  commentaryPlayerIdsToDelete.push(matchingPlayer.commentaryPlayerId);
+                } else {
+                  skippedInningsPlayerActive.push(matchingPlayer.currentInnings);
+                }
+              }
+            });
+          }
+        });
+
+        if (commentaryPlayerIdsToDelete.length > 0) {
+          // Delete all instances using Promise.all
+          const deletePromises = commentaryPlayerIdsToDelete.map(commentaryPlayerId =>
+            axiosInstance.post("/admin/commentary/deleteTeamPlayer", {
+              commentaryId,
+              commentaryPlayerId
+            })
+          );
+
+          await Promise.all(deletePromises);
+
+          let message = `Player deleted from ${commentaryPlayerIdsToDelete.length} innings. `;
+          if (skippedInningsPlayerActive.length > 0) {
+            message += `Skipped innings ${skippedInningsPlayerActive.join(', ')} (because player is active)`;
+          }
+
+          dispatch(updateToastData({
+            data: message,
+            title: "Success",
+            type: SUCCESS
+          }));
+
+          fetchData(commentaryId);
+        }
+
+        setIsLoading(false);
+      } catch (error) {
+        dispatch(updateToastData({
+          data: error?.message,
+          title: error?.title,
+          type: ERROR
+        }));
+        setIsLoading(false);
+      }
+    } else {
+      // Existing functionality - delete from current innings only
+      const playerIndex = commentaryTeamPlayers.findIndex(player => player.playerId === playerId);
+
+      if (playerIndex !== -1) {
+        const commentaryPlayerId = commentaryTeamPlayers[playerIndex].commentaryPlayerId;
+        setIsLoading(true);
+
+        await axiosInstance
+          .post("/admin/commentary/deleteTeamPlayer", { commentaryId, commentaryPlayerId })
+          .then((response) => {
+            setIsLoading(false);
+            setNonCommentaryTeamPlayers(prev => [...prev, {
+              teamId: teamDetails?.teamId,
+              playerId: playerId,
+              playerName: commentaryTeamPlayers[playerIndex]?.playerName
+            }]);
+            setCommentaryTeamPlayers(prev => [...prev.slice(0, playerIndex), ...prev.slice(playerIndex + 1)]);
+          })
+          .catch((error) => {
+            dispatch(updateToastData({
+              data: error?.message,
+              title: error?.title,
+              type: ERROR
+            }));
+            setIsLoading(false);
+          });
+      }
+    }
+  };
 
     const handleReloadTeam = async () => {
         setIsLoading(true);
@@ -238,7 +446,6 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
 
   const handlePlayingXiChange = async (commentaryPlayerId, playerId, currentInnings, isPlayXi) => {
     if (updateAllInnings && allTeamPlayers) {
-      // setIsLoading(true);
       // Find all innings for this team and player
       const playerDataArray = [];
 
@@ -277,10 +484,8 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
           await axiosInstance.post("/admin/commentary/updateTeamPlayer", payload);
 
           fetchData(commentaryId);
-          // setIsLoading(false);
         } catch (error) {
           dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-          // setIsLoading(false);
         }
       }
     } else {
@@ -607,6 +812,13 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                 <div class="col-1">
                   <Button
                     color="soft-danger"
+                    disabled={
+                      player?.isPlay ||
+                      player?.isBatterOut ||
+                      player?.onStrike === true ||
+                      player?.onStrike === false ||
+                      player?.isBatterRetir
+                    }
                     onClick={(e) => handleDeletePlayer(player.playerId)}
                   >
                     <i className="ri-delete-bin-2-line"></i>
@@ -654,6 +866,23 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
       <Button color="success" className="btn-sm px-3" onClick={handleSave}>
         Save
       </Button>
+      {/* Modal for adding player to other innings */}
+      <Modal isOpen={showInningsModal} toggle={handleCloseInningsModal} centered>
+        <ModalHeader toggle={handleCloseInningsModal}>
+          Add Player to Innings {inningstoAddPlayer[currentInningsIndex]}
+        </ModalHeader>
+        <ModalBody>
+          <p>Do you want to add player <strong>{pendingPlayerData?.playerName}</strong> to innings <strong>{inningstoAddPlayer[currentInningsIndex]}</strong> as well?</p>
+        </ModalBody>
+        <ModalFooter>
+          <Button color="secondary" onClick={handleCloseInningsModal}>
+            No
+          </Button>
+          <Button color="primary" onClick={handleAddToOtherInnings}>
+            Yes
+          </Button>
+        </ModalFooter>
+      </Modal>
     </>
   );
 };
