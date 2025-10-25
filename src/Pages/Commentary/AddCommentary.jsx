@@ -151,6 +151,7 @@ function AddCommentary() {
                 "competitionId": true,
                 "team1Players": true,
                 "team2Players": true,
+                "eventTypeId": true,
             };
 
             // if (initialEditData?.commentaryStatus != 1) {

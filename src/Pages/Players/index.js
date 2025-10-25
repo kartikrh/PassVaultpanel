@@ -658,7 +658,6 @@ const Index = () => {
     if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard")
     }
-    console.log("sfs")
     fetchData();
     fetchEventTypeData()
     fetchTeamsData()
@@ -802,12 +801,14 @@ const Index = () => {
             playerSearch = {playerSearch}
             renderCustomFilter={() => {
               return <>
+              <Tooltip title={"Update player statistics"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
                 <Button
                   onClick={() => updatedImportData()}
                     className="btn border"
                 >
                     Update
                 </Button>
+              </Tooltip>
               </>
             }}
             showBrokenOnly={showBrokenOnly}
