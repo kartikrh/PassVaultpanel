@@ -54,8 +54,8 @@ export const TeamFields = [
         label: "Jersey Image",
         parentclassName: "",
         isValidateImage: true,
-        validateWidth:750,
-        validateHeight:550
+        validateWidth:664,
+        validateHeight:254
     },
     {
         type: IMAGE,
@@ -63,8 +63,8 @@ export const TeamFields = [
         label: "Team Image",
         parentclassName: "",
         isValidateImage: true,        
-        validateWidth:600,
-        validateHeight:600    
+        validateWidth:400,
+        validateHeight:400    
     },
     {
         type: MULTI_SELECT,

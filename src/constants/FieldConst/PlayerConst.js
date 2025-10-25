@@ -153,7 +153,10 @@ export const PlayerFields = [
         name: "image",
         label: "Player Image",
         labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 4, lg: 4 }
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
+        isValidateImage: true,
+        validateWidth:310,
+        validateHeight:300
     },
     {
         name: "tpId",
