@@ -31,7 +31,6 @@ const MatchCard = ({ matchData, onClose }) => {
     weather,
     pitch,
   } = matchData.match_info;
-  console.log("matchData", matchData)
 
   // const {} = matchData.match-playing11
 
