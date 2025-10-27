@@ -51,6 +51,7 @@ const PlayerCommentary = () => {
   const [openAccordions, setOpenAccordions] = useState("");
   const [updateAllInnings, setUpdateAllInnings] = useState(false);
   const [dataRefreshKey, setDataRefreshKey] = useState(0);
+  const [openInningsAccordions, setOpenInningsAccordions] = useState({});
 
   useEffect(() => {
     if (
@@ -64,8 +65,6 @@ const PlayerCommentary = () => {
       fetchBowlingTypeData(commentaryId);
     }
   }, []);
-
-
 
   const fetchBowlingTypeData = async (commentaryId) => {
     setIsDataLoading(true);
@@ -148,6 +147,14 @@ const PlayerCommentary = () => {
         })
       );
     }
+  };
+
+  const toggleInningsAccordion = (teamId, inningsNumber) => {
+    const key = `${teamId}-${inningsNumber}`;
+    setOpenInningsAccordions(prev => ({
+      ...prev,
+      [key]: !prev[key]
+    }));
   };
 
   const handleBackClick = () => {
@@ -252,6 +259,7 @@ const PlayerCommentary = () => {
                       >
                         <Card>
                           <CardHeader>{teamDetails?.teamName}</CardHeader>
+                          <CardBody>
                           {teamDetails?.commentaryTeamPlayers &&
                             Object.keys(teamDetails.commentaryTeamPlayers)
                               .length > 0 &&
@@ -276,11 +284,62 @@ const PlayerCommentary = () => {
                                       )
                                     : "");
                                 // console.log("Current Innings: ", currentInnings);
-                                return (
-                                  <CardBody key={inningKey}>
-                                    {commentaryData?.totalInnings > 1 ? (
-                                      <h6> Innings : {currentInnings}</h6>
-                                    ) : null}
+                                // return (
+                                //   <CardBody key={inningKey}>
+                                //     {commentaryData?.totalInnings > 1 ? (
+                                //       <h6> Innings : {currentInnings}</h6>
+                                //     ) : null}
+                                //     <TeamPlayerCard
+                                //       key={`${teamDetails.teamId}-${inningKey}-${dataRefreshKey}`}
+                                //       commentaryId={commentaryId}
+                                //       eventRefId={commentaryDetails?.eventRefId}
+                                //       teamDetails={teamDetails}
+                                //       inningPlayers={inningPlayers}
+                                //       currentInnings={currentInnings}
+                                //       fetchData={fetchData}
+                                //       bowlingType={bowlerType}
+                                //       allTeamPlayers={teams}
+                                //       updateAllInnings={updateAllInnings}
+                                //       commentaryData={commentaryData}
+                                //     />
+                                //     <hr className="my-3" />
+                                //   </CardBody>
+                                // );
+
+                                 const accordionId = `${teamDetails.teamId}-${currentInnings}`;
+                                const isOpen = openInningsAccordions[accordionId];
+
+                                return commentaryData?.totalInnings > 1 ? (
+                                  // With Accordion when totalInnings > 1
+                                  <Accordion
+                                    key={inningKey}
+                                    open={isOpen ? accordionId : ""}
+                                    toggle={() => toggleInningsAccordion(teamDetails.teamId, currentInnings)}
+                                  >
+                                    <AccordionItem>
+                                      <AccordionHeader targetId={accordionId} className='market-category-header'>
+                                        <strong>Innings : {currentInnings}</strong>
+                                      </AccordionHeader>
+                                      <AccordionBody accordionId={accordionId}>
+                                        <TeamPlayerCard
+                                          key={`${teamDetails.teamId}-${inningKey}-${dataRefreshKey}`}
+                                          commentaryId={commentaryId}
+                                          eventRefId={commentaryDetails?.eventRefId}
+                                          teamDetails={teamDetails}
+                                          inningPlayers={inningPlayers}
+                                          currentInnings={currentInnings}
+                                          fetchData={fetchData}
+                                          bowlingType={bowlerType}
+                                          allTeamPlayers={teams}
+                                          updateAllInnings={updateAllInnings}
+                                          commentaryData={commentaryData}
+                                        />
+                                      </AccordionBody>
+                                    </AccordionItem>
+                                  </Accordion>
+                                ) : (
+                                  // Without Accordion when totalInnings <= 1
+                                  <div key={inningKey}>
                                     <TeamPlayerCard
                                       key={`${teamDetails.teamId}-${inningKey}-${dataRefreshKey}`}
                                       commentaryId={commentaryId}
@@ -292,11 +351,13 @@ const PlayerCommentary = () => {
                                       bowlingType={bowlerType}
                                       allTeamPlayers={teams}
                                       updateAllInnings={updateAllInnings}
+                                      commentaryData={commentaryData}
                                     />
                                     <hr className="my-3" />
-                                  </CardBody>
+                                  </div>
                                 );
                               })}
+                          </CardBody>
                         </Card>
                       </div>
                     ))}
