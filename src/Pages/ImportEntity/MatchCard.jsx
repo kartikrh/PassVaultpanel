@@ -340,6 +340,46 @@ const MatchCard = ({ matchData, onClose }) => {
           </Card>
         </Col>
       </Row>
+      <Divider style={{ marginTop: "5px", marginBottom: "8px" }} />
+      <Row gutter={[24, 16]}>
+        <Col xs={24} md={12}>
+          <Card
+            title={<span className="matchCardText">{teama?.name} </span>}
+            size="small"
+            className="team-card h-100"
+          >
+            <div /* className="overflow-auto" style={{ maxHeight: '100px' }} */>
+            {matchData["match-playing11"].teama.squads.map((player, index) => (
+              <span key={index}>
+                {player.name}
+                {index < matchData["match-playing11"].teama.squads.length - 1 && ', '}
+              </span>
+            ))}
+            </div>
+            {/* ) : (
+              <div className="mb-2 matchCardText">No data available</div>
+            )} */}
+          </Card>
+        </Col>
+
+        {/* Pitch Details */}
+        <Col xs={24} md={12}>
+          <Card
+            title={<span className="matchCardText">{teamb?.name} </span>}
+            size="small"
+            className="team-card h-100"
+          >
+            <div /* className="overflow-auto" style={{ maxHeight: '100px' }} */>
+              {matchData["match-playing11"].teamb.squads.map((player, index) => (
+                <span key={index}>
+                  {player.name}
+                  {index < matchData["match-playing11"].teamb.squads.length - 1 && ', '}
+                </span>
+              ))}
+            </div>
+          </Card>
+        </Col>
+      </Row>
     </>
   );
 };

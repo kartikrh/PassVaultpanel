@@ -30,6 +30,7 @@ export default function ImportEntityPlayer() {
 
   // State variables
   const [data, setData] = useState([]);
+  const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const loadInitData = useSelector((state) => state.loadInit.loadInitData);
   const [currentPage, setCurrentPage] = useState(1);
@@ -53,7 +54,6 @@ export default function ImportEntityPlayer() {
       setPermissionChecked(true);
     }
   }, [permissionObj, navigate]);
-
   const fetchData = useCallback(async () => {
     if (!permissionChecked) return;
 
@@ -65,7 +65,7 @@ export default function ImportEntityPlayer() {
         paged: currentPage === 0 ? 1 : currentPage,
         per_page: pageSize,
         country: selectedCountry?.value || null,
-        // search: "",
+        search: search || null,
       }
       const response = await axios.get(`${entitySportUrl}/player/search`, {
         params
@@ -91,7 +91,8 @@ export default function ImportEntityPlayer() {
     selectedCountry,
     pageSize,
     entitySportUrl,
-    dispatch
+    dispatch,
+    search
   ]);
 
   const fetchCountryCodeData = async () => {
@@ -294,7 +295,7 @@ export default function ImportEntityPlayer() {
     reloadButton: true,
   };
 
-  const customPageSizeOptions = ["10", "20", "50", "100"];
+  const customPageSizeOptions = ["10", "20", "50"];
 
   return (
     <React.Fragment>
@@ -311,6 +312,8 @@ export default function ImportEntityPlayer() {
             serverCurrentPage={currentPage}
             serverPageSize={pageSize}
             serverTotal={total}
+            playerSearch={search}
+            setSearch={setSearch}
             setServerCurrentPage={handlePageChange}
             setServerPageSize={handlePageSizeChange}
             customPageSizeOptions={customPageSizeOptions}

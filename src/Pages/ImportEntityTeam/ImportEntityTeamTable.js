@@ -252,7 +252,7 @@ export default function ImportEntityTeam() {
     // resetButton: true,
     // reloadButton: true,
   };
-  const customPageSizeOptions = ["10", "20", "50", "100"];
+  const customPageSizeOptions = ["10", "20", "50"];
 
   return (
     <React.Fragment>

@@ -70,6 +70,9 @@ export const EntitySocketFields = [
         //   },
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 },
+        isValidateImage: true,        
+        validateWidth:400,
+        validateHeight:400  
     },
     {
         type: IMAGE,
@@ -77,6 +80,9 @@ export const EntitySocketFields = [
         label: "Jersy Image",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 },
+        isValidateImage: true,        
+        validateWidth:664,
+        validateHeight:254  
     },
     {
         type: IMAGE,
@@ -84,6 +90,9 @@ export const EntitySocketFields = [
         label: "Player Image",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 },
+        isValidateImage: true,        
+        validateWidth:310,
+        validateHeight:300  
     },
     {
         type: IMAGE,
@@ -91,6 +100,9 @@ export const EntitySocketFields = [
         label: "Player Jersey Image",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 },
+        // isValidateImage: true,        
+        // validateWidth:279,
+        // validateHeight:376  
     },
     {
         name: "isAutoScoreUpdate",
