@@ -2352,7 +2352,7 @@ const Index = forwardRef(
                               classNamePrefix="filter-dropdown"
                             />
                           ) : null}
-                          {renderCustomFilter && renderCustomFilter()}
+                          {/* {renderCustomFilter && renderCustomFilter()} */}
                           {tableElement?.commentaryStatus ? (
                             <Select
                               value={selectedTableElements?.commentaryStatus}
@@ -2754,6 +2754,7 @@ const Index = forwardRef(
                               </span>
                             </div>
                           ) : null}
+                          {renderCustomFilter && renderCustomFilter()}
                         </div>
                       </Col>
                       {/* <Col className="col-sm-auto ms-auto">

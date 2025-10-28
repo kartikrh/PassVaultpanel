@@ -507,9 +507,20 @@ const Index = () => {
     {
       title: "Gender",
       key: "isMen",
-      render: (text, record) => {
-        return <span>{record.isMen == true ? "Men" : record.isMen == false ? "Women" : ""}</span>
-      },
+      render: (text, record) => (
+        <Tooltip title={"Player"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Button
+            color={`${record.isMen ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handlePermissions("isMen", record, record.isMen);
+            }}
+          >
+            <i className={`bx ${record.isMen ? "bx-check" : "bx-block"}`}></i>
+          </Button>
+        </Tooltip>
+      ),
       style: { width: "2%", textAlign: "center" },
     },
     {
