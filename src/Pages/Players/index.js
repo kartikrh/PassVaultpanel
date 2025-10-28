@@ -505,7 +505,7 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Gender",
+      title: "Men",
       key: "isMen",
       render: (text, record) => (
         <Tooltip title={"Player"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
