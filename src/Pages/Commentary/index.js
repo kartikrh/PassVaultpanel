@@ -2747,6 +2747,22 @@ const Index = () => {
       ),
       style: { width: "4%", textAlign: "center" },
     },
+    {
+      title: "Views",
+      dataIndex: "views",
+      key: "views",
+      // printType: "ignore",
+      render: (text, record) => (
+        <Tooltip
+          title={`${text} views`}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
+            {text}
+        </Tooltip>
+      ),
+      style: { width: "4%", textAlign: "center" },
+    },
   ];
 
   const getColumns = (data) => {
