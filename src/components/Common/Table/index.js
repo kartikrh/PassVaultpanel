@@ -3701,7 +3701,7 @@ const Index = forwardRef(
                             placeholder="Search Min. 2 characters"
                             value={searchTerm}
                             onChange={(e) => {
-                              setSearchTerm(e.target.value.toString().trim());
+                              setSearchTerm(e.target.value.toString());
                             }}
                           />
                           {isSearching && (
@@ -3739,7 +3739,7 @@ const Index = forwardRef(
                           placeholder="Search Min. 2 characters"
                           value={searchTerm}
                           onChange={(e) => {
-                            setSearchTerm(e.target.value.toString().trim());
+                            setSearchTerm(e.target.value.toString());
                           }}
                         />
                         {isSearching && (

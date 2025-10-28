@@ -3,7 +3,9 @@ import { Button, Col, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 're
 import "../CommentaryCss.css"
 import CardComponent from '../CardComponent';
 const UpdateInningsModal = ({ isOpen, toggle, onsubmit, currentInningTeams }) => {
-    const [battingTeamId, setBattingTeamId] = useState({});
+    const [battingTeamId, setBattingTeamId] = useState(null);
+    const [error, setError] = useState("");
+
     return (
         <Modal backdrop="static" className="commentary-modal" zIndex={1000} isOpen={isOpen} toggle={toggle} >
             <ModalHeader>
@@ -16,7 +18,7 @@ const UpdateInningsModal = ({ isOpen, toggle, onsubmit, currentInningTeams }) =>
                         <Col
                             key={index}
                             xs={6}
-                            onClick={() => { setBattingTeamId(val.teamId) }}
+                            onClick={() => { setBattingTeamId(val.teamId); setError("");  }}
                         >
                             <CardComponent
                                 title={val.teamName}
@@ -28,9 +30,23 @@ const UpdateInningsModal = ({ isOpen, toggle, onsubmit, currentInningTeams }) =>
                         </Col>
                     ))}
                 </Row>
+                {error && (
+                    <div style={{ color: "red", marginTop: "1px", fontWeight: 200 }}>
+                        {error}
+                    </div>
+                )}
             </ModalBody>
             <ModalFooter>
-                <Button color="success" className="decision-Button" onClick={() => onsubmit(battingTeamId)}>Submit</Button>
+                <Button color="success" className="decision-Button"
+                    // disabled={!battingTeamId} 
+                    onClick={() => {
+                        if (!battingTeamId) {
+                            setError("Please select batting team.");
+                            return;
+                        }
+                        setError("");
+                        onsubmit(battingTeamId);
+                }}>Submit</Button>
                 <Button color="light" className="decision-Button text-right mx-2" onClick={() => toggle()}>Close</Button>
             </ModalFooter>
         </Modal >

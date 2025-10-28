@@ -505,6 +505,14 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
+      title: "Gender",
+      key: "isMen",
+      render: (text, record) => {
+        return <span>{record.isMen == true ? "Men" : record.isMen == false ? "Women" : ""}</span>
+      },
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
       title: "System Player",
       key: "isSystemPlayer",
       render: (text, record) => (
