@@ -2352,7 +2352,7 @@ const Index = forwardRef(
                               classNamePrefix="filter-dropdown"
                             />
                           ) : null}
-                          {renderCustomFilter && renderCustomFilter()}
+                          {/* {renderCustomFilter && renderCustomFilter()} */}
                           {tableElement?.commentaryStatus ? (
                             <Select
                               value={selectedTableElements?.commentaryStatus}
@@ -2754,6 +2754,7 @@ const Index = forwardRef(
                               </span>
                             </div>
                           ) : null}
+                          {renderCustomFilter && renderCustomFilter()}
                         </div>
                       </Col>
                       {/* <Col className="col-sm-auto ms-auto">
@@ -3532,7 +3533,7 @@ const Index = forwardRef(
                             placeholder="Search Min. 2 characters"
                             value={searchTerm}
                             onChange={(e) => {
-                              setSearchTerm(e.target.value.toString().trim());
+                              setSearchTerm(e.target.value);
                             }}
                           />
                           {isSearching && (
@@ -3701,7 +3702,7 @@ const Index = forwardRef(
                             placeholder="Search Min. 2 characters"
                             value={searchTerm}
                             onChange={(e) => {
-                              setSearchTerm(e.target.value.toString());
+                              setSearchTerm(e.target.value);
                             }}
                           />
                           {isSearching && (
@@ -3739,7 +3740,7 @@ const Index = forwardRef(
                           placeholder="Search Min. 2 characters"
                           value={searchTerm}
                           onChange={(e) => {
-                            setSearchTerm(e.target.value.toString());
+                            setSearchTerm(e.target.value);
                           }}
                         />
                         {isSearching && (
