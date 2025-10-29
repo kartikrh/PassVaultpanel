@@ -2760,7 +2760,7 @@ const Index = forwardRef(
                       {/* <Col className="col-sm-auto ms-auto">
                        
                       </Col> */}
-                      <Col className="col-sm-auto ms-auto d-flex">
+                      <Col className="col-sm-auto ms-auto d-flex align-items-center">
                         {tableElement?.showBrokenImageButton && (
                           <Tooltip title={`Show ${tableElement.title} without image`} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
                             <Button
@@ -2792,16 +2792,18 @@ const Index = forwardRef(
                         )}
                         {!tableElement?.isDateRange &&
                           tableElement?.loadData ? (
-                          <Button
-                            color="warning"
-                            onClick={() => {
-                              loadDataModelFunction(true);
-                            }}
-                            className="d-flex align-items-center gap-1"
-                          >
-                            <i className="ri-refresh-line"></i>
-                            Load Data
-                          </Button>
+                          <div>
+                            <Button
+                              color="warning"
+                              onClick={() => {
+                                loadDataModelFunction(true);
+                              }}
+                              className="d-flex align-items-center gap-1"
+                            >
+                              <i className="ri-refresh-line"></i>
+                              Load Data
+                            </Button>
+                          </div>
                         ) : null}
                       </Col>
                     </Row>
