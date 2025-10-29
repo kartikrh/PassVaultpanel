@@ -552,7 +552,7 @@ const Index = () => {
   const updatedImportData = async () => {
     setIsLoading(true)
     await axiosInstance
-      .post(`/admin/team/importUpdate`, {teamIds: checekedList})
+      .post(`/admin/autoImportData/saveAll`, {refType: 6, refIds: checekedList, sourceId: 3})
       .then((response) => {
         fetchData()
         dispatch(
