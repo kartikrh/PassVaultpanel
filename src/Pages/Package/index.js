@@ -350,7 +350,7 @@ const Index = () => {
             size="sm"
             className="btn"
             onClick={() => {
-              handlePermissions("Display", record, record.isDisplay);
+              handlePermissions("isDisplay", record, record.isDisplay);
             }}
           >
             <i className={`bx ${record.isDisplay ? "bx-check" : "bx-block"}`}></i>
