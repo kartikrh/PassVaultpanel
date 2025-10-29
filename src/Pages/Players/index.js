@@ -298,31 +298,31 @@ const Index = () => {
 
   // console.log("playerIds", checekedList)
   const updatedImportData = async () => {
-      setIsLoading(true)
-      await axiosInstance
-        .post(`/admin/player/importUpdate`, {playerIds: checekedList})
-        .then((response) => {
-          fetchData()
-          dispatch(
-            updateToastData({
-              data: response.result,
-              title: response?.title,
-              type: SUCCESS,
-            })
-          );
-          setIsLoading(false);
-        })
-        .catch((error) => {
-          setIsLoading(false);
-          dispatch(
-            updateToastData({
-              data: error?.message,
-              title: error?.title,
-              type: ERROR,
-            })
-          );
-        });
-    };
+    setIsLoading(true)
+    await axiosInstance
+      .post(`/admin/autoImportData/saveAll`, {refType: 7, refIds: checekedList, sourceId: 3})
+      .then((response) => {
+        fetchData()
+        dispatch(
+          updateToastData({
+            data: response.result,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
 
   //checkbox select
   const getSelectedItemsData = () => {
