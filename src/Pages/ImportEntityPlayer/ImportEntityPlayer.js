@@ -70,7 +70,6 @@ export default function ImportEntityPlayer() {
       const response = await axios.get(`${entitySportUrl}/player/search`, {
         params
       });
-
       const items = response?.data?.result?.items;
       const totalItems = response?.data?.result?.total_items;
 
@@ -225,6 +224,14 @@ export default function ImportEntityPlayer() {
       ),
       key: "logo_url",
       style: { width: "10%", textAlign: "left" },
+    },
+    {
+      title: "Player Id",
+      dataIndex: "pid",
+      key: "pid",
+      width: "10%",
+      sort: true,
+      style: { width: "10%", textAlign: "left" }
     },
     {
       title: "Name",
