@@ -26,7 +26,8 @@ const Index = () => {
 
   const [selectedTableElements, setSelectedTableElements] = useState({
       eventType: null,
-      team: null
+      team: null,
+      isMen: null
     });
   const finalizeRef = useRef(null);
   const permissionObj = useSelector(state => state.auth?.tabPermissionList);
@@ -71,9 +72,10 @@ const Index = () => {
     const tableActions = finalizeRef.current.getTableAction()
     await axiosInstance
       .post(`/admin/player/all`, {
-        eventtypeId: PlayerEventTypeId ? PlayerEventTypeId : latestValueFromTable?.eventtypeId || tableActions?.eventTypeId,
+        eventTypeId: PlayerEventTypeId ? PlayerEventTypeId : latestValueFromTable?.eventtypeId || tableActions?.eventTypeId,
         teamId: PlayerTeamId ? PlayerTeamId : latestValueFromTable?.teamId || tableActions?.teamId,
-        ...(latestValueFromTable || tableActions)
+        ...(latestValueFromTable || tableActions),
+        ...(latestValueFromTable?.isMen != null ? { isMen: latestValueFromTable.isMen } : {})
       })
       .then((response) => {
         const apiData = response?.result?.sort((a, b) => a?.playerId - b?.playerId);
@@ -670,6 +672,7 @@ const Index = () => {
     loadData: true,
     importExport: true,
     teamsList: true,
+    isMen: true,
     showBrokenImageButton: true,
   };
 
