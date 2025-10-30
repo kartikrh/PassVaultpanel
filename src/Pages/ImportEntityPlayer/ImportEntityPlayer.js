@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-import { Avatar } from "antd";
+import { Avatar, Modal } from "antd";
 import Select from "react-select";
 import Table from "../../components/Common/Table";
 import { Button, Container } from "reactstrap";
@@ -19,6 +19,7 @@ import { checkPermission } from "../../components/Common/Reusables/reusableMetho
 import { updateToastData } from "../../Features/toasterSlice";
 import { loadInit } from "../../config";
 import axios from "axios";
+import PlayerCard from "./PlayerCard";
 
 export default function ImportEntityPlayer() {
   const pageName = TAB_IMPORT_ENTITYPLAYERIMPORT;
@@ -41,6 +42,11 @@ export default function ImportEntityPlayer() {
   const [countryCode, setCountryCode] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [dataToDB, setDataToDB] = useState({});
+  
+  // Player Card Modal States
+  const [isPlayerModalVisible, setIsPlayerModalVisible] = useState(false);
+  const [selectedPlayerData, setSelectedPlayerData] = useState(null);
+  const [loadingPlayerData, setLoadingPlayerData] = useState(false);
   
   let entitySportUrl =
     loadInitData.find((item) => item.key === loadInit.ENTITYSPORT_URL)?.value;
@@ -148,6 +154,34 @@ export default function ImportEntityPlayer() {
       });
   };
 
+  const handlePlayerClick = async (pid) => {
+    setLoadingPlayerData(true);
+    setIsPlayerModalVisible(true);
+    
+    try {
+      const response = await axios.get(`${entitySportUrl}/player/${pid}/statistics`);
+      console.log("response", response);
+      setSelectedPlayerData(response?.data);
+    } catch (error) {
+      console.error("Error fetching player stats:", error);
+      dispatch(
+        updateToastData({
+          data: "Failed to fetch player data",
+          title: "Error",
+          type: ERROR,
+        })
+      );
+      setIsPlayerModalVisible(false);
+    } finally {
+      setLoadingPlayerData(false);
+    }
+  }
+
+  // const handleClosePlayerModal = () => {
+  //   setIsPlayerModalVisible(false);
+  //   setSelectedPlayerData(null);
+  // };
+
   const handlePageChange = (page) => {
     if (page === currentPage || isLoading) return;
     if (page !== currentPage && !isLoading) {
@@ -238,6 +272,17 @@ export default function ImportEntityPlayer() {
       dataIndex: "title",
       key: "title",
       width: "10%",
+      render: (text, record) => (
+        <span
+          className="cursor-pointer"
+          onClick={() => handlePlayerClick(record?.pid)}
+          style={{
+            cursor: "pointer",
+          }}
+        >
+          {text}
+        </span>
+      ),
       sort: true,
     },
     {
@@ -344,6 +389,35 @@ export default function ImportEntityPlayer() {
           />
         </Container>
       </div>
+
+      {/* Player Card Modal */}
+      <Modal
+        open={isPlayerModalVisible}
+        onCancel={()=>setIsPlayerModalVisible(false)}
+        footer={null}
+        width={900}
+        closable={false}
+        centered
+        className="player-modal"
+        styles={{
+          body: {
+            top: "3rem",
+            maxHeight: 650,
+            overflowY: "auto",
+            overflowX: "hidden",
+            marginRight: "-16px",
+            marginLeft: "-16px",
+            marginTop: "0px",
+            marginBottom: "-16px",
+            scrollBehavior: 'smooth'
+          },
+        }}
+      >
+        <PlayerCard
+          playerData={selectedPlayerData}
+          onClose={() => setIsPlayerModalVisible(false)}
+        />
+      </Modal>
     </React.Fragment>
   );
 }
