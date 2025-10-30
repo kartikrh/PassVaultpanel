@@ -191,6 +191,7 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
       try {
         const commentaryPlayerIdsToDelete = [];
         const skippedInningsPlayerActive = [];
+        const playerDeletedInnings = [];
 
         allTeamPlayers.forEach(team => {
           if (team.teamId === teamDetails.teamId && team.commentaryTeamPlayers) {
@@ -208,8 +209,9 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                 );
                 if (canDelete) {
                   commentaryPlayerIdsToDelete.push(matchingPlayer.commentaryPlayerId);
+                  playerDeletedInnings.push(matchingPlayer.currentInnings ?? inningKey.replace("inning", ""));
                 } else {
-                  skippedInningsPlayerActive.push(matchingPlayer.currentInnings);
+                  skippedInningsPlayerActive.push(matchingPlayer.currentInnings ?? inningKey.replace("inning", ""));
                 }
               }
             });
@@ -227,9 +229,16 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
 
           await Promise.all(deletePromises);
 
-          let message = `Player deleted from ${commentaryPlayerIdsToDelete.length} innings. `;
-          if (skippedInningsPlayerActive.length > 0) {
-            message += `Skipped innings ${skippedInningsPlayerActive.join(', ')} (because player is active)`;
+          const sortPlayerDeletedInnings = playerDeletedInnings
+            .map(Number)
+            .sort((a, b) => a - b);
+          const sortPlayerSkippedInnings = skippedInningsPlayerActive
+            .map(Number)
+            .sort((a, b) => a - b);
+
+          let message = `Player deleted from innings ${sortPlayerDeletedInnings.join(", ")}. `;
+          if (sortPlayerSkippedInnings.length > 0) {
+            message += `Skipped innings ${sortPlayerSkippedInnings.join(', ')} (because player is active)`;
           }
 
           dispatch(updateToastData({
@@ -268,7 +277,7 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
               playerName: commentaryTeamPlayers[playerIndex]?.playerName
             }]);
             setCommentaryTeamPlayers(prev => [...prev.slice(0, playerIndex), ...prev.slice(playerIndex + 1)]);
-          })
+                      })
           .catch((error) => {
             dispatch(updateToastData({
               data: error?.message,
