@@ -1173,7 +1173,7 @@ const Index = forwardRef(
         },
         isMen: {
           value: null,
-          label: "Is Men",
+          label: "Select Gender",
         },
         commentaryStatus: {
           value: 0,
@@ -2578,7 +2578,10 @@ const Index = forwardRef(
                                 //     e?.value === "Select" ? null : e?.value
                                 //   );
                                 // }}
-                                value={selectedTableElements?.isMen}
+                                value={
+                                  selectedTableElementsLogs?.isMen ||
+                                  selectedTableElements?.isMen
+                                }
                                 onChange={(e) => {
                                   if (
                                     e?.value !==
@@ -2592,11 +2595,11 @@ const Index = forwardRef(
                                   }
                                 }}
                                 options={[
-                                  { value: null, label: "Select Men" },
+                                  { value: null, label: "Select Gender" },
                                   { value: true, label: "Men" },
                                   { value: false, label: "Women" },
                                 ]}
-                                placeholder="Men"
+                                placeholder="Gender"
                                 classNamePrefix="filter-dropdown"
                               />
                             </div>
