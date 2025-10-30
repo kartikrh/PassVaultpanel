@@ -82,7 +82,26 @@ const PlayerDetails = () => {
       dataIndex: "teamName",
       key: "teamName",
       sort: true,
-      style: { width: "90%", verticalAlign: "middle" },
+      style: { width: "20%", verticalAlign: "middle" },
+    },
+    {
+      title: "Home Team",
+      dataIndex: "homeTeam",
+      key: "homeTeam",
+      style: { width: "70%", verticalAlign: "middle" },
+      render: (text, record) => (
+        <input
+          type="checkbox"
+          checked={record.homeTeam}
+          // onChange={() => handleHomeTeamChange(record.playerId, record.homeTeam)}
+          style={{
+            width: "18px",
+            height: "18px",
+            accentColor: "green",
+            cursor: "pointer",
+          }}
+        />
+      ),
     },
   ];
 
