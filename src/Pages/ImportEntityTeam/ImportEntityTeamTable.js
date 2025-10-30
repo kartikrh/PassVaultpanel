@@ -215,6 +215,14 @@ export default function ImportEntityTeam() {
       style: { width: "10%", textAlign: "left" },
     },
     {
+      title: "Team Id",
+      dataIndex: "tid",
+      key: "tid",
+      width: "10%",
+      sort: true,
+      style: { width: "10%", textAlign: "left" }
+    },
+    {
       title: "Name",
       dataIndex: "title",
       key: "title",
