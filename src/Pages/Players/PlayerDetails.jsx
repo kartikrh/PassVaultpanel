@@ -8,7 +8,7 @@ import { ERROR, SUCCESS } from "../../components/Common/Const";
 import { useNavigate } from "react-router-dom";
 import "../Competition/tournament.css";
 import { convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
-import { Avatar } from "antd";
+import { Avatar, Tooltip } from "antd";
 
 const PlayerDetails = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -41,38 +41,6 @@ const PlayerDetails = () => {
         setIsLoading(false);
       });
   };
-
-  // const handleHomeTeamUpdate = async (playerId, teamId, isHomeTeam) => {
-  //   if (isHomeTeam) return; // do nothing if already true
-
-  //   try {
-  //     setIsLoading(true);
-  //     const response = await axiosInstance.post("/admin/player/updateHomeTeam", {
-  //       playerId,
-  //       homeTeamId: teamId,
-  //     });
-  //     if (response?.success || response?.status === 200) {
-  //       fetchPlayer(playerId);
-  //       dispatch(
-  //         updateToastData({
-  //           data: response?.message,
-  //           title: response?.title,
-  //           type: SUCCESS,
-  //         })
-  //       );
-  //     }
-  //   } catch (error) {
-  //     dispatch(
-  //       updateToastData({
-  //         data: error?.message || "Unable to update home team",
-  //         title: "Error",
-  //         type: ERROR,
-  //       })
-  //     );
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
 
   const handleHomeTeamUpdate = async (record, cState) => {
     if (cState) return; // do nothing if already true
@@ -162,19 +130,24 @@ const PlayerDetails = () => {
         //     cursor: "pointer",
         //   }}
         // />
-        <Button
-          color={`${record.homeTeam ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            handleHomeTeamUpdate(record, record?.homeTeam);
-          }}
+        <Tooltip
+          title={!record?.homeTeam ? "Set HomeTeam": ""}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
         >
-          <i
-            className={`bx ${record?.homeTeam ? "bx-check" : "bx-block"}`}
-          ></i>
-        </Button>
-
+          <Button
+            color={`${record.homeTeam ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleHomeTeamUpdate(record, record?.homeTeam);
+            }}
+          >
+            <i
+              className={`bx ${record?.homeTeam ? "bx-check" : "bx-block"}`}
+            ></i>
+          </Button>
+        </Tooltip>
       ),
     },
   ];
