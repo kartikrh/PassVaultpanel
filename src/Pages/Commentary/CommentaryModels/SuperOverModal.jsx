@@ -4,7 +4,8 @@ import "../CommentaryCss.css"
 import CardComponent from '../CardComponent';
 const SuperOverModal = ({ toggle, onSuperOverClick, onResultClick, currentInningTeams }) => {
     const [isSuperOver, setIsSuperOver] = useState(false)
-    const [battingTeamId, setBattingTeamId] = useState({});
+    const [battingTeamId, setBattingTeamId] = useState(null);
+    const [error, setError] = useState("");
     const [overs, setOvers] = useState(false)
     const handleKeyPress = (e) => {
         if (e.key === 'Enter' && e.shiftKey) onResultClick();
@@ -52,7 +53,7 @@ const SuperOverModal = ({ toggle, onSuperOverClick, onResultClick, currentInning
                                 <Col
                                     key={index}
                                     xs={6}
-                                    onClick={() => { setBattingTeamId(val.teamId) }}
+                                    onClick={() => { setBattingTeamId(val.teamId); setError(""); }}
                                 >
                                     <CardComponent
                                         title={val.teamName}
@@ -66,10 +67,21 @@ const SuperOverModal = ({ toggle, onSuperOverClick, onResultClick, currentInning
                         </Row>
                     </>
                     : "The match is tied, please select an action to perform?"}
+                {error && (
+                    <div style={{ color: "red", marginTop: "1px", fontWeight: 200 }}>
+                        {error}
+                    </div>
+                )}
             </ModalBody>
             <ModalFooter className='d-block'>
                 {isSuperOver ?
-                    <Button color="success" className="decision-Button" onClick={() => onSuperOverClick({ overs, battingTeamId })}>Submit</Button>
+                    <Button color="success" className="decision-Button" onClick={() => {
+                        if (!battingTeamId) {
+                            setError("Please select batting team.");
+                            return;
+                        }
+                        setError("");
+                        onSuperOverClick({ overs, battingTeamId })}}>Submit</Button>
                     : <>
                         <Button color="success" className="decision-Button" onClick={() => { setIsSuperOver(true) }}>Super Over</Button>
                         <Button color="light" className="decision-Button text-right mx-2" onClick={() => toggle()}>Close</Button>
