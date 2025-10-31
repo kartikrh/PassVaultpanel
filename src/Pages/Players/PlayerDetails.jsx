@@ -42,36 +42,65 @@ const PlayerDetails = () => {
       });
   };
 
-  const handleHomeTeamUpdate = async (playerId, teamId, isHomeTeam) => {
-    if (isHomeTeam) return; // do nothing if already true
+  // const handleHomeTeamUpdate = async (playerId, teamId, isHomeTeam) => {
+  //   if (isHomeTeam) return; // do nothing if already true
 
-    try {
-      setIsLoading(true);
-      const response = await axiosInstance.post("/admin/player/updateHomeTeam", {
-        playerId,
-        homeTeamId: teamId,
-      });
-      if (response?.success || response?.status === 200) {
-        fetchPlayer(playerId);
-        dispatch(
-          updateToastData({
-            data: response?.message,
-            title: response?.title,
-            type: SUCCESS,
-          })
-        );
-      }
-    } catch (error) {
+  //   try {
+  //     setIsLoading(true);
+  //     const response = await axiosInstance.post("/admin/player/updateHomeTeam", {
+  //       playerId,
+  //       homeTeamId: teamId,
+  //     });
+  //     if (response?.success || response?.status === 200) {
+  //       fetchPlayer(playerId);
+  //       dispatch(
+  //         updateToastData({
+  //           data: response?.message,
+  //           title: response?.title,
+  //           type: SUCCESS,
+  //         })
+  //       );
+  //     }
+  //   } catch (error) {
+  //     dispatch(
+  //       updateToastData({
+  //         data: error?.message || "Unable to update home team",
+  //         title: "Error",
+  //         type: ERROR,
+  //       })
+  //     );
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+
+  const handleHomeTeamUpdate = async (record, cState) => {
+    if (cState) return; // do nothing if already true
+
+    setIsLoading(true);
+    await axiosInstance.post("/admin/player/updateHomeTeam", {
+      playerId: record?.refPlayerId,
+      homeTeamId: record?.teamId,
+    }).then((response) => {
+      fetchPlayer(record?.refPlayerId);
+      dispatch(
+        updateToastData({
+          data: response?.message,
+          title: response?.title,
+          type: SUCCESS,
+        })
+      );
+    }).catch((error) => {
       dispatch(
         updateToastData({
           data: error?.message || "Unable to update home team",
-          title: "Error",
+          title: error?.title,
           type: ERROR,
         })
       );
-    } finally {
+    }).finally(() => {
       setIsLoading(false);
-    }
+    });
   };
 
   const handleBackClick = () => {
@@ -122,17 +151,30 @@ const PlayerDetails = () => {
       key: "homeTeam",
       style: { width: "70%", verticalAlign: "middle" },
       render: (text, record) => (
-        <input
-          type="checkbox"
-          checked={record.homeTeam}
-          onChange={() => handleHomeTeamUpdate(record?.refPlayerId, record?.teamId, record?.homeTeam)}
-          style={{
-            width: "18px",
-            height: "18px",
-            accentColor: "green",
-            cursor: "pointer",
+        // <input
+        //   type="checkbox"
+        //   checked={record.homeTeam}
+        //   onChange={() => handleHomeTeamUpdate(record?.refPlayerId, record?.teamId, record?.homeTeam)}
+        //   style={{
+        //     width: "18px",
+        //     height: "18px",
+        //     accentColor: "green",
+        //     cursor: "pointer",
+        //   }}
+        // />
+        <Button
+          color={`${record.homeTeam ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handleHomeTeamUpdate(record, record?.homeTeam);
           }}
-        />
+        >
+          <i
+            className={`bx ${record?.homeTeam ? "bx-check" : "bx-block"}`}
+          ></i>
+        </Button>
+
       ),
     },
   ];
