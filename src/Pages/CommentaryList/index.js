@@ -964,11 +964,6 @@ const Index = () => {
     setPageSize(size);
     setCheckedList([]);
   };
-
-  useEffect(() => {
-    setTableSearchedData([]);
-  }, [dataIndexList]);
-  
   //table columns
   const columns = [
     {

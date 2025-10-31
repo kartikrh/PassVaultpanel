@@ -1449,6 +1449,9 @@ const Index = forwardRef(
     useEffect(() => {
       if (searchTerm.length === 0) {
         setSearchedData([])
+        if (setParentSearchedData) {
+          setParentSearchedData([]);
+        }
       }
     }, [searchTerm])
     // useEffect(() => {
