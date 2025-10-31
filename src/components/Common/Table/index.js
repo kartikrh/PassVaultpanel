@@ -1063,7 +1063,7 @@ const Index = forwardRef(
       } else if (isPagination) {
         if (searchTerm.toString().length > 2 || playerSearch) {
           handleSearchFilter()
-          dataSource = searchedData
+          dataSource = searchedData.length > 0 ? searchedData : dataSource;
         }
         const possibleNoOfPages = Math.ceil(dataSource?.length / pageSize);
         let sliced;
@@ -1451,8 +1451,21 @@ const Index = forwardRef(
         setSearchedData([])
       }
     }, [searchTerm])
+    // useEffect(() => {
+    //       fetchData();
+    // }, [dataSource]);
+
     useEffect(() => {
-      fetchData();
+      if (setParentSearchedData && searchedData.length === 0 && dataSource.length > 0) {
+        setParentSearchedData([]);
+      }
+    }, [searchedData, dataSource]);
+
+    useEffect(() => {
+      // If dataSource changes, dataSource has data but table shows no data available
+      if (searchTerm.length <= 2) {
+        fetchData();
+      }
     }, [dataSource]);
     // useEffect(() => {
     //   return () => {
