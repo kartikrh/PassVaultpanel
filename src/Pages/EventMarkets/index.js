@@ -580,6 +580,10 @@ const Index = () => {
     setCheckedList([]);
   };
 
+  useEffect(() => {
+    setTableSearchedData([]);
+  }, [dataIndexList]);
+
   //table columns
   const columns = [
     {
