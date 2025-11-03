@@ -65,10 +65,10 @@ const Index = () => {
     await axiosInstance
       .post(`/admin/log/entityUpdateLogs`, payload)
       .then((response) => {
-        const logsData = response?.result?.data?.sort((a,b)=>b?.errId - a?.errId);
+        const logsData = response?.result?.data?.sort((a,b)=>b?.id - a?.id);
         let logsDataIdList = [];
         logsData.forEach((ele) => {
-          logsDataIdList.push(ele?.errId);
+          logsDataIdList.push(ele?.id);
         });
         setDataIndexList(logsDataIdList)
         setData(logsData);
@@ -83,12 +83,12 @@ const Index = () => {
 
   const handleSingleCheck = (e) => {
     let updateSingleCheck = [];
-    if (checekedList.includes(e.errId)) {
+    if (checekedList.includes(e.id)) {
       updateSingleCheck = checekedList.filter(
-        (item) => item !== e.errId
+        (item) => item !== e.id
       );
     } else {
-      updateSingleCheck = [...checekedList, e.errId];
+      updateSingleCheck = [...checekedList, e.id];
     }
     setCheckedList(updateSingleCheck);
   };
@@ -96,7 +96,7 @@ const Index = () => {
   //checkbox select
   const getSelectedItemsData = () => {
     return tableSearchedData && tableSearchedData.length > 0
-      ? tableSearchedData.map(item => item.errId)
+      ? tableSearchedData.map(item => item.id)
       : dataIndexList;
   };
 
@@ -155,10 +155,10 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={checekedList.includes(record.errId)}
+            checked={checekedList.includes(record.id)}
             onChange={() => {
               handleSingleCheck(record);
-              if (!checekedList.includes(record.errId)) {
+              if (!checekedList.includes(record.id)) {
                 setCloneValues({
                   eventName: record?.eventName,
                   eventRefId: record?.eventRefId,
