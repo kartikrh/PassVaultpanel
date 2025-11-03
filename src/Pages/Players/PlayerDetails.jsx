@@ -8,7 +8,7 @@ import { ERROR, SUCCESS } from "../../components/Common/Const";
 import { useNavigate } from "react-router-dom";
 import "../Competition/tournament.css";
 import { convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
-import { Avatar } from "antd";
+import { Avatar, Tooltip } from "antd";
 
 const PlayerDetails = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -42,36 +42,33 @@ const PlayerDetails = () => {
       });
   };
 
-  const handleHomeTeamUpdate = async (playerId, teamId, isHomeTeam) => {
-    if (isHomeTeam) return; // do nothing if already true
+  const handleHomeTeamUpdate = async (record, cState) => {
+    if (cState) return; // do nothing if already true
 
-    try {
-      setIsLoading(true);
-      const response = await axiosInstance.post("/admin/player/updateHomeTeam", {
-        playerId,
-        homeTeamId: teamId,
-      });
-      if (response?.success || response?.status === 200) {
-        fetchPlayer(playerId);
-        dispatch(
-          updateToastData({
-            data: response?.message,
-            title: response?.title,
-            type: SUCCESS,
-          })
-        );
-      }
-    } catch (error) {
+    setIsLoading(true);
+    await axiosInstance.post("/admin/player/updateHomeTeam", {
+      playerId: record?.refPlayerId,
+      homeTeamId: record?.teamId,
+    }).then((response) => {
+      fetchPlayer(record?.refPlayerId);
+      dispatch(
+        updateToastData({
+          data: response?.message,
+          title: response?.title,
+          type: SUCCESS,
+        })
+      );
+    }).catch((error) => {
       dispatch(
         updateToastData({
           data: error?.message || "Unable to update home team",
-          title: "Error",
+          title: error?.title,
           type: ERROR,
         })
       );
-    } finally {
+    }).finally(() => {
       setIsLoading(false);
-    }
+    });
   };
 
   const handleBackClick = () => {
@@ -122,17 +119,35 @@ const PlayerDetails = () => {
       key: "homeTeam",
       style: { width: "70%", verticalAlign: "middle" },
       render: (text, record) => (
-        <input
-          type="checkbox"
-          checked={record.homeTeam}
-          onChange={() => handleHomeTeamUpdate(record?.refPlayerId, record?.teamId, record?.homeTeam)}
-          style={{
-            width: "18px",
-            height: "18px",
-            accentColor: "green",
-            cursor: "pointer",
-          }}
-        />
+        // <input
+        //   type="checkbox"
+        //   checked={record.homeTeam}
+        //   onChange={() => handleHomeTeamUpdate(record?.refPlayerId, record?.teamId, record?.homeTeam)}
+        //   style={{
+        //     width: "18px",
+        //     height: "18px",
+        //     accentColor: "green",
+        //     cursor: "pointer",
+        //   }}
+        // />
+        <Tooltip
+          title={!record?.homeTeam ? "Set HomeTeam": ""}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
+          <Button
+            color={`${record.homeTeam ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleHomeTeamUpdate(record, record?.homeTeam);
+            }}
+          >
+            <i
+              className={`bx ${record?.homeTeam ? "bx-check" : "bx-block"}`}
+            ></i>
+          </Button>
+        </Tooltip>
       ),
     },
   ];
