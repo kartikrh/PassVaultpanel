@@ -9,6 +9,7 @@ import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
 import {
   PERMISSION_VIEW,
+  TAB_ACTION_LOGS,
   TAB_ENTITY_UPDATE_LOGS,
 } from "../../components/Common/Const";
 import { useSelector } from "react-redux";
@@ -17,11 +18,11 @@ import { checkPermission, convertDateLocalToUTC, convertDateUtcFormat, convertDa
 import { isEmpty, isEqual } from "lodash";
 
 const Index = () => {
-  const pageName = TAB_ENTITY_UPDATE_LOGS;
+  const pageName = TAB_ACTION_LOGS;
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
-  document.title = "Entity Commentary Update Logs";
-  const EventCommentaryUpdateLogsId = sessionStorage.getItem("eventCommentaryUpdateLogsId")
+  document.title = "Commentary Action Logs";
+  const ActionLogsId = sessionStorage.getItem("actionLogsId")
   const globalPageSize = localStorage.getItem("pageSize")
   const globalDateType = JSON.parse(localStorage.getItem("DateType"))
   const [data, setData] = useState([]);
@@ -31,7 +32,7 @@ const Index = () => {
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [reqModelVisible, setReqModelVisible] = useState(false);
   const [reqBodyData, setReqBodyData] = useState(null);
-  const [isSearch, setIsSearch] = useState(EventCommentaryUpdateLogsId ? false : true);
+  const [isSearch, setIsSearch] = useState(ActionLogsId ? false: true);
   const [dateType, setDateType] = useState(globalDateType || { label: "Local Timezone", value: 1 });
   const [dateRange, setDateRange] = useState({
     startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
@@ -55,7 +56,7 @@ const Index = () => {
       ...(latestValueFromTable || tableActions),
       page: currentPage == 0 ? 1 : currentPage,
       limit: pageSize,
-      ...(EventCommentaryUpdateLogsId && { commentaryId : EventCommentaryUpdateLogsId })
+      ...(ActionLogsId && { commentaryId : ActionLogsId })
     }
     if (isSearch) {
       payload = {
@@ -65,7 +66,7 @@ const Index = () => {
       };
     }
     await axiosInstance
-      .post(`/admin/log/entityUpdateLogs`, payload)
+      .post(`/admin/log/actionLogs`, payload)
       .then((response) => {
         const logsData = response?.result?.data?.sort((a,b)=>b?.id - a?.id);
         let logsDataIdList = [];
@@ -181,9 +182,10 @@ const Index = () => {
       sort: true,
       style: { width: "10%" },
     },
+    
     {
       title: "Date",
-      dataIndex: "createDate",
+      dataIndex: "createdAt",
       render: (text, record) => (
         <span>
           {dateType?.value == 1
@@ -197,31 +199,16 @@ const Index = () => {
       style: { width: "10%" },
     },
     {
-      title: "Message",
-      dataIndex: "message",
-      key: "message",
-    //   sort: true,
-      style: { width: "5%", textAlign: "center" },
-    },
-    {
-      title: "Off set Hour",
-      dataIndex: "offsetHour",
-      key: "offsetHour",
+      title: "apiName",
+      dataIndex: "apiName",
+      key: "apiName",
       sort: true,
       style: { width: "10%" },
     },
     {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      render: (text, record) => (
-        <span>
-          {text == 1
-            ? 'Start' : text == 2 ? "No update" : text == 3 ? "Success" : text == 4 ? "failed"
-            : ""
-          }
-        </span>
-      ),
+      title: "createdBy",
+      dataIndex: "createdBy",
+      key: "createdBy",
       sort: true,
       style: { width: "10%" },
     },
@@ -229,7 +216,7 @@ const Index = () => {
   ];
   //elements required
   const tableElement = {
-    title: "Entity Commentary Update Logs",
+    title: "Commentary Action Logs",
     isServerPagination: true,
     reloadButton: true,
     isDateRange: true,
@@ -252,7 +239,7 @@ const Index = () => {
     <React.Fragment>
       <div className="page-content">
         <Container fluid={true}>
-          <Breadcrumbs title="ScoreCard" breadcrumbItem="Entity Commentary Update Logs" />
+          <Breadcrumbs title="ScoreCard" breadcrumbItem="Commentary Action Logs" />
           {isLoading && <SpinnerModel />}
           <Table
             ref={finalizeRef}
