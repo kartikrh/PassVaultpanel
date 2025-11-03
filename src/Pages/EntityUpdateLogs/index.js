@@ -20,7 +20,7 @@ const Index = () => {
   const pageName = TAB_ENTITY_UPDATE_LOGS;
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
-  document.title = "Entity Update Logs";
+  document.title = "Entity Commentary Update Logs";
   const globalPageSize = localStorage.getItem("pageSize")
   const globalDateType = JSON.parse(localStorage.getItem("DateType"))
   const [data, setData] = useState([]);
@@ -227,7 +227,7 @@ const Index = () => {
   ];
   //elements required
   const tableElement = {
-    title: "Entity Update Logs",
+    title: "Entity Commentary Update Logs",
     isServerPagination: true,
     reloadButton: true,
     isDateRange: true,
@@ -250,7 +250,7 @@ const Index = () => {
     <React.Fragment>
       <div className="page-content">
         <Container fluid={true}>
-          <Breadcrumbs title="ScoreCard" breadcrumbItem="Entity Update Logs" />
+          <Breadcrumbs title="ScoreCard" breadcrumbItem="Entity Commentary Update Logs" />
           {isLoading && <SpinnerModel />}
           <Table
             ref={finalizeRef}
