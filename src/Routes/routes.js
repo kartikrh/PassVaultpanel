@@ -127,6 +127,7 @@ import ErrorLogs from "../Pages/ErrorLogs";
 import PredictorLogs from "../Pages/PredictorLogs";
 import UndoLogs from "../Pages/UndoLogs";
 import EntityUpdateLogs from "../Pages/EntityUpdateLogs";
+import ActionLogs from "../Pages/ActionLogs";
 import UndoReport from "../Pages/Report/UndoReport";
 import ScoringLogs from "../Pages/ScoringLogs";
 import EventMarketLogs from "../Pages/EventMarketLogs";
@@ -321,6 +322,7 @@ const authProtectedRoutes = [
   { path: "/predictorLogs", component: <PredictorLogs /> },
   { path: "/undoLogs", component: <UndoLogs /> },
   { path: "/EntityUpdateLogs", component: <EntityUpdateLogs /> },
+  { path: "/ActionLogs", component: <ActionLogs /> },
   { path: "/scoringLogs", component: <ScoringLogs /> },
   { path: "/EventMarketLogs", component: <EventMarketLogs /> },
   { path: "/eventResult", component: <EventResult /> },
