@@ -31,7 +31,7 @@ const ENTITY_OPTIONS = [
   { label: "TB-10", value: 20 },
 ];
 
-export const MatchTypeClone = ({ cloneModelVisible, setCloneModelVisible, handleClone, setCloneName, setEntityType, singleCheck }) => {
+export const MatchTypeClone = ({ cloneModelVisible, setCloneModelVisible, handleClone, setCloneName, setEntityType, singleCheck, setCheckedList }) => {
   return (
     <Modal isOpen={cloneModelVisible} toggle={() => setCloneModelVisible(false)} centered>
       <div className="tablelist-form">
@@ -64,6 +64,7 @@ export const MatchTypeClone = ({ cloneModelVisible, setCloneModelVisible, handle
           <div className="hstack gap-2 justify-content-end">
             <button type="button" className="btn btn-light" onClick={() => {setCloneModelVisible(false)
               setEntityType(undefined)
+              setCheckedList([])
             }}>Close</button>
             {singleCheck.length === 1 && (
               <button type="submit" className="btn btn-warning" onClick={handleClone}>Clone Match Type</button>
@@ -75,7 +76,7 @@ export const MatchTypeClone = ({ cloneModelVisible, setCloneModelVisible, handle
   );
 };
 
-export const CommentaryClone = ({cloneModelVisible, cloneValues, setCloneModelVisible, handleClone, setCloneValues, singleCheck}) => {
+export const CommentaryClone = ({cloneModelVisible, cloneValues, setCloneModelVisible, handleClone, setCloneValues, singleCheck, setCheckedList}) => {
     const handleCloneValues = (e) =>{
         const {name, value} = e.target;
         setCloneValues((preValue)=>{
@@ -88,6 +89,7 @@ export const CommentaryClone = ({cloneModelVisible, cloneValues, setCloneModelVi
     const handleCloseModal = () => {
       setCloneModelVisible(false);
       setCloneValues({});
+      setCheckedList([]);
     }
     return (
     <Modal backdrop="static" isOpen={cloneModelVisible} toggle={() => {setCloneModelVisible(false)}} centered >

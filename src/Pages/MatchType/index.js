@@ -381,7 +381,10 @@ const Index = () => {
 
   const handleTableSearchedDataChange = (data) => {
     setTableSearchedData(data);
-    setCheckedList([]);
+    // setCheckedList([]);
+    if (!cloneModelVisible) {
+      setCheckedList([]);
+    }
   };
 
   const handleCurrentPageChange = (page) => {
@@ -676,6 +679,7 @@ const Index = () => {
             setCloneName={setCloneName}
             setEntityType={setEntityType}
             singleCheck={checekedList}
+            setCheckedList={setCheckedList}
           />
           {loadDataModelVisable && (
             <LoadDataModal
