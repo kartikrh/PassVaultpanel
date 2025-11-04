@@ -763,6 +763,24 @@ function MarketDataLogs() {
     });
   }, [data]);
 
+  const transformedData = useMemo(() => {
+  return data.map((item) => {
+    const logObject = item?.data ? JSON.parse(item.data) : {};
+    const runners = logObject?.runner || [];
+    return {
+      ...item,
+      createdDate: item?.createdDate,
+      userName: item?.userName,
+      marketName: logObject?.marketName,
+      status: logObject?.status,
+      isActive: logObject?.isActive,
+      isAllow: logObject?.isAllow,
+      isSendData: item?.isSendData,
+      nestedTable: <NestedTable data={runners} />,
+    };
+  });
+}, [data]);
+
   return (
     <React.Fragment>
       <div className="page-content">
@@ -838,21 +856,22 @@ function MarketDataLogs() {
               setParentSearchedData={handleTableSearchedDataChange}
               setServerTotal={setTotal}
               datePriceModelFunction={setDateModelVisable}
-              dataSource={data.map((item) => {
-                const logObject = item?.data ? JSON.parse(item.data) : {};
-                const runners = logObject?.runner || [];
-                return {
-                  ...item,
-                  createdDate: item?.createdDate,
-                  userName: item?.userName,
-                  marketName: logObject?.marketName,
-                  status: logObject?.status,
-                  isActive: logObject?.isActive,
-                  isAllow: logObject?.isAllow,
-                  isSendData: item?.isSendData,
-                  nestedTable: <NestedTable data={runners} />, // Pass the entire runners array to the nested table
-                };
-              })}
+              // dataSource={data.map((item) => {
+              //   const logObject = item?.data ? JSON.parse(item.data) : {};
+              //   const runners = logObject?.runner || [];
+              //   return {
+              //     ...item,
+              //     createdDate: item?.createdDate,
+              //     userName: item?.userName,
+              //     marketName: logObject?.marketName,
+              //     status: logObject?.status,
+              //     isActive: logObject?.isActive,
+              //     isAllow: logObject?.isAllow,
+              //     isSendData: item?.isSendData,
+              //     nestedTable: <NestedTable data={runners} />, // Pass the entire runners array to the nested table
+              //   };
+              // })}
+              dataSource={transformedData}
               sendDataList={sendDataList}
               createdTypeList={createdTypeList}
               handleReset={handleReset}
