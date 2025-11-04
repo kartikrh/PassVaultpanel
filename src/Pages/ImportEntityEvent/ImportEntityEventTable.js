@@ -562,47 +562,63 @@ export default function ImportEntityEvent() {
       width: "10%",
     },
     {
-      title: "Competition",
+      title: "Event",
       dataIndex: "title",
       key: "title",
       width: "20%",
       render: (text, record) => (
-        <span
-          // className="cursor-pointer"
-          // onClick={() => handleCompetitionClick(record)}
-          // style={{
-          //   cursor: "pointer",
-          // }}
-          
-        >
-          {record?.competition?.title}
-        </span>
-      ),
-    },
-    {
-      title: "E-No",
-      dataIndex: "match_number",
-      key: "match_number",
-      width: "10%",
-      style: { textAlign: "center" },
-    },
-    {
-      title: "Event",
-      dataIndex: "title",
-      key: "title",
-      width: "40%",
-      render: (text, record) => (
-        <span
-          className="cursor-pointer"
-          onClick={() => handleMatchClick(record)}
+        <div onClick={() => handleMatchClick(record)} 
           style={{
-            cursor: "pointer",
-          }}
-        >
-          {text}
-        </span>
+              cursor: "pointer",
+            }}
+          >
+          <div 
+            // onClick={() => handleMatchClick(record)}
+            
+          >
+            {text} ({record.match_number})
+          </div>
+          <div style={{ fontSize: "12px"}}>
+            {record?.competition?.title}
+          </div>
+        </div>
+        // <span
+        //   // className="cursor-pointer"
+        //   // onClick={() => handleCompetitionClick(record)}
+        //   // style={{
+        //   //   cursor: "pointer",
+        //   // }}
+          
+        // >
+        //   {console.log("record", record)}
+        //   {record?.competition?.title}
+        // </span>
       ),
     },
+    // {
+    //   title: "E-No",
+    //   dataIndex: "match_number",
+    //   key: "match_number",
+    //   width: "10%",
+    //   style: { textAlign: "center" },
+    // },
+    // {
+    //   title: "Event",
+    //   dataIndex: "title",
+    //   key: "title",
+    //   width: "40%",
+    //   render: (text, record) => (
+    //     <span
+    //       className="cursor-pointer"
+    //       onClick={() => handleMatchClick(record)}
+    //       style={{
+    //         cursor: "pointer",
+    //       }}
+    //     >
+    //       {text}
+    //     </span>
+    //   ),
+    // },
     {
       title: "E-Status",
       dataIndex: "status_str",
