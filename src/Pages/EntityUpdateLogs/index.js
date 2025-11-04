@@ -9,18 +9,19 @@ import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
 import {
   PERMISSION_VIEW,
-  TAB_ERROR_LOGS,
+  TAB_ENTITY_UPDATE_LOGS,
 } from "../../components/Common/Const";
 import { useSelector } from "react-redux";
 import { checkPermission, convertDateLocalToUTC, convertDateUtcFormat, convertDateUtcFormat24, convertDateUTCToLocal2, convertDateUTCToLocal2_24 } from "../../components/Common/Reusables/reusableMethods";
-import RequestModal from "./RequestModal";
+// import RequestModal from "./RequestModal";
 import { isEmpty, isEqual } from "lodash";
 
 const Index = () => {
-  const pageName = TAB_ERROR_LOGS;
+  const pageName = TAB_ENTITY_UPDATE_LOGS;
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
-  document.title = "Error Logs";
+  document.title = "Entity Commentary Update Logs";
+  const EventCommentaryUpdateLogsId = sessionStorage.getItem("eventCommentaryUpdateLogsId")
   const globalPageSize = localStorage.getItem("pageSize")
   const globalDateType = JSON.parse(localStorage.getItem("DateType"))
   const [data, setData] = useState([]);
@@ -30,7 +31,7 @@ const Index = () => {
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [reqModelVisible, setReqModelVisible] = useState(false);
   const [reqBodyData, setReqBodyData] = useState(null);
-  const [isSearch, setIsSearch] = useState(true);
+  const [isSearch, setIsSearch] = useState(EventCommentaryUpdateLogsId ? false : true);
   const [dateType, setDateType] = useState(globalDateType || { label: "Local Timezone", value: 1 });
   const [dateRange, setDateRange] = useState({
     startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
@@ -54,6 +55,7 @@ const Index = () => {
       ...(latestValueFromTable || tableActions),
       page: currentPage == 0 ? 1 : currentPage,
       limit: pageSize,
+      ...(EventCommentaryUpdateLogsId && { commentaryId : EventCommentaryUpdateLogsId })
     }
     if (isSearch) {
       payload = {
@@ -63,12 +65,12 @@ const Index = () => {
       };
     }
     await axiosInstance
-      .post(`/admin/log/errorLogs`, payload)
+      .post(`/admin/log/entityUpdateLogs`, payload)
       .then((response) => {
-        const logsData = response?.result?.data?.sort((a,b)=>b?.errId - a?.errId);
+        const logsData = response?.result?.data?.sort((a,b)=>b?.id - a?.id);
         let logsDataIdList = [];
         logsData.forEach((ele) => {
-          logsDataIdList.push(ele?.errId);
+          logsDataIdList.push(ele?.id);
         });
         setDataIndexList(logsDataIdList)
         setData(logsData);
@@ -83,12 +85,12 @@ const Index = () => {
 
   const handleSingleCheck = (e) => {
     let updateSingleCheck = [];
-    if (checekedList.includes(e.errId)) {
+    if (checekedList.includes(e.id)) {
       updateSingleCheck = checekedList.filter(
-        (item) => item !== e.errId
+        (item) => item !== e.id
       );
     } else {
-      updateSingleCheck = [...checekedList, e.errId];
+      updateSingleCheck = [...checekedList, e.id];
     }
     setCheckedList(updateSingleCheck);
   };
@@ -96,7 +98,7 @@ const Index = () => {
   //checkbox select
   const getSelectedItemsData = () => {
     return tableSearchedData && tableSearchedData.length > 0
-      ? tableSearchedData.map(item => item.errId)
+      ? tableSearchedData.map(item => item.id)
       : dataIndexList;
   };
 
@@ -155,10 +157,10 @@ const Index = () => {
             type="checkbox"
             name="chk_child"
             value="option1"
-            checked={checekedList.includes(record.errId)}
+            checked={checekedList.includes(record.id)}
             onChange={() => {
               handleSingleCheck(record);
-              if (!checekedList.includes(record.errId)) {
+              if (!checekedList.includes(record.id)) {
                 setCloneValues({
                   eventName: record?.eventName,
                   eventRefId: record?.eventRefId,
@@ -173,15 +175,15 @@ const Index = () => {
       style: { width: "2%" },
     },
     {
-      title: "Id",
-      dataIndex: "errId",
-      key: "errId",
+      title: "Commentary Id",
+      dataIndex: "commentaryId",
+      key: "commentaryId",
       sort: true,
       style: { width: "10%" },
     },
     {
       title: "Date",
-      dataIndex: "createdDate",
+      dataIndex: "createDate",
       render: (text, record) => (
         <span>
           {dateType?.value == 1
@@ -190,87 +192,44 @@ const Index = () => {
           }
         </span>
       ),
-      key: "createdDate",
+      key: "createDate",
       sort: true,
       style: { width: "10%" },
     },
     {
-      title: "Created By",
-      dataIndex: "createdBy",
-      key: "createdBy",
-      sort: true,
+      title: "Message",
+      dataIndex: "message",
+      key: "message",
+    //   sort: true,
       style: { width: "5%", textAlign: "center" },
     },
     {
-      title: "Err Message",
-      dataIndex: "errMessage",
-      key: "errMessage",
+      title: "Off set Hour",
+      dataIndex: "offsetHour",
+      key: "offsetHour",
       sort: true,
       style: { width: "10%" },
     },
     {
-      title: "Err Stack",
-      dataIndex: "errStack",
-      key: "errStack",
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      render: (text, record) => (
+        <span>
+          {text == 1
+            ? 'Start' : text == 2 ? "No update" : text == 3 ? "Success" : text == 4 ? "failed"
+            : ""
+          }
+        </span>
+      ),
       sort: true,
       style: { width: "10%" },
     },
-    {
-      title: "Domain",
-      dataIndex: "domain",
-      key: "domain",
-      sort: true,
-      style: { width: "10%" },
-    },
-    {
-      title: "UserId",
-      dataIndex: "userId",
-      key: "userId",
-      sort: true,
-      style: { width: "10%", textAlign: "center" },
-    },
-    {
-      title: "Api",
-      dataIndex: "api",
-      key: "api",
-      sort: true,
-      style: { width: "10%" },
-    },
-    {
-      title: "Request Body",
-      dataIndex: "requestBody",
-      render: (text, record) => {
-        const logObject = text;
-        const logItems =
-          logObject &&
-          Object.entries(logObject).map(([key, value]) => (
-            <span key={key}>
-              <strong>{key}:</strong>{" "}
-              {typeof value === "object" ? JSON.stringify(value) : value}{" "}
-            </span>
-          ));
-        return <div 
-        onClick={() => {
-          setReqModelVisible(true);
-          setReqBodyData(record?.requestBody);
-        }}
-        style={{ 
-          display: 'inline-block', 
-          maxWidth: '400px',
-          whiteSpace: 'nowrap', 
-          overflow: 'hidden', 
-          textOverflow: 'ellipsis',
-          cursor: "pointer"
-        }}>{logItems}</div>;
-      },
-      key: "requestBody",
-      sort: true,
-      style: { width: "20%" },
-    }
+    
   ];
   //elements required
   const tableElement = {
-    title: "Error Logs",
+    title: "Entity Commentary Update Logs",
     isServerPagination: true,
     reloadButton: true,
     isDateRange: true,
@@ -293,7 +252,7 @@ const Index = () => {
     <React.Fragment>
       <div className="page-content">
         <Container fluid={true}>
-          <Breadcrumbs title="ScoreCard" breadcrumbItem="Error Logs" />
+          <Breadcrumbs title="ScoreCard" breadcrumbItem="Entity Commentary Update Logs" />
           {isLoading && <SpinnerModel />}
           <Table
             ref={finalizeRef}
@@ -336,14 +295,14 @@ const Index = () => {
             addModelVisable={addModelVisable}
             setAddModelVisable={setAddModelVisable}
           />
-          {reqModelVisible && (
+          {/* {reqModelVisible && (
             <RequestModal
               isOpen={reqModelVisible}
               toggle={() => setReqModelVisible(!reqModelVisible)}
               data={reqBodyData}
               fetchData={fetchData}
             />
-          )}
+          )} */}
         </Container>
       </div>
     </React.Fragment>
