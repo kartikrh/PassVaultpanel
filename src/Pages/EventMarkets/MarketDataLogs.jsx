@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { CardHeader, Col, Container, Row, Button } from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { ERROR, SUCCESS } from "../../components/Common/Const";
@@ -741,6 +741,28 @@ function MarketDataLogs() {
     fetchData();
   };
 
+  const processedData = useMemo(() => {
+    return data.map((item) => {
+      const logObject = item?.data ? JSON.parse(item.data) : {};
+      const runner = logObject?.runner?.[0] || {};
+      return {
+        ...item,
+        status: logObject?.status,
+        isActive: logObject?.isActive,
+        isAllow: logObject?.isAllow,
+        isSendData: item?.isSendData,
+        runner: runner.runner || "",
+        layPrice: runner.layPrice || "",
+        laySize: runner.laySize || "",
+        backPrice: runner.backPrice || "",
+        backSize: runner.backSize || "",
+        line: runner.line || "",
+        overRate: runner.overRate || "",
+        underRate: runner.underRate || "",
+      };
+    });
+  }, [data]);
+
   return (
     <React.Fragment>
       <div className="page-content">
@@ -764,24 +786,7 @@ function MarketDataLogs() {
             <Table
               ref={finalizeRef}
               columns={columns}
-              dataSource={data.map((item) => {
-                const logObject = item?.data && JSON.parse(item.data);
-                return {
-                  ...item,
-                  status: logObject?.status,
-                  isActive: logObject?.isActive,
-                  isAllow: logObject?.isAllow,
-                  isSendData: item?.isSendData,
-                  runner: logObject?.runner?.[0]?.runner || "",
-                  layPrice: logObject?.runner?.[0]?.layPrice || "",
-                  laySize: logObject?.runner?.[0]?.laySize || "",
-                  backPrice: logObject?.runner?.[0]?.backPrice || "",
-                  backSize: logObject?.runner?.[0]?.backSize || "",
-                  line: logObject?.runner?.[0]?.line || "",
-                  overRate: logObject?.runner?.[0]?.overRate || "",
-                  underRate: logObject?.runner?.[0]?.underRate || "",
-                };
-              })}
+              dataSource={processedData}
               tableElement={tableElement}
               singleCheck={checekedList}
               reFetchData={fetchData}
