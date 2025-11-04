@@ -1489,7 +1489,10 @@ const Index = () => {
 
   const handleTableSearchedDataChange = (data) => {
     setTableSearchedData(data);
-    setCheckedList([]);
+    // setCheckedList([]);
+    if (!cloneModelVisible) {
+      setCheckedList([]);
+    }
   };
 
   const handleCurrentPageChange = (page) => {
@@ -3179,6 +3182,7 @@ const Index = () => {
             setCloneValues={setCloneValues}
             cloneValues={cloneValues}
             singleCheck={checekedList}
+            setCheckedList={setCheckedList}
           />
           {changeModelVisible && (
             <ChnageMatchTypeModel
