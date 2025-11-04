@@ -14,8 +14,9 @@ import {
 } from "../../components/Common/Const";
 import { useSelector } from "react-redux";
 import { checkPermission, convertDateLocalToUTC, convertDateUtcFormat, convertDateUtcFormat24, convertDateUTCToLocal2, convertDateUTCToLocal2_24 } from "../../components/Common/Reusables/reusableMethods";
-// import RequestModal from "./RequestModal";
+import RequestModal from "./RequestModal";
 import { isEmpty, isEqual } from "lodash";
+import ResponseModal from "./ResponseModal";
 
 const Index = () => {
   const pageName = TAB_ACTION_LOGS;
@@ -26,11 +27,13 @@ const Index = () => {
   const globalPageSize = localStorage.getItem("pageSize")
   const globalDateType = JSON.parse(localStorage.getItem("DateType"))
   const [data, setData] = useState([]);
+  const [resModelVisible, setResModelVisible] = useState(false);
   const [checekedList, setCheckedList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [reqModelVisible, setReqModelVisible] = useState(false);
+  const [resBodyData, setResBodyData] = useState({});
   const [reqBodyData, setReqBodyData] = useState(null);
   const [isSearch, setIsSearch] = useState(ActionLogsId ? false: true);
   const [dateType, setDateType] = useState(globalDateType || { label: "Local Timezone", value: 1 });
@@ -182,7 +185,6 @@ const Index = () => {
       sort: true,
       style: { width: "10%" },
     },
-    
     {
       title: "Date",
       dataIndex: "createdAt",
@@ -212,7 +214,79 @@ const Index = () => {
       sort: true,
       style: { width: "10%" },
     },
-    
+    {
+      title: "Request Body",
+      dataIndex: "requestBody",
+      render: (text, record) => {
+        const logObject = text;
+        const logItems =
+          logObject &&
+          Object.entries(logObject).map(([key, value]) => (
+            <span key={key}>
+              <strong>{key}:</strong>{" "}
+              {typeof value === "object" ? JSON.stringify(value) : value}{" "}
+            </span>
+          ));
+        return <div
+          onClick={() => {
+            setReqModelVisible(true);
+                  setReqBodyData({
+                    requestBody: record?.requestBody,id:record?.id,
+                    commentaryId: record?.commentaryId,
+                    createdBy: record?.createdBy,
+                    createdAt: record?.createdAt
+                  });
+          }}
+          style={{
+            display: 'inline-block',
+            maxWidth: '400px',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            cursor: "pointer"
+          }}>{logItems}</div>;
+      },
+      key: "requestBody",
+      sort: true,
+      style: { width: "40%" },
+    },
+    {
+      title: "Response",
+      dataIndex: "response",
+      render: (text, record) => {
+        const logObject = text;
+        const logItems =
+          logObject &&
+          Object.entries(logObject).map(([key, value]) => (
+            <span key={key}>
+              <strong>{key}:</strong>{" "}
+              {typeof value === "object" ? JSON.stringify(value) : value}{" "}
+            </span>
+          ));
+        console.log("record", record)
+        return <div
+          onClick={() => {
+            setResModelVisible(true);
+            setResBodyData({
+              response: record?.requestBody,
+              commentaryId: record?.commentaryId,
+              createdBy: record?.createdBy,
+              createdAt: record?.createdAt
+            });
+          }}
+          style={{
+            display: 'inline-block',
+            maxWidth: '400px',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            cursor: "pointer"
+          }}>{logItems}</div>;
+      },
+      key: "response",
+      sort: true,
+      style: { width: "20%" },
+    },
   ];
   //elements required
   const tableElement = {
@@ -282,14 +356,22 @@ const Index = () => {
             addModelVisable={addModelVisable}
             setAddModelVisable={setAddModelVisable}
           />
-          {/* {reqModelVisible && (
+          {reqModelVisible && (
             <RequestModal
               isOpen={reqModelVisible}
               toggle={() => setReqModelVisible(!reqModelVisible)}
               data={reqBodyData}
               fetchData={fetchData}
             />
-          )} */}
+          )}
+          {resModelVisible && (
+            <ResponseModal
+              isOpen={resModelVisible}
+              toggle={() => setResModelVisible(!resModelVisible)}
+              data={resBodyData}
+              fetchData={fetchData}
+            />
+          )}
         </Container>
       </div>
     </React.Fragment>
