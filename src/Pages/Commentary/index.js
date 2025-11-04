@@ -600,6 +600,18 @@ const Index = () => {
     sessionStorage.removeItem("undoLogsId");
     sessionStorage.removeItem("undoLogsDetails");
   };
+  const handleEventCommentaryUpdateLogsClick = (details) => {
+    const url = new URL(window.location.origin + "/EntityUpdateLogs");
+    sessionStorage.setItem("eventCommentaryUpdateLogsId", "" + details?.commentaryId);
+    window.open(url.href, "_blank");
+    sessionStorage.removeItem("eventCommentaryUpdateLogsId");
+  };
+  const handleActionLogsClick = (details) => {
+    const url = new URL(window.location.origin + "/ActionLogs");
+    sessionStorage.setItem("actionLogsId", "" + details?.commentaryId);
+    window.open(url.href, "_blank");
+    sessionStorage.removeItem("actionLogsId");
+  };
   const handleEventMarketLogsClick = (details) => {
     const url = new URL(window.location.origin + "/EventMarketLogs");
     sessionStorage.setItem("eventMarketLogsId", "" + details?.commentaryId);
@@ -1477,7 +1489,10 @@ const Index = () => {
 
   const handleTableSearchedDataChange = (data) => {
     setTableSearchedData(data);
-    setCheckedList([]);
+    // setCheckedList([]);
+    if (!cloneModelVisible) {
+      setCheckedList([]);
+    }
   };
 
   const handleCurrentPageChange = (page) => {
@@ -2456,6 +2471,42 @@ const Index = () => {
               {/* <i class="bx bxs-up-arrow-square"></i> */}
             </Button>
           </Tooltip>
+          <Tooltip
+            title={"Entity commentary update Logs"}
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            <Button
+              // color={"info"}
+              // style={{ backgroundColor: "#8e9dc8", color: "#fff", border: "#8e9dc8" }}
+              size="sm"
+              className="btn scoringLogsBtn"
+              onClick={() => {
+                handleEventCommentaryUpdateLogsClick(record);
+              }}
+            >
+              I
+              {/* <i class="bx bxs-up-arrow-square"></i> */}
+            </Button>
+          </Tooltip>
+          <Tooltip
+            title={"Commentary Action Logs"}
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            <Button
+              // color={"info"}
+              // style={{ backgroundColor: "#8e9dc8", color: "#fff", border: "#8e9dc8" }}
+              size="sm"
+              className="btn commentaryLogsBtn"
+              onClick={() => {
+                handleActionLogsClick(record);
+              }}
+            >
+              A
+              {/* <i class="bx bxs-up-arrow-square"></i> */}
+            </Button>
+          </Tooltip>
         </div>
       ),
       style: { width: "2%", textAlign: "center" },
@@ -3131,6 +3182,7 @@ const Index = () => {
             setCloneValues={setCloneValues}
             cloneValues={cloneValues}
             singleCheck={checekedList}
+            setCheckedList={setCheckedList}
           />
           {changeModelVisible && (
             <ChnageMatchTypeModel
