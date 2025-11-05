@@ -946,7 +946,7 @@ const Commentary = (props) => {
         const order = props.data.commentaryData.commentaryTeams.filter((t) => t.teamBattingOrder === 1)
         const commentaryDetailsobj = props.data.commentaryData.commentaryDetails
         const onPitchPlayersobj = { ...onPitchPlayers, [playerType]: player }
-        const updatedOnPitchPlyer = { ...onPitchPlayers, [playerType]: { ...player, "isPlay": true } }
+        const updatedOnPitchPlyer = { ...onPitchPlayers, [playerType]: { ...player, "isPlay": true, "isPlayInEvent" : true } }
         const partnershipDetails = {
             "batter1Id": onPitchPlayersobj[ON_STRIKE]?.commentaryPlayerId,
             "batter1Name": onPitchPlayersobj[ON_STRIKE]?.playerName,
@@ -1096,7 +1096,7 @@ const Commentary = (props) => {
                 // condition to set for new selected player for both batter and bowler
                 if (isEqual(player.commentaryPlayerId, newPlayerId)) {
                     const updatedPlayer = {
-                        ...player, "isPlay": true, "onStrike": playerToChange === ON_STRIKE ? true : false,
+                        ...player, "isPlay": true, "onStrike": playerToChange === ON_STRIKE ? true : false, "isPlayInEvent" : true,
                         [updateOrderKey]: player[updateOrderKey] || fetchNextPlayerOrder(playerToChange, players[teamType])
                     }
                     updatedOnPitchPlayer[playerToChange] = updatedPlayer
@@ -1223,6 +1223,7 @@ const Commentary = (props) => {
                 "bowlerOrder": newPlayer?.bowlerOrder,
                 "isPlay": newPlayer?.isPlay,
                 "onStrike": newPlayer?.onStrike,
+                "isPlayInEvent": newPlayer?.isPlayInEvent,
             }
             updatedOldPlayer = {
                 ...newPlayer,
@@ -1230,6 +1231,7 @@ const Commentary = (props) => {
                 "bowlerOrder": oldPlayer?.bowlerOrder,
                 "isPlay": oldPlayer?.isPlay,
                 "onStrike": oldPlayer?.onStrike,
+                "isPlayInEvent": oldPlayer?.isPlayInEvent,
             }
         }
 
@@ -1322,7 +1324,8 @@ const Commentary = (props) => {
             "bowlerLegByeBallRun": +(newBowler.bowlerLegByeBallRun || 0) + +(currentOver.totalLegByesRun || 0),
             "bowlerTotalWicket": +(newBowler.bowlerTotalWicket || 0) + getBowlerRelatedWickets(currentOver?.overId, ballHistory),
             "bowlerOrder": newBowlerOrder,
-            "isPlay": true
+            "isPlay": true,
+            "isPlayInEvent": true,
         }
         const UpdatedOver = {
             ...currentOver,
@@ -1376,6 +1379,7 @@ const Commentary = (props) => {
             }
             if (updatedPlayer.commentaryPlayerId === newPlayerId) {
                 updatedPlayer["isPlay"] = true
+                updatedPlayer["isPlayInEvent"] = true
                 playersToChangeList.push(updatedPlayer)
                 updatedOnPitchPlayer[CURRENT_BOWLER] = updatedPlayer
             }
@@ -1409,6 +1413,7 @@ const Commentary = (props) => {
             }
             if (updatedPlayer.commentaryPlayerId === currentBall.bowlerId) {
                 updatedPlayer["isPlay"] = true
+                updatedPlayer["isPlayInEvent"] = true
                 playersToChangeList.push(updatedPlayer)
                 updatedOnPitchPlayer[CURRENT_BOWLER] = updatedPlayer
             }
@@ -1923,11 +1928,11 @@ const Commentary = (props) => {
             }
 
             if (player.commentaryPlayerId === currentBall.batStrikeId) {
-                updatedPlayer = { ...updatedPlayer, isPlay: true, onStrike: true }
+                updatedPlayer = { ...updatedPlayer, isPlay: true, onStrike: true, isPlayInEvent: true }
                 updatedOnPitchPlayer[ON_STRIKE] = updatedPlayer
                 playersToChange[updatedPlayer.commentaryPlayerId] = updatedPlayer
             } else if (player.commentaryPlayerId === currentBall.batNonStrikeId) {
-                updatedPlayer = { ...updatedPlayer, isPlay: true, onStrike: null }
+                updatedPlayer = { ...updatedPlayer, isPlay: true, onStrike: null, isPlayInEvent: true }
                 updatedOnPitchPlayer[NON_STRIKE] = updatedPlayer
                 playersToChange[updatedPlayer.commentaryPlayerId] = updatedPlayer
             }

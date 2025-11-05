@@ -302,6 +302,7 @@ const PlayerSelection = forwardRef((props, ref) => {
         isPlay: true,
         isBatterOut: false,
         onStrike: true,
+        isPlayInEvent: true,
       }
 
       oldCommentaryPlayerIds = commentaryTeamsPlayersDetails.filter(i => (i.isPlay === true &&
@@ -322,6 +323,7 @@ const PlayerSelection = forwardRef((props, ref) => {
         isPlay: true,
         isBatterOut: false,
         onStrike: false,
+        isPlayInEvent: true,
       }
 
       oldCommentaryPlayerIds = commentaryTeamsPlayersDetails.filter(i => (i.isPlay === true &&
@@ -334,6 +336,7 @@ const PlayerSelection = forwardRef((props, ref) => {
       updatedData = {
         isPlay: true,
         bowlerOver: 0,
+        isPlayInEvent: true,
       }
 
       oldCommentaryPlayerIds = commentaryTeamsPlayersDetails.filter(i => (i.isPlay === true &&
