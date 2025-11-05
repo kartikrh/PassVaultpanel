@@ -345,6 +345,7 @@ const PlayerSelectionScreen = forwardRef((props, ref) => {
         isPlay: true,
         isBatterOut: false,
         onStrike: true,
+        isPlayInEvent: true,
       };
 
       oldCommentaryPlayerIds = commentaryTeamsPlayersDetails
@@ -374,6 +375,7 @@ const PlayerSelectionScreen = forwardRef((props, ref) => {
         isPlay: true,
         isBatterOut: false,
         onStrike: false,
+        isPlayInEvent: true,
       };
 
       oldCommentaryPlayerIds = commentaryTeamsPlayersDetails
@@ -394,6 +396,7 @@ const PlayerSelectionScreen = forwardRef((props, ref) => {
       updatedData = {
         isPlay: true,
         bowlerOver: 0,
+        isPlayInEvent: true,
       };
 
       oldCommentaryPlayerIds = commentaryTeamsPlayersDetails
