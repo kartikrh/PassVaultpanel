@@ -63,7 +63,7 @@ const CancelModal = ({ isOpen, toggle, data, fetchData }) => {
       {/* <ModalHeader toggle={toggle}>Cancel Market {data?.marketName}</ModalHeader> */}
       <ModalHeader toggle={toggle}>
         <h5 className="modal-title" style={{ color: "#ff3d60" }}>
-          Set Result Market {data?.marketName}
+          Cancel Market {data?.marketName}
         </h5>
       </ModalHeader>
       <ModalBody>
