@@ -91,7 +91,12 @@ const ResultModal = ({ isOpen, toggle, data, fetchData }) => {
 
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" className="custom-modal">
-      <ModalHeader toggle={toggle}>Set Result Market {data?.marketName}</ModalHeader>
+      {/* <ModalHeader toggle={toggle} style={{color: "green"}}>Set Result Market {data?.marketName}</ModalHeader> */}
+      <ModalHeader toggle={toggle}>
+        <h5 className="modal-title" style={{ color: "#0bb197" }}>
+          Set Result Market {data?.marketName}
+        </h5>
+      </ModalHeader>
       <ModalBody>
         {data && (
           <table className="table">
