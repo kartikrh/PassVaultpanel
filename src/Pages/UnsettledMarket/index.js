@@ -496,11 +496,11 @@ const Index = () => {
       sort: true,
     },  
     {
-      title: "Set Result",
+      title: "Result",
       key: "result",
       render: (text, record) => (
         <Tooltip
-          title={"Set Result"}
+          title={"Result"}
           color={"#e8e8ea"}
           overlayInnerStyle={{ color: "#000" }}
         >
@@ -512,35 +512,13 @@ const Index = () => {
               handleResult(record);
             }}
           >
-            Set Result
+            Result
           </Button>
         </Tooltip>
       ),
       style: { width: "10%", textAlign: "center" },
     },  
-    {
-      title: "Cancel",
-      key: "cancel",
-      render: (text, record) => (
-        <Tooltip
-          title={"Cancel Market"}
-          color={"#e8e8ea"}
-          overlayInnerStyle={{ color: "#000" }}
-        >
-          <Button
-            color="danger"
-            size="sm"
-            className="btn"
-            onClick={() => {
-              handleCancel(record);
-            }}
-          >
-            Cancel
-          </Button>
-        </Tooltip>
-      ),
-      style: { width: "10%", textAlign: "center" },
-    },
+    
     {
       render: (text, record) => (
         <>
@@ -577,6 +555,29 @@ const Index = () => {
             </Button>
           </Tooltip>
         </>
+      ),
+      style: { width: "10%", textAlign: "center" },
+    },
+    {
+      title: "Cancel",
+      key: "cancel",
+      render: (text, record) => (
+        <Tooltip
+          title={"Cancel Market"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
+          <Button
+            color="danger"
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleCancel(record);
+            }}
+          >
+            Cancel
+          </Button>
+        </Tooltip>
       ),
       style: { width: "10%", textAlign: "center" },
     },
