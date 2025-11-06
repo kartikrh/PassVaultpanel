@@ -1837,8 +1837,8 @@ const Commentary = (props) => {
             "commentaryTeams": teamUpdates,
             "commentaryPlayers": [
                 { ...onPitchPlayers[ON_STRIKE], isPlay: null, onStrike: null, isPlayInEvent: (!onPitchPlayers[ON_STRIKE]?.bowlerRun && !onPitchPlayers[ON_STRIKE]?.batBall && !onPitchPlayers[ON_STRIKE]?.batRun) ? false : onPitchPlayers[ON_STRIKE]?.isPlayInEvent },
-                { ...onPitchPlayers[NON_STRIKE], isPlay: null, isPlayInEvent: (!onPitchPlayers[ON_STRIKE]?.bowlerRun && !onPitchPlayers[ON_STRIKE]?.batBall && !onPitchPlayers[ON_STRIKE]?.batRun) ? false : onPitchPlayers[ON_STRIKE]?.isPlayInEvent },
-                { ...onPitchPlayers[CURRENT_BOWLER], isPlay: null, isPlayInEvent: (!onPitchPlayers[ON_STRIKE]?.bowlerRun && !onPitchPlayers[ON_STRIKE]?.batBall && !onPitchPlayers[ON_STRIKE]?.batRun) ? false : onPitchPlayers[ON_STRIKE]?.isPlayInEvent },
+                { ...onPitchPlayers[NON_STRIKE], isPlay: null, isPlayInEvent: (!onPitchPlayers[NON_STRIKE]?.bowlerRun && !onPitchPlayers[NON_STRIKE]?.batBall && !onPitchPlayers[NON_STRIKE]?.batRun) ? false : onPitchPlayers[NON_STRIKE]?.isPlayInEvent },
+                { ...onPitchPlayers[CURRENT_BOWLER], isPlay: null, isPlayInEvent: (!onPitchPlayers[CURRENT_BOWLER]?.bowlerRun && !onPitchPlayers[CURRENT_BOWLER]?.batBall && !onPitchPlayers[CURRENT_BOWLER]?.batRun) ? false : onPitchPlayers[CURRENT_BOWLER]?.isPlayInEvent },
             ],
             "updateTeamStatus": extractRequiredFieldsForTeamStatus(teamUpdates),
         }
