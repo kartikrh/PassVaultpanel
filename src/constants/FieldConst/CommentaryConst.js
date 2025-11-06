@@ -1842,6 +1842,13 @@ export const BATTING_PLAYER_FEATURE_FIELD = (bowlingPlayers = []) => [
         type: SWITCH,
         fieldColspan: { xs: 3, md: 2, lg: 1 },
     },
+    {
+        name: "isPlayInEvent",
+        placeholder: "Play In Event",
+        formName: PLAYER,
+        type: SWITCH,
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
+    },
 ]
 
 export const BOWLING_PLAYER_FEATURE_FIELD = (bowlingStyleList = []) => [
@@ -2035,6 +2042,13 @@ export const BOWLING_PLAYER_FEATURE_FIELD = (bowlingStyleList = []) => [
     {
         name: "isPlay",
         placeholder: "Play",
+        formName: PLAYER,
+        type: SWITCH,
+        fieldColspan: { xs: 3, md: 2, lg: 1 },
+    },
+    {
+        name: "isPlayInEvent",
+        placeholder: "Play In Event",
         formName: PLAYER,
         type: SWITCH,
         fieldColspan: { xs: 3, md: 2, lg: 1 },
