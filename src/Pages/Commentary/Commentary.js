@@ -1401,6 +1401,16 @@ const Commentary = (props) => {
         setPlayerToChange(undefined)
         setIsChangeBowler({ isChange: null, isChangePopup: null, popupOption: null })
     }
+    const isPlayerNew = (player) => {
+        const isStatZeroOrFalsy = (value) => {
+            return !value || value == 0;
+        };
+        return (
+            isStatZeroOrFalsy(player?.bowlerRun) && 
+            isStatZeroOrFalsy(player?.batBall) && 
+            isStatZeroOrFalsy(player?.batRun)
+        );
+    };
     const undoSameOverNewBaller = () => {
         const playersToChangeList = []
         let updatedOnPitchPlayer = onPitchPlayers
@@ -1409,7 +1419,7 @@ const Commentary = (props) => {
             if (player.isPlay || player.onStrike) {
                 updatedPlayer["isPlay"] = null
                 updatedPlayer["onStrike"] = null
-                if (!player?.bowlerRun && !player?.batBall && !player?.batRun) {
+                if (isPlayerNew(player)) {
                     updatedPlayer["isPlayInEvent"] = false;
                 }
                 playersToChangeList.push(updatedPlayer)
@@ -1741,7 +1751,7 @@ const Commentary = (props) => {
             let forNewPlayers = {}
             if (compareNumStringValues(player.commentaryPlayerId, onPitchPlayers[ON_STRIKE].commentaryPlayerId)
                 || compareNumStringValues(player.commentaryPlayerId, onPitchPlayers[NON_STRIKE].commentaryPlayerId)) {
-                forNewPlayers = { isPlay: null, onStrike: null, isBatterOut: null, batterOrder: null, batsmanStrikeRate: null, bowlerEconomy: null }
+                forNewPlayers = { isPlay: null, onStrike: null, isBatterOut: null, batterOrder: null, batsmanStrikeRate: null, bowlerEconomy: null, isPlayInEvent: isPlayerNew(player) ? false : player?.isPlayInEvent }
                 playerListToSendToDb.push({ ...player, ...forNewPlayers })
             }
             let updatedPlayer = { ...player, ...forNewPlayers }
@@ -1779,6 +1789,9 @@ const Commentary = (props) => {
             const updatedPlayer = player
             if (compareNumStringValues(player.commentaryPlayerId, onPitchPlayers[CURRENT_BOWLER].commentaryPlayerId)) {
                 updatedPlayer["isPlay"] = null
+                if (isPlayerNew(player)) {
+                    updatedPlayer["isPlayInEvent"] = false;
+                }
                 setPlayerUpdateList([].concat([updatedPlayer], playerUpdateList || []))
             }
             else if (compareNumStringValues(player.commentaryPlayerId, previousBall.bowlerId)) {
@@ -1796,6 +1809,9 @@ const Commentary = (props) => {
                 compareNumStringValues(player.commentaryPlayerId, onPitchPlayers[NON_STRIKE].commentaryPlayerId)) {
                 updatedPlayer["isPlay"] = null
                 updatedPlayer["onStrike"] = null
+                if (isPlayerNew(player)) {
+                    updatedPlayer["isPlayInEvent"] = false;
+                }
             }
             if (compareNumStringValues(player.commentaryPlayerId, previousBall.nextBatStrikeId)) {
                 updatedPlayer["isPlay"] = true
@@ -1836,9 +1852,9 @@ const Commentary = (props) => {
             },
             "commentaryTeams": teamUpdates,
             "commentaryPlayers": [
-                { ...onPitchPlayers[ON_STRIKE], isPlay: null, onStrike: null, isPlayInEvent: (!onPitchPlayers[ON_STRIKE]?.bowlerRun && !onPitchPlayers[ON_STRIKE]?.batBall && !onPitchPlayers[ON_STRIKE]?.batRun) ? false : onPitchPlayers[ON_STRIKE]?.isPlayInEvent },
-                { ...onPitchPlayers[NON_STRIKE], isPlay: null, isPlayInEvent: (!onPitchPlayers[NON_STRIKE]?.bowlerRun && !onPitchPlayers[NON_STRIKE]?.batBall && !onPitchPlayers[NON_STRIKE]?.batRun) ? false : onPitchPlayers[NON_STRIKE]?.isPlayInEvent },
-                { ...onPitchPlayers[CURRENT_BOWLER], isPlay: null, isPlayInEvent: (!onPitchPlayers[CURRENT_BOWLER]?.bowlerRun && !onPitchPlayers[CURRENT_BOWLER]?.batBall && !onPitchPlayers[CURRENT_BOWLER]?.batRun) ? false : onPitchPlayers[CURRENT_BOWLER]?.isPlayInEvent },
+                { ...onPitchPlayers[ON_STRIKE], isPlay: null, onStrike: null, isPlayInEvent: isPlayerNew(onPitchPlayers[ON_STRIKE]) ? false : onPitchPlayers[ON_STRIKE]?.isPlayInEvent },
+                { ...onPitchPlayers[NON_STRIKE], isPlay: null, isPlayInEvent: isPlayerNew(onPitchPlayers[NON_STRIKE]) ? false : onPitchPlayers[NON_STRIKE]?.isPlayInEvent },
+                { ...onPitchPlayers[CURRENT_BOWLER], isPlay: null, isPlayInEvent: isPlayerNew(onPitchPlayers[CURRENT_BOWLER]) ? false : onPitchPlayers[CURRENT_BOWLER]?.isPlayInEvent },
             ],
             "updateTeamStatus": extractRequiredFieldsForTeamStatus(teamUpdates),
         }
@@ -1927,7 +1943,7 @@ const Commentary = (props) => {
             let updatedPlayer = player
             if (player.isPlay || player.onStrike) {
                 updatedPlayer = { ...updatedPlayer, isPlay: null, onStrike: null }
-                if (!player?.bowlerRun && !player?.batBall && !player?.batRun) {
+                if (isPlayerNew(player)) {
                     updatedPlayer["isPlayInEvent"] = false;
                 }
                 playersToChange[updatedPlayer.commentaryPlayerId] = updatedPlayer
