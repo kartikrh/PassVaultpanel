@@ -1409,6 +1409,9 @@ const Commentary = (props) => {
             if (player.isPlay || player.onStrike) {
                 updatedPlayer["isPlay"] = null
                 updatedPlayer["onStrike"] = null
+                if (!player?.bowlerRun && !player?.batBall && !player?.batRun) {
+                    updatedPlayer["isPlayInEvent"] = false;
+                }
                 playersToChangeList.push(updatedPlayer)
             }
             if (updatedPlayer.commentaryPlayerId === currentBall.bowlerId) {
@@ -1833,9 +1836,9 @@ const Commentary = (props) => {
             },
             "commentaryTeams": teamUpdates,
             "commentaryPlayers": [
-                { ...onPitchPlayers[ON_STRIKE], isPlay: null, onStrike: null },
-                { ...onPitchPlayers[NON_STRIKE], isPlay: null, },
-                { ...onPitchPlayers[CURRENT_BOWLER], isPlay: null, }
+                { ...onPitchPlayers[ON_STRIKE], isPlay: null, onStrike: null, isPlayInEvent: (!onPitchPlayers[ON_STRIKE]?.bowlerRun && !onPitchPlayers[ON_STRIKE]?.batBall && !onPitchPlayers[ON_STRIKE]?.batRun) ? false : onPitchPlayers[ON_STRIKE]?.isPlayInEvent },
+                { ...onPitchPlayers[NON_STRIKE], isPlay: null, isPlayInEvent: (!onPitchPlayers[ON_STRIKE]?.bowlerRun && !onPitchPlayers[ON_STRIKE]?.batBall && !onPitchPlayers[ON_STRIKE]?.batRun) ? false : onPitchPlayers[ON_STRIKE]?.isPlayInEvent },
+                { ...onPitchPlayers[CURRENT_BOWLER], isPlay: null, isPlayInEvent: (!onPitchPlayers[ON_STRIKE]?.bowlerRun && !onPitchPlayers[ON_STRIKE]?.batBall && !onPitchPlayers[ON_STRIKE]?.batRun) ? false : onPitchPlayers[ON_STRIKE]?.isPlayInEvent },
             ],
             "updateTeamStatus": extractRequiredFieldsForTeamStatus(teamUpdates),
         }
@@ -1924,6 +1927,9 @@ const Commentary = (props) => {
             let updatedPlayer = player
             if (player.isPlay || player.onStrike) {
                 updatedPlayer = { ...updatedPlayer, isPlay: null, onStrike: null }
+                if (!player?.bowlerRun && !player?.batBall && !player?.batRun) {
+                    updatedPlayer["isPlayInEvent"] = false;
+                }
                 playersToChange[updatedPlayer.commentaryPlayerId] = updatedPlayer
             }
 
