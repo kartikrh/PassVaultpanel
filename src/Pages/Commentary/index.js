@@ -2112,9 +2112,9 @@ const Index = () => {
       key: "marketResult",
       render: (text, record) => (
         <div className="d-flex align-items-center gap-2">
-          {record.isPredictMarket && (
+          {/* {record.isPredictMarket && ( */}
             <>
-              {record.isPredictMarket && (
+              {/* {record.isPredictMarket && ( */}
                 <Tooltip
                   title={"Event Market"}
                   color={"#e8e8ea"}
@@ -2132,8 +2132,8 @@ const Index = () => {
                     <i class="bx bxs-up-arrow-square"></i>
                   </Button>
                 </Tooltip>
-              )}
-              {record.isPredictMarket && (
+              {/* )} */}
+              {/* {record.isPredictMarket && ( */}
                 <Tooltip
                   title={"Manual Odds Market"}
                   color={"#e8e8ea"}
@@ -2152,7 +2152,7 @@ const Index = () => {
                     B
                   </Button>
                 </Tooltip>
-              )}
+              {/* )} */}
               <Tooltip
                 title={"Session Result"}
                 color={"#e8e8ea"}
@@ -2203,28 +2203,30 @@ const Index = () => {
                   C
                 </Button>
               </Tooltip>
-              <Tooltip
-                title="Trader"
-                color={"#e8e8ea"}
-                // color="#f1734f"
-                overlayInnerStyle={{ color: "#000" }}
-              >
-                <Button
-                  // color="f1734f"
-                  // style={{ backgroundColor: "#f1734f", color: "#fff", border: "#f1734f" }}
-                  size="sm"
-                  className="btn traderBtn"
-                  onClick={() => {
-                    handleTraderClick(record)
-                    // setSelectedCommentaryId(record.commentaryId); // Store the commentaryId
-                    // setLoadSingleDataModelVisible(true); // Open the modal
-                  }}
+              {record.isPredictMarket && (
+                <Tooltip
+                  title="Trader"
+                  color={"#e8e8ea"}
+                  // color="#f1734f"
+                  overlayInnerStyle={{ color: "#000" }}
                 >
-                  T
-                </Button>
-              </Tooltip>
+                  <Button
+                    // color="f1734f"
+                    // style={{ backgroundColor: "#f1734f", color: "#fff", border: "#f1734f" }}
+                    size="sm"
+                    className="btn traderBtn"
+                    onClick={() => {
+                      handleTraderClick(record)
+                      // setSelectedCommentaryId(record.commentaryId); // Store the commentaryId
+                      // setLoadSingleDataModelVisible(true); // Open the modal
+                    }}
+                  >
+                    T
+                  </Button>
+                </Tooltip>
+              )}
             </>
-          )}
+          {/* )} */}
         </div>
       ),
       style: { width: "2%", textAlign: "center" },
