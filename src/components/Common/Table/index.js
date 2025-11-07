@@ -419,6 +419,43 @@ const Index = forwardRef(
       );
     };
 
+    const FalseSymbolStatus = () => {
+      return (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100%",
+            fontSize: 12,
+            color: "#fff",
+            // paddingRight: 2,
+          }}
+        >
+          {" "}
+          False
+        </div>
+      );
+    };
+    const TrueSymbolStatus = () => {
+      return (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100%",
+            fontSize: 12,
+            color: "#fff",
+            // paddingRight: 4,
+          }}
+        >
+          {" "}
+          True
+        </div>
+      );
+    };
+
     const OffsymbolApprovedStatus = () => {
       return (
         <div
@@ -3463,8 +3500,8 @@ const Index = forwardRef(
                     />
                     <Switch
                       width={70}
-                      uncheckedIcon={<OffsymbolStatus />}
-                      checkedIcon={<OnSymbolStatus />}
+                      uncheckedIcon={<FalseSymbolStatus />}
+                      checkedIcon={<TrueSymbolStatus />}
                       className="pe-0"
                       onColor="#02a499"
                       onChange={() => {

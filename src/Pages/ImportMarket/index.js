@@ -50,7 +50,7 @@ const Index = () => {
   );
   const [tournamentList, setTournamentList] = useState([]);
   const [showtournamentList, setisShowTournamentList] = useState(false);
-  const [isTournamentFilter, setIsTournamentFilter] = useState(false);
+  const [isTournamentFilter, setIsTournamentFilter] = useState(true);
   const [eventTypeRefId, setEventTypeRefId] = useState("");
   const [StickHeader,setStickHeader] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
@@ -257,7 +257,7 @@ const Index = () => {
                 dispatch(
                   updateToastData({
                     data: "Please select a tournament before importing.",
-                    title: "Error",
+                    title: "Import Error",
                     type: ERROR,
                   })
                 );
@@ -413,6 +413,20 @@ const Index = () => {
           size="sm"
           className="sucessBtn"
           onClick={() => {
+
+            if (isTournamentFilter) {
+              if (!tournamentObject?.competitionId || tournamentObject?.competitionId == 0) {
+                dispatch(
+                  updateToastData({
+                    data: "Please select a tournament before importing.",
+                    title: "Import Error",
+                    type: ERROR,
+                  })
+                );
+                return;
+              }
+            }
+
             setDataToDB({
               ...dataToDB,
               marketName: text,
