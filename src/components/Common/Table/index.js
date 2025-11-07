@@ -147,6 +147,8 @@ const Index = forwardRef(
       tournamentList,
       showtournamentList,
       onTournamentisChanges,
+      isTournamentFilter,
+      setIsTournamentFilter,
       setStickHeader,
       renderHeader,
       manualExcel,
@@ -215,6 +217,11 @@ const Index = forwardRef(
     useEffect(() => {
       if (dataSource && tableElement.title !== "Entity Player Import") setSearchTerm(playerSearch || "");
     }, [dataSource]);
+
+    useEffect(() => {
+      if (dataSource && tableElement.title === "Entity Player Import")  setData(dataSource);
+    }, [dataSource]);
+
     useEffect(() => {
       if (data.length == 0 && filteredData.length == 0) {
         if (serverCurrentPage) {
@@ -255,6 +262,15 @@ const Index = forwardRef(
         setParentSearchedData(searchedData);
       }
     }, [searchedData])
+
+    useEffect(() => {
+      if (!isTournamentFilter && (tableElement.title === "Auto Events" || tableElement.title === "Manual Events")) {
+        setSelectedTableElements((prev) => ({
+          ...prev,
+          tournamentType: { value: "0", label: "Tournament List" },
+        }));
+      }
+    }, [isTournamentFilter]);
 
     const debouncedHandleSearchFilter = useCallback(
       debounce((searchValue) => {
@@ -399,6 +415,43 @@ const Index = forwardRef(
         >
           {" "}
           active
+        </div>
+      );
+    };
+
+    const FalseSymbolStatus = () => {
+      return (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100%",
+            fontSize: 12,
+            color: "#fff",
+            // paddingRight: 2,
+          }}
+        >
+          {" "}
+          False
+        </div>
+      );
+    };
+    const TrueSymbolStatus = () => {
+      return (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100%",
+            fontSize: 12,
+            color: "#fff",
+            // paddingRight: 4,
+          }}
+        >
+          {" "}
+          True
         </div>
       );
     };
@@ -3415,7 +3468,7 @@ const Index = forwardRef(
                   />
                 )}
                 {showtournamentList && tournamentList.length > 0 && (
-                  <div className="">
+                  <div className="d-flex align-items-center gap-2">
                     <Select
                       styles={{
                         control: (provided) => ({
@@ -3442,7 +3495,19 @@ const Index = forwardRef(
                         value: item?.competitionId,
                         compRefId: item?.competitionRefId
                       }))}
+                      isDisabled={!isTournamentFilter}
                       classNamePrefix="filter-dropdown"
+                    />
+                    <Switch
+                      width={70}
+                      uncheckedIcon={<FalseSymbolStatus />}
+                      checkedIcon={<TrueSymbolStatus />}
+                      className="pe-0"
+                      onColor="#02a499"
+                      onChange={() => {
+                        setIsTournamentFilter(!isTournamentFilter);
+                      }}
+                      checked={isTournamentFilter}
                     />
                   </div>
                 )}

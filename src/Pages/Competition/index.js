@@ -517,7 +517,7 @@ const Index = () => {
   const handleUpdate = async (e) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/admin/tournamentTeamPoints/import`, {"refId" : e.tpId, "refType": 7 , "sourceId": 3})
+      .post(`/admin/autoImportData/save`, {"refId" : e?.tpId, "refType": 8 , "sourceId": 3})
       .then((response) => {
         fetchData();
         dispatch(
