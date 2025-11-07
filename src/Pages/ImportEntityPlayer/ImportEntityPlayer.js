@@ -7,7 +7,7 @@ import { Button, Container } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
-import _, { isEmpty } from "lodash";
+import _, { debounce, isEmpty } from "lodash";
 import {
   ERROR,
   PERMISSION_VIEW,
@@ -100,6 +100,27 @@ export default function ImportEntityPlayer() {
     search
   ]);
 
+  const debouncedFetchData = useCallback(
+    debounce(() => {
+      fetchData();
+    }, 500), // delay of 500ms
+    [fetchData]
+  );
+
+  useEffect(() => {
+    if (!permissionChecked) return;
+
+    // Fetch only when search is empty or at least 3 characters
+    if (search.trim().length === 0 || search.trim().length > 2) {
+      debouncedFetchData();
+    }
+
+    // cleanup to cancel any pending debounce calls
+    return () => {
+      debouncedFetchData.cancel();
+    };
+  }, [search, currentPage, pageSize, selectedCountry, permissionChecked, debouncedFetchData]);
+
   const fetchCountryCodeData = async () => {
     await axiosInstance
       .post(`/admin/countryCode/all`, { isActive: true })
@@ -109,9 +130,9 @@ export default function ImportEntityPlayer() {
       .catch((error) => {});
   };
 
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+  // useEffect(() => {
+  //   fetchData();
+  // }, [fetchData]);
 
   useEffect(() => {
     fetchCountryCodeData();
