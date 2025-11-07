@@ -84,7 +84,7 @@ function PredictorApiLogs() {
         //   Object.entries(logObject).map(([key, value]) => (
         //     <span key={key}>
         //       <strong>{key}:</strong>{" "}
-        //       {typeof value === "object" ? JSON.stringify(value) : value}{" "}
+        //       {typeof value === "object" ? JSON.stringify(value) : typeof value === "boolean" ? value.toString() : value}{" "}
         //     </span>
         //   ));
         const renderContent = () => {
@@ -96,7 +96,7 @@ function PredictorApiLogs() {
             const logItems = Object.entries(text).map(([key, value]) => (
               <span key={key}>
                 <strong>{key}:</strong>{" "}
-                {typeof value === "object" ? JSON.stringify(value) : value}{" "}
+                {typeof value === "object" ? JSON.stringify(value) : typeof value === "boolean" ? value.toString() : value}{" "}
               </span>
             ));
             return <div>{logItems}</div>;
@@ -119,7 +119,7 @@ function PredictorApiLogs() {
           Object.entries(logObject).map(([key, value]) => (
             <span key={key}>
               <strong>{key}:</strong>{" "}
-              {typeof value === "object" ? JSON.stringify(value) : value}{" "}
+              {typeof value === "object" ? JSON.stringify(value) : typeof value === "boolean" ? value.toString() : value}{" "}
             </span>
           ));
         return <div>{logItems}</div>;

@@ -304,7 +304,7 @@ const Index = () => {
           Object.entries(logObject).map(([key, value]) => (
             <span key={key}>
               <strong>{key}:</strong>{" "}
-              {typeof value === "object" ? JSON.stringify(value) : value}{" "}
+              {typeof value === "object" ? JSON.stringify(value) : typeof value === "boolean" ? value.toString() : value}{" "}
             </span>
           ));
         return <div
@@ -338,7 +338,7 @@ const Index = () => {
           Object.entries(logObject).map(([key, value]) => (
             <span key={key}>
               <strong>{key}:</strong>{" "}
-              {typeof value === "object" ? JSON.stringify(value) : value}{" "}
+              {typeof value === "object" ? JSON.stringify(value) : typeof value === "boolean" ? value.toString() : value}{" "}
             </span>
           ));
         return <div

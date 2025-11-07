@@ -474,7 +474,7 @@ const Index = () => {
         const logItems = logObject && Object.entries(logObject).map(([key, value]) => (
           <span key={key}>
             <strong>{key}:</strong>{" "}
-            {typeof value === "object" ? JSON.stringify(value) : value}<br />
+            {typeof value === "object" ? JSON.stringify(value) : typeof value === "boolean" ? value.toString() : value}<br />
           </span>
         ));
         return <div>{logItems}</div>;

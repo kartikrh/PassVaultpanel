@@ -215,6 +215,11 @@ const Index = forwardRef(
     useEffect(() => {
       if (dataSource && tableElement.title !== "Entity Player Import") setSearchTerm(playerSearch || "");
     }, [dataSource]);
+
+    useEffect(() => {
+      if (dataSource && tableElement.title === "Entity Player Import")  setData(dataSource);
+    }, [dataSource]);
+
     useEffect(() => {
       if (data.length == 0 && filteredData.length == 0) {
         if (serverCurrentPage) {
