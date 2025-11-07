@@ -147,6 +147,8 @@ const Index = forwardRef(
       tournamentList,
       showtournamentList,
       onTournamentisChanges,
+      isTournamentFilter,
+      setIsTournamentFilter,
       setStickHeader,
       renderHeader,
       manualExcel,
@@ -260,6 +262,15 @@ const Index = forwardRef(
         setParentSearchedData(searchedData);
       }
     }, [searchedData])
+
+    useEffect(() => {
+      if (!isTournamentFilter && (tableElement.title === "Auto Events" || tableElement.title === "Manual Events")) {
+        setSelectedTableElements((prev) => ({
+          ...prev,
+          tournamentType: { value: "0", label: "Tournament List" },
+        }));
+      }
+    }, [isTournamentFilter]);
 
     const debouncedHandleSearchFilter = useCallback(
       debounce((searchValue) => {
@@ -3420,7 +3431,7 @@ const Index = forwardRef(
                   />
                 )}
                 {showtournamentList && tournamentList.length > 0 && (
-                  <div className="">
+                  <div className="d-flex align-items-center gap-2">
                     <Select
                       styles={{
                         control: (provided) => ({
@@ -3447,7 +3458,19 @@ const Index = forwardRef(
                         value: item?.competitionId,
                         compRefId: item?.competitionRefId
                       }))}
+                      isDisabled={!isTournamentFilter}
                       classNamePrefix="filter-dropdown"
+                    />
+                    <Switch
+                      width={70}
+                      uncheckedIcon={<OffsymbolStatus />}
+                      checkedIcon={<OnSymbolStatus />}
+                      className="pe-0"
+                      onColor="#02a499"
+                      onChange={() => {
+                        setIsTournamentFilter(!isTournamentFilter);
+                      }}
+                      checked={isTournamentFilter}
                     />
                   </div>
                 )}
