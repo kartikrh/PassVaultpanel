@@ -157,6 +157,42 @@ const Index = () => {
     setCheckedList([]);
   };
 
+  function mapRefType(status) {
+    switch (parseInt(status)) {
+      case 1:
+        return "Cricket";
+      case 2:
+        return "Competition";
+      case 3:
+        return "Match";
+      case 4:
+        return "Team";
+      case 5:
+        return "Player";
+      case 6:
+        return "Team Update";
+      case 7:
+        return "Player Update";
+      case 8:
+        return "Tournament Team";
+      default:
+        return "-";
+    }
+  }
+
+  function mapSourceType(status) {
+    switch (parseInt(status)) {
+      case 1:
+        return "Prediction";
+      case 2:
+        return "Betfair";
+      case 3:
+        return "EntitySport";
+      default:
+        return "-";
+    }
+  }
+
   //table columns
   const columns = [
     {
@@ -250,9 +286,7 @@ const Index = () => {
       key: "refType",
       sort: true,
       style: { width: "10%" },
-      render:(text, record) => (
-        <div>{text == 1 ? "Cricket" : text == 2 ? "Competition" : text == 3 ? "Match" : text == 4 ? "Team" : text == 5 ? "Player" : text == 6 ? "Team Update" : text == 7 ? "Player Update" : ""}</div>
-        ),
+      render: (text, record) => <span>{mapRefType(text)}</span>,
     },
     {
       title: "Source",
@@ -260,9 +294,7 @@ const Index = () => {
       key: "sourceId",
       sort: true,
       style: { width: "10%" },
-      render:(text, record) => (
-        <div>{text == 1 ? "Prediction" : text == 2 ? "Betfair" : text == 3 ? "EntitySport" : ""}</div>
-      ),
+      render: (text, record) => <span>{mapSourceType(text)}</span>,
     },
     {
       title: "Created By",
