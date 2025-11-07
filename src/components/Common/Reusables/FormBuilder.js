@@ -366,6 +366,9 @@ const FormBuilder = forwardRef(
           });
         }
 
+        if (field.type === "SELECT" && field.name === "playerTypeId") {
+          updatedFormData["isKipper"] = Number(updatedFormData["playerTypeId"]) === 3;
+        }
         return updatedFormData;
       });
       setFieldErrors(errors);
@@ -763,7 +766,7 @@ const FormBuilder = forwardRef(
                     )}
                     {field.type === SWITCH && (
                       <div
-                        className={`mb-4`}
+                        // className={`mb-4`}
                       >
                         {/* <input
                           className="form-check-input"

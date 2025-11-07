@@ -1,4 +1,4 @@
-import { COUNTER, IMAGE, MULTI_SELECT, SELECT, SWITCH, TEXT } from "../../components/Common/Const";
+import { COUNTER, DATE_TIME_PICKER, IMAGE, MULTI_SELECT, SELECT, SWITCH, TEXT } from "../../components/Common/Const";
 
 export const PlayerFields = [
     {
@@ -53,13 +53,6 @@ export const PlayerFields = [
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
-        type: SWITCH,
-        name: "isLeftHandedBatting",
-        label: "Is Left Hand Batting",
-        labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 4, lg: 4 }
-    },
-    {
         type: SELECT,
         name: "bowlingStyleId",
         label: "Bowling Style",
@@ -71,6 +64,14 @@ export const PlayerFields = [
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
+    {
+        type: SWITCH,
+        name: "isLeftHandedBatting",
+        label: "Is Left Hand Batting",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
+    },
+    
     {
         type: SELECT,
         name: "bowlingTypeId",
@@ -89,8 +90,11 @@ export const PlayerFields = [
     },
     {
         type: SWITCH,
+        dependsOnField: "playerTypeId",
+        dependsOnValue: 3,
         name: "isKipper",
         label: "Is Keeper",
+        defaultValue: true,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
@@ -149,14 +153,32 @@ export const PlayerFields = [
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
-        type: IMAGE,
-        name: "image",
-        label: "Player Image",
+        type: SWITCH,
+        name: "isActive",
+        label: "Is Active",
+        defaultValue: true,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
+    },
+    {
+        name: "birthDate",
+        label: "DOB",
+        // isRequired: true,
+        // customStyle: {
+        //   maxWidth: "600px",
+        // },
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 4, lg: 4 },
-        isValidateImage: true,
-        validateWidth:310,
-        validateHeight:300
+        type: DATE_TIME_PICKER,
+    },
+    
+    {
+        type: SWITCH,
+        name: "isMen",
+        label: "Is Men",
+        defaultValue: true,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
         name: "tpId",
@@ -166,19 +188,14 @@ export const PlayerFields = [
         fieldColspan: { xs: 12, md: 4, lg: 4 },
     },
     {
-        type: SWITCH,
-        name: "isActive",
-        label: "Is Active",
-        defaultValue: true,
+        type: IMAGE,
+        name: "image",
+        label: "Player Image",
         labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 4, lg: 4 }
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
+        isValidateImage: true,
+        validateWidth:310,
+        validateHeight:300
     },
-    {
-        type: SWITCH,
-        name: "isMen",
-        label: "Is Men",
-        defaultValue: true,
-        labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 4, lg: 4 }
-    },
+    
 ]
