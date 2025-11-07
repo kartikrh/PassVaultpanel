@@ -517,7 +517,7 @@ const Index = () => {
   const handleUpdate = async (e) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/admin/tournamentTeamPoints/import`, {"refId" : e.tpId, "refType": 7 , "sourceId": 3})
+      .post(`/admin/autoImportData/save`, {"refId" : e?.tpId, "refType": 8 , "sourceId": 3})
       .then((response) => {
         fetchData();
         dispatch(
@@ -1143,7 +1143,7 @@ const Index = () => {
       dataIndex: "",
       key: "",
       render: (text, record) => {
-        if (record.isPointTable && record.tpId) {
+        // if (record.isPointTable && record.tpId) {
           return (
             <Tooltip
               title="Update"
@@ -1160,8 +1160,8 @@ const Index = () => {
               </Button>
             </Tooltip>
           );
-        }
-        return null; // render nothing if condition fails
+        // }
+        // return null; // render nothing if condition fails
       },
 
       style: { width: "10%" },
