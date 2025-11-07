@@ -53,22 +53,55 @@ const PartnershipAccordian = ({ partnerships, overBalls, teamDetails, overHistor
         setExpanded(isExpanded ? panel : false);
     };
     // Sort keys to put current batting team first
-    const sortedKeys = Object.keys(groupedOvers).sort((a, b) => {
-        const [inningsA, teamIdA] = a.split('_');
-        const [inningsB, teamIdB] = b.split('_');
+    // const sortedKeys = Object.keys(groupedOvers).sort((a, b) => {
+    //     const [inningsA, teamIdA] = a.split('_');
+    //     const [inningsB, teamIdB] = b.split('_');
 
-        if (currentOver) {
-            const isCurrentA = inningsA === currentOver.currentInnings.toString() &&
-                teamIdA === currentOver.teamId.toString();
-            const isCurrentB = inningsB === currentOver.currentInnings.toString() &&
-                teamIdB === currentOver.teamId.toString();
+    //     if (currentOver) {
+    //         const isCurrentA = inningsA === currentOver.currentInnings.toString() &&
+    //             teamIdA === currentOver.teamId.toString();
+    //         const isCurrentB = inningsB === currentOver.currentInnings.toString() &&
+    //             teamIdB === currentOver.teamId.toString();
 
-            if (isCurrentA) return 1;
-            if (isCurrentB) return -1;
-        }
+    //         if (isCurrentA) return 1;
+    //         if (isCurrentB) return -1;
+    //     }
 
-        return b.localeCompare(a);
-    });
+    //     return b.localeCompare(a);
+    // });
+
+    const sortedKeys = React.useMemo(() => {
+        const keys = Object.keys(groupedOvers || {});
+        if (!keys.length) return [];
+
+        return keys.sort((a, b) => {
+            const [inningsA, teamIdA] = a.split('_').map(Number);
+            const [inningsB, teamIdB] = b.split('_').map(Number);
+
+            if (currentOver) {
+            const isCurrentA =
+                inningsA === currentOver.currentInnings &&
+                teamIdA === currentOver.teamId;
+            const isCurrentB =
+                inningsB === currentOver.currentInnings &&
+                teamIdB === currentOver.teamId;
+
+            // Move the current innings/team to the top
+            if (isCurrentA && !isCurrentB) return -1;
+            if (!isCurrentA && isCurrentB) return 1;
+            }
+
+            // Sort by innings DESCENDING (2 before 1)
+            if (inningsA > inningsB) return -1;
+            if (inningsA < inningsB) return 1;
+
+            // Then by teamId ASCENDING within the same innings
+            if (teamIdA < teamIdB) return -1;
+            if (teamIdA > teamIdB) return 1;
+
+            return 0;
+        });
+    }, [groupedOvers, currentOver]);
     const [expanded, setExpanded] = React.useState(sortedKeys[0]);
 
     const renderPartnerships = (key, partnershipsData, team) => {

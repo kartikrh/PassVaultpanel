@@ -135,7 +135,41 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
     // }, [currentOver]);
 
     // Sort keys to put current batting team first
-    const sortedKeys = allteams.sort((a, b) => b.teamBattingOrder - a.teamBattingOrder)?.map((item) => `${item.currentInnings}_${item.teamId}`)
+    // const sortedKeys = allteams.filter((i) => i.teamScore != null && i.teamOver != null).sort((a, b) => b.teamBattingOrder - a.teamBattingOrder)?.map((item) => `${item.currentInnings}_${item.teamId}`)
+    
+    const sortedKeys = React.useMemo(() => {
+        const keys = Object.keys(groupedOvers || {});
+        if (!keys.length) return [];
+
+        return keys.sort((a, b) => {
+            const [inningsA, teamIdA] = a.split('_').map(Number);
+            const [inningsB, teamIdB] = b.split('_').map(Number);
+
+            if (currentOver) {
+            const isCurrentA =
+                inningsA === currentOver.currentInnings &&
+                teamIdA === currentOver.teamId;
+            const isCurrentB =
+                inningsB === currentOver.currentInnings &&
+                teamIdB === currentOver.teamId;
+
+            //  Move the current innings/team to the top
+            if (isCurrentA && !isCurrentB) return -1;
+            if (!isCurrentA && isCurrentB) return 1;
+            }
+
+            // Sort by innings DESCENDING (2 before 1)
+            if (inningsA > inningsB) return -1;
+            if (inningsA < inningsB) return 1;
+
+            // Then by teamId ASCENDING within the same innings
+            if (teamIdA < teamIdB) return -1;
+            if (teamIdA > teamIdB) return 1;
+
+            return 0;
+        });
+    }, [groupedOvers, currentOver]);
+
 
     // const sortedKeys = Object.keys(groupedOvers).sort((a, b) => {
     //     const [inningsA, teamIdA] = a.split('_');
@@ -163,7 +197,7 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
     }, [sortedKeys, hasInitialized]);
 
     useEffect(() => {
-        if (sortedKeys.length > 0 && (!expanded || expanded == undefined)) {
+        if (sortedKeys.length > 0 && (!expanded || expanded == false)) {
             setExpanded(sortedKeys[0]);
         }
     }, []);
