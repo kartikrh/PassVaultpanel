@@ -47,6 +47,7 @@ const Index = () => {
   
   const [tournamentList, setTournamentList] = useState([]);
   const [showtournamentList, setisShowTournamentList] = useState(false);
+  const [isTournamentFilter, setIsTournamentFilter] = useState(true);
   const [eventTypeRefId, setEventTypeRefId] = useState("");
   const [StickHeader,setStickHeader] = useState(true);
 
@@ -197,13 +198,13 @@ const Index = () => {
             setDataToDB({
               ...dataToDB,
               [`${selectedMarket?.isCompitition
-                ? "competitionId"
+                ? "competnId"
                 : selectedMarket?.isEvent
                   ? "eventId"
                   : "eventTypeId"
                 }`]: selectedMarket?.isCompitition ? record?.competitionID : selectedMarket?.isEvent ? record?.eventID : record?.eventTypeID,
               [`${selectedMarket?.isCompitition
-                ? "competitionName"
+                ? "competnName"
                 : selectedMarket?.isEvent
                   ? "eventName"
                   : "eventTypeName"
@@ -248,6 +249,20 @@ const Index = () => {
           size="sm"
           className="btn-primary"
           onClick={() => {
+
+            if (isTournamentFilter) {
+              if (!tournamentObject?.competitionId || tournamentObject?.competitionId == 0) {
+                dispatch(
+                  updateToastData({
+                    data: "Please select a tournament before importing.",
+                    title: "Import Error",
+                    type: ERROR,
+                  })
+                );
+                return;
+              }
+            }
+
             if(showtournamentList && tournamentObject?.competitionId != 0){
               setDataToDB({
                 ...dataToDB,
@@ -284,6 +299,8 @@ const Index = () => {
                 openDate: record?.eventDate,
                 venue: record?.venue || "",
                 compId: tournamentObject?.competitionId || 0,
+                competitionId: dataToDB?.competnId,
+                competitionName: dataToDB?.competnName || "",
               });
               addData({
                 ...dataToDB,
@@ -294,6 +311,8 @@ const Index = () => {
                 openDate: record?.eventDate,
                 venue: record?.venue || "",
                 compId: tournamentObject?.competitionId || 0,
+                competitionId: dataToDB?.competnId,
+                competitionName: dataToDB?.competnName || "",
               });
             }
           }}
@@ -352,13 +371,13 @@ const Index = () => {
             setDataToDB({
               ...dataToDB,
               [`${selectedMarket?.isCompitition
-                ? "competitionId"
+                ? "competnId"
                 : selectedMarket?.isEvent
                   ? "eventId"
                   : "eventTypeId"
                 }`]: selectedMarket?.isCompitition ? record?.competitionID : selectedMarket?.isEvent ? record?.eventID : record?.eventTypeID,
               [`${selectedMarket?.isCompitition
-                ? "competitionName"
+                ? "competnName"
                 : selectedMarket?.isEvent
                   ? "eventName"
                   : "eventTypeName"
@@ -394,6 +413,20 @@ const Index = () => {
           size="sm"
           className="btn-primary"
           onClick={() => {
+
+            if (isTournamentFilter) {
+              if (!tournamentObject?.competitionId || tournamentObject?.competitionId == 0) {
+                dispatch(
+                  updateToastData({
+                    data: "Please select a tournament before importing.",
+                    title: "Import Error",
+                    type: ERROR,
+                  })
+                );
+                return;
+              }
+            }
+            
             setDataToDB({
               ...dataToDB,
               marketName: text,
@@ -404,9 +437,9 @@ const Index = () => {
               runner: record?.runner,
               rateSource: rateSource,
               categoryType: record?.categoryType,
-              competitionName: tournamentObject?.competitionName || dataToDB?.competitionName,
+              competitionName: tournamentObject?.competitionName || dataToDB?.competnName,
               compId: tournamentObject?.competitionId || 0,
-              competitionId: tournamentObject?.compRefId || dataToDB?.competitionId
+              competitionId: tournamentObject?.compRefId || dataToDB?.competnId
             });
             addMarketData({
               ...dataToDB,
@@ -418,9 +451,9 @@ const Index = () => {
               runner: record?.runner,
               rateSource: rateSource,
               categoryType: record?.categoryType,
-              competitionName: tournamentObject?.competitionName || dataToDB?.competitionName,
+              competitionName: tournamentObject?.competitionName || dataToDB?.competnName,
               compId: tournamentObject?.competitionId || 0,
-              competitionId: tournamentObject?.compRefId || dataToDB?.competitionId
+              competitionId: tournamentObject?.compRefId || dataToDB?.competnId
             });
           }}
         >
@@ -559,6 +592,16 @@ const Index = () => {
   // }, [selectedMarket]);
 
   useEffect(() => {
+    if (!isTournamentFilter) {
+      setTournamentObject({
+        competitionId: 0,
+        competitionName: "",
+        compRefId: ""
+      });
+    }
+  }, [isTournamentFilter]);
+
+  useEffect(() => {
     dispatch(
       setSelectedMarketHistory([
         {
@@ -606,6 +649,8 @@ const Index = () => {
             showtournamentList={showtournamentList}
             tournamentList = {tournamentList}
             onTournamentisChanges = {handleTournamentObjectClick}
+            isTournamentFilter={isTournamentFilter}
+            setIsTournamentFilter={setIsTournamentFilter}
             setStickHeader = {StickHeader}
             serverCurrentPage={currentPage}
             serverPageSize={pageSize}
