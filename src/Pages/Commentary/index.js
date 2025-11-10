@@ -1599,7 +1599,7 @@ const Index = () => {
       ),
       key: "eventDate",
       sort: true,
-      sticky: windowWidth > 420 ? true : false,
+      sticky: windowWidth > 1020 ? true : false,
       style: { width: "10%", left: 0 },
     },
     {
@@ -1659,8 +1659,8 @@ const Index = () => {
       ),
       key: "eventRefId",
       sort: true,
-      sticky: windowWidth > 420 ? true : false,
-      style: { width: 100, left: 150 },
+      sticky: windowWidth > 1020 ? true : false,
+      style: { width: 100, left: 110 },
     },
     // {
     //   title: "Competition",
@@ -1737,8 +1737,8 @@ const Index = () => {
       ),
       key: "eventName",
       sort: true,
-      sticky: windowWidth > 420 ? true : false,
-      style: { width: 100, left: 250 },
+      sticky: windowWidth > 1020 ? true : false,
+      style: { width: 100, left: 200 },
     },
     {
       title: "Match Type",
@@ -1857,53 +1857,98 @@ const Index = () => {
       key: "pitchAge",
       style: { width: "10%" },
     },
+    // {
+    //   title: "Show",
+    //   key: "isClientShow",
+    //   render: (text, record) => (
+    //     <Tooltip
+    //       title={"Show/Hide Client"}
+    //       color={"#e8e8ea"}
+    //       overlayInnerStyle={{ color: "#000" }}
+    //     >
+    //       <Button
+    //         color={`${record.isClientShow ? "primary" : "danger"}`}
+    //         size="sm"
+    //         className="btn"
+    //         onClick={() => {
+    //           handlePermissions("isClientShow", record, record?.isClientShow);
+    //         }}
+    //       >
+    //         <i
+    //           className={`bx ${record?.isClientShow ? "bx-check" : "bx-block"}`}
+    //         ></i>
+    //       </Button>
+    //     </Tooltip>
+    //   ),
+    //   style: { width: "2%", textAlign: "center" },
+    // },
+    // {
+    //   title: "Active",
+    //   key: "isActive",
+    //   render: (text, record) => (
+    //     <Tooltip
+    //       title={"Commentary"}
+    //       color={"#e8e8ea"}
+    //       overlayInnerStyle={{ color: "#000" }}
+    //     >
+    //       <Button
+    //         color={`${record.isActive ? "primary" : "danger"}`}
+    //         size="sm"
+    //         className="btn"
+    //         onClick={() => {
+    //           handleActiveInactive("isActive", record, record?.isActive);
+    //         }}
+    //       >
+    //         <i
+    //           className={`bx ${record?.isActive ? "bx-check" : "bx-block"}`}
+    //         ></i>
+    //       </Button>
+    //     </Tooltip>
+    //   ),
+    //   style: { width: "2%", textAlign: "center" },
+    // },
     {
-      title: "Show",
-      key: "isClientShow",
-      render: (text, record) => (
-        <Tooltip
-          title={"Show/Hide Client"}
-          color={"#e8e8ea"}
-          overlayInnerStyle={{ color: "#000" }}
-        >
-          <Button
-            color={`${record.isClientShow ? "primary" : "danger"}`}
-            size="sm"
-            className="btn"
-            onClick={() => {
-              handlePermissions("isClientShow", record, record?.isClientShow);
-            }}
-          >
-            <i
-              className={`bx ${record?.isClientShow ? "bx-check" : "bx-block"}`}
-            ></i>
-          </Button>
-        </Tooltip>
-      ),
-      style: { width: "2%", textAlign: "center" },
-    },
-    {
-      title: "Active",
+      title: "Actions",
       key: "isActive",
       render: (text, record) => (
-        <Tooltip
-          title={"Commentary"}
-          color={"#e8e8ea"}
-          overlayInnerStyle={{ color: "#000" }}
-        >
-          <Button
-            color={`${record.isActive ? "primary" : "danger"}`}
-            size="sm"
-            className="btn"
-            onClick={() => {
-              handleActiveInactive("isActive", record, record?.isActive);
-            }}
+        <>
+          <Tooltip
+            title={"Show/Hide Client"}
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
           >
-            <i
-              className={`bx ${record?.isActive ? "bx-check" : "bx-block"}`}
-            ></i>
-          </Button>
-        </Tooltip>
+            <Button
+              color={`${record.isClientShow ? "primary" : "danger"}`}
+              size="sm"
+              className="btn me-2"
+              onClick={() => {
+                handlePermissions("isClientShow", record, record?.isClientShow);
+              }}
+            >
+              <i
+                className={`bx ${record?.isClientShow ? "bx-check" : "bx-block"}`}
+              ></i>
+            </Button>
+          </Tooltip>
+          <Tooltip
+            title={"Active"}
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            <Button
+              color={`${record.isActive ? "primary" : "danger"}`}
+              size="sm"
+              className="btn"
+              onClick={() => {
+                handleActiveInactive("isActive", record, record?.isActive);
+              }}
+            >
+              <i
+                className={`bx ${record?.isActive ? "bx-check" : "bx-block"}`}
+              ></i>
+            </Button>
+          </Tooltip>
+        </>
       ),
       style: { width: "2%", textAlign: "center" },
     },
