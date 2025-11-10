@@ -55,12 +55,16 @@ export const notificationConfigField = [
           <span><b>bowlingteam:</b> - Bowling Team, </span>
           <span><b>bowlername:</b> - Bowler Name, </span>
           <span><b>battingteam:</b> - Batting Team, </span>
+          <span><b>runs:</b> - Runs, </span>
+          <span><b>wickets:</b> - Wickets, </span>
+          <span><b>overs:</b> - Overs, </span>
           <span><b>batsmanname:</b> - Batsman Name, </span>
           <span><b>batsmanrun:</b> - Batsman Runs, </span>
+          <span><b>batsmanball:</b> - Batsman Balls, </span>
           <span><b>wickettype:</b> - Wicket Type, </span>
           <span><b>teamScore:</b> - Team Score, </span>
           <span><b>wonremark:</b> - Won Remark, </span>
-          <span><b>boundary:</b> - Boundary, </span>
+          <span><b>boundarytype:</b> - Boundary Type, </span>
           <span><b>result:</b> - Result, </span>
           <span><b>rmk:</b> - Remark</span>
         </div>
