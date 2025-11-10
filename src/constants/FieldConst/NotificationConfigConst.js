@@ -33,6 +33,15 @@ export const notificationConfigField = [
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
   {
+    name: "title",
+    label: "Title",
+    isRequired: true,
+    parentclassName: "",
+    type: TEXT_EDITOR,
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 10, lg: 10 },
+  },
+  {
     name: "content",
     label: "Content",
     isRequired: true,
