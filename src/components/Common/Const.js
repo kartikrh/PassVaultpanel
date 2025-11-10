@@ -43,6 +43,7 @@ export const TAB_CLIENT = "Client";
 export const TAB_ClientSocket = "ClientSocket";
 export const TAB_EntitySocket = "EntitySocket";
 export const TAB_COMMENTARY = "Commentary";
+export const TAB_VIEWS_REPORT = "Views Report";
 export const TAB_COMMENTARY_HISTORY = "Commentary History";
 export const TAB_COMMENTARY_LIST = "Commentary List";
 export const TAB_COMMENTARY_LOGS = "Commentary Logs";
