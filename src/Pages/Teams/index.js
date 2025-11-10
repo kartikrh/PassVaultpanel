@@ -322,109 +322,72 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
+      title: "Event Type",
+      dataIndex: "eventType",
+      key: "eventType",
+      style: { width: "10%" },
+      sort: true,
+    },
+    {
       title: "Image",
       dataIndex: "image",
       printType: "ignore",
       render: (text, record) => (
-        <div className="flex-shrink-0">
-          {text ? (
-            <div>
-              <img
-                className="avatar-xs "
-                alt=""
-                src={text}
-              />
-            </div>
-          ) : (
-            <Avatar src="#" alt="ET">
-              Image
-            </Avatar>
-          )}
+        <div className="d-flex align-items-center justify-content-start gap-2">
+          <div className="flex-shrink-0">
+            {text ? (
+              <div>
+                <img
+                  className="avatar-xs "
+                  alt=""
+                  src={text}
+                />
+              </div>
+            ) : (
+              <Avatar src="#" alt="ET">
+                Image
+              </Avatar>
+            )}
+          </div>
+          <div className="flex-shrink-0">
+            {record?.jersey ? (
+              <div>
+                <img
+                  className="avatar-xs "
+                  alt=""
+                  src={record?.jersey}
+                />
+              </div>
+            ) : (
+              <Avatar src="#" alt="ET">
+                Image
+              </Avatar>
+            )}
+          </div>
         </div>
       ),
       key: "image",
       style: { width: "10%" },
     },
     {
-      title: "Jersey Image",
-      dataIndex: "jersey",
-      printType: "ignore",
-      render: (text, record) => (
-        <div className="flex-shrink-0">
-          {text ? (
-            <div>
-              <img
-                className="avatar-xs "
-                alt=""
-                src={text}
-              />
-            </div>
-          ) : (
-            <Avatar src="#" alt="ET">
-              Image
-            </Avatar>
-          )}
-        </div>
-      ),
-      key: "jersey",
-      style: { width: "10%", textAlign: "left" },
-    },
-    {
-      title: "",
-      dataIndex: "",
-      key: "",
-      render: (text, record) => {
-        // const isMatchingCompetition =
-        //   record?.competitionId === filledDropdownData?.competition?.value;
-          
-        // if (userRefData.competitionId != 0 && !isMatchingCompetition) return null; 
-
-        return (
-          <Tooltip
-            title={"Players"}
-            color={"#e8e8ea"}
-            overlayInnerStyle={{ color: "#000" }}
-          >
-            <Button
-              color={"primary"}
-              size="sm"
-              className="btn"
-              onClick={() => handlePlayerClick(record)}
-            >
-              P
-            </Button>
-          </Tooltip>
-        );
-      },
-      style: { width: "5%" },
-      // sort: true,
-    },
-    {
-      title: "Team Name",
+      title: "Team",
       dataIndex: "teamName",
       key: "teamName",
-      style: { width: "20%" },
-      sort: true,
-    },
-    {
-      title: "Event Type",
-      dataIndex: "eventType",
-      key: "eventType",
-      style: { width: "20%" },
+      style: { width: "10%" },
       sort: true,
     },
     {
       title: "Short Name",
       dataIndex: "teamShortName",
       key: "teamShortName",
-      style: { width: "20%" },
+      style: { width: "10%" },
     },
     {
       title: "Country",
       dataIndex: "countryName",
       render: (text, record) => text !== null ? text : "N/A",
       key: "countryName",
-      style: { width: "20%" },
+      style: { width: "10%" },
     },
     {
       title: "Snap",
@@ -448,10 +411,24 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Generate Image",
+      title: "",
       key: "generateImage",
       render: (text, record) => (
-        <>
+        <div className="d-flex align-items-center justify-content-start gap-2">
+          <Tooltip
+            title={"Players"}
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            <Button
+              color={"primary"}
+              size="sm"
+              className="btn"
+              onClick={() => handlePlayerClick(record)}
+            >
+              P
+            </Button>
+          </Tooltip>
           <Tooltip title={"Generate Image"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
             <Button
               // color={"info"}
@@ -465,7 +442,7 @@ const Index = () => {
               GI
             </Button>
           </Tooltip>
-        </>
+        </div>
       ),
       style: { width: "2%", textAlign: "center" },
     },

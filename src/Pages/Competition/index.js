@@ -22,7 +22,7 @@ import {
   TAB_COMPETITION,
 } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
-import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateUtcFormatWithoutSec24, convertDateUTCToLocalWithoutSec24 } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import CompetitionMarketTemplateModel from "../../components/Model/CompetitionMarketTemplateModel";
 import LoadDataModal from "../../components/Model/LoadDataModal";
@@ -70,7 +70,11 @@ const Index = () => {
   const [tableSearchedData, setTableSearchedData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(globalPageSize || 10);
-
+  const globalDateType = JSON.parse(localStorage.getItem("DateType"))
+  const [dateType, setDateType] = useState(globalDateType || {
+    label: "Local Timezone",
+    value: 1,
+  });
   const fetchUserPermission = () => {
     const refData = JSON.parse(localStorage.getItem("refData"));
     setUserRefData(refData);
@@ -733,8 +737,8 @@ const Index = () => {
     (commentaryPermission || commentaryListPermission) &&
     {
       title: "",
-      dataIndex: "",
-      key: "",
+      dataIndex: "commentaryList",
+      key: "commentaryList",
       render: (text, record) => {
         
         const isMatchingCompetition =
@@ -743,44 +747,38 @@ const Index = () => {
         if (userRefData.competitionId != 0 && !isMatchingCompetition) return null; 
 
         return (
-          <Tooltip
-            title={"Commentary List"}
-            color={"#e8e8ea"}
-            overlayInnerStyle={{ color: "#000" }}
-          >
-            <Button
-              color={"primary"}
-              size="sm"
-              className="btn"
-              onClick={() => handleCommentaryClick(record)}
+          <div className="d-flex align-items-center justify-content-start gap-2">
+            <Tooltip
+              title={"Commentary List"}
+              color={"#e8e8ea"}
+              overlayInnerStyle={{ color: "#000" }}
             >
-              CL
-            </Button>
-          </Tooltip>
+              <Button
+                color={"primary"}
+                size="sm"
+                className="btn"
+                onClick={() => handleCommentaryClick(record)}
+              >
+                CL
+              </Button>
+            </Tooltip>
+            <Tooltip title={"Event"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+              <Button
+                color={"primary"}
+                size="sm"
+                className="btn"
+                onClick={() => {
+                  handleEventClick(record)
+                  // handlePermissions("isHighlight", record, record.isHighlight);
+                }}
+              >
+                E
+              </Button>
+            </Tooltip>
+          </div>
         );
       },
       // sort: true,
-      style: { width: "10%" },
-    },
-    {
-      title: "",
-      dataIndex: "",
-      key: "",
-      render: (text, record) => (
-      <Tooltip title={"Event"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-        <Button
-          color={"primary"}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            handleEventClick(record)
-            // handlePermissions("isHighlight", record, record.isHighlight);
-          }}
-        >
-          E
-        </Button>
-      </Tooltip>
-      ),
       style: { width: "10%" },
     },
     {
@@ -1166,6 +1164,34 @@ const Index = () => {
 
       style: { width: "10%" },
     },
+    {
+      title: "Start Date",
+      dataIndex: "startDate",
+      render: (text, record) => (
+        <span style={{ cursor: "pointer" }}>
+          {dateType?.value == 1
+            ? convertDateUTCToLocalWithoutSec24(text, "index")
+            : convertDateUtcFormatWithoutSec24(text, "index")}
+        </span>
+      ),
+      key: "startDate",
+      style: { width: "10%" },
+      sort: true,
+    },
+    {
+      title: "End Date",
+      dataIndex: "endDate",
+      render: (text, record) => (
+        <span style={{ cursor: "pointer" }}>
+          {dateType?.value == 1
+            ? convertDateUTCToLocalWithoutSec24(text, "index")
+            : convertDateUtcFormatWithoutSec24(text, "index")}
+        </span>
+      ),
+      key: "endDate",
+      style: { width: "10%" },
+      sort: true,
+    },
   ];
 
   const handleReset = (value) => {
@@ -1198,6 +1224,38 @@ const Index = () => {
     isMen: true,
     loadData: true,
     isVirtual: true,
+    isDateTypeSelect: true,
+    commentaryStatus: true,
+    statusOptions: [
+      {
+        label: "All",
+        value: 0,
+      },
+      {
+        label: "Open",
+        value: 1,
+      },
+      {
+        label: "Toss Done",
+        value: 2,
+      },
+      {
+        label: "In Progress",
+        value: 3,
+      },
+      {
+        label: "End",
+        value: 4,
+      },
+      {
+        label: "Innings Break",
+        value: 5,
+      },
+      {
+        label: "Cancel",
+        value: 10,
+      },
+    ],
     virtualOptions: [
       {
         label: "All",
@@ -1250,6 +1308,8 @@ const Index = () => {
             selectedTableElementsLogs={selectedTableElements}
             loadDataModelFunction={setLoadDataModelVisable}
             onAddNavigate={"/addCompetition"}
+            dateType={dateType}
+            setDateType={setDateType}
             handleReset={handleReset}
             isAddPermission={checkPermission(
               permissionObj,
