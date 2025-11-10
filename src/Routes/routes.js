@@ -161,6 +161,7 @@ import WhiteLabel from "../Pages/WhiteLabel";
 import AddWhiteLabel from "../Pages/WhiteLabel/AddWhiteLabel.jsx";
 import { ShowHide } from "../Pages/WhiteLabel/EventType/index.js";
 import Venue from "../Pages/Venue";
+import ViewsReport from "../Pages/ViewsReport";
 import AddVenue from "../Pages/Venue/AddVenue.jsx";
 import AddCardType from "../Pages/CardType/AddCardType.jsx";
 import ImportEntity from "../Pages/ImportEntity/ImportEntityTable.js";
@@ -341,6 +342,7 @@ const authProtectedRoutes = [
   { path: "/dataproviderMarkets", component: <EventDetails /> },
   { path: "/iccRanking", component: <IccRankings /> },
   { path: "/addRanking", component: <AddRankings /> },
+  { path: "/viewsReport", component: <ViewsReport /> },
   { path: "/streamingList", component: <StreamingList /> },
   {
     path: "/changePassword",
