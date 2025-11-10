@@ -1232,6 +1232,10 @@ const Index = forwardRef(
           value: 0,
           label: "Commentary Status",
         },
+        commStatus: {
+          value: 0,
+          label: "Competition Status",
+        },
         isVirtual: {
           value: 0,
           label: "Virtual Status",
@@ -2446,6 +2450,37 @@ const Index = forwardRef(
                                 }
                               }}
                               options={tableElement?.statusOptions?.map(
+                                (item) => ({
+                                  label: item?.label,
+                                  value: item?.value,
+                                })
+                              )}
+                              classNamePrefix="filter-dropdown"
+                            />
+                          ) : null}
+                          {tableElement?.commStatus ? (
+                            <Select
+                              value={selectedTableElements?.commStatus}
+                              placeholder="Commentary Status"
+                              styles={{
+                                control: (provided) => ({
+                                  ...provided,
+                                  width: 200,
+                                }), // Adjust width as needed
+                              }}
+                              onChange={(e) => {
+                                if (
+                                  e?.value !==
+                                  selectedTableElements?.commStatus?.value
+                                ) {
+                                  handleTableActions("commStatus", e);
+                                  setSelectedTableElements({
+                                    ...selectedTableElements,
+                                    commStatus: e,
+                                  });
+                                }
+                              }}
+                              options={tableElement?.commStatusOptions?.map(
                                 (item) => ({
                                   label: item?.label,
                                   value: item?.value,
