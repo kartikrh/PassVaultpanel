@@ -810,11 +810,12 @@ const FormBuilder = forwardRef(
                         />
                       </>
                     )}
-                    {field.type === DATE_TIME_PICKER && (
+                    {/* {field.type === DATE_TIME_PICKER && (
                       <input
                         className="form-control"
                         style={field?.customStyle}
-                        type="datetime-local"
+                        // type="datetime-local"
+                        type={field.type === false ? "date" : "datetime-local"}
                         disabled={disabledFields?.[field.name]}
                         value={
                           convertDateUTCToLocal(formData[field.name]) || ""
@@ -822,7 +823,29 @@ const FormBuilder = forwardRef(
                         id={field.name}
                         onChange={(e) => handleChange(field, e.target.value)}
                       />
+                    )} */}
+                    {field.type === DATE_TIME_PICKER && (
+                      <input
+                        className="form-control"
+                        style={field?.customStyle}
+                        type={field?.isDateOnly ? "date" : "datetime-local"}  // ✅ controlled by a flag
+                        disabled={disabledFields?.[field.name]}
+                        value={
+                          field?.isDateOnly
+                            ? convertDateUTCToLocal(formData[field.name])?.split("T")[0] || "" // show only date
+                            : convertDateUTCToLocal(formData[field.name]) || ""
+                        }
+                        id={field.name}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          handleChange(
+                            field,
+                            field?.isDateOnly ? `${val}T00:00:00` : val // ✅ ensures consistent backend format
+                          );
+                        }}
+                      />
                     )}
+
                     {field.type === COUNTER && (
                       <input
                         className="form-control"
