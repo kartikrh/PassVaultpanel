@@ -368,6 +368,7 @@ const Commentary = (props) => {
     }
     console.log("overHistory", overHistory)
     console.log("ballHistory", ballHistory)
+    console.log("partnerShipHistory", partnershipHistory);
     const handleInningsUpdate = (battingTeamId) => {
         let updatedInningsTeam = [{ ...teams?.[BATTING_TEAM], isBattingComplete: true }]
         const runDifference = (teams[BATTING_TEAM]?.teamScore || 0) + (teams[BATTING_TEAM]?.teamLeadRuns || 0) - (teams[BATTING_TEAM]?.teamTrialRuns || 0)
@@ -1765,6 +1766,10 @@ const Commentary = (props) => {
 
     const onUndoLastInnings = async () => {
         try {
+            if(currentBall?.overCount > 0){
+               setUndoErrorModal("Cannot Undo Innings From Mid of Scoring");
+                return; 
+            }
             console.log("=== UNDO INNINGS START ===");
             console.log("Current Innings:", commentaryDetails.currentInnings);
 
@@ -2185,6 +2190,7 @@ const Commentary = (props) => {
                     currentInnings: innings,
                 },
                 commentaryTeams: updatedTeams,
+                commentaryOvers: restoredOver,
             };
             // const updatedOverBallDisplay = {};
             // Object.keys(overBallByBallDisplay).forEach(overKey => {
@@ -2275,6 +2281,7 @@ const Commentary = (props) => {
             console.error("Error:", error);
             console.error("Stack:", error.stack);
             setUndoErrorModal("An error occurred while undoing innings: " + error.message);
+            setUndoInningsPopup(false);
         }
     };
 
