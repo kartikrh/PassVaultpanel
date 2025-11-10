@@ -281,10 +281,17 @@ const Index = () => {
       sort: true,
     },
     {
+      title: "Title",
+      dataIndex: "title",
+      key: "title",
+      style: { width: "10%" },
+      sort: true,
+    },
+    {
       title: "Content",
       dataIndex: "content",
       key: "content",
-      style: { width: "84%" },
+      style: { width: "74%" },
       sort: true,
     },
     {
