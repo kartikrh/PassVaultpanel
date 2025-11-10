@@ -17,7 +17,8 @@ const CommentaryAction = ({
     endInnings,
     paneltyRuns,
     retiredHurt,
-    commentaryId }) => {
+    commentaryId,
+    toggleUndoInnings }) => {
     const [showRunsPopup, setShowRunsPopup] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [showRevertModal, setShowRevertModal] = useState(false);
@@ -56,42 +57,47 @@ const CommentaryAction = ({
                 <ModalBody>
                     <div className='m-3'>Please Select an Action :</div>
                     <Row>
-                        <Col role="button" className="score-button" xs={3} md={3} lg={3}
-                            onClick={() => updateExtras(NO_BALL_BYE)}>
-                            No Ball Bye
-                        </Col>
-                        <Col role="button" className="score-button" xs={3} md={3} lg={3}
-                            onClick={() => updateExtras(NO_BALL_LEG_BYE)}>
-                            No Ball Leg Bye
-                        </Col>
-                        <Col role="button" className="score-button" xs={3} md={3} lg={3}
-                            onClick={() => setShowRunsPopup(true)}>
-                            <img className="button-icon" src="icons/5.png" alt="Icon" />
-                        </Col>
-                        <Col role="button" className="score-button" xs={3} md={3} lg={3}
-                            onClick={paneltyRuns}>
-                            <img className="button-icon" src="icons/p.png" alt="Icon" />
-                            enalty
-                        </Col>
-                        <Col role="button" className="score-button green-success-button" xs={3} md={3} lg={3}
+                         <Col role="button" className="score-button green-success-button" xs={4} md={4} lg={4}
                             onClick={changeOver}>
                             <img className="button-icon" src="icons/end-over.png" alt="Icon" />
                             End Over
                         </Col>
-                        <Col role="button" className="score-button red-warning-button" xs={3} md={3} lg={3}
+                        <Col role="button" className="score-button" xs={4} md={4} lg={4}
+                            onClick={() => updateExtras(NO_BALL_LEG_BYE)}>
+                            No Ball Leg Bye
+                        </Col>
+                         <Col role="button" className="score-button red-warning-button" xs={4} md={4} lg={4}
                             onClick={endInnings}>
                             <img className="button-icon" src="icons/end-innings.png" alt="Icon" />
                             End Innings
                         </Col>
-                        <Col role="button" className="score-button" xs={3} md={3} lg={3}
+                         <Col role="button" className="score-button" xs={4} md={4} lg={4}
+                            onClick={() => updateExtras(NO_BALL_BYE)}>
+                            No Ball Bye
+                        </Col>
+                        <Col role="button" className="score-button" xs={4} md={4} lg={4}
+                            onClick={paneltyRuns}>
+                            <img className="button-icon" src="icons/p.png" alt="Icon" />
+                            enalty
+                        </Col>
+                        <Col role="button" className="score-button" xs={4} md={4} lg={4}
+                            onClick={() => setShowRunsPopup(true)}>
+                            <img className="button-icon" src="icons/5.png" alt="Icon" />
+                        </Col>
+                        <Col role="button" className="score-button yellow-information-button" xs={4} md={4} lg={4}
+                            onClick={() => setShowRevertModal(true)}>
+                            <img className="button-icon" src="icons/revert.png" alt="Icon" />
+                            Revert to Toss
+                        </Col>
+                          <Col role="button" className="score-button" xs={4} md={4} lg={4}
                             onClick={retiredHurt}>
                             <img className="button-icon" src="icons/r.png" alt="Icon" />
                             etired Hurt
                         </Col>
-                        <Col role="button" className="score-button yellow-information-button" xs={3} md={3} lg={3}
-                            onClick={() => setShowRevertModal(true)}>
+                        <Col role="button" className="score-button yellow-information-button" xs={4} md={4} lg={4}
+                            onClick={() => toggleUndoInnings()}>
                             <img className="button-icon" src="icons/revert.png" alt="Icon" />
-                            Revert to Toss
+                            Undo Innings
                         </Col>
                     </Row>
                 </ModalBody>
