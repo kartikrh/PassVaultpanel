@@ -58,7 +58,8 @@ export const notificationConfigField = [
           <span><b>eventtype:</b> - Event Type, </span>
           <span><b>competition:</b> - Competition, </span>
           <span><b>eventname:</b> - Event Name, </span>
-          <span><b>eventdate:</b> - Event Date, </span>
+          <span><b>date:</b> - Event Date, </span>
+          <span><b>eventdate:</b> - Event Date Time, </span>
           <span><b>location:</b> - Location, </span>
           <span><b>tosswonby:</b> - Toss Won by, </span>
           <span><b>bowlingteam:</b> - Bowling Team, </span>
