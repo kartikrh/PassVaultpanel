@@ -1225,35 +1225,27 @@ const Index = () => {
     loadData: true,
     isVirtual: true,
     isDateTypeSelect: true,
-    commentaryStatus: true,
-    statusOptions: [
+    commStatus: true,
+    commStatusOptions: [
       {
         label: "All",
         value: 0,
       },
       {
-        label: "Open",
+        label: "Upcoming",
         value: 1,
       },
       {
-        label: "Toss Done",
+        label: "Started",
         value: 2,
       },
       {
-        label: "In Progress",
+        label: "Completed",
         value: 3,
       },
       {
-        label: "End",
+        label: "Stop",
         value: 4,
-      },
-      {
-        label: "Innings Break",
-        value: 5,
-      },
-      {
-        label: "Cancel",
-        value: 10,
       },
     ],
     virtualOptions: [
