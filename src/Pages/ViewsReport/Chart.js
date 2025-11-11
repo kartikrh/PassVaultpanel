@@ -18,8 +18,9 @@ const Chart = ({ eventData = [] }) => {
         month: "short",
         year: "numeric",
       });
+      const date = new Date(item.eventDate).toLocaleString();
       // Combine name and date (multi-line label)
-      return `${item.eventName}\n${eventDate}`;
+      return ` ${item.eventName} ${eventDate}`;
     });
 
     const views = eventData.map((item) => Number(item.views || 0));
@@ -45,8 +46,16 @@ const Chart = ({ eventData = [] }) => {
           },
         },
         dataLabels: {
-          enabled: true,
-          formatter: (val) => `${val}`,
+            enabled: true,
+            formatter: (val) => `${val}`,
+            style: {
+                colors: ["#ffffff"], // <-- This will now work!
+                fontSize: "14px",
+                fontWeight: 600,
+            },
+            background: {
+                enabled: false, // <-- Crucial line: Disable the background
+            },
         },
         colors: ["#0ab39c"],
         stroke: { width: 1 },
@@ -57,6 +66,7 @@ const Chart = ({ eventData = [] }) => {
             style: {
               fontSize: "12px",
               whiteSpace: "pre-line", // allows line break in labels
+              width: '10px'
             },
           },
           title: {
@@ -71,10 +81,16 @@ const Chart = ({ eventData = [] }) => {
           },
         },
         tooltip: {
+          x: {
+            formatter: (val, { dataPointIndex }) => {
+              const date = new Date(eventData[dataPointIndex].eventDate).toLocaleString();
+              return `${date} ${eventData[dataPointIndex].eventName}`;
+            },
+          },
           y: {
             formatter: (val, { dataPointIndex }) => {
               const date = new Date(eventData[dataPointIndex].eventDate).toLocaleString();
-              return `${val} views\n${eventNames[dataPointIndex]}\n${date}`;
+              return `${val}`;
             },
           },
         },
@@ -90,8 +106,8 @@ const Chart = ({ eventData = [] }) => {
           options={chartData.options}
           series={chartData.series}
           type="bar"
-          height={350}
           className="apex-charts"
+          height={600}
         />
       ) : (
         <p className="text-center">Loading chart...</p>
