@@ -366,9 +366,9 @@ const Commentary = (props) => {
         dispatch(addCommentaryScreenData(objToSave))
         setShowInningsChangePopup(undefined)
     }
-    console.log("overHistory", overHistory)
-    console.log("ballHistory", ballHistory)
-    console.log("partnerShipHistory", partnershipHistory);
+    // console.log("overHistory", overHistory)
+    // console.log("ballHistory", ballHistory)
+    // console.log("partnerShipHistory", partnershipHistory);
     const handleInningsUpdate = (battingTeamId) => {
         let updatedInningsTeam = [{ ...teams?.[BATTING_TEAM], isBattingComplete: true }]
         const runDifference = (teams[BATTING_TEAM]?.teamScore || 0) + (teams[BATTING_TEAM]?.teamLeadRuns || 0) - (teams[BATTING_TEAM]?.teamTrialRuns || 0)
@@ -1474,41 +1474,39 @@ const Commentary = (props) => {
         setCurrentWicket(undefined)
     }
     const handleUndoClick = () => {
-        console.log("currentBall", currentBall)
-        if (isSaving || isCommentaryBallLoading || currentBall?.commentaryBallByBallId === lastUndoId) return;
+        if (isSaving || isCommentaryBallLoading || !currentBall?.overCount || currentBall?.commentaryBallByBallId === lastUndoId) return;
         if (currentBall?.commentaryBallByBallId && (+currentBall?.overCount === +teams[BATTING_TEAM].teamOver)) {
             setLastUndoId(currentBall?.commentaryBallByBallId);
-            const isAnyTeamBattingComplete = allInningaTeams?.some(
-                team => team.currentInnings === commentaryDetails.currentInnings && team.isBattingComplete === true
-            );
+            
+            // const isAnyTeamBattingComplete = allInningaTeams?.some(
+            //     team => team.currentInnings === commentaryDetails.currentInnings && team.isBattingComplete === true
+            // );
 
-            const isAtStartOfCurrentInnings =
-                (parseFloat(teams[BATTING_TEAM]?.teamOver) === 0 || !teams[BATTING_TEAM]?.teamOver) &&
-                (teams[BATTING_TEAM]?.teamWicket === 0 || !teams[BATTING_TEAM]?.teamWicket) &&
-                ((currentOver.over || 0) === 0) &&
-                ((currentOver.ballCount || 0) === 0);
+            // const isAtStartOfCurrentInnings =
+            //     (parseFloat(teams[BATTING_TEAM]?.teamOver) === 0 || !teams[BATTING_TEAM]?.teamOver) &&
+            //     (teams[BATTING_TEAM]?.teamWicket === 0 || !teams[BATTING_TEAM]?.teamWicket) &&
+            //     ((currentOver.over || 0) === 0) &&
+            //     ((currentOver.ballCount || 0) === 0);
 
-            // SCENARIO 1: Within current innings undo
-            if (isAtStartOfCurrentInnings && isAnyTeamBattingComplete) {
-                console.log("✅ Undo Innings: Scenario 1 - Resume within current innings");
-                setUndoInningsPopup(true);
-                return;
-            }
+            // if (isAtStartOfCurrentInnings && isAnyTeamBattingComplete) {
+            //     console.log("✅ Undo Innings: Scenario 1 - Resume within current innings");
+            //     setUndoInningsPopup(true);
+            //     return;
+            // }
 
-            // SCENARIO 2: Previous innings undo
-            if (isAtStartOfCurrentInnings && commentaryDetails.currentInnings > 1) {
-                console.log("✅ Undo Innings: Scenario 2 - Go back to previous innings");
-                setUndoInningsPopup(true);
-                return;
-            }
+            // if (isAtStartOfCurrentInnings && commentaryDetails.currentInnings > 1) {
+            //     console.log("✅ Undo Innings: Scenario 2 - Go back to previous innings");
+            //     setUndoInningsPopup(true);
+            //     return;
+            // }
 
-            // Rest of your existing undo logic for balls, overs, etc.
-            if (!currentBall?.overCount) return;
+            // if (!currentBall?.overCount) return;
             // if (((currentOver.over || 0) === 0) && ((currentOver.ballCount || 0) === 0) && (currentBall.ballType === BALL_TYPE_OVER_COMPLETE)
             //     && ((currentBall.ballRun || 0) === 0) && ((currentBall.ballExtraRun || 0) === 0)) {
             //     setUndoInningsPopup(true)
             // } 
-            else if ((currentBall.ballType === BALL_TYPE_OVER_COMPLETE)
+
+            if ((currentBall.ballType === BALL_TYPE_OVER_COMPLETE)
                 && (currentBall.currentOverBalls === 0) && (currentBall.ballRun === 0)) setUndoOverPopup(true)
             else if (currentBall.ballType === BALL_TYPE_RETIRED_HURT) undoRetiredHurt()
             else if (currentBall.ballType === BALL_TYPE_BOWLER_RETIRED_HURT) undoSameOverNewBaller()
@@ -1965,17 +1963,6 @@ const Commentary = (props) => {
                     {
                         ...secondBattingTeam,
                         teamStatus: BOWLING_STATUS,
-                        teamScore: 0,
-                        teamWicket: 0,
-                        teamOver: "0.0",
-                        teamWideRuns: 0,
-                        teamByRuns: 0,
-                        teamLegByRuns: 0,
-                        teamNoBallRuns: 0,
-                        teamPenaltyRuns: 0,
-                        crr: 0,
-                        rrr: 0,
-                        isBattingComplete: false,
                     }
                 ];
 
@@ -2145,16 +2132,6 @@ const Commentary = (props) => {
                     {
                         ...previousBowlingTeam,
                         teamStatus: BOWLING_STATUS,
-                        teamScore: 0,
-                        teamWicket: 0,
-                        teamOver: "0.0",
-                        teamWideRuns: 0,
-                        teamByRuns: 0,
-                        teamLegByRuns: 0,
-                        teamNoBallRuns: 0,
-                        teamPenaltyRuns: 0,
-                        crr: 0,
-                        rrr: 0,
                     }
                 ];
             }
@@ -2191,6 +2168,7 @@ const Commentary = (props) => {
                 },
                 commentaryTeams: updatedTeams,
                 commentaryOvers: restoredOver,
+                commentaryPartnership: restoredPartnership,
             };
             // const updatedOverBallDisplay = {};
             // Object.keys(overBallByBallDisplay).forEach(overKey => {
