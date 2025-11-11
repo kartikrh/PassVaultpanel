@@ -2461,7 +2461,7 @@ const Index = forwardRef(
                           {tableElement?.commStatus ? (
                             <Select
                               value={selectedTableElements?.commStatus}
-                              placeholder="Commentary Status"
+                              placeholder="Competition Status"
                               styles={{
                                 control: (provided) => ({
                                   ...provided,
