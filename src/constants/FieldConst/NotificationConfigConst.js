@@ -33,6 +33,15 @@ export const notificationConfigField = [
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
   {
+    name: "title",
+    label: "Title",
+    isRequired: true,
+    parentclassName: "",
+    type: TEXT_EDITOR,
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 10, lg: 10 },
+  },
+  {
     name: "content",
     label: "Content",
     isRequired: true,
@@ -49,18 +58,23 @@ export const notificationConfigField = [
           <span><b>eventtype:</b> - Event Type, </span>
           <span><b>competition:</b> - Competition, </span>
           <span><b>eventname:</b> - Event Name, </span>
-          <span><b>eventdate:</b> - Event Date, </span>
+          <span><b>date:</b> - Event Date, </span>
+          <span><b>eventdate:</b> - Event Date Time, </span>
           <span><b>location:</b> - Location, </span>
           <span><b>tosswonby:</b> - Toss Won by, </span>
           <span><b>bowlingteam:</b> - Bowling Team, </span>
           <span><b>bowlername:</b> - Bowler Name, </span>
           <span><b>battingteam:</b> - Batting Team, </span>
+          <span><b>runs:</b> - Runs, </span>
+          <span><b>wickets:</b> - Wickets, </span>
+          <span><b>overs:</b> - Overs, </span>
           <span><b>batsmanname:</b> - Batsman Name, </span>
           <span><b>batsmanrun:</b> - Batsman Runs, </span>
+          <span><b>batsmanball:</b> - Batsman Balls, </span>
           <span><b>wickettype:</b> - Wicket Type, </span>
           <span><b>teamScore:</b> - Team Score, </span>
           <span><b>wonremark:</b> - Won Remark, </span>
-          <span><b>boundary:</b> - Boundary, </span>
+          <span><b>boundarytype:</b> - Boundary Type, </span>
           <span><b>result:</b> - Result, </span>
           <span><b>rmk:</b> - Remark</span>
         </div>

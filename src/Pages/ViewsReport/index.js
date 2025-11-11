@@ -6,6 +6,11 @@ import Pagination from "../../components/Pagination";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
 import Chart from "./Chart";
+import { PERMISSION_VIEW, TAB_VIEWS_REPORT } from "../../components/Common/Const";
+import { useSelector } from "react-redux";
+import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
+import { isEmpty } from "lodash";
+import { useNavigate } from "react-router-dom";
 
 const virtualStatusOptions = [
     {
@@ -53,6 +58,8 @@ const statusOptions = [
 ]
 
 const Index = () => {
+  const pageName = TAB_VIEWS_REPORT
+  const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   document.title = "Views Report";
   const globalPageSize = parseInt(localStorage.getItem("pageSize")) || 10;
 
@@ -62,7 +69,7 @@ const Index = () => {
   const [displayedData, setDisplayedData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const [pageSize, setPageSize] = useState(globalPageSize);
+  const [pageSize, setPageSize] = useState(globalPageSize > 20 ? 20 : globalPageSize);
   const [currentPage, setCurrentPage] = useState(1);
   const [total, setTotal] = useState(0);
 
@@ -87,6 +94,8 @@ const Index = () => {
       .split("T")[0]}T23:59:00`,
   });
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     eventTypeListOptions();
     pythonAPIData()
@@ -98,7 +107,17 @@ const Index = () => {
     }
   }, [eventTypeSelect])
 
+  // useEffect(() => {
+  //   fetchAndSetData();
+  // }, [eventTypeSelect, compSelect, commentaryStatusSelect, virtualStatusSelect, pythonApisSelect, isSearch]);
+  
   useEffect(() => {
+    if (
+      !checkPermission(permissionObj, pageName, PERMISSION_VIEW) &&
+      !isEmpty(permissionObj)
+    ) {
+      navigate("/dashboard");
+    }
     fetchAndSetData();
   }, [eventTypeSelect, compSelect, commentaryStatusSelect, virtualStatusSelect, pythonApisSelect, isSearch]);
 
@@ -152,7 +171,6 @@ const Index = () => {
       .catch((error) => { });
   };
 
-  console.log("isSearch", isSearch)
 
   const fetchAndSetData = async (resetToFirstPage = false) => {
     if (resetToFirstPage === true) return;
@@ -214,7 +232,6 @@ const Index = () => {
     () => (isServerPagination ? displayedData : displayedData),
     [isServerPagination, displayedData]
   );
-  console.log("data", data)
 
   return (
     <div className="page-content bg-white min-vh-100">
@@ -314,7 +331,7 @@ const Index = () => {
             className="me-2 py-2"
           />
         </div>
-        <Row className="align-items-center g-2 p-2 rounded shadow-sm">
+        <Row className="align-items-center g-2 p-2">
           {/* 🔹 Search Toggle (checkbox style button) */}
           <Col xs="auto">
             <Button
@@ -341,8 +358,8 @@ const Index = () => {
           </Col>
 
           {/* 🔹 To Date */}
-          <Col xs="auto" className="d-flex">
-            <span className="pe-2 align-items-center">To</span>
+          <Col xs="auto" className="d-flex align-items-center">
+            <span className="pe-2">To</span>
             <input
               className="form-control"
               type="datetime-local"
@@ -425,7 +442,7 @@ const Index = () => {
 
 
 
-        <div className="text-muted mb-2 mb-md-0">
+        <div className="text-muted mb-2 mb-md-0 py-4">
           {totalEntries > 0 ? (
             <span>
               Showing <strong>{startEntry}</strong> - <strong>{endEntry}</strong> of{" "}
