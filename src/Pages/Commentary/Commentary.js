@@ -1764,10 +1764,6 @@ const Commentary = (props) => {
 
     const onUndoLastInnings = async () => {
         try {
-            if(currentBall?.overCount > 0){
-               setUndoErrorModal("Cannot Undo Innings From Mid of Scoring");
-                return; 
-            }
             console.log("=== UNDO INNINGS START ===");
             console.log("Current Innings:", commentaryDetails.currentInnings);
 
@@ -1900,10 +1896,14 @@ const Commentary = (props) => {
                 deleteWickets.push(...secondTeamWickets.map(w => w.commentaryWicketId));
 
                 // Find partnership
-                const firstTeamPartnerships = partnershipHistory.filter(partnership =>
+                let firstTeamPartnerships = partnershipHistory.filter(partnership =>
                     partnership.currentInnings === commentaryDetails.currentInnings &&
                     compareNumStringValues(partnership.teamId, firstBattingTeam.teamId)
                 );
+
+                firstTeamPartnerships = Array.isArray(firstTeamPartnerships)
+                    ? firstTeamPartnerships
+                    : [firstTeamPartnerships];
 
                 for (let i = firstTeamPartnerships.length - 1; i >= 0; i--) {
                     const p = firstTeamPartnerships[i];
@@ -1917,6 +1917,8 @@ const Commentary = (props) => {
                         break;
                     }
                 }
+
+                console.log("restored partnership", restoredPartnership)
 
                 // Add all partnerships from second team
                 const secondTeamPartnerships = partnershipHistory.filter(p =>
@@ -2062,10 +2064,14 @@ const Commentary = (props) => {
                 deletePartnershipIds = currentInningsPartnerships.map(p => p.commentaryPartnershipId);
 
                 // partnership
-                const previousTeamPartnerships = partnershipHistory.filter(partnership =>
+                let previousTeamPartnerships = partnershipHistory.filter(partnership =>
                     partnership.currentInnings === targetInnings &&
                     compareNumStringValues(partnership.teamId, previousBattingTeam.teamId)
                 );
+
+                previousTeamPartnerships = Array.isArray(previousTeamPartnerships)
+                    ? previousTeamPartnerships
+                    : [previousTeamPartnerships];
 
                 for (let i = previousTeamPartnerships.length - 1; i >= 0; i--) {
                     const p = previousTeamPartnerships[i];
@@ -2079,6 +2085,7 @@ const Commentary = (props) => {
                         break;
                     }
                 }
+                console.log("partnership found", restoredPartnership)
 
                 // Check if last ball has wicket
                 const lastBallWicket = wicketHistory.find(w =>
@@ -2115,7 +2122,7 @@ const Commentary = (props) => {
                             updatedOnPitchPlayers[CURRENT_BOWLER] = {
                                 ...player,
                                 isPlay: true,
-                                bowlerOver: (((+player.bowlerOver || 0) - 1) + bowlToAdd)?.toFixed(1)  // ✅ ADD
+                                bowlerOver: (((+player.bowlerOver || 0) - 1) + bowlToAdd)?.toFixed(1) 
                             };
                         }
                     }
@@ -2170,16 +2177,6 @@ const Commentary = (props) => {
                 commentaryOvers: restoredOver,
                 commentaryPartnership: restoredPartnership,
             };
-            // const updatedOverBallDisplay = {};
-            // Object.keys(overBallByBallDisplay).forEach(overKey => {
-            //     const filteredBalls = overBallByBallDisplay[overKey].filter(ball =>
-            //         !deleteBallIds.includes(ball.ballId)
-            //     );
-            //     if (filteredBalls.length > 0) {
-            //         updatedOverBallDisplay[overKey] = filteredBalls;
-            //     }
-            // });
-            // console.log("Updated over ball display:", updatedOverBallDisplay);
 
             console.log("\n=== API PAYLOAD ===");
             console.log("Teams to update:", updatedTeams);
@@ -2252,6 +2249,7 @@ const Commentary = (props) => {
                         error?.message ||
                         "Failed to undo innings"
                     );
+                    setUndoInningsPopup(false);
                 });
 
         } catch (error) {
@@ -3135,6 +3133,8 @@ const Commentary = (props) => {
 
     const isAnyPopupOpen = showChangeOverModal || showWicketModal || isOverChange || isPaneltyPopup || undoOverPopup || isWicketChange || inningsChangePopup || showUpdateInnings || winnerAnnouncement || isUndoBall || undoErrorModal || undoInningsPopup || completeMatchModal || selectMissingPlayer || showRretiredHurt || superOverModal || retryModel || showCricketFieldModal;
 
+    const hasBattingComplete = allInningaTeams.some(t => t.isBattingComplete);
+    const showInningsButton = hasBattingComplete && (currentBall?.ballType === BALL_TYPE_OVER_COMPLETE) && (currentBall?.overCount == 0);
     return <>
         {props?.isNewUi ?
             <NewCommentaryScreen
@@ -3442,6 +3442,7 @@ const Commentary = (props) => {
                 bowlingTypes={props.data.commentaryData?.bowlingStyles}
                 onBowlingTypeChange={onBowlingTypeChange}
                 toggleUndoInnings={() => setUndoInningsPopup(!undoInningsPopup)}
+                showInningsButton={showInningsButton}
             />}
         {!props?.isNewUi && !(isCommentaryBallLoading || inningsChangePopup || superOverModal || showRretiredHurt || isPaneltyPopup || props.isDataLoading ||
             winnerAnnouncement || showUpdateInnings || completeMatchModal || superOverModal || showCricketFieldModal) &&

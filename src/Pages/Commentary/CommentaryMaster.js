@@ -93,6 +93,7 @@ function CommentaryMaster() {
   // const scoreCardUrl =
   //   process.env.REACT_APP_SCORECARD_URL || "https://deployed.live";
   const socket = createSocket();
+  const [undoInningsPopup, setUndoInningsPopup] = useState(false);
 
   function formatDateTime(isoString) {
     const date = new Date(isoString);
@@ -490,6 +491,7 @@ function CommentaryMaster() {
                             <div className="col-12 col-md-12 d-flex flex-wrap align-items-center justify-content-between my-2 float-end">
                               <NetworkStatus/>
                               <div>
+                                {(ALL_SCREENS[currentScreen] === COMMENTARY_PLAYER_SELECTION_SCREEN && commentaryData?.commentaryTeams?.some(team => team.isBattingComplete)) ? <Button color="warning" className="mx-1" onClick={() => setUndoInningsPopup(true)}>Undo Innings</Button> : null} 
                                 {commentaryList === 'commentary' && <Button color="primary" className="mx-1" onClick={handleLoadCommentaryClick}>Load Commentary</Button>}
                                 <Button color="primary" className="mx-1" onClick={openIframePopup}>Scorecard</Button>
                                 {/* <Button color="primary" className="mx-1 my-2 my-md-0" onClick={() => {setIsNewUi(!isNewUi)}}>New Ui</Button> */}
@@ -540,6 +542,9 @@ function CommentaryMaster() {
                           getScreenNumber(COMMENTARY_MAIN_SCREEN)
                         );
                       }}
+                      fetchData={fetchData}
+                      undoInningsPopup={undoInningsPopup}   
+                      setUndoInningsPopup={setUndoInningsPopup} 
                     /> : <PlayerSelectionScreen 
                             data={commentaryData}
                             save={handleSaveClick}
