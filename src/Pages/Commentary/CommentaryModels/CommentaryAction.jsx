@@ -18,7 +18,8 @@ const CommentaryAction = ({
     paneltyRuns,
     retiredHurt,
     commentaryId,
-    toggleUndoInnings }) => {
+    toggleUndoInnings,
+    showInningsButton }) => {
     const [showRunsPopup, setShowRunsPopup] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [showRevertModal, setShowRevertModal] = useState(false);
@@ -94,11 +95,11 @@ const CommentaryAction = ({
                             <img className="button-icon" src="icons/r.png" alt="Icon" />
                             etired Hurt
                         </Col>
-                        {/* <Col role="button" className="score-button yellow-information-button" xs={4} md={4} lg={4}
+                        {showInningsButton && <Col role="button" className="score-button yellow-information-button" xs={4} md={4} lg={4}
                             onClick={() => toggleUndoInnings()}>
                             <img className="button-icon" src="icons/revert.png" alt="Icon" />
                             Undo Innings
-                        </Col> */}
+                        </Col>}
                     </Row>
                 </ModalBody>
                 <ModalFooter>
