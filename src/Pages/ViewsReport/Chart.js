@@ -9,6 +9,23 @@ const Chart = ({ eventData = [] }) => {
     options: {},
   });
 
+  const [chartHeight, setChartHeight] = useState(600);
+
+  useEffect(() => {
+    const updateHeight = () => {
+      const h = window.innerHeight;
+      if (h < 500) setChartHeight(200);
+      else if (h < 700) setChartHeight(300);
+      else if (h < 900) setChartHeight(400);
+      else if (h <= 1024) setChartHeight(500);
+      else setChartHeight(650);
+    };
+
+    updateHeight();
+    window.addEventListener("resize", updateHeight);
+    return () => window.removeEventListener("resize", updateHeight);
+  }, []);
+
   useEffect(() => {
     // if (eventData.length === 0) return;
 
@@ -64,16 +81,18 @@ const Chart = ({ eventData = [] }) => {
         xaxis: {
           categories: labels,
           labels: {
-            style: {
-              fontSize: "12px",
-              whiteSpace: "pre-line", // allows line break in labels
-              width: '10px'
-            },
+          rotate: -45,
+          style: {
+            fontSize: "10px",
+            colors: "#555",
           },
-          title: {
-            text: "Events",
-            style: { fontSize: "14px", fontWeight: 600 },
+          formatter: function (val) {
+            return val.length > 15 ? val.slice(0, 15) + "..." : val;
           },
+        },
+        // tooltip: {
+        //   enabled: true,
+        // },
         },
         yaxis: {
           title: {
@@ -100,6 +119,8 @@ const Chart = ({ eventData = [] }) => {
     });
   }, [eventData]);
 
+  console.log("chartHeight", chartHeight)
+
   return (
     <div>
       {chartData.series.length > 0 ? (
@@ -108,7 +129,7 @@ const Chart = ({ eventData = [] }) => {
           series={chartData.series}
           type="bar"
           className="apex-charts"
-          height={600}
+          height={chartHeight}
         />
       ) : (
         <p className="text-center">Loading chart...</p>
