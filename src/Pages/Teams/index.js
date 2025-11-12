@@ -272,6 +272,23 @@ const Index = () => {
     setCheckedList([]);
   };
 
+  const handlePermissions = async (pType, record, cState) => {
+    setIsLoading(true);
+    await axiosInstance
+    .post(`/admin/team/activeInactive`, {
+      teamId: record.teamId,
+      [pType]: cState ? false : true,
+    })
+    .then((response) => {
+      fetchData();
+      dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+    })
+    .catch((error) => {
+      setIsLoading(false);
+      dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+    });
+  };
+
   //table columns
   const columns = [
     {
@@ -322,13 +339,6 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Event Type",
-      dataIndex: "eventType",
-      key: "eventType",
-      style: { width: "10%" },
-      sort: true,
-    },
-    {
       title: "Image",
       dataIndex: "image",
       printType: "ignore",
@@ -367,8 +377,15 @@ const Index = () => {
         </div>
       ),
       key: "image",
-      style: { width: "10%" },
+      style: { width: "2%" },
     },
+    {
+      title: "Event Type",
+      dataIndex: "eventType",
+      key: "eventType",
+      style: { width: "10%" },
+      sort: true,
+    },  
     {
       title: "Team",
       dataIndex: "teamName",
@@ -388,6 +405,44 @@ const Index = () => {
       render: (text, record) => text !== null ? text : "N/A",
       key: "countryName",
       style: { width: "10%" },
+    },
+    {
+      title: "Men",
+      key: "isMen",
+      render: (text, record) => (
+        <Tooltip title={"Men"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Button
+            color={`${record.isMen ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handlePermissions("isMen", record, record.isMen);
+            }}
+          >
+            <i className={`bx ${record.isMen ? "bx-check" : "bx-block"}`}></i>
+          </Button>
+        </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "International",
+      key: "isInternational",
+      render: (text, record) => (
+        <Tooltip title={"International"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Button
+            color={`${record.isInternational ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handlePermissions("isInternational", record, record.isInternational);
+            }}
+          >
+            <i className={`bx ${record.isInternational ? "bx-check" : "bx-block"}`}></i>
+          </Button>
+        </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
     },
     {
       title: "Snap",
