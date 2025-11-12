@@ -738,12 +738,12 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                     value={getPlayerBowlingTypeValue(player)}
                     placeholder="Bowling Style"
                     class="form-control"
-                    styles={{
-                        control: (provided) => ({
-                          ...provided,
-                          width: 180,
-                        }),
-                      }}
+                    // styles={{
+                    //     control: (provided) => ({
+                    //       ...provided,
+                    //       width: 180,
+                    //     }),
+                    //   }}
                     onChange={(value) =>
                       handleBowlerStyleChange(
                         player.commentaryPlayerId,
