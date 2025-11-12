@@ -3,7 +3,6 @@ import ReactApexChart from "react-apexcharts";
 import "./chart.css";
 
 const Chart = ({ eventData = [] }) => {
-    console.log("eventData", eventData)
   const [chartData, setChartData] = useState({
     series: [],
     options: {},
@@ -119,8 +118,6 @@ const Chart = ({ eventData = [] }) => {
     });
   }, [eventData]);
 
-  console.log("chartHeight", chartHeight)
-
   return (
     <div>
       {chartData.series.length > 0 ? (
@@ -129,7 +126,8 @@ const Chart = ({ eventData = [] }) => {
           series={chartData.series}
           type="bar"
           className="apex-charts"
-          height={chartHeight}
+          // height={chartHeight}
+          height={window.innerHeight - 400}
         />
       ) : (
         <p className="text-center">Loading chart...</p>

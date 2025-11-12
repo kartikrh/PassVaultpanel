@@ -24,6 +24,7 @@ import {
   Container,
   Row,
 } from "reactstrap";
+import Select from "react-select";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { updateToastData } from "../../Features/toasterSlice";
 import axiosInstance from "../../Features/axios";
@@ -34,6 +35,7 @@ import { Tooltip } from "antd";
 const PlayerCommentary = () => {
   const pageName = TAB_COMMENTARY;
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
+  const globalDateType = JSON.parse(localStorage.getItem("DateType"));
   const location = useLocation();
   let navigate = useNavigate();
   const [isDataLoading, setIsDataLoading] = useState(false);
@@ -52,6 +54,7 @@ const PlayerCommentary = () => {
   const [updateAllInnings, setUpdateAllInnings] = useState(false);
   const [dataRefreshKey, setDataRefreshKey] = useState(0);
   const [openInningsAccordions, setOpenInningsAccordions] = useState({});
+  const [dateType, setDateType] = useState(globalDateType || { label: "Local Timezone", value: 1 });
 
   useEffect(() => {
     if (
@@ -177,7 +180,26 @@ const PlayerCommentary = () => {
                       page="updatecp"
                     />
                   </Col>
-                  <Col className="mt-3 mt-lg-3 mt-md-3 d-flex justify-content-end align-items-center">
+                  <Col className="mt-3 mt-lg-3 mt-md-3 d-flex justify-content-end align-items-center gap-3">
+                    <Select
+                      value={dateType}
+                      placeholder="Date Type"
+                      styles={{
+                        control: (provided) => ({
+                          ...provided,
+                          width: 200,
+                        }),
+                      }}
+                      onChange={(e) => {
+                        localStorage.setItem("DateType", JSON.stringify(e))
+                        setDateType(e)
+                      }}
+                      options={[
+                        { label: "Local Timezone", value: 1 },
+                        { label: "UTC Timezone", value: 2 },
+                      ]}
+                      classNamePrefix="filter-dropdown"
+                    />
                     {commentaryData?.totalInnings > 1 && (
                       <Tooltip
                         title={"Update Player in All Innings"}
@@ -333,6 +355,7 @@ const PlayerCommentary = () => {
                                           allTeamPlayers={teams}
                                           updateAllInnings={updateAllInnings}
                                           commentaryData={commentaryData}
+                                          dateType={dateType}
                                         />
                                       </AccordionBody>
                                     </AccordionItem>
@@ -352,6 +375,7 @@ const PlayerCommentary = () => {
                                       allTeamPlayers={teams}
                                       updateAllInnings={updateAllInnings}
                                       commentaryData={commentaryData}
+                                      dateType={dateType}
                                     />
                                     <hr className="my-3" />
                                   </div>
