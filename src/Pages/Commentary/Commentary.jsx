@@ -673,7 +673,10 @@ export const CommentaryScreen = ({
                 handleRetiredHurt()
             }}
             commentaryId={commentaryId}
-            toggleUndoInnings={toggleUndoInnings}
+            toggleUndoInnings={() => {
+                toggleUndoInnings()
+                setActionPopup(false)
+            }}
             showInningsButton={showInningsButton}
         />}
     </React.Fragment >
