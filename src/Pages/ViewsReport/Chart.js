@@ -67,7 +67,7 @@ const Chart = ({ eventData = [] }) => {
             formatter: (val) => `${val}`,
             style: {
                 colors: ["#ffffff"], // <-- This will now work!
-                fontSize: "14px",
+                fontSize: "10px",
                 fontWeight: 600,
             },
             background: {
@@ -79,6 +79,10 @@ const Chart = ({ eventData = [] }) => {
         grid: { borderColor: "#f1f1f1" },
         xaxis: {
           categories: labels,
+          title: {
+            text: "Events",
+            style: { fontSize: "14px", fontWeight: 600 },
+          },
           labels: {
           rotate: -45,
           style: {
