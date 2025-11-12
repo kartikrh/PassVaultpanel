@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ReactApexChart from "react-apexcharts";
+import "./chart.css";
 
 const Chart = ({ eventData = [] }) => {
     console.log("eventData", eventData)
