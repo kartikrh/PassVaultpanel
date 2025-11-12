@@ -662,16 +662,16 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
           {/* <div className="col-2"></div> Remove Pls Add After if you want to set Remove Delete Players*/}
           <div style={{ width: "100%"}}>
             <div className="row">
-              <div style={{ width: "5%"}}></div>
+              <div style={{ width: "7%"}}></div>
               <div style={{ width: "5%"}}></div>
               <div style={{ width: "5%"}}></div>
               <div style={{ width: "10%"}}></div>
-              <div style={{ width: "20%"}}>Player</div>
+              <div style={{ width: "15%"}}>Player</div>
               <div style={{ width: "15%"}}>Bowling Style</div>
-              <div style={{ width: "5%"}}>Avg</div>
+              <div style={{ width: "6%"}}>Avg</div>
               {/* <div style={{ width: "10%"}}>SR</div> */}
-              <div style={{ width: "5%"}}>BDRY</div>
-              <div style={{ width: "5%"}}>PBF</div>
+              <div style={{ width: "6%"}}>BDRY</div>
+              <div style={{ width: "6%"}}>PBF</div>
               {/* <div style={{ width: "10%"}}>Delete</div> */}
               <div style={{ width: "10%"}}>XI</div>
               {/* <div style={{ width: "10%"}}>P-Event</div> */}
@@ -683,7 +683,7 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
           <div key={index} class="row d-flex align-items-center my-2 ">
             <div style={{ width: "100%"}}>
               <div className="row">
-                <div style={{ width: "5%"}} className="d-flex align-items-center justify-content-start gap-3">
+                <div style={{ width: "7%"}} className="d-flex align-items-center justify-content-start gap-3">
                   <input
                     className="form-check-input"
                     type="checkbox"
@@ -730,17 +730,18 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                     </Avatar>
                   )}
                 </div>
-                <div className="playerNameScroll" style={{ width: "20%"}}>
+                <div className="playerNameScroll" style={{ width: "15%"}}>
                   {player?.isPlayInEvent ? <strong>{player?.playerName}</strong> : player?.playerName}
                 </div>
                 <div style={{ width: "15%"}}>
                   <Select
                     value={getPlayerBowlingTypeValue(player)}
-                    placeholder="Select Bowling Style"
+                    placeholder="Bowling Style"
+                    class="form-control"
                     styles={{
                         control: (provided) => ({
                           ...provided,
-                          width: 250,
+                          width: 180,
                         }),
                       }}
                     onChange={(value) =>
@@ -755,7 +756,7 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                     classNamePrefix="filter-dropdown"
                   />
                 </div>
-                <div style={{ width: "5%"}}>
+                <div style={{ width: "6%"}}>
                   <input
                     type="number"
                     style={{ width: "60px" }}
@@ -796,7 +797,7 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                                         }
                                     />
                                 </div> */}
-                <div style={{ width: "5%"}}>
+                <div style={{ width: "6%"}}>
                   <input
                     type="number"
                     style={{ width: "50px" }}
@@ -818,7 +819,7 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                     }
                   />
                 </div>
-                <div style={{ width: "5%"}}>
+                <div style={{ width: "6%"}}>
                   <input
                     type="number"
                     style={{ width: "50px" }}
