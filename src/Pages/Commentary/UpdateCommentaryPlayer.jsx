@@ -40,6 +40,7 @@ const PlayerCommentary = () => {
   let navigate = useNavigate();
   const [isDataLoading, setIsDataLoading] = useState(false);
   const [apiResponse, setApiResponse] = useState(false);
+  const [open, setOpen] = useState([]);
   const commentaryId = +localStorage.getItem("updatePlayerCommentaryId") || "0";
   const commentaryDetails = JSON.parse(
     localStorage.getItem("updatePlayerCommentaryDetails")
@@ -55,6 +56,12 @@ const PlayerCommentary = () => {
   const [dataRefreshKey, setDataRefreshKey] = useState(0);
   const [openInningsAccordions, setOpenInningsAccordions] = useState({});
   const [dateType, setDateType] = useState(globalDateType || { label: "Local Timezone", value: 1 });
+
+  const toggle = (id) => {
+    setOpen((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
 
   useEffect(() => {
     if (
@@ -273,119 +280,121 @@ const PlayerCommentary = () => {
                   </div>
                 </div> */}
                 <Row>
-                  <Row>
-                    {teams.map((teamDetails, index) => (
-                      <div
-                        key={index}
-                        className="col-12 col-lg-12 col-sm-12 col-md-12"
-                      >
-                        <Card>
-                          <CardHeader>{teamDetails?.teamName}</CardHeader>
-                          <CardBody>
-                          {teamDetails?.commentaryTeamPlayers &&
-                            Object.keys(teamDetails.commentaryTeamPlayers)
-                              .length > 0 &&
-                            Object.keys(teamDetails.commentaryTeamPlayers)
-                              .sort((a, b) => {
-                                const numA = Number(
-                                  a.replace("currentInnings", "")
-                                );
-                                const numB = Number(
-                                  b.replace("currentInnings", "")
-                                );
-                                return numA - numB;
-                              })
-                              .map((inningKey) => {
-                                const inningPlayers =
-                                  teamDetails.commentaryTeamPlayers[inningKey];
-                                const currentInnings =
-                                  inningPlayers[0]?.currentInnings ||
-                                  (inningKey.startsWith("currentInnings")
-                                    ? Number(
-                                        inningKey.replace("currentInnings", "")
-                                      )
-                                    : "");
-                                // console.log("Current Innings: ", currentInnings);
-                                // return (
-                                //   <CardBody key={inningKey}>
-                                //     {commentaryData?.totalInnings > 1 ? (
-                                //       <h6> Innings : {currentInnings}</h6>
-                                //     ) : null}
-                                //     <TeamPlayerCard
-                                //       key={`${teamDetails.teamId}-${inningKey}-${dataRefreshKey}`}
-                                //       commentaryId={commentaryId}
-                                //       eventRefId={commentaryDetails?.eventRefId}
-                                //       teamDetails={teamDetails}
-                                //       inningPlayers={inningPlayers}
-                                //       currentInnings={currentInnings}
-                                //       fetchData={fetchData}
-                                //       bowlingType={bowlerType}
-                                //       allTeamPlayers={teams}
-                                //       updateAllInnings={updateAllInnings}
-                                //       commentaryData={commentaryData}
-                                //     />
-                                //     <hr className="my-3" />
-                                //   </CardBody>
-                                // );
+                  {teams.map((teamDetails, index) => (
+                    <div
+                      key={index}
+                      className="col-12 col-lg-12 col-sm-12 col-md-12"
+                    >
+                      <Accordion open={open} toggle={toggle}>
+                        <AccordionItem>
+                          <AccordionHeader targetId={`details-accordion-${index}`} className="market-category-header">
+                            {teamDetails?.teamName}
+                          </AccordionHeader>
+                          <AccordionBody accordionId={`details-accordion-${index}`} className="market-category-body p-2">
+                            {teamDetails?.commentaryTeamPlayers &&
+                              Object.keys(teamDetails.commentaryTeamPlayers)
+                                .length > 0 &&
+                              Object.keys(teamDetails.commentaryTeamPlayers)
+                                .sort((a, b) => {
+                                  const numA = Number(
+                                    a.replace("currentInnings", "")
+                                  );
+                                  const numB = Number(
+                                    b.replace("currentInnings", "")
+                                  );
+                                  return numA - numB;
+                                })
+                                .map((inningKey) => {
+                                  const inningPlayers =
+                                    teamDetails.commentaryTeamPlayers[inningKey];
+                                  const currentInnings =
+                                    inningPlayers[0]?.currentInnings ||
+                                    (inningKey.startsWith("currentInnings")
+                                      ? Number(
+                                          inningKey.replace("currentInnings", "")
+                                        )
+                                      : "");
+                                  // console.log("Current Innings: ", currentInnings);
+                                  // return (
+                                  //   <CardBody key={inningKey}>
+                                  //     {commentaryData?.totalInnings > 1 ? (
+                                  //       <h6> Innings : {currentInnings}</h6>
+                                  //     ) : null}
+                                  //     <TeamPlayerCard
+                                  //       key={`${teamDetails.teamId}-${inningKey}-${dataRefreshKey}`}
+                                  //       commentaryId={commentaryId}
+                                  //       eventRefId={commentaryDetails?.eventRefId}
+                                  //       teamDetails={teamDetails}
+                                  //       inningPlayers={inningPlayers}
+                                  //       currentInnings={currentInnings}
+                                  //       fetchData={fetchData}
+                                  //       bowlingType={bowlerType}
+                                  //       allTeamPlayers={teams}
+                                  //       updateAllInnings={updateAllInnings}
+                                  //       commentaryData={commentaryData}
+                                  //     />
+                                  //     <hr className="my-3" />
+                                  //   </CardBody>
+                                  // );
 
-                                 const accordionId = `${teamDetails.teamId}-${currentInnings}`;
-                                const isOpen = openInningsAccordions[accordionId];
+                                  const accordionId = `${teamDetails.teamId}-${currentInnings}`;
+                                  const isOpen = openInningsAccordions[accordionId];
 
-                                return commentaryData?.totalInnings > 1 ? (
-                                  // With Accordion when totalInnings > 1
-                                  <Accordion
-                                    key={inningKey}
-                                    open={isOpen ? accordionId : ""}
-                                    toggle={() => toggleInningsAccordion(teamDetails.teamId, currentInnings)}
-                                  >
-                                    <AccordionItem>
-                                      <AccordionHeader targetId={accordionId} className='market-category-header'>
-                                        <strong>Innings : {currentInnings}</strong>
-                                      </AccordionHeader>
-                                      <AccordionBody accordionId={accordionId}>
-                                        <TeamPlayerCard
-                                          key={`${teamDetails.teamId}-${inningKey}-${dataRefreshKey}`}
-                                          commentaryId={commentaryId}
-                                          eventRefId={commentaryDetails?.eventRefId}
-                                          teamDetails={teamDetails}
-                                          inningPlayers={inningPlayers}
-                                          currentInnings={currentInnings}
-                                          fetchData={fetchData}
-                                          bowlingType={bowlerType}
-                                          allTeamPlayers={teams}
-                                          updateAllInnings={updateAllInnings}
-                                          commentaryData={commentaryData}
-                                          dateType={dateType}
-                                        />
-                                      </AccordionBody>
-                                    </AccordionItem>
-                                  </Accordion>
-                                ) : (
-                                  // Without Accordion when totalInnings <= 1
-                                  <div key={inningKey}>
-                                    <TeamPlayerCard
-                                      key={`${teamDetails.teamId}-${inningKey}-${dataRefreshKey}`}
-                                      commentaryId={commentaryId}
-                                      eventRefId={commentaryDetails?.eventRefId}
-                                      teamDetails={teamDetails}
-                                      inningPlayers={inningPlayers}
-                                      currentInnings={currentInnings}
-                                      fetchData={fetchData}
-                                      bowlingType={bowlerType}
-                                      allTeamPlayers={teams}
-                                      updateAllInnings={updateAllInnings}
-                                      commentaryData={commentaryData}
-                                      dateType={dateType}
-                                    />
-                                    <hr className="my-3" />
-                                  </div>
-                                );
+                                  return commentaryData?.totalInnings > 1 ? (
+                                    // With Accordion when totalInnings > 1
+                                    <Accordion
+                                      key={inningKey}
+                                      open={isOpen ? accordionId : ""}
+                                      toggle={() => toggleInningsAccordion(teamDetails.teamId, currentInnings)}
+                                    >
+                                      <AccordionItem>
+                                        <AccordionHeader targetId={accordionId} className='market-category-header'>
+                                          <strong>Innings : {currentInnings}</strong>
+                                        </AccordionHeader>
+                                        <AccordionBody accordionId={accordionId}>
+                                          <TeamPlayerCard
+                                            key={`${teamDetails.teamId}-${inningKey}-${dataRefreshKey}`}
+                                            commentaryId={commentaryId}
+                                            eventRefId={commentaryDetails?.eventRefId}
+                                            teamDetails={teamDetails}
+                                            inningPlayers={inningPlayers}
+                                            currentInnings={currentInnings}
+                                            fetchData={fetchData}
+                                            bowlingType={bowlerType}
+                                            allTeamPlayers={teams}
+                                            updateAllInnings={updateAllInnings}
+                                            commentaryData={commentaryData}
+                                            dateType={dateType}
+                                          />
+                                        </AccordionBody>
+                                      </AccordionItem>
+                                    </Accordion>
+                                  ) : (
+                                    // Without Accordion when totalInnings <= 1
+                                    <div key={inningKey}>
+                                      <TeamPlayerCard
+                                        key={`${teamDetails.teamId}-${inningKey}-${dataRefreshKey}`}
+                                        commentaryId={commentaryId}
+                                        eventRefId={commentaryDetails?.eventRefId}
+                                        teamDetails={teamDetails}
+                                        inningPlayers={inningPlayers}
+                                        currentInnings={currentInnings}
+                                        fetchData={fetchData}
+                                        bowlingType={bowlerType}
+                                        allTeamPlayers={teams}
+                                        updateAllInnings={updateAllInnings}
+                                        commentaryData={commentaryData}
+                                        dateType={dateType}
+                                      />
+                                      <hr className="my-3" />
+                                    </div>
+                                  );
                               })}
-                          </CardBody>
-                        </Card>
-                      </div>
-                    ))}
-                  </Row>
+                          </AccordionBody>
+                        </AccordionItem>
+                      </Accordion>
+                    </div>
+                  ))}
                 </Row>
                 <Row>
                   <Accordion
