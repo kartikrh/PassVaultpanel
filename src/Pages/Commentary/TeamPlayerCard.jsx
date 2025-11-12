@@ -698,7 +698,8 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                       )
                     }
                   />
-                  <Button
+                  <span>{index + 1}</span>
+                  {!player?.isPlayInEvent && <Button
                     color="soft-danger"
                     // disabled={
                     //   player?.isPlay ||
@@ -707,12 +708,10 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                     //   player?.onStrike === false ||
                     //   player?.isBatterRetir
                     // }
-                    disabled={player?.isPlayInEvent}
                     onClick={(e) => handleDeletePlayer(player.playerId)}
                   >
                     <i className="ri-delete-bin-2-line"></i>
-                  </Button>
-                  <span>{index + 1}</span>
+                  </Button>}
                 </div>
                 <div className="col-1">{imageRender(player?.playerType)}</div>
                 <div className="col-1">
