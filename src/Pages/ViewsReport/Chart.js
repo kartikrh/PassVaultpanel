@@ -108,7 +108,7 @@ const Chart = ({ eventData = [] }) => {
           series={chartData.series}
           type="bar"
           className="apex-charts"
-          height={600}
+          height={window.innerHeight - 400}
         />
       ) : (
         <p className="text-center">Loading chart...</p>

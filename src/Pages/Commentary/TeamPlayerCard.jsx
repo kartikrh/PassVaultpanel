@@ -13,6 +13,7 @@ import ball from '../../../src/assets/images/cricket-icons/cricket-ball.png';
 import bat from '../../../src/assets/images/cricket-icons/cricket-bat.png';
 import allrounder from '../../../src/assets/images/cricket-icons/cricket.png';
 import keeper from '../../../src/assets/images/cricket-icons/game.png';
+import { convertDateUTCToLocalWithoutSec24 } from '../../components/Common/Reusables/reusableMethods';
 
 const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, fetchData, currentInnings, bowlingType, updateAllInnings, allTeamPlayers, commentaryData }) => {
     const [commentaryTeamPlayers, setCommentaryTeamPlayers] = useState([]);
@@ -664,14 +665,16 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
               <div className="col-1"></div>
               <div className="col-1"></div>
               <div className="col-1"></div>
-              <div className="col-2">Player</div>
+              <div className="col-1">Player</div>
               <div className="col-2">Bowling Style</div>
               <div className="col-1">Avg</div>
               {/* <div className="col-1">SR</div> */}
               <div className="col-1">BDRY</div>
               <div className="col-1">PBF</div>
-              <div className="col-1">Delete</div>
+              {/* <div className="col-1">Delete</div> */}
               <div className="col-1">XI</div>
+              <div className="col-1">P-Event</div>
+              <div className="col-1">Date</div>
             </div>
           </div>
         </div>
@@ -679,7 +682,7 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
           <div key={index} class="row d-flex align-items-center my-2 ">
             <div class="col-12">
               <div className="row">
-                <div className="col-1">
+                <div className="col-1 d-flex align-items-center justify-content-start gap-3">
                   <input
                     className="form-check-input"
                     type="checkbox"
@@ -695,7 +698,21 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                       )
                     }
                   />
-                  <span className="ms-5">{index + 1}</span>
+                  <Button
+                    color="soft-danger"
+                    // disabled={
+                    //   player?.isPlay ||
+                    //   player?.isBatterOut ||
+                    //   player?.onStrike === true ||
+                    //   player?.onStrike === false ||
+                    //   player?.isBatterRetir
+                    // }
+                    disabled={player?.isPlayInEvent}
+                    onClick={(e) => handleDeletePlayer(player.playerId)}
+                  >
+                    <i className="ri-delete-bin-2-line"></i>
+                  </Button>
+                  <span>{index + 1}</span>
                 </div>
                 <div className="col-1">{imageRender(player?.playerType)}</div>
                 <div className="col-1">
@@ -711,7 +728,7 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                     </Avatar>
                   )}
                 </div>
-                <div className="col-2 playerNameScroll">
+                <div className="col-1 playerNameScroll">
                   {player?.playerName}
                 </div>
                 <div className="col-2">
@@ -818,7 +835,7 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                     }
                   />
                 </div>
-                <div class="col-1">
+                {/* <div class="col-1">
                   <Button
                     color="soft-danger"
                     disabled={
@@ -832,7 +849,7 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                   >
                     <i className="ri-delete-bin-2-line"></i>
                   </Button>
-                </div>
+                </div> */}
                 <div className="col-1">
                   <div className="form-check form-switch form-switch-lg">
                     <input
@@ -866,6 +883,20 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                       }
                     />
                   </div>
+                </div>
+                <div className="col-1">
+                  <div className="form-check form-switch form-switch-lg">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      id="customSwitchsizelg"
+                      checked={player?.isPlayInEvent}
+                      disabled
+                    />
+                  </div>
+                </div>
+                <div className="col-1">
+                  {convertDateUTCToLocalWithoutSec24(player?.createdDate, "index")}
                 </div>
               </div>
             </div>
