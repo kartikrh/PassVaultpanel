@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, CardBody, CardHeader, Col, Row, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Button, Col, Row, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import Select from "react-select";
 import axiosInstance from '../../Features/axios';
 import { updateToastData } from '../../Features/toasterSlice';
@@ -13,9 +13,9 @@ import ball from '../../../src/assets/images/cricket-icons/cricket-ball.png';
 import bat from '../../../src/assets/images/cricket-icons/cricket-bat.png';
 import allrounder from '../../../src/assets/images/cricket-icons/cricket.png';
 import keeper from '../../../src/assets/images/cricket-icons/game.png';
-import { convertDateUTCToLocalWithoutSec24 } from '../../components/Common/Reusables/reusableMethods';
+import { convertDateUtcFormat24, convertDateUTCToLocal2_24 } from '../../components/Common/Reusables/reusableMethods';
 
-const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, fetchData, currentInnings, bowlingType, updateAllInnings, allTeamPlayers, commentaryData }) => {
+const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, fetchData, currentInnings, bowlingType, updateAllInnings, allTeamPlayers, commentaryData, dateType }) => {
     const [commentaryTeamPlayers, setCommentaryTeamPlayers] = useState([]);
     const [nonCommentaryTeamPlayers, setNonCommentaryTeamPlayers] = useState([]);
     const [selectedPlayer, setSelectedPlayer] = useState(undefined);
@@ -665,6 +665,7 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
               <div className="col-1"></div>
               <div className="col-1"></div>
               <div className="col-1"></div>
+              <div className="col-1"></div>
               <div className="col-1">Player</div>
               <div className="col-2">Bowling Style</div>
               <div className="col-1">Avg</div>
@@ -673,7 +674,7 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
               <div className="col-1">PBF</div>
               {/* <div className="col-1">Delete</div> */}
               <div className="col-1">XI</div>
-              <div className="col-1">P-Event</div>
+              {/* <div className="col-1">P-Event</div> */}
               <div className="col-1">Date</div>
             </div>
           </div>
@@ -699,6 +700,8 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                     }
                   />
                   <span>{index + 1}</span>
+                </div>
+                <div className="col-1">
                   {!player?.isPlayInEvent && <Button
                     color="soft-danger"
                     // disabled={
@@ -728,7 +731,7 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                   )}
                 </div>
                 <div className="col-1 playerNameScroll">
-                  {player?.playerName}
+                  {player?.isPlayInEvent ? <strong>{player?.playerName}</strong> : player?.playerName}
                 </div>
                 <div className="col-2">
                   <Select
@@ -883,7 +886,7 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                     />
                   </div>
                 </div>
-                <div className="col-1">
+                {/* <div className="col-1">
                   <div className="form-check form-switch form-switch-lg">
                     <input
                       className="form-check-input"
@@ -893,9 +896,12 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                       disabled
                     />
                   </div>
-                </div>
+                </div> */}
                 <div className="col-1">
-                  {convertDateUTCToLocalWithoutSec24(player?.createdDate, "index")}
+                  {dateType?.value == 1
+                    ? convertDateUTCToLocal2_24(player?.createdDate, "index")
+                    : convertDateUtcFormat24(player?.createdDate, "index")
+                  }
                 </div>
               </div>
             </div>
