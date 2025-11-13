@@ -1,4 +1,4 @@
-import { IMAGE, MULTI_SELECT, SELECT, TEXT, COLOR_PICKER, COUNTER } from "../../components/Common/Const";
+import { IMAGE, MULTI_SELECT, SELECT, TEXT, COLOR_PICKER, COUNTER, SWITCH } from "../../components/Common/Const";
 
 export const TeamFields = [
     {
@@ -65,6 +65,22 @@ export const TeamFields = [
         isValidateImage: true,        
         validateWidth:400,
         validateHeight:400    
+    },
+    {
+        type: SWITCH,
+        name: "isMen",
+        label: "Is Men",
+        defaultValue: true,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
+    },
+    {
+        type: SWITCH,
+        name: "isInternational",
+        label: "Is International",
+        defaultValue: false,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
         type: MULTI_SELECT,

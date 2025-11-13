@@ -135,6 +135,19 @@ export const CommentaryFeatures = () => {
         if (!isEmpty(deleteWicket)) deleteObjToSave["deleteWickets"] = Object.values(deleteWicket)
         if (!isEmpty(partnershipData)) objToSave["commentaryPartnership"] = Object.values(partnershipData)
         if (!isEmpty(deletePartnership)) deleteObjToSave["deletePartnership"] = Object.values(deletePartnership)
+        if (!isEmpty(teamsData)) {
+            const invalidTeam = Object.values(teamsData).find(
+                (team) => team?.teamStatus && team?.teamBattingOrder
+            );
+            if (!invalidTeam) {
+                dispatch(updateToastData({
+                    data: "Missing Team Batting Order or Team Status in teamsData",
+                    title: "Teams Data Error",
+                    type: ERROR,
+                }));
+                return;
+            }
+        }
         try {
             let success = false;
             if (!isEmpty(objToSave)) {

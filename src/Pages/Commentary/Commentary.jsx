@@ -15,7 +15,7 @@ export const CommentaryScreen = ({
     refId, teamDetails, onPitchPlayers, _onPitchPlayers, updateRuns, changePlayer, changeOver, updateExtras, onWicketClick,
     onUndoClick, changeStrike, endInnings, isLoading, changeBowler, updateDisplayStatus, showPaneltyRuns,
     overBalls, anyPopup, handleRetiredHurt = {}, target, partnerships, commentaryId, handleWheelShowToggle, handleRemainingBallsShowToggle, isRemainingBallsShow, isWheelShow, overHistory,
-    players, currentOver, currentInnings, isPredict, isPredictToggle, setIsPredictToggle, allteams, fetchData, isSaving, isAnyPopupOpen, overTypeOption, overTypeValue, onOverTypeChange, handleDefaultOverSwitch, isDefaultOverType, bowlingTypes, onBowlingTypeChange,toggleUndoInnings }) => {
+    players, currentOver, currentInnings, isPredict, isPredictToggle, setIsPredictToggle, allteams, fetchData, isSaving, isAnyPopupOpen, overTypeOption, overTypeValue, onOverTypeChange, handleDefaultOverSwitch, isDefaultOverType, bowlingTypes, onBowlingTypeChange,toggleUndoInnings, showInningsButton }) => {
     const [actionPopup, setActionPopup] = useState(undefined);
     const isDarkTheme = document.body.getAttribute('data-theme') === 'dark';
     
@@ -673,7 +673,11 @@ export const CommentaryScreen = ({
                 handleRetiredHurt()
             }}
             commentaryId={commentaryId}
-            toggleUndoInnings={toggleUndoInnings}
+            toggleUndoInnings={() => {
+                toggleUndoInnings()
+                setActionPopup(false)
+            }}
+            showInningsButton={showInningsButton}
         />}
     </React.Fragment >
 }

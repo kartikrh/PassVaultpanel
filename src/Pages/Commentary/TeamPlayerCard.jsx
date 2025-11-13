@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, CardBody, CardHeader, Col, Row, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Button, Col, Row, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import Select from "react-select";
 import axiosInstance from '../../Features/axios';
 import { updateToastData } from '../../Features/toasterSlice';
@@ -13,8 +13,9 @@ import ball from '../../../src/assets/images/cricket-icons/cricket-ball.png';
 import bat from '../../../src/assets/images/cricket-icons/cricket-bat.png';
 import allrounder from '../../../src/assets/images/cricket-icons/cricket.png';
 import keeper from '../../../src/assets/images/cricket-icons/game.png';
+import { convertDateUtcFormat24, convertDateUTCToLocal2_24 } from '../../components/Common/Reusables/reusableMethods';
 
-const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, fetchData, currentInnings, bowlingType, updateAllInnings, allTeamPlayers, commentaryData }) => {
+const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, fetchData, currentInnings, bowlingType, updateAllInnings, allTeamPlayers, commentaryData, dateType }) => {
     const [commentaryTeamPlayers, setCommentaryTeamPlayers] = useState([]);
     const [nonCommentaryTeamPlayers, setNonCommentaryTeamPlayers] = useState([]);
     const [selectedPlayer, setSelectedPlayer] = useState(undefined);
@@ -659,27 +660,30 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
       <Row className="rounded py-3">
         <div class="row d-flex align-items-center my-2 ">
           {/* <div className="col-2"></div> Remove Pls Add After if you want to set Remove Delete Players*/}
-          <div class="col-12 ps-4">
+          <div style={{ width: "100%"}}>
             <div className="row">
-              <div className="col-1"></div>
-              <div className="col-1"></div>
-              <div className="col-1"></div>
-              <div className="col-2">Player</div>
-              <div className="col-2">Bowling Style</div>
-              <div className="col-1">Avg</div>
-              {/* <div className="col-1">SR</div> */}
-              <div className="col-1">BDRY</div>
-              <div className="col-1">PBF</div>
-              <div className="col-1">Delete</div>
-              <div className="col-1">XI</div>
+              <div style={{ width: "7%"}}></div>
+              <div style={{ width: "5%"}}></div>
+              <div style={{ width: "5%"}}></div>
+              <div style={{ width: "10%"}}></div>
+              <div style={{ width: "15%"}}>Player</div>
+              <div style={{ width: "15%"}}>Bowling Style</div>
+              <div style={{ width: "6%"}}>Avg</div>
+              {/* <div style={{ width: "10%"}}>SR</div> */}
+              <div style={{ width: "6%"}}>BDRY</div>
+              <div style={{ width: "6%"}}>PBF</div>
+              {/* <div style={{ width: "10%"}}>Delete</div> */}
+              <div style={{ width: "7%"}}>XI</div>
+              {/* <div style={{ width: "10%"}}>P-Event</div> */}
+              <div style={{ width: "18%"}}>Date</div>
             </div>
           </div>
         </div>
         {sortedData?.map((player, index) => (
           <div key={index} class="row d-flex align-items-center my-2 ">
-            <div class="col-12">
+            <div style={{ width: "100%"}}>
               <div className="row">
-                <div className="col-1">
+                <div style={{ width: "7%"}} className="d-flex align-items-center justify-content-start gap-3">
                   <input
                     className="form-check-input"
                     type="checkbox"
@@ -695,10 +699,25 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                       )
                     }
                   />
-                  <span className="ms-5">{index + 1}</span>
+                  <span>{index + 1}</span>
                 </div>
-                <div className="col-1">{imageRender(player?.playerType)}</div>
-                <div className="col-1">
+                <div style={{ width: "5%"}}>
+                  {!player?.isPlayInEvent && <Button
+                    color="soft-danger"
+                    // disabled={
+                    //   player?.isPlay ||
+                    //   player?.isBatterOut ||
+                    //   player?.onStrike === true ||
+                    //   player?.onStrike === false ||
+                    //   player?.isBatterRetir
+                    // }
+                    onClick={(e) => handleDeletePlayer(player.playerId)}
+                  >
+                    <i className="ri-delete-bin-2-line"></i>
+                  </Button>}
+                </div>
+                <div style={{ width: "5%"}}>{imageRender(player?.playerType)}</div>
+                <div style={{ width: "10%"}}>
                   {player?.jerseyPlayerImage ? (
                     <img
                       src={player.jerseyPlayerImage}
@@ -711,16 +730,20 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                     </Avatar>
                   )}
                 </div>
-                <div className="col-2 playerNameScroll">
-                  {player?.playerName}
+                <div className="playerNameScroll" style={{ width: "15%"}}>
+                  {player?.isPlayInEvent ? <strong>{player?.playerName}</strong> : player?.playerName}
                 </div>
-                <div className="col-2">
+                <div style={{ width: "15%"}}>
                   <Select
-                    class="form-control"
-                    classNamePrefix="filter-dropdown"
-                    style={{ width: "60px" }}
                     value={getPlayerBowlingTypeValue(player)}
-                    options={bowlingType}
+                    placeholder="Bowling Style"
+                    class="form-control"
+                    // styles={{
+                    //     control: (provided) => ({
+                    //       ...provided,
+                    //       width: 180,
+                    //     }),
+                    //   }}
                     onChange={(value) =>
                       handleBowlerStyleChange(
                         player.commentaryPlayerId,
@@ -729,9 +752,11 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                         value.value
                       )
                     }
+                    options={bowlingType}
+                    classNamePrefix="filter-dropdown"
                   />
                 </div>
-                <div className="col-1">
+                <div style={{ width: "6%"}}>
                   <input
                     type="number"
                     style={{ width: "60px" }}
@@ -755,7 +780,7 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                     }
                   />
                 </div>
-                {/* <div className="col-1">
+                {/* <div style={{ width: "10%"}}>
                                     <input
                                         type="number"
                                         style={{ width: "50px" }}
@@ -772,7 +797,7 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                                         }
                                     />
                                 </div> */}
-                <div className="col-1">
+                <div style={{ width: "6%"}}>
                   <input
                     type="number"
                     style={{ width: "50px" }}
@@ -794,7 +819,7 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                     }
                   />
                 </div>
-                <div className="col-1">
+                <div style={{ width: "6%"}}>
                   <input
                     type="number"
                     style={{ width: "50px" }}
@@ -818,7 +843,7 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                     }
                   />
                 </div>
-                <div class="col-1">
+                {/* <div class="col-1">
                   <Button
                     color="soft-danger"
                     disabled={
@@ -832,8 +857,8 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                   >
                     <i className="ri-delete-bin-2-line"></i>
                   </Button>
-                </div>
-                <div className="col-1">
+                </div> */}
+                <div style={{ width: "7%"}}>
                   <div className="form-check form-switch form-switch-lg">
                     <input
                       className="form-check-input"
@@ -866,6 +891,23 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                       }
                     />
                   </div>
+                </div>
+                {/* <div style={{ width: "10%"}}>
+                  <div className="form-check form-switch form-switch-lg">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      id="customSwitchsizelg"
+                      checked={player?.isPlayInEvent}
+                      disabled
+                    />
+                  </div>
+                </div> */}
+                <div style={{ width: "18%"}}>
+                  {dateType?.value == 1
+                    ? convertDateUTCToLocal2_24(player?.createdDate, "index")
+                    : convertDateUtcFormat24(player?.createdDate, "index")
+                  }
                 </div>
               </div>
             </div>
