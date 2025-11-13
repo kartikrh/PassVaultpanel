@@ -121,11 +121,11 @@ const Index = () => {
     fetchAndSetData();
   }, [eventTypeSelect, compSelect, commentaryStatusSelect, virtualStatusSelect, pythonApisSelect, isSearch]);
 
-  useEffect(() => {
-    if (!isServerPagination && dataSource.length > 0) {
-      sliceData(dataSource, currentPage, pageSize);
-    }
-  }, [currentPage, dataSource, isServerPagination]);
+  // useEffect(() => {
+  //   if (!isServerPagination && dataSource.length > 0) {
+  //     sliceData(dataSource, currentPage, pageSize);
+  //   }
+  // }, [currentPage, dataSource, isServerPagination]);
 
   const eventTypeListOptions = async () => {
     try {
@@ -202,7 +202,8 @@ const Index = () => {
 
       setDataSource(apiData);
       setTotal(apiData.length);
-      sliceData(apiData, currentPage, pageSize);
+      setDisplayedData(apiData)
+      // sliceData(apiData, currentPage, pageSize);
       setIsLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -210,22 +211,21 @@ const Index = () => {
     }
   };
 
+  // const sliceData = (dataArr, page, size) => {
+  //   const start = (page - 1) * size;
+  //   const end = start + size;
+  //   setDisplayedData(dataArr.slice(start, end));
+  // };
 
-  const sliceData = (dataArr, page, size) => {
-    const start = (page - 1) * size;
-    const end = start + size;
-    setDisplayedData(dataArr.slice(start, end));
-  };
+  // const totalEntries = total;
+  // const safePage = Math.max(currentPage, 1);
+  // const safePageSize = Math.max(pageSize, 1);
+  // const startEntry =
+  //   totalEntries === 0 ? 0 : Math.min((safePage - 1) * safePageSize + 1, totalEntries);
+  // const endEntry =
+  //   totalEntries === 0 ? 0 : Math.min(safePage * safePageSize, totalEntries);
 
-  const totalEntries = total;
-  const safePage = Math.max(currentPage, 1);
-  const safePageSize = Math.max(pageSize, 1);
-  const startEntry =
-    totalEntries === 0 ? 0 : Math.min((safePage - 1) * safePageSize + 1, totalEntries);
-  const endEntry =
-    totalEntries === 0 ? 0 : Math.min(safePage * safePageSize, totalEntries);
-
-  const customPageSizeOptions = ["10", "20"];
+  // const customPageSizeOptions = ["10", "20"];
 
   // ✅ Stable data reference (prevents Chart infinite updates)
   const data = useMemo(
@@ -238,7 +238,6 @@ const Index = () => {
       <Container fluid>
         <Breadcrumbs title="ScoreCard" breadcrumbItem="Views Report" />
         {isLoading && <SpinnerModel />}
-
         <div className="d-flex flex-wrap mb-3">
           <Select
             styles={{
@@ -439,23 +438,23 @@ const Index = () => {
             </div>
           </Col>
         </Row>
-
-
-
         <div className="text-muted mb-2 mb-md-0 py-4">
-          {totalEntries > 0 ? (
+          {data.length > 0 ? (
             <span>
-              Showing <strong>{startEntry}</strong> - <strong>{endEntry}</strong> of{" "}
-              <strong>{totalEntries}</strong> entries
+              Showing <strong>1</strong> - <strong>{data.length}</strong> of{" "}
+              <strong>{data.length}</strong> entries
             </span>
           ) : (
             "Showing 1 - 0 of 0 entries"
           )}
         </div>
-
-        <Chart eventData={data} />
-
-        <div className="d-flex justify-content-end py-2">
+        <div style={{ overflowX: "auto", overflowY: "hidden" }}>
+          <div style={{ width: `${data.length * 100}px` }}> 
+            <Chart eventData={data} />
+          </div>
+        </div>
+        {/* <Chart eventData={data} /> */}
+        {/* <div className="d-flex justify-content-end py-2">
           <Pagination
             total={totalEntries}
             pageSize={pageSize}
@@ -468,7 +467,7 @@ const Index = () => {
             }}
             customPageSizeOptions={customPageSizeOptions}
           />
-        </div>
+        </div> */}
       </Container>
     </div>
   );
