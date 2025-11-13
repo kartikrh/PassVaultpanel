@@ -26,7 +26,7 @@ const Chart = ({ eventData = [] }) => {
   }, []);
 
   useEffect(() => {
-    // if (eventData.length === 0) return;
+    if (!eventData || eventData.length === 0) return;
 
     // Prepare data from props
     const labels = eventData.map((item) => {
@@ -35,19 +35,18 @@ const Chart = ({ eventData = [] }) => {
         month: "short",
         year: "numeric",
       });
-      const date = new Date(item.eventDate).toLocaleString();
-      // Combine name and date (multi-line label)
-      return ` ${item.eventName} ${eventDate}`;
+
+      //  UPDATED HERE → cleaner multi-line or combined label
+      return `${item.eventName} (${eventDate})`;
     });
 
     const views = eventData.map((item) => Number(item.views || 0));
-    const eventNames = eventData.map((item) => item.eventName || "Unknown Event");
 
-    // compute numeric max safely, add optional padding if you want some space above the highest bar
-    const numericViews = views.map(v => Number(v) || 0);
+    // Compute max value
+    const numericViews = views.map((v) => Number(v) || 0);
     const rawMax = numericViews.length ? Math.max(...numericViews) : 0;
-    // const padding = Math.ceil(rawMax * 0.05); // 5% padding (set to 0 if you want exact top)
-    const yMax = rawMax ;
+    const padding = Math.ceil(rawMax * 0.02);
+    const yMax = rawMax + padding;
 
     setChartData({
       series: [
@@ -66,15 +65,19 @@ const Chart = ({ eventData = [] }) => {
           bar: {
             columnWidth: "40px",
             borderRadius: 6,
-            dataLabels: {
-              position: "top",
-            },
+            dataLabels: { position: "top" },
           },
         },
         dataLabels: {
           enabled: true,
           offsetY: -15,
-          formatter: (val) => `${val}`,
+          formatter: (val) => {
+            val = Number(val.toFixed(0)); // fix floating point issues
+
+            if (val >= 1000000) return (val / 1000000).toFixed(1).replace(".0", "") + "M";
+            if (val >= 1000) return (val / 1000).toFixed(1).replace(".0", "") + "k";
+            return val;
+          },
           style: {
             colors: ["#000000"],
             fontSize: "10px",
@@ -100,17 +103,26 @@ const Chart = ({ eventData = [] }) => {
             },
           },
         },
-
         yaxis: {
           min: 0,
-          max: yMax,               // <-- set max here (not inside title)
-          forceNiceScale: false,   // <-- also here
+          max: yMax,
+          forceNiceScale: false,
+
+          labels: {
+            formatter: function (val) {
+              // FIX floating point issues
+              val = Number(val.toFixed(0));
+
+              if (val >= 1000000) return (val / 1000000).toFixed(1).replace(".0", "") + "M";
+              if (val >= 1000) return (val / 1000).toFixed(1).replace(".0", "") + "k";
+              return val;
+            },
+          },
           title: {
             text: "Views",
             style: { fontSize: "14px", fontWeight: 600 },
           },
         },
-
         tooltip: {
           x: {
             formatter: (val, { dataPointIndex }) => {
@@ -119,7 +131,11 @@ const Chart = ({ eventData = [] }) => {
             },
           },
           y: {
-            formatter: (val) => `${val}`,
+            formatter: (val) => {
+              if (val >= 1000000) return (val / 1000000).toFixed(1).replace(".0", "") + "M";
+              if (val >= 1000) return (val / 1000).toFixed(1).replace(".0", "") + "k";
+              return val;
+            },
           },
         },
         legend: { show: false },
