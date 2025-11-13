@@ -1795,6 +1795,7 @@ const Commentary = (props) => {
 
                 // Restore the previous teams balls and playerIds
                 ballToRestore = firstTeamBalls[firstTeamBalls.length - 1];
+                const bowlToAdd = ((+ballToRestore.currentOverBalls || 0) / 10);
                 //  console.log("ballToRestore", ballToRestore, "bowlToAdd", bowlToAdd)
 
                 // Extract player IDs from ball to restore
@@ -1904,6 +1905,7 @@ const Commentary = (props) => {
                         ...firstBattingTeam,
                         teamStatus: BATTING_STATUS,
                         isBattingComplete: false,
+                        teamOver: ballToRestore ? (+ballToRestore?.overCount)?.toFixed(1) : (((+firstBattingTeam.teamOver || 0) - 1) + bowlToAdd)?.toFixed(1),
                     },
                     {
                         ...secondBattingTeam,
@@ -1954,6 +1956,8 @@ const Commentary = (props) => {
 
                 //Ball to restore (second-to-last ball of previous innings)
                 ballToRestore = previousTeamBalls[previousTeamBalls.length - 1];
+
+                const bowlToAdd = ((+ballToRestore.currentOverBalls || 0) / 10);
 
                 // Extract player IDs
                 const bowlerId = ballToRestore.bowlerId;
@@ -2053,6 +2057,7 @@ const Commentary = (props) => {
                         ...previousBattingTeam,
                         teamStatus: BATTING_STATUS,
                         isBattingComplete: false,
+                        teamOver: ballToRestore ? (+ballToRestore?.overCount)?.toFixed(1) : (((+previousBattingTeam.teamOver || 0) - 1) + bowlToAdd)?.toFixed(1),
                     },
                     {
                         ...previousBowlingTeam,
@@ -2849,6 +2854,7 @@ const Commentary = (props) => {
     useEffect(() => {
         if (props.IsCommentaryWithUndo) {
             if (checkIfUndoFromMaster) {
+                setShowChangeOverModal(false);
                 handleUndoClick();
                 props.toggleCommenatryWithUndo();
                 setCheckIfUndoFromMaster(false);
