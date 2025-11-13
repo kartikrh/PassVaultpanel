@@ -167,7 +167,8 @@ const Index = forwardRef(
       setParentCurrentPage,
       setParentPageSize,
       setParentSearchedData,
-      parentCurrentPage
+      parentCurrentPage,
+      cardHeaderData,
     },
     ref
   ) => {
@@ -1547,6 +1548,7 @@ const Index = forwardRef(
               tableElement?.title !== "Manual Events" &&
               !tableElement.isNonCrud && (
                 <CardHeader className="p-0 p-md-2">
+                  {cardHeaderData ? cardHeaderData : 
                   <form>
                     {renderHeader && renderHeader()}
                     <Row className="g-2">
@@ -3491,7 +3493,7 @@ const Index = forwardRef(
                         </div>
                       </Row>
                     ) : null}
-                  </form>
+                  </form>}
                 </CardHeader>
               )}
 

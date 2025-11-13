@@ -17,6 +17,7 @@ import { ImportExportModel } from '../../components/Model/ImportExportModel';
 import { UploadPlayerHistoryModal } from '../../components/Model/PlayerModal/UploadPlayerHistoryModal ';
 import LoadDataModal from "../../components/Model/LoadDataModal";
 import GenerateModal from "./GenerateModal";
+import PlayerCompetitionDetails from "../../components/Model/PlayerCompetitionDetails";
 
 const Index = () => {
   const pageName = TAB_PLAYERS
@@ -54,6 +55,8 @@ const Index = () => {
   const [hasCheckedImages, setHasCheckedImages] = useState(false);
   const [isCheckingImages, setIsCheckingImages] = useState(false);
   const [tableSearchedData, setTableSearchedData] = useState([]);
+  const [competitionModelVisible, setCompetitionModelVisible] = useState(false);
+  const [competitionRecord, setCompetitionRecord] = useState({});
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -594,6 +597,30 @@ const Index = () => {
       style: { width: "10%" },
       // sort: true,
     },
+    {
+      title: "Competition Details",
+      key: "competitionDetails",
+      render: (text, record) => (
+      <Tooltip
+        title={"Player Competition Details"}
+        color={"#e8e8ea"}
+        overlayInnerStyle={{ color: "#000" }}
+      >
+        <Button
+          color={"info"}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            setCompetitionModelVisible(true);
+            setCompetitionRecord(record);
+          }}
+        >
+          <i class='bx bxs-store' ></i>
+        </Button>
+      </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
   ];
   const downloadExcelColumn = [
     {
@@ -876,6 +903,14 @@ const Index = () => {
               handleLoadData={handleLoadData}
               moduleName={"Players"}
             />}
+          {competitionModelVisible && (
+            <PlayerCompetitionDetails
+              competitionModelVisible={competitionModelVisible}
+              setCompetitionModelVisible={setCompetitionModelVisible}
+              competitionRecord={competitionRecord}
+              fetchData={fetchData}
+            />
+          )}
         </Container>
       </div>
     </React.Fragment>
