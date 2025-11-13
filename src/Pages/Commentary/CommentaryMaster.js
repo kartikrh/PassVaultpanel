@@ -75,6 +75,7 @@ function CommentaryMaster() {
   const [isNewUi, setIsNewUi] = useState(false);
   const [isPredict, setIsPredict] = useState(false);
   const [isPredictToggle, setIsPredictToggle] = useState(false);
+  const [IsCommentaryWithUndo, setIsCommentaryWithUndo] = useState(false);
   const { isCommentaryDataUpdated, isCommentaryBallLoading } = useSelector(
     (state) => state.tabsData.commentary
   );
@@ -230,10 +231,12 @@ function CommentaryMaster() {
   
 
   useEffect(() => {
-    if (isCommentaryDataUpdated && currentScreen !== 3 && currentScreen !== 4) {
+    if(isCommentaryDataUpdated){
       dispatch(updateSavedState(undefined));
-      setCurrentScreen(nextScreen);
-      setCommentaryData(nextData);
+      if (currentScreen != 3 && currentScreen != 4) {
+        setCurrentScreen(nextScreen);
+        setCommentaryData(nextData);
+      }
     }
   }, [isCommentaryDataUpdated]);
 
@@ -277,7 +280,7 @@ function CommentaryMaster() {
         );
         setIsDataLoading(false);
       });
-      return commentaryDataToUpdate;
+    return commentaryDataToUpdate;
   };
   useEffect(() => {
     if (
@@ -324,9 +327,9 @@ function CommentaryMaster() {
       socket.emit(COMMENTARY_UPDATE, { ballStatus: BALL_START_STATUS, eventRefId: commentaryData.commentaryDetails?.eventRefId, commentaryId: commentaryId });
     }
     dispatch(updateCommentaryBallStatus({
-        "commentaryId": commentaryId,
-        "displayStatus": BOWLER_CHANGE_DISPLAY_STATUS,
-        // "commentaryPlayerId": onPitchPlayers[ON_STRIKE].commentaryPlayerId,
+      "commentaryId": commentaryId,
+      "displayStatus": BOWLER_CHANGE_DISPLAY_STATUS,
+      // "commentaryPlayerId": onPitchPlayers[ON_STRIKE].commentaryPlayerId,
     }))
   };
 
@@ -352,10 +355,10 @@ function CommentaryMaster() {
               <CardBody className="card-css">
                 {((isCommentaryBallLoading && currentScreen !== 3) ||
                   isDataLoading || !commentaryData) && <SpinnerModel />}
-              {isNewUi ? (
-                <Row className="mb-3">
-                  <Col className="p-0" xs={12}>
-                    {/* {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN && ( */}
+                {isNewUi ? (
+                  <Row className="mb-3">
+                    <Col className="p-0" xs={12}>
+                      {/* {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN && ( */}
                       <div className="d-flex flex-wrap justify-content-between">
                         {commentaryData ? <div className="d-flex flex-wrap align-items-center gap-2">
                           <span
@@ -391,26 +394,26 @@ function CommentaryMaster() {
                         </div> : null}
                         <div className="d-flex flex-wrap align-items-center gap-2">
                           {/* {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN && ( */}
-                            <>
+                          <>
                               <NetworkStatus newUi={true}/>
-                              {
-                                commentaryList === 'commentary' &&
-                                <div className="d-flex align-items-center py-2">
-                                    <span>Bet Allow</span>
-                                    <Switch
-                                      width={70}
-                                      uncheckedIcon={<OffsymbolStatus />}
-                                      checkedIcon={<OnSymbolStatus />}
-                                      className="pe-0 mx-2"
-                                      onColor="#02a499"
-                                      onChange={() => {
-                                        setIsBetAllow(!isBetAllow);
-                                      }}
-                                      checked={isBetAllow}
-                                    />
-                                </div>
-                              }
-                                {/* <button
+                            {
+                              commentaryList === 'commentary' &&
+                              <div className="d-flex align-items-center py-2">
+                                <span>Bet Allow</span>
+                                <Switch
+                                  width={70}
+                                  uncheckedIcon={<OffsymbolStatus />}
+                                  checkedIcon={<OnSymbolStatus />}
+                                  className="pe-0 mx-2"
+                                  onColor="#02a499"
+                                  onChange={() => {
+                                    setIsBetAllow(!isBetAllow);
+                                  }}
+                                  checked={isBetAllow}
+                                />
+                              </div>
+                            }
+                            {/* <button
                                   className="score-header-navigation-btns"
                                   onClick={() => {
                                     setIsNewUi(!isNewUi);
@@ -418,21 +421,21 @@ function CommentaryMaster() {
                                 >
                                   Old Ui
                               </button> */}
-                              {commentaryList === 'commentary' && 
-                                <button 
-                                  className="score-header-navigation-btns"
-                                  onClick={handleLoadCommentaryClick}
-                                >
-                                  Load Commentary
-                                </button>
-                              }
-                              <button 
+                            {commentaryList === 'commentary' &&
+                              <button
                                 className="score-header-navigation-btns"
-                                onClick={openIframePopup}
+                                onClick={handleLoadCommentaryClick}
                               >
-                                Scorecard
+                                Load Commentary
                               </button>
-                            </>
+                            }
+                            <button
+                              className="score-header-navigation-btns"
+                              onClick={openIframePopup}
+                            >
+                              Scorecard
+                            </button>
+                          </>
                           {/* )} */}
                           <button className="score-header-navigation-btns">
                             <img
@@ -450,116 +453,122 @@ function CommentaryMaster() {
                           </button>
                         </div>
                       </div>
-                    {/* )} */}
-                  </Col>
-                </Row>
+                      {/* )} */}
+                    </Col>
+                  </Row>
                 ) : (
                   <Row className='mb-3'>
-                      {/* <Col className="p-0" xs={12} md={6} lg={6}> */}
-                        {/* {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN && */}
-                          {/* <>
+                    {/* <Col className="p-0" xs={12} md={6} lg={6}> */}
+                    {/* {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN && */}
+                    {/* <>
                             <div className='match-details-breadcrumbs'>{`${commentaryData?.commentaryDetails.ety}/ ${commentaryData?.commentaryDetails.com}/ ${commentaryData?.commentaryDetails.en}`}</div>
                             <div>{`Ref: ${commentaryData?.commentaryDetails.eid} [ ${commentaryData?.commentaryDetails.ed + " " + commentaryData?.commentaryDetails.et} ]`}</div>
                           </> */}
-                          {/* // } */}
-                      {/* </Col> */}
-                      <Col className="p-0 d-flex flex-wrap">
-                        <div className="col-12 col-md-6">
-                          {commentaryData ? <><div className='match-details-breadcrumbs'>{`${commentaryData?.commentaryDetails.ety}/ ${commentaryData?.commentaryDetails.com}/ ${commentaryData?.commentaryDetails.en}`}</div>
+                    {/* // } */}
+                    {/* </Col> */}
+                    <Col className="p-0 d-flex flex-wrap">
+                      <div className="col-12 col-md-6">
+                        {commentaryData ? <><div className='match-details-breadcrumbs'>{`${commentaryData?.commentaryDetails.ety}/ ${commentaryData?.commentaryDetails.com}/ ${commentaryData?.commentaryDetails.en}`}</div>
                           <div>{`Ref: ${commentaryData?.commentaryDetails.eid} [ ${commentaryData?.commentaryDetails.ed + " " + commentaryData?.commentaryDetails.et} ]`}</div></> : null}
-                        </div>
-                        <div className='col-12 col-md-6 d-flex align-items-center justify-content-md-end mt-2 mt-md-0'>
-                          {(ALL_SCREENS[currentScreen] === COMMENTARY_PLAYER_SELECTION_SCREEN || ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN) && commentaryList === 'commentary' &&
-                            <div className="d-flex align-items-center py-2">
-                              <span>Bet Allow</span>
-                                <Switch
-                                  width={70}
-                                  uncheckedIcon={<OffsymbolStatus />}
-                                  checkedIcon={<OnSymbolStatus />}
-                                  className="pe-0 mx-2"
-                                  onColor="#02a499"
-                                  onChange={() => {
-                                    setIsBetAllow(!isBetAllow);
-                                  }}
-                                  checked={isBetAllow}
-                                />
-                            </div>
-                            }
-                            <Button color="danger" className=" mx-1 text-right" onClick={handleBackClick}>Exit</Button>
-                        </div>
-                          {/* {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN && */}
-                            <div className="col-12 col-md-12 d-flex flex-wrap align-items-center justify-content-between my-2 float-end">
+                      </div>
+                      <div className='col-12 col-md-6 d-flex align-items-center justify-content-md-end mt-2 mt-md-0'>
+                        {(ALL_SCREENS[currentScreen] === COMMENTARY_PLAYER_SELECTION_SCREEN || ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN) && commentaryList === 'commentary' &&
+                          <div className="d-flex align-items-center py-2">
+                            <span>Bet Allow</span>
+                            <Switch
+                              width={70}
+                              uncheckedIcon={<OffsymbolStatus />}
+                              checkedIcon={<OnSymbolStatus />}
+                              className="pe-0 mx-2"
+                              onColor="#02a499"
+                              onChange={() => {
+                                setIsBetAllow(!isBetAllow);
+                              }}
+                              checked={isBetAllow}
+                            />
+                          </div>
+                        }
+                        <Button color="danger" className=" mx-1 text-right" onClick={handleBackClick}>Exit</Button>
+                      </div>
+                      {/* {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN && */}
+                      <div className="col-12 col-md-12 d-flex flex-wrap align-items-center justify-content-between my-2 float-end">
                               <NetworkStatus/>
-                              <div>
-                                {(ALL_SCREENS[currentScreen] === COMMENTARY_PLAYER_SELECTION_SCREEN && commentaryData?.commentaryTeams?.some(team => team.isBattingComplete)) ? <Button color="warning" className="mx-1" onClick={() => setUndoInningsPopup(true)}>Undo Innings</Button> : null} 
-                                {commentaryList === 'commentary' && <Button color="primary" className="mx-1" onClick={handleLoadCommentaryClick}>Load Commentary</Button>}
-                                <Button color="primary" className="mx-1" onClick={openIframePopup}>Scorecard</Button>
-                                {/* <Button color="primary" className="mx-1 my-2 my-md-0" onClick={() => {setIsNewUi(!isNewUi)}}>New Ui</Button> */}
-                                {(ALL_SCREENS[currentScreen] === COMMENTARY_TOSS_SCREEN || ALL_SCREENS[currentScreen] === COMMENTARY_PLAYER_SELECTION_SCREEN) ? <Button color="primary" className="mx-1 my-2 my-md-0" onClick={handleBallStartClick}>Ball Start</Button> : null}
-                              </div>
-                            </div>
-                          {/* // } */}
-                      </Col>
+                        <div>
+                          {(ALL_SCREENS[currentScreen] === COMMENTARY_PLAYER_SELECTION_SCREEN && commentaryData?.commentaryTeams?.some(team => team.isBattingComplete)) ? <Button color="warning" className="mx-1" onClick={() => setUndoInningsPopup(true)}>Undo Innings</Button> : null}
+                          {commentaryList === 'commentary' && <Button color="primary" className="mx-1" onClick={handleLoadCommentaryClick}>Load Commentary</Button>}
+                          <Button color="primary" className="mx-1" onClick={openIframePopup}>Scorecard</Button>
+                          {/* <Button color="primary" className="mx-1 my-2 my-md-0" onClick={() => {setIsNewUi(!isNewUi)}}>New Ui</Button> */}
+                          {(ALL_SCREENS[currentScreen] === COMMENTARY_TOSS_SCREEN || ALL_SCREENS[currentScreen] === COMMENTARY_PLAYER_SELECTION_SCREEN) ? <Button color="primary" className="mx-1 my-2 my-md-0" onClick={handleBallStartClick}>Ball Start</Button> : null}
+                        </div>
+                      </div>
+                      {/* // } */}
+                    </Col>
                   </Row>
                 )}
                 <>
                   {ALL_SCREENS[currentScreen] === COMMENTARY_TOSS_SCREEN && (
                     <>
-                    {!isNewUi ? <Toss
-                      data={commentaryData}
-                      save={handleSaveClick}
-                      isPredictToggle={isPredictToggle}
-                      next={() => {
-                        setCurrentScreen(
-                          getScreenNumber(COMMENTARY_PLAYER_SELECTION_SCREEN)
-                        );
-                      }}
+                      {!isNewUi ? <Toss
+                        data={commentaryData}
+                        save={handleSaveClick}
+                        isPredictToggle={isPredictToggle}
+                        next={() => {
+                          setCurrentScreen(
+                            getScreenNumber(COMMENTARY_PLAYER_SELECTION_SCREEN)
+                          );
+                        }}
                     />: <TossScreen 
-                          data={commentaryData} 
-                          save={handleSaveClick} 
-                          isPredictToggle={isPredictToggle}
-                          next={() => {
-                            setCurrentScreen(
-                              getScreenNumber(COMMENTARY_PLAYER_SELECTION_SCREEN)
-                            );
-                          }}
-                        />}
+                        data={commentaryData}
+                        save={handleSaveClick}
+                        isPredictToggle={isPredictToggle}
+                        next={() => {
+                          setCurrentScreen(
+                            getScreenNumber(COMMENTARY_PLAYER_SELECTION_SCREEN)
+                          );
+                        }}
+                      />}
                     </>
                   )}
                   {ALL_SCREENS[currentScreen] === COMMENTARY_PLAYER_SELECTION_SCREEN && (
                     <>
-                    {!isNewUi ? <PlayerSelection
-                      data={commentaryData}
-                      save={handleSaveClick}
-                      isPredictToggle={isPredictToggle}
-                      previous={() => {
-                        setCurrentScreen(
-                          getScreenNumber(COMMENTARY_TOSS_SCREEN)
-                        );
-                      }}
-                      next={() => {
-                        setCurrentScreen(
-                          getScreenNumber(COMMENTARY_MAIN_SCREEN)
-                        );
-                      }}
-                      fetchData={fetchData}
-                      undoInningsPopup={undoInningsPopup}   
-                      setUndoInningsPopup={setUndoInningsPopup} 
-                    /> : <PlayerSelectionScreen 
-                            data={commentaryData}
-                            save={handleSaveClick}
-                            isPredictToggle={isPredictToggle}
-                            previous={() => {
-                              setCurrentScreen(
-                                getScreenNumber(COMMENTARY_TOSS_SCREEN)
-                              );
-                            }}
-                            next={() => {
-                              setCurrentScreen(
-                                getScreenNumber(COMMENTARY_MAIN_SCREEN)
-                              );
-                            }}
-                          />}
+                      {!isNewUi ? <PlayerSelection
+                        data={commentaryData}
+                        save={handleSaveClick}
+                        isPredictToggle={isPredictToggle}
+                        previous={() => {
+                          setCurrentScreen(
+                            getScreenNumber(COMMENTARY_TOSS_SCREEN)
+                          );
+                        }}
+                        next={() => {
+                          setCurrentScreen(
+                            getScreenNumber(COMMENTARY_MAIN_SCREEN)
+                          );
+                        }}
+                        undoNext={() => {
+                          setIsCommentaryWithUndo(true)
+                          setCurrentScreen(
+                            getScreenNumber(COMMENTARY_MAIN_SCREEN)
+                          );
+                        }}
+                        fetchData={fetchData}
+                        undoInningsPopup={undoInningsPopup}
+                        setUndoInningsPopup={setUndoInningsPopup}
+                      /> : <PlayerSelectionScreen
+                        data={commentaryData}
+                        save={handleSaveClick}
+                        isPredictToggle={isPredictToggle}
+                        previous={() => {
+                          setCurrentScreen(
+                            getScreenNumber(COMMENTARY_TOSS_SCREEN)
+                          );
+                        }}
+                        next={() => {
+                          setCurrentScreen(
+                            getScreenNumber(COMMENTARY_MAIN_SCREEN)
+                          );
+                        }}
+                      />}
                     </>
                   )}
                   {ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN && (
@@ -576,6 +585,8 @@ function CommentaryMaster() {
                       isPredictToggle={isPredictToggle}
                       setIsPredictToggle={setIsPredictToggle}
                       fetchData={fetchData}
+                      IsCommentaryWithUndo={IsCommentaryWithUndo}
+                      toggleCommenatryWithUndo={() => setIsCommentaryWithUndo(!IsCommentaryWithUndo)}
                     />
                   )}
                   {!isNewUi && <Col xs={12} md={6} lg={6}>

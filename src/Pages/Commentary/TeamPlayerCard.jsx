@@ -673,9 +673,9 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
               <div style={{ width: "6%"}}>BDRY</div>
               <div style={{ width: "6%"}}>PBF</div>
               {/* <div style={{ width: "10%"}}>Delete</div> */}
-              <div style={{ width: "10%"}}>XI</div>
+              <div style={{ width: "7%"}}>XI</div>
               {/* <div style={{ width: "10%"}}>P-Event</div> */}
-              <div style={{ width: "15%"}}>Date</div>
+              <div style={{ width: "18%"}}>Date</div>
             </div>
           </div>
         </div>
@@ -738,12 +738,12 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                     value={getPlayerBowlingTypeValue(player)}
                     placeholder="Bowling Style"
                     class="form-control"
-                    styles={{
-                        control: (provided) => ({
-                          ...provided,
-                          width: 180,
-                        }),
-                      }}
+                    // styles={{
+                    //     control: (provided) => ({
+                    //       ...provided,
+                    //       width: 180,
+                    //     }),
+                    //   }}
                     onChange={(value) =>
                       handleBowlerStyleChange(
                         player.commentaryPlayerId,
@@ -858,7 +858,7 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                     <i className="ri-delete-bin-2-line"></i>
                   </Button>
                 </div> */}
-                <div style={{ width: "10%"}}>
+                <div style={{ width: "7%"}}>
                   <div className="form-check form-switch form-switch-lg">
                     <input
                       className="form-check-input"
@@ -903,7 +903,7 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                     />
                   </div>
                 </div> */}
-                <div style={{ width: "15%"}}>
+                <div style={{ width: "18%"}}>
                   {dateType?.value == 1
                     ? convertDateUTCToLocal2_24(player?.createdDate, "index")
                     : convertDateUtcFormat24(player?.createdDate, "index")
