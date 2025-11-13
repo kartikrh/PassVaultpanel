@@ -500,7 +500,6 @@ const PlayerSelection = forwardRef((props, ref) => {
             restoredPartnership = {
               ...p,
               isActive: true,
-              commentaryBallByBallId: ballToRestore.commentaryBallByBallId
             };
             break;
           }
@@ -642,7 +641,6 @@ const PlayerSelection = forwardRef((props, ref) => {
             restoredPartnership = {
               ...p,
               isActive: true,
-              commentaryBallByBallId: ballToRestore.commentaryBallByBallId
             };
             break;
           }
