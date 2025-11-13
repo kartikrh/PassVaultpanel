@@ -1745,7 +1745,6 @@ const Commentary = (props) => {
 
     const onUndoLastInnings = async () => {
         try {
-            console.log("=== UNDO INNINGS START ===");
 
             //Identify current teams
             const currentBattingTeam = teams[BATTING_TEAM];
