@@ -484,7 +484,7 @@ const PlayerSelection = forwardRef((props, ref) => {
         let firstTeamPartnerships = partnershipHistory.filter(partnership =>
           partnership.currentInnings === commentaryDetails.currentInnings &&
           compareNumStringValues(partnership.teamId, firstBattingTeam.teamId)
-        ) || [];
+        ).sort((a, b) => b.commentaryPartnershipId - a.commentaryPartnershipId) || [];
 
         firstTeamPartnerships = Array.isArray(firstTeamPartnerships)
           ? firstTeamPartnerships
@@ -621,7 +621,7 @@ const PlayerSelection = forwardRef((props, ref) => {
           ?.filter(partnership =>
             partnership.currentInnings === targetInnings &&
             compareNumStringValues(partnership.teamId, previousBattingTeam.teamId)
-          ) || [];
+          ).sort((a, b) => b.commentaryPartnershipId - a.commentaryPartnershipId) || [];
 
         previousTeamPartnerships = Array.isArray(previousTeamPartnerships)
           ? previousTeamPartnerships
