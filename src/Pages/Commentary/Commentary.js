@@ -1764,8 +1764,6 @@ const Commentary = (props) => {
             const isMultiInnings = matchTypeDetails.noOfIningsPerSide > 1
                 && !hasBattingCompleteInSameInnings;
 
-            console.log("Scenario Type:", isMultiInnings ? "MULTI-INNINGS" : "SINGLE-INNINGS");
-
             let deleteBallIds = [];
             let deleteOverIds = [];
             let deletePartnershipIds = [];
@@ -1863,7 +1861,6 @@ const Commentary = (props) => {
                         restoredPartnership = {
                             ...p,
                             isActive: true,
-                            commentaryBallByBallId: ballToRestore.commentaryBallByBallId
                         };
                         break;
                     }
@@ -2024,7 +2021,6 @@ const Commentary = (props) => {
                         restoredPartnership = {
                             ...p,
                             isActive: true,
-                            commentaryBallByBallId: ballToRestore.commentaryBallByBallId
                         };
                         break;
                     }
