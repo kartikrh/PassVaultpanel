@@ -43,6 +43,12 @@ const Chart = ({ eventData = [] }) => {
     const views = eventData.map((item) => Number(item.views || 0));
     const eventNames = eventData.map((item) => item.eventName || "Unknown Event");
 
+    // compute numeric max safely, add optional padding if you want some space above the highest bar
+    const numericViews = views.map(v => Number(v) || 0);
+    const rawMax = numericViews.length ? Math.max(...numericViews) : 0;
+    // const padding = Math.ceil(rawMax * 0.05); // 5% padding (set to 0 if you want exact top)
+    const yMax = rawMax ;
+
     setChartData({
       series: [
         {
@@ -58,25 +64,28 @@ const Chart = ({ eventData = [] }) => {
         },
         plotOptions: {
           bar: {
-            columnWidth: "40%",
+            columnWidth: "40px",
             borderRadius: 6,
+            dataLabels: {
+              position: "top",
+            },
           },
         },
         dataLabels: {
-            enabled: true,
-            formatter: (val) => `${val}`,
-            style: {
-                colors: ["#ffffff"], // <-- This will now work!
-                fontSize: "10px",
-                fontWeight: 600,
-            },
-            background: {
-                enabled: false, // <-- Crucial line: Disable the background
-            },
+          enabled: true,
+          offsetY: -15,
+          formatter: (val) => `${val}`,
+          style: {
+            colors: ["#000000"],
+            fontSize: "10px",
+            fontWeight: 600,
+          },
+          background: { enabled: false },
         },
         colors: ["#0ab39c"],
         stroke: { width: 1 },
         grid: { borderColor: "#f1f1f1" },
+
         xaxis: {
           categories: labels,
           title: {
@@ -84,25 +93,24 @@ const Chart = ({ eventData = [] }) => {
             style: { fontSize: "14px", fontWeight: 600 },
           },
           labels: {
-          rotate: -45,
-          style: {
-            fontSize: "10px",
-            colors: "#555",
-          },
-          formatter: function (val) {
-            return val.length > 15 ? val.slice(0, 15) + "..." : val;
+            rotate: -45,
+            style: { fontSize: "10px", colors: "#555" },
+            formatter: function (val) {
+              return val.length > 15 ? val.slice(0, 15) + "..." : val;
+            },
           },
         },
-        // tooltip: {
-        //   enabled: true,
-        // },
-        },
+
         yaxis: {
+          min: 0,
+          max: yMax,               // <-- set max here (not inside title)
+          forceNiceScale: false,   // <-- also here
           title: {
             text: "Views",
             style: { fontSize: "14px", fontWeight: 600 },
           },
         },
+
         tooltip: {
           x: {
             formatter: (val, { dataPointIndex }) => {
@@ -111,15 +119,13 @@ const Chart = ({ eventData = [] }) => {
             },
           },
           y: {
-            formatter: (val, { dataPointIndex }) => {
-              const date = new Date(eventData[dataPointIndex].eventDate).toLocaleString();
-              return `${val}`;
-            },
+            formatter: (val) => `${val}`,
           },
         },
         legend: { show: false },
       },
     });
+
   }, [eventData]);
 
   return (
@@ -131,7 +137,7 @@ const Chart = ({ eventData = [] }) => {
           type="bar"
           className="apex-charts"
           // height={chartHeight}
-          height={window.innerHeight - 400}
+          height={window.innerHeight - 380}
         />
       ) : (
         <p className="text-center">Loading chart...</p>
