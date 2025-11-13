@@ -455,7 +455,7 @@ const Index = () => {
 
         <Chart eventData={data} />
 
-        <div className="d-flex justify-content-end pt-4">
+        <div className="d-flex justify-content-end py-2">
           <Pagination
             total={totalEntries}
             pageSize={pageSize}
