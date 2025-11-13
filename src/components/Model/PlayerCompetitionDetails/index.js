@@ -33,8 +33,8 @@ const Index = ({
           playerId: playerId,
         }
       );
-      setUpcomingComp(response?.result?.notEnded);
-      setCompletedComp(response?.result?.ended);
+      setUpcomingComp(response?.result?.notEnded || []);
+      setCompletedComp(response?.result?.ended || []);
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
@@ -54,17 +54,17 @@ const Index = ({
     }
   }, [competitionRecord]);
 
-  const upcomingCompColumns = [
+  const columns = [
       {
         title: "Reference Id",
-        dataIndex: "wrRefID",
-        key: "wrRefID",
+        dataIndex: "refID",
+        key: "refID",
         style: { width: "10%" },
       },
       {
         title: "Competition",
-        dataIndex: "wrCompetition",
-        key: "wrCompetition",
+        dataIndex: "competition",
+        key: "competition",
         style: { width: "10%" },
       },
       // {
@@ -88,111 +88,39 @@ const Index = ({
       // },
       {
         title: "TPID",
-        dataIndex: "wrTpId",
-        key: "wrTpId",
+        dataIndex: "tpId",
+        key: "tpId",
         style: { width: "10%" },
         sort: true,
       },
       {
         title: "CID",
-        dataIndex: "wrCompetitionId",
-        key: "wrCompetitionId",
+        dataIndex: "competitionId",
+        key: "competitionId",
         style: { width: "10%" },
         sort: true,
       },
       {
         title: "Start Date",
-        dataIndex: "wrStartDate",
+        dataIndex: "startDate",
         render: (text, record) => (
           <span>
             {convertDateUTCToLocalWithoutSec24(text, "index")}
           </span>
         ),
-        key: "wrStartDate",
+        key: "startDate",
         style: { width: "10%" },
         sort: true,
       },
       {
         title: "End Date",
-        dataIndex: "wrEndDate",
+        dataIndex: "endDate",
         render: (text, record) => (
           <span>
             {convertDateUTCToLocalWithoutSec24(text, "index")}
           </span>
         ),
-        key: "wrEndDate",
-        style: { width: "10%" },
-        sort: true,
-      },
-    ];
-
-  const completedCompColumns = [
-      {
-        title: "Reference Id",
-        dataIndex: "wrRefID",
-        key: "wrRefID",
-        style: { width: "10%" },
-      },
-      {
-        title: "Competition",
-        dataIndex: "wrCompetition",
-        key: "wrCompetition",
-        style: { width: "10%" },
-      },
-      // {
-      //   title: "Status",
-      //   dataIndex: "wrStatus",
-      //   render: (text, record) => {
-      //     const statusLabels = {
-      //       1: "Upcoming",
-      //       2: "Started",
-      //       3: "Completed",
-      //       4: "Stop",
-      //     };
-      //     return (
-      //       <span>
-      //         {statusLabels[text] || " "}
-      //       </span>
-      //     );
-      //   },
-      //   key: "wrStatus",
-      //   style: { width: "10%" },
-      // },
-      {
-        title: "TPID",
-        dataIndex: "wrTpId",
-        key: "wrTpId",
-        style: { width: "10%" },
-        sort: true,
-      },
-      {
-        title: "CID",
-        dataIndex: "wrCompetitionId",
-        key: "wrCompetitionId",
-        style: { width: "10%" },
-        sort: true,
-      },
-      {
-        title: "Start Date",
-        dataIndex: "wrStartDate",
-        render: (text, record) => (
-          <span>
-            {convertDateUTCToLocalWithoutSec24(text, "index")}
-          </span>
-        ),
-        key: "wrStartDate",
-        style: { width: "10%" },
-        sort: true,
-      },
-      {
-        title: "End Date",
-        dataIndex: "wrEndDate",
-        render: (text, record) => (
-          <span>
-            {convertDateUTCToLocalWithoutSec24(text, "index")}
-          </span>
-        ),
-        key: "wrEndDate",
+        key: "endDate",
         style: { width: "10%" },
         sort: true,
       },
@@ -235,7 +163,7 @@ const Index = ({
             }}>
               <Table
                 ref={upcomingCompRef}
-                columns={upcomingCompColumns}
+                columns={columns}
                 dataSource={upcomingComp}
                 tableElement={tableElement}
                 cardHeaderData={"Upcoming Competition"}
@@ -248,7 +176,7 @@ const Index = ({
             }}>
               <Table
                 ref={completedCompRef}
-                columns={completedCompColumns}
+                columns={columns}
                 dataSource={completedComp}
                 tableElement={tableElement}
                 cardHeaderData={"Completed Competition"}
