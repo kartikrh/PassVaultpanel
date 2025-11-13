@@ -428,6 +428,8 @@ const PlayerSelection = forwardRef((props, ref) => {
         // last Ball
         ballToRestore = firstTeamBalls[firstTeamBalls.length - 1];
 
+        const bowlToAdd = ((+ballToRestore?.currentOverBalls) / 10);
+
         // Extract player IDs from ball to restore
         const bowlerId = ballToRestore.bowlerId;
         const batStrikeId = ballToRestore.nextBatStrikeId || ballToRestore.batStrikeId;
@@ -437,7 +439,7 @@ const PlayerSelection = forwardRef((props, ref) => {
         const firstTeamOvers = overHistory.filter(over =>
           over.currentInnings === commentaryDetails.currentInnings &&
           compareNumStringValues(over.teamId, firstBattingTeam.teamId)
-        );
+        ).sort((a, b) => a.overId - b.overId);
 
         if (firstTeamOvers.length === 0) {
           setUndoErrorModal("No overs found for first batting team");
@@ -507,6 +509,7 @@ const PlayerSelection = forwardRef((props, ref) => {
             ...firstBattingTeam,
             teamStatus: BATTING_STATUS,
             isBattingComplete: false,
+            teamOver: ballToRestore ? (+ballToRestore?.overCount)?.toFixed(1) : (((+firstBattingTeam.teamOver || 0) - 1) + bowlToAdd)?.toFixed(1),
           },
           {
             ...secondBattingTeam,
@@ -551,7 +554,7 @@ const PlayerSelection = forwardRef((props, ref) => {
         const previousTeamBalls = ballHistory.filter(ball =>
           ball.currentInnings === targetInnings &&
           compareNumStringValues(ball.teamId, previousBattingTeam.teamId)
-        ).sort((a, b) => a.commentaryBallByBallId - b.commentaryBallByBallId);;
+        ).sort((a, b) => a.commentaryBallByBallId - b.commentaryBallByBallId);
 
         if (previousTeamBalls.length < 1) {
           setUndoErrorModal("Not enough balls found in previous innings");
@@ -559,7 +562,9 @@ const PlayerSelection = forwardRef((props, ref) => {
         }
 
         // last Ball
-        ballToRestore = previousTeamBalls[previousTeamBalls.length -1];
+        ballToRestore = previousTeamBalls[previousTeamBalls.length - 1];
+
+        const bowlToAdd = ((+ballToRestore?.currentOverBalls) / 10);
 
         // Extract player IDs
         const bowlerId = ballToRestore.bowlerId;
@@ -570,14 +575,14 @@ const PlayerSelection = forwardRef((props, ref) => {
         const previousTeamOvers = overHistory.filter(over =>
           over.currentInnings === targetInnings &&
           compareNumStringValues(over.teamId, previousBattingTeam.teamId)
-        );
+        ).sort((a, b) => a.overId - b.overId);
 
         if (previousTeamOvers.length === 0) {
           setUndoErrorModal("No overs found in previous innings");
           return;
         }
 
-        const lastPreviousTeamOver = previousTeamOvers[previousTeamOvers.length -1];
+        const lastPreviousTeamOver = previousTeamOvers[previousTeamOvers.length - 1];
 
         // Restored over
         restoredOver = {
@@ -640,6 +645,7 @@ const PlayerSelection = forwardRef((props, ref) => {
             ...previousBattingTeam,
             teamStatus: BATTING_STATUS,
             isBattingComplete: false,
+            teamOver: ballToRestore ? (+ballToRestore?.overCount)?.toFixed(1) : (((+previousBattingTeam.teamOver || 0) - 1) + bowlToAdd)?.toFixed(1),
           },
           {
             ...previousBowlingTeam,
