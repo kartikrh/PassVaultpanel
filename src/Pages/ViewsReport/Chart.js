@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ReactApexChart from "react-apexcharts";
 import "./chart.css";
+import SpinnerModel from "../../components/Model/SpinnerModel";
 
 const Chart = ({ eventData = [] }) => {
   const [chartData, setChartData] = useState({
@@ -146,7 +147,6 @@ const Chart = ({ eventData = [] }) => {
 
   return (
     <div>
-      {chartData.series.length > 0 ? (
         <ReactApexChart
           options={chartData.options}
           series={chartData.series}
@@ -155,9 +155,6 @@ const Chart = ({ eventData = [] }) => {
           // height={chartHeight}
           height={window.innerHeight - 380}
         />
-      ) : (
-        <p className="text-center">Loading chart...</p>
-      )}
     </div>
   );
 };
