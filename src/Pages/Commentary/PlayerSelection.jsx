@@ -428,8 +428,6 @@ const PlayerSelection = forwardRef((props, ref) => {
         // last Ball
         ballToRestore = firstTeamBalls[firstTeamBalls.length - 1];
 
-        const bowlToAdd = ((+ballToRestore?.currentOverBalls) / 10);
-
         // Extract player IDs from ball to restore
         const bowlerId = ballToRestore.bowlerId;
         const batStrikeId = ballToRestore.nextBatStrikeId || ballToRestore.batStrikeId;
@@ -451,9 +449,7 @@ const PlayerSelection = forwardRef((props, ref) => {
         // Restored over
         restoredOver = {
           ...lastFirstTeamOver,
-          ballCount: lastFirstTeamOver.ballCount,
           isComplete: false,
-          teamScore: `${firstBattingTeam.teamScore}/${firstBattingTeam.teamWicket}`
         };
 
         // Find players for updatedOnPitchPlayers
@@ -477,7 +473,6 @@ const PlayerSelection = forwardRef((props, ref) => {
               updatedOnPitchPlayers[CURRENT_BOWLER] = {
                 ...player,
                 isPlay: true,
-                bowlerOver: (((+player.bowlerOver || 0) - 1) + bowlToAdd)?.toFixed(1)
               };
             }
           }
@@ -512,7 +507,6 @@ const PlayerSelection = forwardRef((props, ref) => {
             ...firstBattingTeam,
             teamStatus: BATTING_STATUS,
             isBattingComplete: false,
-            teamOver: ballToRestore ? (+ballToRestore?.overCount)?.toFixed(1) : (((+firstBattingTeam.teamOver || 0) - 1) + bowlToAdd)?.toFixed(1),
           },
           {
             ...secondBattingTeam,
@@ -567,9 +561,6 @@ const PlayerSelection = forwardRef((props, ref) => {
         // last Ball
         ballToRestore = previousTeamBalls[previousTeamBalls.length -1];
 
-        // Calculate balls
-        const bowlToAdd = ((+ballToRestore.currentOverBalls || 0) / 10);
-
         // Extract player IDs
         const bowlerId = ballToRestore.bowlerId;
         const batStrikeId = ballToRestore.nextBatStrikeId || ballToRestore.batStrikeId;
@@ -591,9 +582,7 @@ const PlayerSelection = forwardRef((props, ref) => {
         // Restored over
         restoredOver = {
           ...lastPreviousTeamOver,
-          ballCount: lastPreviousTeamOver.ballCount,
           isComplete: false,
-          teamScore: `${previousBattingTeam.teamScore}/${previousBattingTeam.teamWicket}`
         };
 
         // Find players
@@ -617,7 +606,6 @@ const PlayerSelection = forwardRef((props, ref) => {
               updatedOnPitchPlayers[CURRENT_BOWLER] = {
                 ...player,
                 isPlay: true,
-                bowlerOver: (((+player.bowlerOver || 0) - 1) + bowlToAdd)?.toFixed(1)
               };
             }
           }
@@ -652,7 +640,6 @@ const PlayerSelection = forwardRef((props, ref) => {
             ...previousBattingTeam,
             teamStatus: BATTING_STATUS,
             isBattingComplete: false,
-            teamOver: ballToRestore ? (+ballToRestore?.overCount)?.toFixed(1) : (((+previousBattingTeam.teamOver || 0) - 1) + bowlToAdd)?.toFixed(1),
           },
           {
             ...previousBowlingTeam,

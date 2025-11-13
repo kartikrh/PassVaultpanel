@@ -1767,7 +1767,7 @@ const Commentary = (props) => {
             let deleteBallIds = [];
             let deleteOverIds = [];
             let deletePartnershipIds = [];
-            let deleteWickets = [];
+            // let deleteWickets = [];
             let updatedTeams = [];
             let updatedOnPitchPlayers = [];
             let restoredOver = [];
@@ -1795,7 +1795,6 @@ const Commentary = (props) => {
 
                 // Restore the previous teams balls and playerIds
                 ballToRestore = firstTeamBalls[firstTeamBalls.length - 1];
-                const bowlToAdd = ((+ballToRestore.currentOverBalls || 0) / 10);
                 //  console.log("ballToRestore", ballToRestore, "bowlToAdd", bowlToAdd)
 
                 // Extract player IDs from ball to restore
@@ -1826,9 +1825,7 @@ const Commentary = (props) => {
                 const lastFirstTeamOver = firstTeamOvers[firstTeamOvers.length - 1];
                 restoredOver = {
                     ...lastFirstTeamOver,
-                    ballCount: lastFirstTeamOver.ballCount,
                     isComplete: false,
-                    teamScore: `${firstBattingTeam.teamScore}/${firstBattingTeam.teamWicket}`
                 };
 
                 // Add all overs from second team
@@ -1838,11 +1835,11 @@ const Commentary = (props) => {
                 );
                 deleteOverIds = secondTeamOvers.map(o => o.overId);
 
-                const secondTeamWickets = wicketHistory.filter(w =>
-                    w.currentInnings === commentaryDetails.currentInnings &&
-                    compareNumStringValues(w.teamId, secondBattingTeam.teamId)
-                );
-                deleteWickets.push(...secondTeamWickets.map(w => w.commentaryWicketId));
+                // const secondTeamWickets = wicketHistory.filter(w =>
+                //     w.currentInnings === commentaryDetails.currentInnings &&
+                //     compareNumStringValues(w.teamId, secondBattingTeam.teamId)
+                // );
+                // deleteWickets.push(...secondTeamWickets.map(w => w.commentaryWicketId));
 
                 // Find partnership
                 let firstTeamPartnerships = partnershipHistory.filter(partnership =>
@@ -1896,7 +1893,6 @@ const Commentary = (props) => {
                             updatedOnPitchPlayers[CURRENT_BOWLER] = {
                                 ...player,
                                 isPlay: true,
-                                bowlerOver: (((+player.bowlerOver || 0) - 1) + bowlToAdd)?.toFixed(1)
                             };
                         }
                     }
@@ -1908,7 +1904,6 @@ const Commentary = (props) => {
                         ...firstBattingTeam,
                         teamStatus: BATTING_STATUS,
                         isBattingComplete: false,
-                        teamOver: ballToRestore ? (+ballToRestore?.overCount)?.toFixed(1) : (((+firstBattingTeam.teamOver || 0) - 1) + bowlToAdd)?.toFixed(1)
                     },
                     {
                         ...secondBattingTeam,
@@ -1960,9 +1955,6 @@ const Commentary = (props) => {
                 //Ball to restore (second-to-last ball of previous innings)
                 ballToRestore = previousTeamBalls[previousTeamBalls.length - 1];
 
-                // Calculate balls to add back
-                const bowlToAdd = ((+ballToRestore.currentOverBalls || 0) / 10);
-
                 // Extract player IDs
                 const bowlerId = ballToRestore.bowlerId;
                 const batStrikeId = ballToRestore.nextBatStrikeId || ballToRestore.batStrikeId;
@@ -1994,9 +1986,7 @@ const Commentary = (props) => {
                 // Restored over
                 restoredOver = {
                     ...lastPreviousTeamOver,
-                    ballCount: lastPreviousTeamOver.ballCount,
                     isComplete: false,
-                    teamScore: `${previousBattingTeam.teamScore}/${previousBattingTeam.teamWicket}`
                 };
 
                 const currentInningsPartnerships = partnershipHistory.filter(p =>
@@ -2026,10 +2016,10 @@ const Commentary = (props) => {
                     }
                 }
 
-                const currentInningWickets = wicketHistory.filter(w =>
-                    w.currentInnings === commentaryDetails.currentInnings
-                );
-                deleteWickets.push(...currentInningWickets.map(w => w.commentaryWicketId));
+                // const currentInningWickets = wicketHistory.filter(w =>
+                //     w.currentInnings === commentaryDetails.currentInnings
+                // );
+                // deleteWickets.push(...currentInningWickets.map(w => w.commentaryWicketId));
 
                 //Find players
                 propsData.commentaryData.commentaryPlayers.forEach(player => {
@@ -2052,7 +2042,6 @@ const Commentary = (props) => {
                             updatedOnPitchPlayers[CURRENT_BOWLER] = {
                                 ...player,
                                 isPlay: true,
-                                bowlerOver: (((+player.bowlerOver || 0) - 1) + bowlToAdd)?.toFixed(1)
                             };
                         }
                     }
@@ -2064,7 +2053,6 @@ const Commentary = (props) => {
                         ...previousBattingTeam,
                         teamStatus: BATTING_STATUS,
                         isBattingComplete: false,
-                        teamOver: ballToRestore ? (+ballToRestore?.overCount)?.toFixed(1) : (((+previousBattingTeam.teamOver || 0) - 1) + bowlToAdd)?.toFixed(1),
                     },
                     {
                         ...previousBowlingTeam,
@@ -2096,7 +2084,7 @@ const Commentary = (props) => {
                 commentaryId: commentaryDetails.commentaryId,
                 deleteCommentaryBallByBallId: deleteBallIds,
                 deleteOverId: deleteOverIds,
-                deleteWicketId: deleteWickets,
+                // deleteWicketId: deleteWickets,
                 deletePartnershipId: deletePartnershipIds,
                 commentaryPlayers: [...playersToReset, ...Object.values(updatedOnPitchPlayers)],
                 commentaryDetails: {
@@ -2133,12 +2121,12 @@ const Commentary = (props) => {
                     setIsLastInnings(false);
 
                     // Remove deleted items from local history
-                    if (deleteWickets.length > 0) {
-                        const updatedWicketHistory = wicketHistory.filter(w =>
-                            !deleteWickets.includes(w.commentaryWicketId)
-                        );
-                        setWicketHistory(updatedWicketHistory);
-                    }
+                    // if (deleteWickets.length > 0) {
+                    //     const updatedWicketHistory = wicketHistory.filter(w =>
+                    //         !deleteWickets.includes(w.commentaryWicketId)
+                    //     );
+                    //     setWicketHistory(updatedWicketHistory);
+                    // }
                     if (deleteBallIds.length > 0) {
                         const updatedBalls = ballHistory.filter(b =>
                             !deleteBallIds.includes(b.commentaryBallByBallId)
