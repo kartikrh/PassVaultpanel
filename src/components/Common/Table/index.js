@@ -169,6 +169,7 @@ const Index = forwardRef(
       setParentSearchedData,
       parentCurrentPage,
       cardHeaderData,
+      maxTableHeight,
     },
     ref
   ) => {
@@ -3887,6 +3888,11 @@ const Index = forwardRef(
                 <div
                   className="table-responsive table-responsive2 table-card mt-3 mb-1"
                   id="myTable"
+                  style={maxTableHeight ? {
+                    maxHeight: maxTableHeight,
+                    overflowY: 'auto',
+                    overflowX: 'hidden',
+                  } : null}
                 >
                   {tableElement?.dragDrop ? (
                     <DragDropContext onDragEnd={handleDragEnd}>
