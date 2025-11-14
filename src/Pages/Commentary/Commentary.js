@@ -1773,7 +1773,8 @@ const Commentary = (props) => {
             let restoredOver = [];
             let restoredPartnership = [];
             let ballToRestore = [];
-
+            let battingTeamPlayers = []
+            let bowlingTeamPlayers = []
             // ========== SCENARIO 1: SINGLE INNINGS ==========
             if (hasBattingCompleteInSameInnings) {
                 const firstBattingTeam = currentBowlingTeam; // Team that batted first
@@ -1800,8 +1801,8 @@ const Commentary = (props) => {
 
                 // Extract player IDs from ball to restore
                 const bowlerId = ballToRestore.bowlerId;
-                const batStrikeId = ballToRestore.nextBatStrikeId || ballToRestore.batStrikeId;
-                const batNonStrikeId = ballToRestore.nextBatNonStrikeId || ballToRestore.batNonStrikeId;
+                const batStrikeId = ballToRestore?.batStrikeId ? ballToRestore.batStrikeId : ballToRestore.nextBatStrikeId;
+                const batNonStrikeId = ballToRestore?.batNonStrikeId ? ballToRestore.batNonStrikeId : ballToRestore.nextBatNonStrikeId;
 
                 //Second teams first ball delete
                 const secondTeamBalls = ballHistory.filter(b =>
@@ -1961,8 +1962,8 @@ const Commentary = (props) => {
 
                 // Extract player IDs
                 const bowlerId = ballToRestore.bowlerId;
-                const batStrikeId = ballToRestore.nextBatStrikeId || ballToRestore.batStrikeId;
-                const batNonStrikeId = ballToRestore.nextBatNonStrikeId || ballToRestore.batNonStrikeId;
+                const batStrikeId = ballToRestore?.batStrikeId ? ballToRestore.batStrikeId : ballToRestore.nextBatStrikeId;
+                const batNonStrikeId = ballToRestore?.batNonStrikeId ? ballToRestore.batNonStrikeId : ballToRestore.nextBatNonStrikeId;
 
                 // Add ALL data from current innings
                 const currentInningsBalls = ballHistory.filter(b =>
@@ -2120,6 +2121,22 @@ const Commentary = (props) => {
                         [BOWLING_TEAM]: updatedTeams[1]
                     });
 
+                    propsData.commentaryData.commentaryPlayers.forEach(playerDetails => {
+                        // if (isEqual(playerDetails.currentInnings, commentaryDetails.currentInnings)) {
+                        const isBattingTeam = playerDetails?.teamId === updatedTeams[0]?.teamId
+                        // If player is from batting team, add them to the batting object list
+                        if (isBattingTeam) {
+                            battingTeamPlayers.push(playerDetails)
+                        }
+                        else {
+                            bowlingTeamPlayers.push(playerDetails)
+                        }
+                    });
+
+                    setPlayers({
+                        [BATTING_TEAM]: battingTeamPlayers,
+                        [BOWLING_TEAM]: bowlingTeamPlayers
+                    })
                     setOnPitchPlayers(updatedOnPitchPlayers);
                     setCurrentOver(restoredOver);
                     setCurrentPartnership(restoredPartnership);
