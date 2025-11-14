@@ -62,41 +62,28 @@ const Index = ({
         style: { width: "10%" },
       },
       {
+        title: "CID",
+        dataIndex: "competitionId",
+        key: "competitionId",
+        style: { width: "10%" },
+        sort: true,
+      },
+      {
         title: "Competition",
         dataIndex: "competition",
         key: "competition",
         style: { width: "10%" },
       },
-      // {
-      //   title: "Status",
-      //   dataIndex: "wrStatus",
-      //   render: (text, record) => {
-      //     const statusLabels = {
-      //       1: "Upcoming",
-      //       2: "Started",
-      //       3: "Completed",
-      //       4: "Stop",
-      //     };
-      //     return (
-      //       <span>
-      //         {statusLabels[text] || " "}
-      //       </span>
-      //     );
-      //   },
-      //   key: "wrStatus",
-      //   style: { width: "10%" },
-      // },
+      {
+        title: "Match Type",
+        dataIndex: "matchType",
+        key: "matchType",
+        style: { width: "10%" },
+      },
       {
         title: "TPID",
         dataIndex: "tpId",
         key: "tpId",
-        style: { width: "10%" },
-        sort: true,
-      },
-      {
-        title: "CID",
-        dataIndex: "competitionId",
-        key: "competitionId",
         style: { width: "10%" },
         sort: true,
       },
