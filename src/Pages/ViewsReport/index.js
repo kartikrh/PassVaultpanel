@@ -191,6 +191,7 @@ const Index = () => {
     setCompSelect(null);
     setCommentaryStatusSelect(null);
     setVirtualStatusSelect(null);
+    setIsSearch(true)
     setDateRange({
       startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
       endDate: `${new Date(Date.now() + 24 * 60 * 60 * 1000)
