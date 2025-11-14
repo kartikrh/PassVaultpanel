@@ -432,8 +432,8 @@ const PlayerSelection = forwardRef((props, ref) => {
 
         // Extract player IDs from ball to restore
         const bowlerId = ballToRestore.bowlerId;
-        const batStrikeId = ballToRestore.nextBatStrikeId || ballToRestore.batStrikeId;
-        const batNonStrikeId = ballToRestore.nextBatNonStrikeId || ballToRestore.batNonStrikeId;
+        const batStrikeId = ballToRestore?.batStrikeId ? ballToRestore.batStrikeId : ballToRestore.nextBatStrikeId;
+        const batNonStrikeId = ballToRestore?.batNonStrikeId ? ballToRestore.batNonStrikeId : ballToRestore.nextBatNonStrikeId;
 
         // Get first batting team's last over
         const firstTeamOvers = overHistory.filter(over =>
@@ -568,8 +568,8 @@ const PlayerSelection = forwardRef((props, ref) => {
 
         // Extract player IDs
         const bowlerId = ballToRestore.bowlerId;
-        const batStrikeId = ballToRestore.nextBatStrikeId || ballToRestore.batStrikeId;
-        const batNonStrikeId = ballToRestore.nextBatNonStrikeId || ballToRestore.batNonStrikeId;
+        const batStrikeId = ballToRestore?.batStrikeId ? ballToRestore.batStrikeId : ballToRestore.nextBatStrikeId;
+        const batNonStrikeId = ballToRestore?.batNonStrikeId ? ballToRestore.batNonStrikeId : ballToRestore.nextBatNonStrikeId;
 
         // Get previous innings' overs
         const previousTeamOvers = overHistory.filter(over =>
