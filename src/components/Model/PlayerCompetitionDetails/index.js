@@ -143,32 +143,22 @@ const Index = ({
             id="modal-id"
           >
             {isLoading && <SpinnerModel />}
-            <div style={{
-              maxHeight: "350px",
-              overflowY: "auto",
-              overflowX: "hidden",
-            }}>
-              <Table
-                ref={upcomingCompRef}
-                columns={columns}
-                dataSource={upcomingComp}
-                tableElement={tableElement}
-                cardHeaderData={"Upcoming Competition"}
-              />
-            </div>
-            <div style={{
-              maxHeight: "350px",
-              overflowY: "auto",
-              overflowX: "hidden",
-            }}>
-              <Table
-                ref={completedCompRef}
-                columns={columns}
-                dataSource={completedComp}
-                tableElement={tableElement}
-                cardHeaderData={"Completed Competition"}
-              />
-            </div>
+            <Table
+              ref={upcomingCompRef}
+              columns={columns}
+              dataSource={upcomingComp}
+              tableElement={tableElement}
+              cardHeaderData={"Upcoming Competition"}
+              maxTableHeight="300px"
+            />
+            <Table
+              ref={completedCompRef}
+              columns={columns}
+              dataSource={completedComp}
+              tableElement={tableElement}
+              cardHeaderData={"Completed Competition"}
+              maxTableHeight="300px"
+            />
             <div className="hstack justify-content-end mt-4">
               <button
                 type="button"
