@@ -106,6 +106,13 @@ const Index = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    if(!eventTypeSelect){
+      setCompetitions([])
+    }
+    setCompSelect(null)
+  }, [eventTypeSelect])
+
+  useEffect(() => {
     eventTypeListOptions();
     pythonAPIData()
   }, []);
