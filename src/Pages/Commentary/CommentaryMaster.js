@@ -247,7 +247,6 @@ function CommentaryMaster() {
       .post("/admin/commentary/detailsById", { commentaryId })
       .then(async (response) => {
         commentaryDataToUpdate = response?.result;
-        console.log("🔄 fetchCommentaryData API called",response);
         setCurrentScreen(
           commentaryDataToUpdate?.commentaryDetails?.commentaryStatus || 1
         );

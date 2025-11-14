@@ -1922,19 +1922,16 @@ const Commentary = (props) => {
                 let previousBattingTeam = null;
                 let previousBowlingTeam = null;
 
-                allInningaTeams.forEach(team => {
-                    if (team.currentInnings === targetInnings) {
-                        if (!previousBattingTeam || team.teamBattingOrder > previousBattingTeam.teamBattingOrder) {
-                            previousBattingTeam = team;
-                        }
-                    }
-                });
+                const previousInningsTeams = allInningaTeams.filter(
+                    t => t.currentInnings === targetInnings
+                );
 
-                allInningaTeams.forEach(team => {
-                    if (team.currentInnings === targetInnings && !compareNumStringValues(team.teamId, previousBattingTeam?.teamId)) {
-                        previousBowlingTeam = team;
-                    }
-                });
+                previousInningsTeams.sort(
+                    (a, b) => Number(b.teamBattingOrder) - Number(a.teamBattingOrder)
+                );
+
+                previousBattingTeam = previousInningsTeams[0];
+                previousBowlingTeam = previousInningsTeams[1];
 
                 if (!previousBattingTeam || !previousBowlingTeam) {
                     setUndoErrorModal("Cannot find previous innings teams");
@@ -2115,6 +2112,12 @@ const Commentary = (props) => {
             await axiosInstance.post('/admin/commentary/undoDetails', payload)
                 .then((response) => {
                     setUndoInningsPopup(undefined);
+
+                    setCommentaryDetails((prev) => ({
+                        ...prev,
+                        currentInnings: innings,
+                        commentaryStatus: 3,
+                    }))
 
                     setTeams({
                         [BATTING_TEAM]: updatedTeams[0],
@@ -2607,9 +2610,11 @@ const Commentary = (props) => {
         setCurrentBall(currentBallToUpdate)
         if (!isEmpty(currentBallToUpdate)) setBallCountForStrike((currentBallToUpdate.autoStrikeBallCount || 0) + 1)
         setIsLastInnings(commentaryDetails.currentInnings >= matchTypeDetails.noOfIningsPerSide)
+        console.log("Partnership Found in API", { partnershipFromApi, onPitchPlayers })
         if (isEmpty(partnershipFromApi) && onPitchPlayers[ON_STRIKE]?.commentaryPlayerId
             && onPitchPlayers[NON_STRIKE]?.commentaryPlayerId)
             apiCallObj["commentaryPartnership"] = generatePartnership({ commentaryDetails, currentPartnership: partnershipDetails, teams: currentInningsTeams })
+        console.log("GENERATING PARTNERSHIP", apiCallObj.commentaryPartnership)
         if (!currentOverToUpdate && onPitchPlayers[CURRENT_BOWLER]?.commentaryPlayerId) {
             apiCallObj["commentaryOvers"] = generateOver({
                 commentaryDetails, onPitchPlayers, teams: currentInningsTeams, selectedOverType
