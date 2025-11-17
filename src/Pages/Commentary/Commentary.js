@@ -1764,18 +1764,17 @@ const Commentary = (props) => {
             const isMultiInnings = matchTypeDetails.noOfIningsPerSide > 1
                 && !hasBattingCompleteInSameInnings;
 
-            console.log("Scenario Type:", isMultiInnings ? "MULTI-INNINGS" : "SINGLE-INNINGS");
-
             let deleteBallIds = [];
             let deleteOverIds = [];
             let deletePartnershipIds = [];
-            let deleteWickets = [];
+            // let deleteWickets = [];
             let updatedTeams = [];
             let updatedOnPitchPlayers = [];
             let restoredOver = [];
             let restoredPartnership = [];
             let ballToRestore = [];
-
+            let battingTeamPlayers = []
+            let bowlingTeamPlayers = []
             // ========== SCENARIO 1: SINGLE INNINGS ==========
             if (hasBattingCompleteInSameInnings) {
                 const firstBattingTeam = currentBowlingTeam; // Team that batted first
@@ -1802,8 +1801,8 @@ const Commentary = (props) => {
 
                 // Extract player IDs from ball to restore
                 const bowlerId = ballToRestore.bowlerId;
-                const batStrikeId = ballToRestore.nextBatStrikeId || ballToRestore.batStrikeId;
-                const batNonStrikeId = ballToRestore.nextBatNonStrikeId || ballToRestore.batNonStrikeId;
+                const batStrikeId = ballToRestore?.batStrikeId ? ballToRestore.batStrikeId : ballToRestore.nextBatStrikeId;
+                const batNonStrikeId = ballToRestore?.batNonStrikeId ? ballToRestore.batNonStrikeId : ballToRestore.nextBatNonStrikeId;
 
                 //Second teams first ball delete
                 const secondTeamBalls = ballHistory.filter(b =>
@@ -1828,9 +1827,7 @@ const Commentary = (props) => {
                 const lastFirstTeamOver = firstTeamOvers[firstTeamOvers.length - 1];
                 restoredOver = {
                     ...lastFirstTeamOver,
-                    ballCount: lastFirstTeamOver.ballCount,
                     isComplete: false,
-                    teamScore: `${firstBattingTeam.teamScore}/${firstBattingTeam.teamWicket}`
                 };
 
                 // Add all overs from second team
@@ -1840,11 +1837,11 @@ const Commentary = (props) => {
                 );
                 deleteOverIds = secondTeamOvers.map(o => o.overId);
 
-                const secondTeamWickets = wicketHistory.filter(w =>
-                    w.currentInnings === commentaryDetails.currentInnings &&
-                    compareNumStringValues(w.teamId, secondBattingTeam.teamId)
-                );
-                deleteWickets.push(...secondTeamWickets.map(w => w.commentaryWicketId));
+                // const secondTeamWickets = wicketHistory.filter(w =>
+                //     w.currentInnings === commentaryDetails.currentInnings &&
+                //     compareNumStringValues(w.teamId, secondBattingTeam.teamId)
+                // );
+                // deleteWickets.push(...secondTeamWickets.map(w => w.commentaryWicketId));
 
                 // Find partnership
                 let firstTeamPartnerships = partnershipHistory.filter(partnership =>
@@ -1863,7 +1860,6 @@ const Commentary = (props) => {
                         restoredPartnership = {
                             ...p,
                             isActive: true,
-                            commentaryBallByBallId: ballToRestore.commentaryBallByBallId
                         };
                         break;
                     }
@@ -1899,7 +1895,6 @@ const Commentary = (props) => {
                             updatedOnPitchPlayers[CURRENT_BOWLER] = {
                                 ...player,
                                 isPlay: true,
-                                bowlerOver: (((+player.bowlerOver || 0) - 1) + bowlToAdd)?.toFixed(1)
                             };
                         }
                     }
@@ -1911,7 +1906,7 @@ const Commentary = (props) => {
                         ...firstBattingTeam,
                         teamStatus: BATTING_STATUS,
                         isBattingComplete: false,
-                        teamOver: ballToRestore ? (+ballToRestore?.overCount)?.toFixed(1) : (((+firstBattingTeam.teamOver || 0) - 1) + bowlToAdd)?.toFixed(1)
+                        teamOver: ballToRestore ? (+ballToRestore?.overCount)?.toFixed(1) : (((+firstBattingTeam.teamOver || 0) - 1) + bowlToAdd)?.toFixed(1),
                     },
                     {
                         ...secondBattingTeam,
@@ -1927,19 +1922,16 @@ const Commentary = (props) => {
                 let previousBattingTeam = null;
                 let previousBowlingTeam = null;
 
-                allInningaTeams.forEach(team => {
-                    if (team.currentInnings === targetInnings) {
-                        if (!previousBattingTeam || team.teamBattingOrder > previousBattingTeam.teamBattingOrder) {
-                            previousBattingTeam = team;
-                        }
-                    }
-                });
+                const previousInningsTeams = allInningaTeams.filter(
+                    t => t.currentInnings === targetInnings
+                );
 
-                allInningaTeams.forEach(team => {
-                    if (team.currentInnings === targetInnings && !compareNumStringValues(team.teamId, previousBattingTeam?.teamId)) {
-                        previousBowlingTeam = team;
-                    }
-                });
+                previousInningsTeams.sort(
+                    (a, b) => Number(b.teamBattingOrder) - Number(a.teamBattingOrder)
+                );
+
+                previousBattingTeam = previousInningsTeams[0];
+                previousBowlingTeam = previousInningsTeams[1];
 
                 if (!previousBattingTeam || !previousBowlingTeam) {
                     setUndoErrorModal("Cannot find previous innings teams");
@@ -1963,13 +1955,12 @@ const Commentary = (props) => {
                 //Ball to restore (second-to-last ball of previous innings)
                 ballToRestore = previousTeamBalls[previousTeamBalls.length - 1];
 
-                // Calculate balls to add back
                 const bowlToAdd = ((+ballToRestore.currentOverBalls || 0) / 10);
 
                 // Extract player IDs
                 const bowlerId = ballToRestore.bowlerId;
-                const batStrikeId = ballToRestore.nextBatStrikeId || ballToRestore.batStrikeId;
-                const batNonStrikeId = ballToRestore.nextBatNonStrikeId || ballToRestore.batNonStrikeId;
+                const batStrikeId = ballToRestore?.batStrikeId ? ballToRestore.batStrikeId : ballToRestore.nextBatStrikeId;
+                const batNonStrikeId = ballToRestore?.batNonStrikeId ? ballToRestore.batNonStrikeId : ballToRestore.nextBatNonStrikeId;
 
                 // Add ALL data from current innings
                 const currentInningsBalls = ballHistory.filter(b =>
@@ -1997,9 +1988,7 @@ const Commentary = (props) => {
                 // Restored over
                 restoredOver = {
                     ...lastPreviousTeamOver,
-                    ballCount: lastPreviousTeamOver.ballCount,
                     isComplete: false,
-                    teamScore: `${previousBattingTeam.teamScore}/${previousBattingTeam.teamWicket}`
                 };
 
                 const currentInningsPartnerships = partnershipHistory.filter(p =>
@@ -2024,16 +2013,15 @@ const Commentary = (props) => {
                         restoredPartnership = {
                             ...p,
                             isActive: true,
-                            commentaryBallByBallId: ballToRestore.commentaryBallByBallId
                         };
                         break;
                     }
                 }
 
-                const currentInningWickets = wicketHistory.filter(w =>
-                    w.currentInnings === commentaryDetails.currentInnings
-                );
-                deleteWickets.push(...currentInningWickets.map(w => w.commentaryWicketId));
+                // const currentInningWickets = wicketHistory.filter(w =>
+                //     w.currentInnings === commentaryDetails.currentInnings
+                // );
+                // deleteWickets.push(...currentInningWickets.map(w => w.commentaryWicketId));
 
                 //Find players
                 propsData.commentaryData.commentaryPlayers.forEach(player => {
@@ -2056,7 +2044,6 @@ const Commentary = (props) => {
                             updatedOnPitchPlayers[CURRENT_BOWLER] = {
                                 ...player,
                                 isPlay: true,
-                                bowlerOver: (((+player.bowlerOver || 0) - 1) + bowlToAdd)?.toFixed(1)
                             };
                         }
                     }
@@ -2100,7 +2087,7 @@ const Commentary = (props) => {
                 commentaryId: commentaryDetails.commentaryId,
                 deleteCommentaryBallByBallId: deleteBallIds,
                 deleteOverId: deleteOverIds,
-                deleteWicketId: deleteWickets,
+                // deleteWicketId: deleteWickets,
                 deletePartnershipId: deletePartnershipIds,
                 commentaryPlayers: [...playersToReset, ...Object.values(updatedOnPitchPlayers)],
                 commentaryDetails: {
@@ -2126,23 +2113,45 @@ const Commentary = (props) => {
                 .then((response) => {
                     setUndoInningsPopup(undefined);
 
+                    setCommentaryDetails((prev) => ({
+                        ...prev,
+                        currentInnings: innings,
+                        commentaryStatus: 3,
+                    }))
+
                     setTeams({
                         [BATTING_TEAM]: updatedTeams[0],
                         [BOWLING_TEAM]: updatedTeams[1]
                     });
 
+                    propsData.commentaryData.commentaryPlayers.forEach(playerDetails => {
+                        // if (isEqual(playerDetails.currentInnings, commentaryDetails.currentInnings)) {
+                        const isBattingTeam = playerDetails?.teamId === updatedTeams[0]?.teamId
+                        // If player is from batting team, add them to the batting object list
+                        if (isBattingTeam) {
+                            battingTeamPlayers.push(playerDetails)
+                        }
+                        else {
+                            bowlingTeamPlayers.push(playerDetails)
+                        }
+                    });
+
+                    setPlayers({
+                        [BATTING_TEAM]: battingTeamPlayers,
+                        [BOWLING_TEAM]: bowlingTeamPlayers
+                    })
                     setOnPitchPlayers(updatedOnPitchPlayers);
                     setCurrentOver(restoredOver);
                     setCurrentPartnership(restoredPartnership);
                     setIsLastInnings(false);
 
                     // Remove deleted items from local history
-                    if (deleteWickets.length > 0) {
-                        const updatedWicketHistory = wicketHistory.filter(w =>
-                            !deleteWickets.includes(w.commentaryWicketId)
-                        );
-                        setWicketHistory(updatedWicketHistory);
-                    }
+                    // if (deleteWickets.length > 0) {
+                    //     const updatedWicketHistory = wicketHistory.filter(w =>
+                    //         !deleteWickets.includes(w.commentaryWicketId)
+                    //     );
+                    //     setWicketHistory(updatedWicketHistory);
+                    // }
                     if (deleteBallIds.length > 0) {
                         const updatedBalls = ballHistory.filter(b =>
                             !deleteBallIds.includes(b.commentaryBallByBallId)
@@ -2601,9 +2610,11 @@ const Commentary = (props) => {
         setCurrentBall(currentBallToUpdate)
         if (!isEmpty(currentBallToUpdate)) setBallCountForStrike((currentBallToUpdate.autoStrikeBallCount || 0) + 1)
         setIsLastInnings(commentaryDetails.currentInnings >= matchTypeDetails.noOfIningsPerSide)
+        // console.log("Partnership Found in API", { partnershipFromApi, onPitchPlayers })
         if (isEmpty(partnershipFromApi) && onPitchPlayers[ON_STRIKE]?.commentaryPlayerId
             && onPitchPlayers[NON_STRIKE]?.commentaryPlayerId)
             apiCallObj["commentaryPartnership"] = generatePartnership({ commentaryDetails, currentPartnership: partnershipDetails, teams: currentInningsTeams })
+        // console.log("GENERATING PARTNERSHIP", apiCallObj.commentaryPartnership)
         if (!currentOverToUpdate && onPitchPlayers[CURRENT_BOWLER]?.commentaryPlayerId) {
             apiCallObj["commentaryOvers"] = generateOver({
                 commentaryDetails, onPitchPlayers, teams: currentInningsTeams, selectedOverType
@@ -2865,6 +2876,7 @@ const Commentary = (props) => {
     useEffect(() => {
         if (props.IsCommentaryWithUndo) {
             if (checkIfUndoFromMaster) {
+                setShowChangeOverModal(false);
                 handleUndoClick();
                 props.toggleCommenatryWithUndo();
                 setCheckIfUndoFromMaster(false);

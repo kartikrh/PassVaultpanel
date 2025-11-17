@@ -167,7 +167,9 @@ const Index = forwardRef(
       setParentCurrentPage,
       setParentPageSize,
       setParentSearchedData,
-      parentCurrentPage
+      parentCurrentPage,
+      cardHeaderData,
+      maxTableHeight,
     },
     ref
   ) => {
@@ -1547,6 +1549,7 @@ const Index = forwardRef(
               tableElement?.title !== "Manual Events" &&
               !tableElement.isNonCrud && (
                 <CardHeader className="p-0 p-md-2">
+                  {cardHeaderData ? cardHeaderData : 
                   <form>
                     {renderHeader && renderHeader()}
                     <Row className="g-2">
@@ -3491,7 +3494,7 @@ const Index = forwardRef(
                         </div>
                       </Row>
                     ) : null}
-                  </form>
+                  </form>}
                 </CardHeader>
               )}
 
@@ -3885,6 +3888,11 @@ const Index = forwardRef(
                 <div
                   className="table-responsive table-responsive2 table-card mt-3 mb-1"
                   id="myTable"
+                  style={maxTableHeight ? {
+                    maxHeight: maxTableHeight,
+                    overflowY: 'auto',
+                    overflowX: 'hidden',
+                  } : null}
                 >
                   {tableElement?.dragDrop ? (
                     <DragDropContext onDragEnd={handleDragEnd}>
