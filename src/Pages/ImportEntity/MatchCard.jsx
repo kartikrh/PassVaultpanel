@@ -351,7 +351,7 @@ const MatchCard = ({ matchData, onClose }) => {
             <div /* className="overflow-auto" style={{ maxHeight: '100px' }} */>
             {matchData["match-playing11"].teama.squads.map((player, index) => (
               <span key={index}>
-                {player.name}
+                {index + 1}{')'} {player.name}
                 {index < matchData["match-playing11"].teama.squads.length - 1 && ', '}
               </span>
             ))}
@@ -372,7 +372,7 @@ const MatchCard = ({ matchData, onClose }) => {
             <div /* className="overflow-auto" style={{ maxHeight: '100px' }} */>
               {matchData["match-playing11"].teamb.squads.map((player, index) => (
                 <span key={index}>
-                  {player.name}
+                  {index + 1}{')'} {player.name}
                   {index < matchData["match-playing11"].teamb.squads.length - 1 && ', '}
                 </span>
               ))}
