@@ -476,7 +476,7 @@ export const fetchConfig = (data) => {
 }
 
 export const extractRequiredFieldsForTeamStatus = (inputList) => {
-  return inputList.map(obj => ({
+  return inputList?.map(obj => ({
     commentaryId: obj.commentaryId,
     commentaryTeamId: obj.commentaryTeamId,
     teamStatus: obj.teamStatus,

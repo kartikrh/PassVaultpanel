@@ -247,7 +247,6 @@ function CommentaryMaster() {
       .post("/admin/commentary/detailsById", { commentaryId })
       .then(async (response) => {
         commentaryDataToUpdate = response?.result;
-        console.log("🔄 fetchCommentaryData API called",response);
         setCurrentScreen(
           commentaryDataToUpdate?.commentaryDetails?.commentaryStatus || 1
         );
@@ -494,7 +493,7 @@ function CommentaryMaster() {
                       <div className="col-12 col-md-12 d-flex flex-wrap align-items-center justify-content-between my-2 float-end">
                               <NetworkStatus/>
                         <div>
-                          {/* {(ALL_SCREENS[currentScreen] === COMMENTARY_PLAYER_SELECTION_SCREEN && commentaryData?.commentaryTeams?.some(team => team.isBattingComplete)) ? <Button color="warning" className="mx-1" onClick={() => setUndoInningsPopup(true)}>Undo Innings</Button> : null} */}
+                          {(ALL_SCREENS[currentScreen] === COMMENTARY_PLAYER_SELECTION_SCREEN && commentaryData?.commentaryTeams?.some(team => team.isBattingComplete)) ? <Button color="warning" className="mx-1" onClick={() => setUndoInningsPopup(true)}>Undo Innings</Button> : null}
                           {commentaryList === 'commentary' && <Button color="primary" className="mx-1" onClick={handleLoadCommentaryClick}>Load Commentary</Button>}
                           <Button color="primary" className="mx-1" onClick={openIframePopup}>Scorecard</Button>
                           {/* <Button color="primary" className="mx-1 my-2 my-md-0" onClick={() => {setIsNewUi(!isNewUi)}}>New Ui</Button> */}
