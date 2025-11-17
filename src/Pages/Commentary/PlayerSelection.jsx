@@ -432,8 +432,8 @@ const PlayerSelection = forwardRef((props, ref) => {
 
         // Extract player IDs from ball to restore
         const bowlerId = ballToRestore.bowlerId;
-        const batStrikeId = ballToRestore.nextBatStrikeId || ballToRestore.batStrikeId;
-        const batNonStrikeId = ballToRestore.nextBatNonStrikeId || ballToRestore.batNonStrikeId;
+        const batStrikeId = ballToRestore?.batStrikeId ? ballToRestore.batStrikeId : ballToRestore.nextBatStrikeId;
+        const batNonStrikeId = ballToRestore?.batNonStrikeId ? ballToRestore.batNonStrikeId : ballToRestore.nextBatNonStrikeId;
 
         // Get first batting team's last over
         const firstTeamOvers = overHistory.filter(over =>
@@ -484,7 +484,7 @@ const PlayerSelection = forwardRef((props, ref) => {
         let firstTeamPartnerships = partnershipHistory.filter(partnership =>
           partnership.currentInnings === commentaryDetails.currentInnings &&
           compareNumStringValues(partnership.teamId, firstBattingTeam.teamId)
-        ) || [];
+        ).sort((a, b) => b.commentaryPartnershipId - a.commentaryPartnershipId) || [];
 
         firstTeamPartnerships = Array.isArray(firstTeamPartnerships)
           ? firstTeamPartnerships
@@ -568,8 +568,8 @@ const PlayerSelection = forwardRef((props, ref) => {
 
         // Extract player IDs
         const bowlerId = ballToRestore.bowlerId;
-        const batStrikeId = ballToRestore.nextBatStrikeId || ballToRestore.batStrikeId;
-        const batNonStrikeId = ballToRestore.nextBatNonStrikeId || ballToRestore.batNonStrikeId;
+        const batStrikeId = ballToRestore?.batStrikeId ? ballToRestore.batStrikeId : ballToRestore.nextBatStrikeId;
+        const batNonStrikeId = ballToRestore?.batNonStrikeId ? ballToRestore.batNonStrikeId : ballToRestore.nextBatNonStrikeId;
 
         // Get previous innings' overs
         const previousTeamOvers = overHistory.filter(over =>
@@ -621,7 +621,7 @@ const PlayerSelection = forwardRef((props, ref) => {
           ?.filter(partnership =>
             partnership.currentInnings === targetInnings &&
             compareNumStringValues(partnership.teamId, previousBattingTeam.teamId)
-          ) || [];
+          ).sort((a, b) => b.commentaryPartnershipId - a.commentaryPartnershipId) || [];
 
         previousTeamPartnerships = Array.isArray(previousTeamPartnerships)
           ? previousTeamPartnerships
