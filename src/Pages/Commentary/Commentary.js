@@ -2610,11 +2610,11 @@ const Commentary = (props) => {
         setCurrentBall(currentBallToUpdate)
         if (!isEmpty(currentBallToUpdate)) setBallCountForStrike((currentBallToUpdate.autoStrikeBallCount || 0) + 1)
         setIsLastInnings(commentaryDetails.currentInnings >= matchTypeDetails.noOfIningsPerSide)
-        console.log("Partnership Found in API", { partnershipFromApi, onPitchPlayers })
+        // console.log("Partnership Found in API", { partnershipFromApi, onPitchPlayers })
         if (isEmpty(partnershipFromApi) && onPitchPlayers[ON_STRIKE]?.commentaryPlayerId
             && onPitchPlayers[NON_STRIKE]?.commentaryPlayerId)
             apiCallObj["commentaryPartnership"] = generatePartnership({ commentaryDetails, currentPartnership: partnershipDetails, teams: currentInningsTeams })
-        console.log("GENERATING PARTNERSHIP", apiCallObj.commentaryPartnership)
+        // console.log("GENERATING PARTNERSHIP", apiCallObj.commentaryPartnership)
         if (!currentOverToUpdate && onPitchPlayers[CURRENT_BOWLER]?.commentaryPlayerId) {
             apiCallObj["commentaryOvers"] = generateOver({
                 commentaryDetails, onPitchPlayers, teams: currentInningsTeams, selectedOverType
