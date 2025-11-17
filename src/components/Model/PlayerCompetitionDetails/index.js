@@ -2,12 +2,12 @@ import React, { useEffect, useRef, useState } from "react";
 import { Button, Card, CardBody, CardHeader, Modal, ModalBody, ModalHeader } from "reactstrap";
 import Table from "../../Common/Table";
 import axiosInstance from "../../../Features/axios";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { updateToastData } from "../../../Features/toasterSlice";
-import { ERROR } from "../../Common/Const";
+import { ERROR, PERMISSION_VIEW, TAB_COMMENTARY, TAB_COMMENTARY_LIST } from "../../Common/Const";
 import SpinnerModel from "../SpinnerModel";
 import { Avatar, Tooltip } from "antd";
-import { convertDateUTCToLocalWithoutSec24 } from "../../Common/Reusables/reusableMethods";
+import { checkPermission, convertDateUTCToLocalWithoutSec24 } from "../../Common/Reusables/reusableMethods";
 
 const Index = ({
   competitionModelVisible,
@@ -20,8 +20,9 @@ const Index = ({
   const [isLoading, setIsLoading] = useState(false);
   const upcomingCompRef = useRef(null);
   const completedCompRef = useRef(null);
-
-
+  const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
+  const CommentaryListPage = TAB_COMMENTARY_LIST;
+  const CommentaryPage = TAB_COMMENTARY;
   const dispatch = useDispatch();
 
   const fetchTemplateByComm = async (playerId) => {
@@ -54,12 +55,60 @@ const Index = ({
     }
   }, [competitionRecord]);
 
+  const commentaryPermission = checkPermission(permissionObj, CommentaryPage, PERMISSION_VIEW);
+  const commentaryListPermission = checkPermission(permissionObj, CommentaryListPage, PERMISSION_VIEW);
+
+  const handleCommentaryClick = (details) => {
+    const navUrl = (commentaryPermission && commentaryListPermission) ? "/Commentary" : commentaryPermission ? "/Commentary" : commentaryListPermission ? "/CommentaryList" : ''
+    const url = new URL(window.location.origin + navUrl);
+    sessionStorage.setItem(
+      "commentaryCompetitionId",
+      "" + details?.competitionId
+    );
+    sessionStorage.setItem(
+      "commentaryEventTypeId",
+      "" + details?.eventTypeId
+    );
+    window.open(url.href, "_blank");
+    sessionStorage.removeItem("commentaryCompetitionId");
+    sessionStorage.removeItem("commentaryEventTypeId");
+  };
+
+  const handleCompetitionClick = (details) => {
+    const url = new URL(window.location.origin + "/Competition");
+    sessionStorage.setItem(
+      "playerCompetitionDetails",
+      "" + details?.competition
+    );
+    window.open(url.href, "_blank");
+    sessionStorage.removeItem("playerCompetitionDetails");
+  };
+
   const columns = [
-      {
-        title: "Reference Id",
-        dataIndex: "refID",
-        key: "refID",
-        style: { width: "10%" },
+    {
+        title: "",
+        dataIndex: "commentaryList",
+        key: "commentaryList",
+        render: (text, record) => {
+          return (
+            <Tooltip
+              title={"Commentary List"}
+              color={"#e8e8ea"}
+              overlayInnerStyle={{ color: "#000" }}
+            >
+              <Button
+                color={"primary"}
+                size="sm"
+                className="btn"
+                onClick={() => handleCommentaryClick(record)}
+              >
+                CL
+              </Button>
+            </Tooltip>
+          );
+        },
+        // sort: true,
+        style: { width: "5%" },
       },
       {
         title: "CID",
@@ -71,6 +120,9 @@ const Index = ({
       {
         title: "Competition",
         dataIndex: "competition",
+        render: (text, record) => (
+        <span style={{ cursor: "pointer" }} onClick={() => {handleCompetitionClick(record)}}>{text}</span>
+      ),
         key: "competition",
         style: { width: "10%" },
       },
@@ -148,7 +200,7 @@ const Index = ({
               columns={columns}
               dataSource={upcomingComp}
               tableElement={tableElement}
-              cardHeaderData={"Upcoming Competition"}
+              cardHeaderData={"Upcoming"}
               maxTableHeight="300px"
             />
             <Table
@@ -156,7 +208,7 @@ const Index = ({
               columns={columns}
               dataSource={completedComp}
               tableElement={tableElement}
-              cardHeaderData={"Completed Competition"}
+              cardHeaderData={"Completed"}
               maxTableHeight="300px"
             />
             <div className="hstack justify-content-end mt-4">

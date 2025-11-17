@@ -66,6 +66,7 @@ const Index = () => {
   );
   const [userRefData, setUserRefData] = useState(false);
   const EventTypeId = +sessionStorage.getItem('CompetitionEventTypeId') || 0;
+  const playerCompetitionDetails = sessionStorage.getItem('playerCompetitionDetails') || "";
   const globalPageSize = localStorage.getItem("pageSize");
   const [tableSearchedData, setTableSearchedData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -1297,6 +1298,7 @@ const Index = () => {
             singleCheck={checekedList}
             reFetchData={fetchData}
             handleReload={handleReload}
+            playerSearch={playerCompetitionDetails}
             selectedTableElementsLogs={selectedTableElements}
             loadDataModelFunction={setLoadDataModelVisable}
             onAddNavigate={"/addCompetition"}
