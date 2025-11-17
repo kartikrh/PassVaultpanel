@@ -1499,6 +1499,13 @@ const Index = forwardRef(
     useEffect(() => {
       handleSearchFilter();
     }, [currentPage, searchTerm]);
+
+    useEffect(() => {
+      if(dataSource.length > 0 && playerSearch) {
+        handleSearchFilter();
+      }
+    },[dataSource, playerSearch])
+
     // useEffect(() => {
     //   if (searchTerm.length >= 2 || searchTerm.length === 0) {
     //     debouncedHandleSearchFilter(searchTerm);
