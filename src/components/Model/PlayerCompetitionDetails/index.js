@@ -77,15 +77,10 @@ const Index = ({
   const handleCompetitionClick = (details) => {
     const url = new URL(window.location.origin + "/Competition");
     sessionStorage.setItem(
-      "playerCompetitionId",
-      "" + details?.competitionId
-    );
-    sessionStorage.setItem(
       "playerCompetitionDetails",
       "" + details?.competition
     );
     window.open(url.href, "_blank");
-    sessionStorage.removeItem("playerCompetitionId");
     sessionStorage.removeItem("playerCompetitionDetails");
   };
 
@@ -96,22 +91,20 @@ const Index = ({
         key: "commentaryList",
         render: (text, record) => {
           return (
-            <div className="d-flex align-items-center justify-content-start gap-2">
-              <Tooltip
-                title={"Commentary List"}
-                color={"#e8e8ea"}
-                overlayInnerStyle={{ color: "#000" }}
+            <Tooltip
+              title={"Commentary List"}
+              color={"#e8e8ea"}
+              overlayInnerStyle={{ color: "#000" }}
+            >
+              <Button
+                color={"primary"}
+                size="sm"
+                className="btn"
+                onClick={() => handleCommentaryClick(record)}
               >
-                <Button
-                  color={"primary"}
-                  size="sm"
-                  className="btn"
-                  onClick={() => handleCommentaryClick(record)}
-                >
-                  CL
-                </Button>
-              </Tooltip>
-            </div>
+                CL
+              </Button>
+            </Tooltip>
           );
         },
         // sort: true,
