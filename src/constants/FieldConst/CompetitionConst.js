@@ -232,7 +232,7 @@ export const CompetitionFields = [
   },
   {
     name: "setOfRules",
-    label: "set Of Rules",
+    label: "Set Of Rules",
     parentclassName: "",
     type: TEXT_EDITOR,
     labelColspan: { xs: 12, md: 2, lg: 2 },
