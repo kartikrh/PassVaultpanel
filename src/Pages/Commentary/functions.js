@@ -118,32 +118,65 @@ export const generateWicket = ({ commentaryDetails, currentWicket, currentOver, 
   }
 }
 
-export const generatePartnership = ({ currentPartnership, commentaryDetails, teams }) => {
-  const toReturn = {
-    "commentaryPartnershipId": currentPartnership.commentaryPartnershipId || 0,
-    "commentaryId": commentaryDetails.commentaryId,
-    "teamId": teams[BATTING_TEAM].teamId,
-    "batter1Id": currentPartnership.batter1Id,
-    "batter1Name": currentPartnership.batter1Name,
-    "batter2Id": currentPartnership.batter2Id,
-    "batter2Name": currentPartnership.batter2Name,
-    "totalRuns": currentPartnership.totalRuns || 0,
-    "totalBalls": currentPartnership.totalBalls || 0,
-    "totalSix": currentPartnership.totalSix || 0,
-    "totalFour": currentPartnership.totalFour || 0,
-    "extras": currentPartnership.extras || 0,
-    "commentaryBallByBallId": currentPartnership.commentaryBallByBallId || 0,
-    "currentInnings": commentaryDetails.currentInnings,
-    "batter1Runs": currentPartnership.batter1Runs || 0,
-    "batter2Runs": currentPartnership.batter2Runs || 0,
-    "batter1Balls": currentPartnership.batter1Balls || 0,
-    "batter2Balls": currentPartnership.batter2Balls || 0,
-    "player1image": currentPartnership.player1image || null,
-    "player2image": currentPartnership.player2image || null,
-    // "order" : currentPartnership?.order,
-    "order": currentPartnership.commentaryPartnershipId ? currentPartnership.order : teams[BATTING_TEAM].teamWicket + 1 || 1,
-    "isActive": currentPartnership?.isActive,
-  };
+export const generatePartnership = ({ commentaryDetails, currentPartnership, teams, onPitchPlayers }) => {
+  const batter1 = onPitchPlayers?.[ON_STRIKE];
+  const batter2 = onPitchPlayers?.[NON_STRIKE];
+
+  let toReturn = {};
+
+  if (currentPartnership?.batter1Id || currentPartnership?.batter2Id) {
+      toReturn = {
+        "commentaryPartnershipId": currentPartnership.commentaryPartnershipId || 0,
+        "commentaryId": commentaryDetails.commentaryId,
+        "teamId": teams[BATTING_TEAM].teamId,
+        "batter1Id": currentPartnership.batter1Id,
+        "batter1Name": currentPartnership.batter1Name,
+        "batter2Id": currentPartnership.batter2Id,
+        "batter2Name": currentPartnership.batter2Name,
+        "totalRuns": currentPartnership.totalRuns || 0,
+        "totalBalls": currentPartnership.totalBalls || 0,
+        "totalSix": currentPartnership.totalSix || 0,
+        "totalFour": currentPartnership.totalFour || 0,
+        "extras": currentPartnership.extras || 0,
+        "commentaryBallByBallId": currentPartnership.commentaryBallByBallId || 0,
+        "currentInnings": commentaryDetails.currentInnings,
+        "batter1Runs": currentPartnership.batter1Runs || 0,
+        "batter2Runs": currentPartnership.batter2Runs || 0,
+        "batter1Balls": currentPartnership.batter1Balls || 0,
+        "batter2Balls": currentPartnership.batter2Balls || 0,
+        "player1image": currentPartnership.player1image || null,
+        "player2image": currentPartnership.player2image || null,
+        // "order" : currentPartnership?.order,
+        "order": currentPartnership.commentaryPartnershipId ? currentPartnership.order : teams[BATTING_TEAM].teamWicket + 1 || 1,
+        "isActive": currentPartnership?.isActive || false,
+      };
+  } else {
+    toReturn = {
+        "commentaryPartnershipId": currentPartnership?.commentaryPartnershipId || 0,
+        "commentaryId": commentaryDetails.commentaryId,
+        "teamId": teams[BATTING_TEAM].teamId,
+        "batter1Id": batter1?.commentaryPlayerId || 0,
+        "batter1Name": batter1?.playerName || "",
+        "player1image": batter1?.playerimage || null,
+        "batter2Id": batter2?.commentaryPlayerId || 0,
+        "batter2Name": batter2?.playerName || "",
+        "player2image": batter2?.playerimage || null,
+        "totalRuns": currentPartnership.totalRuns || 0,
+        "totalBalls": currentPartnership.totalBalls || 0,
+        "totalSix": currentPartnership.totalSix || 0,
+        "totalFour": currentPartnership.totalFour || 0,
+        "extras": currentPartnership.extras || 0,
+        "commentaryBallByBallId": currentPartnership.commentaryBallByBallId || 0,
+        "currentInnings": commentaryDetails.currentInnings,
+        "batter1Runs": currentPartnership.batter1Runs || 0,
+        "batter2Runs": currentPartnership.batter2Runs || 0,
+        "batter1Balls": currentPartnership.batter1Balls || 0,
+        "batter2Balls": currentPartnership.batter2Balls || 0,
+        "order": currentPartnership.commentaryPartnershipId ? currentPartnership.order : teams[BATTING_TEAM].teamWicket + 1 || 1,
+        "isActive": currentPartnership?.isActive || false,
+      };
+  }
+
   return toReturn;
 }
 
