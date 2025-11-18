@@ -2797,11 +2797,11 @@ const Commentary = (props) => {
                 if (objToSave.deleteCommentaryBallByBallId) delete objToSave.commentaryBallByBall
                 if (objToSave.deleteOverId) delete objToSave.commentaryOvers
                 // console.log("Called from : 22");
-                const partnershipDetailsForConsole = {
-                    "batsmen1": objToSave.commentaryPartnership.batter1Name,
-                    "batsmen2": objToSave.commentaryPartnership.batter2Name,
-                    "partnership_no": objToSave.commentaryPartnership.order
-                }
+                // const partnershipDetailsForConsole = {
+                //     "batsmen1": objToSave.commentaryPartnership.batter1Name,
+                //     "batsmen2": objToSave.commentaryPartnership.batter2Name,
+                //     "partnership_no": objToSave.commentaryPartnership.order
+                // }
                 // console.log("partnership details", partnershipDetailsForConsole);
                 // console.log("useEffect normal balls", objToSave)
                 if (!objToSave?.commentaryPartnership?.batter1Id && !objToSave?.commentaryPartnership?.batter2Id) {
