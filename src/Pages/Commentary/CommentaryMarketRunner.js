@@ -5,7 +5,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import { useNavigate } from "react-router-dom";
 import { isEmpty } from "lodash";
 import "../../components/Common/Reusables/CustomCss.css";
-import { convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
+import { convertDateUTCToLocal, convertDateUTCToLocalWithSec24, convertDateUtcFormatWithSec24 } from "../../components/Common/Reusables/reusableMethods";
 import createSocket from "../../Features/socket";
 import { MARKET_RUNNER_CONNECT, MARKET_RUNNER_DATA } from "../../components/Common/Const";
 
@@ -23,6 +23,7 @@ export const CommentaryMarketRunner = () => {
   const commentaryDetails = JSON.parse(
     sessionStorage.getItem("marketRunnerCommentaryDetails") || "{}"
   );
+  const dateTyp = JSON.parse(localStorage.getItem("DateType"));
 
   useEffect(() => {
     if (!isEmpty(commentaryDetails))
@@ -121,7 +122,7 @@ export const CommentaryMarketRunner = () => {
   };
 
   const MarketDetailsDate = commentaryDetails?.eventDate
-    ? convertDateUTCToLocal(commentaryDetails.eventDate, "index")
+    ? (dateTyp?.value == 1 ? convertDateUTCToLocalWithSec24(commentaryDetails?.eventDate, "index") : convertDateUtcFormatWithSec24(commentaryDetails.eventDate, "index"))
     : "";
   return (
     <React.Fragment>

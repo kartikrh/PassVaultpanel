@@ -9,7 +9,7 @@ import { updateToastData } from '../../Features/toasterSlice';
 import { ERROR, SUCCESS } from '../../components/Common/Const';
 import { isEmpty } from 'lodash';
 import "../../components/Common/Reusables/CustomCss.css";
-import { convertDateUTCToLocal } from '../../components/Common/Reusables/reusableMethods';
+import { convertDateUTCToLocal, convertDateUtcFormatWithSec24, convertDateUTCToLocalWithSec24 } from '../../components/Common/Reusables/reusableMethods';
 import EventMarketModal from './CommentaryModels/CustomEventModal';
 import { FaArrowUp } from "react-icons/fa"
 import CustomInput from '../../components/Common/Reusables/CustomInput';
@@ -123,6 +123,7 @@ export const CreateEventMarket = () => {
     const [showBackToTop, setShowBackToTop] = useState(false);
     const [openMarket, setOpenMarket] = useState([]);
     const [openCategory, setOpenCategory] = useState([]);
+    const dateTyp = JSON.parse(localStorage.getItem("DateType"));
 
     useEffect(() => {
         if (!isEmpty(commentaryDetails))
@@ -3255,9 +3256,10 @@ export const CreateEventMarket = () => {
             style: { width: "5%" },
         }
     ];
-    const MarketDetailsDate = commentaryDetails?.eventDate
-        ? convertDateUTCToLocal(commentaryDetails.eventDate, "index")
-        : "";
+    const MarketDetailsDate = dateTyp?.value == 1 ? convertDateUTCToLocalWithSec24(commentaryDetails?.eventDate, "index") : convertDateUtcFormatWithSec24(commentaryDetails.eventDate, "index");
+    // const MarketDetailsDate = commentaryDetails?.eventDate
+    //     ? convertDateUTCToLocal(commentaryDetails.eventDate, "index")
+    //     : "";
 
     return (
         <React.Fragment>
