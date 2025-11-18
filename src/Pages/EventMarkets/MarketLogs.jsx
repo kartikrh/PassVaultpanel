@@ -5,7 +5,7 @@ import axiosInstance from "../../Features/axios";
 import Table from "../../components/Common/Table";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { updateToastData } from "../../Features/toasterSlice";
-import { convertDateUTCToLocal, checkPermission } from "../../components/Common/Reusables/reusableMethods";
+import { convertDateUTCToLocal, checkPermission, convertDateUTCToLocalWithSec24, convertDateUtcFormatWithSec24 } from "../../components/Common/Reusables/reusableMethods";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { useNavigate } from "react-router-dom";
 import {
@@ -21,6 +21,7 @@ function MarketLogs() {
   const dispatch = useDispatch();
   const eventMarketId = +sessionStorage.getItem('eventMarketLogId') || "0";
   const marketDetails = JSON.parse(sessionStorage.getItem('eventMarketLogDetails') || "{}");
+  const dateTyp = JSON.parse(localStorage.getItem("DateType"));
   const pageName = TAB_EVENT_MARKETS;
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   const navigate = useNavigate();
@@ -144,9 +145,10 @@ function MarketLogs() {
       style: { width: "5%" },
     },
   ];
-  const MarketDetailsDate = marketDetails?.eventDate
-    ? convertDateUTCToLocal(marketDetails.eventDate, "index")
-    : "";
+  // const MarketDetailsDate = marketDetails?.eventDate
+  //   ? convertDateUTCToLocal(marketDetails.eventDate, "index")
+  //   : "";
+  const MarketDetailsDate = dateTyp?.value == 1 ? convertDateUTCToLocalWithSec24(marketDetails.eventDate, "index") : convertDateUtcFormatWithSec24(marketDetails.eventDate, "index");
   const tableElement = {
     title: `${marketDetails?.eventTypeName}/ ${marketDetails?.competitionName}/ ${marketDetails?.eventName}/ Ref: ${marketDetails?.eventRefId} [${MarketDetailsDate}]`,
   };

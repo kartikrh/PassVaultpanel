@@ -10,6 +10,8 @@ import {
 import {
   checkPermission,
   convertDateUTCToLocal,
+  convertDateUTCToLocalWithoutSec24,
+  convertDateUtcFormatWithoutSec24,
 } from "../../components/Common/Reusables/reusableMethods";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import {
@@ -56,6 +58,7 @@ const PlayerCommentary = () => {
   const [dataRefreshKey, setDataRefreshKey] = useState(0);
   const [openInningsAccordions, setOpenInningsAccordions] = useState({});
   const [dateType, setDateType] = useState(globalDateType || { label: "Local Timezone", value: 1 });
+  const dateTyp = JSON.parse(localStorage.getItem("DateType"));
 
   const toggle = (id) => {
     setOpen((prev) =>
@@ -251,11 +254,12 @@ const PlayerCommentary = () => {
                   <div className="ml-2" style={{ marginRight: "20px" }}>
                     <strong>Event Date:</strong>{" "}
                     <span>
-                      {convertDateUTCToLocal(
+                      {dateTyp?.value == 1 ? convertDateUTCToLocalWithoutSec24(commentaryDetails?.eventDate, "index") : convertDateUtcFormatWithoutSec24(commentaryDetails?.eventDate, "index")}
+                      {/* {convertDateUTCToLocal(
                         commentaryDetails?.eventDate,
                         "",
                         "DD/MM/YY HH:mm"
-                      )}
+                      )} */}
                     </span>
                   </div>
                 </div>

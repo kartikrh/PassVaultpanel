@@ -14,6 +14,8 @@ import {
   convertDateUTCToLocal2,
   convertDateUTCToLocal24,
   convertDateUTCToLocal2_24,
+  convertDateUTCToLocalWithoutSec24,
+  convertDateUtcFormatWithoutSec24
 } from "../../components/Common/Reusables/reusableMethods";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import NestedTable from "./NestedTable";
@@ -63,6 +65,7 @@ function MarketDataLogs() {
   const userName = useSelector(
       (state) => state.user.userName
     );
+  const dateTyp = JSON.parse(localStorage.getItem("DateType"));
 
   // useEffect(() => {
   //   if(!isEmpty(marketDetails)){
@@ -676,7 +679,7 @@ function MarketDataLogs() {
   // ];
 
   const MarketDetailsDate = marketDetails?.eventDate
-    ? convertDateUTCToLocal24(marketDetails.eventDate, "index")
+    ? (dateTyp?.value == 1 ? convertDateUTCToLocalWithoutSec24(marketDetails.eventDate, "index") : convertDateUtcFormatWithoutSec24(marketDetails.eventDate, "index"))
     : marketDetails?.eventDay && marketDetails?.eventTime
     ? `${marketDetails?.eventDay} ${marketDetails?.eventTime}`
     : "";

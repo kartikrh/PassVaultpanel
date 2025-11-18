@@ -5,7 +5,7 @@ import axiosInstance from "../../Features/axios.js"
 import { updateToastData } from "../../Features/toasterSlice.js"
 import { ERROR, PERMISSION_VIEW, SUCCESS, TAB_COMMENTARY } from "../../components/Common/Const.js"
 import SpinnerModel from "../../components/Model/SpinnerModel/index.js";
-import { checkPermission } from "../../components/Common/Reusables/reusableMethods.js"
+import { checkPermission, convertDateUTCToLocalWithSec24, convertDateUtcFormatWithSec24 } from "../../components/Common/Reusables/reusableMethods.js"
 import { clearLoadingAndError, deleteCommentaryFeatures, saveCommentaryFeatures } from "../../Features/Tabs/commentarySlice.js"
 import { Card, Button, Row, Col, Container, CardBody, ButtonGroup } from 'reactstrap';
 import { TeamFeature } from "./CommentaryFeatures/TeamFeature.jsx"
@@ -53,10 +53,12 @@ export const CommentaryFeatures = () => {
     const permissionObj = useSelector(state => state.auth?.tabPermissionList);
     const { isLoading, isRedirect } = useSelector(state => state.tabsData.commentary);
     const commentaryId = +localStorage.getItem('updateCommentaryId') || "0";
+    const dateTyp = JSON.parse(localStorage.getItem("DateType"));
     const dispatch = useDispatch();
     let navigate = useNavigate();
+    const eventDate = commentaryData?.commentaryDetails?.eventDate;
     if(commentaryData?.commentaryDetails){
-       document.title = `S-Update [ ${commentaryData.commentaryDetails?.ed + " " + commentaryData.commentaryDetails?.et} ] ${commentaryData.commentaryDetails?.en}`;
+       document.title = `S-Update [ ${dateTyp?.value == 1 ? convertDateUTCToLocalWithSec24(eventDate, "index") : convertDateUtcFormatWithSec24(eventDate, "index")} ] ${commentaryData.commentaryDetails?.en}`;
     } else {
        document.title = "S-Update";
     }
@@ -213,7 +215,7 @@ export const CommentaryFeatures = () => {
                                 <Row>
                                     {!isEmpty(commentaryData?.commentaryDetails) && <Col xs={5} md={5} lg={5}>
                                         <div className='match-details-breadcrumbs'>{`${commentaryData?.commentaryDetails.ety}/ ${commentaryData?.commentaryDetails.com}/ ${commentaryData?.commentaryDetails.en}`}</div>
-                                        <div>{`Ref: ${commentaryData?.commentaryDetails.eid} [ ${commentaryData?.commentaryDetails.ed + " " + commentaryData?.commentaryDetails.et} ]`}</div>
+                                        <div>{`Ref: ${commentaryData?.commentaryDetails.eid} [ ${dateTyp?.value == 1 ? convertDateUTCToLocalWithSec24(eventDate, "index") : convertDateUtcFormatWithSec24(eventDate, "index")} ]`}</div>
                                     </Col>}
                                     <Col xs={2} md={2} lg={2}>
                                             <ButtonGroup className="me-3">
