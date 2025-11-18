@@ -2533,7 +2533,7 @@ const Commentary = (props) => {
         //         partnershipFromApi = partnershipDetails
         //     }
         // });
-        partnershipFromApi = propsData.commentaryData.commentaryPartnership?.find((i) => i?.isActive && i?.currentInnings == commentaryDetails?.currentInnings) || {};
+        partnershipFromApi = propsData.commentaryData.commentaryPartnership?.find((i) => i?.isActive && i?.currentInnings == commentaryDetails?.currentInnings && i?.teamId == currentInningsTeams?.[BATTING_TEAM]?.teamId) || {};
         propsData.commentaryData.commentaryOvers.forEach(overDetails => {
             if (
                 isEqual(+overDetails.teamId, currentInningsTeams?.[BATTING_TEAM]?.teamId) &&
