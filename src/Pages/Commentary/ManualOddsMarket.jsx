@@ -11,7 +11,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import { useLocation, useNavigate } from 'react-router-dom';
 import createSocket from '../../Features/socket.js';
 import Select from "react-select";
-import { convertDateUTCToLocal } from '../../components/Common/Reusables/reusableMethods.js';
+import { convertDateUTCToLocal, convertDateUTCToLocalWithSec24, convertDateUtcFormatWithSec24 } from '../../components/Common/Reusables/reusableMethods.js';
 
 export const ManualOddsMarket = () => {
     const dispatch = useDispatch();
@@ -78,6 +78,7 @@ export const ManualOddsMarket = () => {
     const socket = createSocket();
 
     const [isLoading, setIsLoading] = useState(false);
+    const dateTyp = JSON.parse(localStorage.getItem("DateType"));
 
     useEffect(() => {
         if (!isEmpty(commentaryDetails)) {
@@ -387,7 +388,7 @@ export const ManualOddsMarket = () => {
                                                 {eventData.comDetails.eventName}
                                             </div>
                                             <div>
-                                                {`Ref: ${eventData.comDetails.eventRefId} [ ${new Date(eventData.comDetails.eventDate).toLocaleString()} ]`}
+                                                {`Ref: ${eventData.comDetails.eventRefId} [ ${new Date(dateTyp?.value == 1 ? convertDateUTCToLocalWithSec24(eventData?.comDetails?.eventDate, "index") : convertDateUtcFormatWithSec24(eventData?.comDetails?.eventDate, "index")).toLocaleString()} ]`}
                                             </div>
                                         </Col>
                                     )}
@@ -472,6 +473,7 @@ export const ManualOddsMarket = () => {
                                             </div>
                                             <div>
                                                 {`Ref: ${eventData.commentaryDetails.eid} [ ${eventData.commentaryDetails.ed + " " + eventData.commentaryDetails.et} ]`}
+                                                {/* {`Ref: ${eventData.commentaryDetails.eid} [ ${dateTyp?.value == 1 ? convertDateUTCToLocalWithSec24(eventData?.commentaryDetails?.eventDate, "index") : convertDateUtcFormatWithSec24(eventData?.commentaryDetails.eventDate, "index")} ]`} */}
                                             </div>
                                         </Col>
                                     )}
