@@ -237,7 +237,9 @@ const MatchCard = ({ matchData, onClose }) => {
         </Col>
       </Row>
 
-      <Divider style={{ marginTop: "5px", marginBottom: "8px" }} />
+      {(pitch || weather) && (
+        <Divider style={{ marginTop: "5px", marginBottom: "8px" }} />
+      )}
 
       {/* Weather Details */}
       <Row gutter={[24, 16]}>
