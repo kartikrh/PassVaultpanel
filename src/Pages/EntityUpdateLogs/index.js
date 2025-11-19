@@ -1,20 +1,24 @@
 import React, { useState, useEffect, useRef } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
-import { Container } from "reactstrap";
+import { Container, Button } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
+import { Tooltip, Modal } from "antd";
+import MatchCard from "../ImportEntity/MatchCard";
 import {
+  ERROR,
   PERMISSION_VIEW,
   TAB_ENTITY_UPDATE_LOGS,
 } from "../../components/Common/Const";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { checkPermission, convertDateLocalToUTC, convertDateUtcFormat, convertDateUtcFormat24, convertDateUTCToLocal2, convertDateUTCToLocal2_24 } from "../../components/Common/Reusables/reusableMethods";
 // import RequestModal from "./RequestModal";
 import { isEmpty, isEqual } from "lodash";
+import { updateToastData } from "../../Features/toasterSlice";
 
 const Index = () => {
   const pageName = TAB_ENTITY_UPDATE_LOGS;
@@ -46,7 +50,10 @@ const Index = () => {
         eventName: "",
         eventRefId: "",
     });
-    const [dataIndexList, setDataIndexList] = useState([]);
+  const [dataIndexList, setDataIndexList] = useState([]);
+  const [matchModalVisible, setMatchModalVisible] = useState(false);
+  const [matchData, setMatchData] = useState(null);
+  const dispatch = useDispatch();
 
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
@@ -82,6 +89,36 @@ const Index = () => {
         setIsLoading(false);
       });
   };
+
+  const handleMatchCard = (recordData) => {
+    setIsLoading(true);
+
+    try {
+      if (recordData?.responseData) {
+        // console.log("recordData", recordData);
+        setMatchData(recordData.responseData);
+        setMatchModalVisible(true);
+      } else {
+        dispatch(
+          updateToastData({
+            type: ERROR,
+            message: "Data Unavailable",
+          })
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching match details:", error);
+      dispatch(
+        updateToastData({
+          type: ERROR,
+          message: "Failed to fetch match details",
+        })
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
 
   const handleSingleCheck = (e) => {
     let updateSingleCheck = [];
@@ -225,6 +262,29 @@ const Index = () => {
       sort: true,
       style: { width: "10%" },
     },
+    {
+      title: "",
+      dataIndex: "responseData",
+      key: "responseData",
+      render: (text, record) =>(
+        <Tooltip
+            title={"Match Card"}
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            <Button
+              size="sm"
+              className="btn scoringLogsBtn"
+              onClick={() => {
+                handleMatchCard(record);
+              }}
+            >
+              <i class='bx bxs-store' ></i>
+            </Button>
+          </Tooltip>
+      ),
+      style: { width : "5%", textAlign: "center"}
+    }
     
   ];
   //elements required
@@ -303,6 +363,29 @@ const Index = () => {
               fetchData={fetchData}
             />
           )} */}
+          {/* Match Details Modal */}
+          <Modal
+            open={matchModalVisible}
+            onCancel={() => setMatchModalVisible(false)}
+            footer={null}
+            width={850}
+            closable={false}
+            centered
+            styles={{
+              body: {top: "3rem",
+              maxHeight: 650,
+              overflowY: "auto",
+              overflowX: "hidden",
+              marginRight: "-16px",
+              marginLeft: "-16px",
+              marginTop: "0px",
+              marginBottom: "-16px",
+              scrollBehavior: 'smooth'},
+            }}
+          >
+            <MatchCard matchData={matchData} 
+            onClose={() => setMatchModalVisible(false)} />
+          </Modal>
         </Container>
       </div>
     </React.Fragment>
