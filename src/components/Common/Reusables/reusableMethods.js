@@ -310,3 +310,34 @@ export const getDateRange = (daysAgo = 7) => {
     endDate: `${endDate.toISOString().split("T")[0]}T23:59:00`,
   };
 };
+
+export const convertDateUTCToLocalWithSec24 = (UTCDate, page, format) => {
+  if (UTCDate) {
+    if (page === "index") {
+      return moment(UTCDate).local().format("DD/MM/YY, HH:mm:ss");
+    }
+    if (format) {
+      return moment(UTCDate)
+        .local()
+        .format(format.replace("hh", "HH"));
+    }
+    return moment(UTCDate).local().format("YYYY-MM-DDTHH:mm:ss");
+  }
+  return "";
+};
+
+export const convertDateUtcFormatWithSec24 = (UTCDate, page, format) => { 
+  if (UTCDate) {
+    if (page === "index") {
+      return moment.utc(UTCDate).format("DD/MM/YY, HH:mm:ss");
+    }
+    if (format) {
+      return moment
+        .utc(UTCDate)
+        .format(format.replace("hh", "HH"));
+    }
+    return moment.utc(UTCDate).format("YYYY-MM-DDTHH:mm:ss");
+  }
+  return "";
+};
+
