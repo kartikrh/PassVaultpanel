@@ -227,7 +227,7 @@ const Commentary = (props) => {
             ...currentPartnershipData,
             "isActive": false,
         }
-        const updatedPartnership = generatePartnership({ commentaryDetails, currentPartnership: partnershipDetails, teams })
+        const updatedPartnership = generatePartnership({ commentaryDetails, currentPartnership: partnershipDetails, teams, onPitchPlayers: (isEmpty(_onPitchPlayers) ? onPitchPlayers : _onPitchPlayers) })
         const updatedOnPitchPlyer = { ...onPitchPlayers }
         const resetPlayers = Object.values(updatedOnPitchPlyer).map(player =>
             player ? { ...player, isPlay: null, onStrike: null } : null
@@ -305,7 +305,7 @@ const Commentary = (props) => {
             ...currentPartnershipData,
             "isActive": false,
         }
-        const updatedPartnership = generatePartnership({ commentaryDetails, currentPartnership: partnershipDetails, teams })
+        const updatedPartnership = generatePartnership({ commentaryDetails, currentPartnership: partnershipDetails, teams, onPitchPlayers: (isEmpty(_onPitchPlayers) ? onPitchPlayers : _onPitchPlayers) })
         let objToSave = {
             "commentaryId": commentaryDetails.commentaryId,
             "isCallPredict": props?.isPredictToggle,
@@ -339,7 +339,7 @@ const Commentary = (props) => {
             ...currentPartnershipData,
             "isActive": false,
         }
-        const updatedPartnership = generatePartnership({ commentaryDetails, currentPartnership: partnershipDetails, teams })
+        const updatedPartnership = generatePartnership({ commentaryDetails, currentPartnership: partnershipDetails, teams, onPitchPlayers: (isEmpty(_onPitchPlayers) ? onPitchPlayers : _onPitchPlayers) })
         let objToSave = {
             "commentaryId": commentaryDetails.commentaryId,
             "isCallPredict": props?.isPredictToggle,
@@ -446,7 +446,7 @@ const Commentary = (props) => {
     const callWicketToDB = (currentBallByBallID) => {
         const newCurrentBall = currentBall
         newCurrentBall["commentaryBallByBallId"] = currentBallByBallID
-        const updatedPartnership = generatePartnership({ commentaryDetails, currentPartnership: isEmpty(_currentPartnership) ? currentPartnership : _currentPartnership, teams: _teams || teams })
+        const updatedPartnership = generatePartnership({ commentaryDetails, currentPartnership: isEmpty(_currentPartnership) ? currentPartnership : _currentPartnership, teams: _teams || teams, onPitchPlayers: (isEmpty(_onPitchPlayers) ? onPitchPlayers : _onPitchPlayers) })
         const updatedBallByBall = generateBall({
             currentBall: newCurrentBall, commentaryDetails,
             currentOver: _currentOver || currentOver, onPitchPlayers: _onPitchPlayers || onPitchPlayers, teams: _teams || teams, currentPartnership
@@ -962,7 +962,7 @@ const Commentary = (props) => {
             "isActive": true,
             "commentaryBallByBallId": (currentBall.commentaryBallByBallId || "0"),
         }
-        const updatedPartnership = generatePartnership({ commentaryDetails: commentaryDetailsobj, currentPartnership: partnershipDetails, teams })
+        const updatedPartnership = generatePartnership({ commentaryDetails: commentaryDetailsobj, currentPartnership: partnershipDetails, teams, onPitchPlayers: (isEmpty(_onPitchPlayers) ? onPitchPlayers : _onPitchPlayers) })
         let objToSave = {}
         if (isEmpty(currentPartnership)) {
             objToSave = {
@@ -1138,7 +1138,7 @@ const Commentary = (props) => {
                 "commentaryBallByBallId": (currentBall.commentaryBallByBallId || "0"),
 
             }
-            const updatedPartnership = generatePartnership({ commentaryDetails, currentPartnership: partnershipDetails, teams })
+            const updatedPartnership = generatePartnership({ commentaryDetails, currentPartnership: partnershipDetails, teams, onPitchPlayers: (isEmpty(_onPitchPlayers) ? onPitchPlayers : _onPitchPlayers) })
             const objToSave = {
                 "commentaryId": commentaryDetails.commentaryId,
                 "isCallPredict": props?.isPredictToggle,
@@ -2419,7 +2419,7 @@ const Commentary = (props) => {
             // "order": dd,
             "isActive": true,
         }
-        const updatedPartnership = generatePartnership({ commentaryDetails, currentPartnership: partnershipDetails, teams })
+        const updatedPartnership = generatePartnership({ commentaryDetails, currentPartnership: partnershipDetails, teams, onPitchPlayers: (isEmpty(_onPitchPlayers) ? onPitchPlayers : _onPitchPlayers) })
         const objToSave = {
             "commentaryId": commentaryDetails.commentaryId,
             "isCallPredict": props?.isPredictToggle,
@@ -2533,7 +2533,7 @@ const Commentary = (props) => {
         //         partnershipFromApi = partnershipDetails
         //     }
         // });
-        partnershipFromApi = propsData.commentaryData.commentaryPartnership?.find((i) => i?.isActive) || {};
+        partnershipFromApi = propsData.commentaryData.commentaryPartnership?.find((i) => i?.isActive && i?.currentInnings == commentaryDetails?.currentInnings && i?.teamId == currentInningsTeams?.[BATTING_TEAM]?.teamId) || {};
         propsData.commentaryData.commentaryOvers.forEach(overDetails => {
             if (
                 isEqual(+overDetails.teamId, currentInningsTeams?.[BATTING_TEAM]?.teamId) &&
@@ -2613,7 +2613,7 @@ const Commentary = (props) => {
         // console.log("Partnership Found in API", { partnershipFromApi, onPitchPlayers })
         if (isEmpty(partnershipFromApi) && onPitchPlayers[ON_STRIKE]?.commentaryPlayerId
             && onPitchPlayers[NON_STRIKE]?.commentaryPlayerId)
-            apiCallObj["commentaryPartnership"] = generatePartnership({ commentaryDetails, currentPartnership: partnershipDetails, teams: currentInningsTeams })
+            apiCallObj["commentaryPartnership"] = generatePartnership({ commentaryDetails, currentPartnership: partnershipDetails, teams: currentInningsTeams, onPitchPlayers: (isEmpty(_onPitchPlayers) ? onPitchPlayers : _onPitchPlayers) })
         // console.log("GENERATING PARTNERSHIP", apiCallObj.commentaryPartnership)
         if (!currentOverToUpdate && onPitchPlayers[CURRENT_BOWLER]?.commentaryPlayerId) {
             apiCallObj["commentaryOvers"] = generateOver({
@@ -2774,7 +2774,7 @@ const Commentary = (props) => {
                 })
                 const generatePartnershipData = generatePartnership({
                     commentaryDetails, currentBall: {},
-                    currentPartnership: isEmpty(_currentPartnership) ? currentPartnership : _currentPartnership, teams: _teams
+                    currentPartnership: isEmpty(_currentPartnership) ? currentPartnership : _currentPartnership, teams: _teams, onPitchPlayers: (isEmpty(_onPitchPlayers) ? onPitchPlayers : _onPitchPlayers)
                 })
                 objToSave = {
                     ...objToSave,
@@ -2797,11 +2797,11 @@ const Commentary = (props) => {
                 if (objToSave.deleteCommentaryBallByBallId) delete objToSave.commentaryBallByBall
                 if (objToSave.deleteOverId) delete objToSave.commentaryOvers
                 // console.log("Called from : 22");
-                const partnershipDetailsForConsole = {
-                    "batsmen1": objToSave.commentaryPartnership.batter1Name,
-                    "batsmen2": objToSave.commentaryPartnership.batter2Name,
-                    "partnership_no": objToSave.commentaryPartnership.order
-                }
+                // const partnershipDetailsForConsole = {
+                //     "batsmen1": objToSave.commentaryPartnership.batter1Name,
+                //     "batsmen2": objToSave.commentaryPartnership.batter2Name,
+                //     "partnership_no": objToSave.commentaryPartnership.order
+                // }
                 // console.log("partnership details", partnershipDetailsForConsole);
                 // console.log("useEffect normal balls", objToSave)
                 if (!objToSave?.commentaryPartnership?.batter1Id && !objToSave?.commentaryPartnership?.batter2Id) {

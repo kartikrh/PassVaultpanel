@@ -5,6 +5,8 @@ import axiosInstance from "../../Features/axios";
 import { useDispatch } from "react-redux";
 import {
   convertDateUTCToLocal,
+  convertDateUTCToLocalWithSec24,
+  convertDateUtcFormatWithSec24,
 } from "../../components/Common/Reusables/reusableMethods";
 import { isEmpty } from "lodash";
 import { useNavigate } from "react-router-dom";
@@ -29,6 +31,7 @@ const StreamingList = () => {
   const [showStreamTable, setShowStreamTable] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const dateTyp = JSON.parse(localStorage.getItem("DateType"));
   if(commentaryDetails){
       document.title = `Streaming List - ${commentaryDetails?.eventName} [${commentaryDetails?.eventRefId}]`;
   } else {
@@ -85,7 +88,7 @@ const StreamingList = () => {
   };
 
   const EventDate = commentaryDetails?.eventDate
-    ? convertDateUTCToLocal(commentaryDetails.eventDate, "index")
+    ? (dateTyp?.value == 1 ? convertDateUTCToLocalWithSec24(commentaryDetails?.eventDate, "index") : convertDateUtcFormatWithSec24(commentaryDetails?.eventDate, "index"))
     : "";
 
   useEffect(() => {

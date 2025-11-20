@@ -4,6 +4,7 @@ import {
   SELECT,
   SWITCH,
   TEXT,
+  TEXT_EDITOR,
 } from "../../components/Common/Const";
 
 export const CompetitionFields = [
@@ -229,4 +230,13 @@ export const CompetitionFields = [
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
+  {
+    name: "setOfRules",
+    label: "Set Of Rules",
+    parentclassName: "",
+    type: TEXT_EDITOR,
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 10, lg: 10 },
+  },
+
 ];

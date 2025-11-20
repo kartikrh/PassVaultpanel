@@ -135,6 +135,75 @@ const PartnershipAccordian = ({ partnerships, overBalls, teamDetails, overHistor
                         partnershipPosition === 3 ? 'rd' :
                             'th';
 
+            // Getting players from playersList based on commentaryPlayerId
+            const teamPlayerList = partnership.teamId == teamDetails.BATTING_TEAM?.teamId 
+                ? playersList.BATTING_TEAM 
+                : playersList.BOWLING_TEAM;
+            
+            let player1Data = null;
+            let player2Data = null;
+            
+            if (teamPlayerList) {
+                player1Data = teamPlayerList.find(p => 
+                    p.commentaryPlayerId === partnership.batter1Id && 
+                    p.currentInnings == partnership.currentInnings
+                );
+                player2Data = teamPlayerList.find(p => 
+                    p.commentaryPlayerId === partnership.batter2Id && 
+                    p.currentInnings == partnership.currentInnings
+                );
+            }
+
+            // Determine display order based on batterOrder
+            let displayPlayer1, displayPlayer2;
+            
+            if (player1Data && player2Data && 
+                player1Data?.batterOrder != null && player2Data?.batterOrder != null) {
+                if (player1Data.batterOrder <= player2Data.batterOrder) {
+                    // Keep original order (player1 has smaller batterOrder)
+                    displayPlayer1 = {
+                        name: partnership?.batter1Name,
+                        runs: partnership?.batter1Runs,
+                        balls: partnership?.batter1Balls,
+                        image: partnership?.player1image
+                    };
+                    displayPlayer2 = {
+                        name: partnership?.batter2Name,
+                        runs: partnership?.batter2Runs,
+                        balls: partnership?.batter2Balls,
+                        image: partnership?.player2image
+                    };
+                } else {
+                    // Swap the order (player2 has smaller batterOrder)
+                    displayPlayer1 = {
+                        name: partnership?.batter2Name,
+                        runs: partnership?.batter2Runs,
+                        balls: partnership?.batter2Balls,
+                        image: partnership?.player2image
+                    };
+                    displayPlayer2 = {
+                        name: partnership?.batter1Name,
+                        runs: partnership?.batter1Runs,
+                        balls: partnership?.batter1Balls,
+                        image: partnership?.player1image
+                    };
+                }
+            } else {
+                // original order if batterOrder is null or players not found
+                displayPlayer1 = {
+                    name: partnership?.batter1Name,
+                    runs: partnership?.batter1Runs,
+                    balls: partnership?.batter1Balls,
+                    image: partnership?.player1image
+                };
+                displayPlayer2 = {
+                    name: partnership?.batter2Name,
+                    runs: partnership?.batter2Runs,
+                    balls: partnership?.batter2Balls,
+                    image: partnership?.player2image
+                };
+            }
+
             return (
                 <div
                     key={`partnership-${index}`}
@@ -148,17 +217,17 @@ const PartnershipAccordian = ({ partnerships, overBalls, teamDetails, overHistor
                             <div className='d-flex justify-content-center align-items-center'>
                                 <PlayerImage
                                     // width="30px"
-                                    playerImage={partnership.player1image}
+                                    playerImage={displayPlayer1.image}
                                     jerseyImage={team.jersey}
                                     width={cardType === 'first' ? "50px" : "30px"}
                                 />
                             </div>
                             <div className="player-details">
                                 <div className={`${cardType}-player-name`}>
-                                    {partnership.batter1Name}
+                                    {displayPlayer1.name}
                                 </div>
                                 <div className={`${cardType}-player-stats partnershipTextColor`}>
-                                    {partnership.batter1Runs || 0} ({partnership.batter1Balls || 0})
+                                    {displayPlayer1.runs || 0} ({displayPlayer1.balls || 0})
                                 </div>
                             </div>
                         </div>
@@ -181,16 +250,16 @@ const PartnershipAccordian = ({ partnerships, overBalls, teamDetails, overHistor
                                 <PlayerImage
                                     // width="30px"
                                     width={cardType === 'first' ? "50px" : "30px"}
-                                    playerImage={partnership.player2image}
+                                    playerImage={displayPlayer2.image}
                                     jerseyImage={team.jersey}
                                 />
                             </div>
                             <div>
                                 <div className={`${cardType}-player-name`}>
-                                    {partnership.batter2Name}
+                                    {displayPlayer2.name}
                                 </div>
                                 <div className={`${cardType}-player-stats partnershipTextColor`}>
-                                    {partnership.batter2Runs || 0} ({partnership.batter2Balls || 0})
+                                    {displayPlayer2.runs || 0} ({displayPlayer2.balls || 0})
                                 </div>
                             </div>
                         </div>

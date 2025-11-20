@@ -8,6 +8,7 @@ import { ShortCommentaryTeams } from './ShortCommentaryTeams';
 import Breadcrumbs from '../../components/Common/Breadcrumb';
 import { useDispatch } from 'react-redux';
 import { saveShortCommentary } from '../../Features/Tabs/commentarySlice';
+import { convertDateUtcFormatWithSec24, convertDateUTCToLocalWithSec24 } from '../../components/Common/Reusables/reusableMethods';
 
 function ShortCommentaryScreen({ commentaryData, CommentaryFormatedData, totalInnings, backClick }) {
     const shortCommentaryTeamsRef = useRef()
@@ -17,6 +18,7 @@ function ShortCommentaryScreen({ commentaryData, CommentaryFormatedData, totalIn
     const [nextBattingTeam, setNextBattingTeam] = useState(undefined)
     const [showInningsUpdate, setShowInningsUpdate] = useState(undefined)
     const dispatch = useDispatch();
+    const dateTyp = JSON.parse(localStorage.getItem("DateType"));
 
     const fetchTeamData = (teamId, key) => {
         return CommentaryFormatedData["1_##_" + teamId]?.[key]
@@ -219,7 +221,7 @@ function ShortCommentaryScreen({ commentaryData, CommentaryFormatedData, totalIn
                                 <Row>
                                     {!isEmpty(commentaryDetails) && <Col className='mb-3'>
                                         <div className='match-details-breadcrumbs'>{`${commentaryDetails.ety}/ ${commentaryDetails.com}/ ${commentaryDetails.en}`}</div>
-                                        <div>{`Ref: ${commentaryDetails.eid} [ ${commentaryDetails.ed + " " + commentaryDetails.et} ]`}</div>
+                                        <div>{`Ref: ${commentaryDetails.eid} [ ${dateTyp?.value == 1 ? convertDateUTCToLocalWithSec24(commentaryDetails?.eventDate, "index") : convertDateUtcFormatWithSec24(commentaryDetails?.eventDate, "index")} ]`}</div>
                                     </Col>}
                                 </Row>
                                 <UncontrolledAccordion defaultOpen="0">
