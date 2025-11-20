@@ -14,12 +14,15 @@ import bat from '../../../src/assets/images/cricket-icons/cricket-bat.png';
 import allrounder from '../../../src/assets/images/cricket-icons/cricket.png';
 import keeper from '../../../src/assets/images/cricket-icons/game.png';
 import { convertDateUtcFormat24, convertDateUTCToLocal2_24 } from '../../components/Common/Reusables/reusableMethods';
+import DeletePlayerModal from './DeletePlayerModal';
 
 const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, fetchData, currentInnings, bowlingType, updateAllInnings, allTeamPlayers, commentaryData, dateType }) => {
     const [commentaryTeamPlayers, setCommentaryTeamPlayers] = useState([]);
     const [nonCommentaryTeamPlayers, setNonCommentaryTeamPlayers] = useState([]);
     const [selectedPlayer, setSelectedPlayer] = useState(undefined);
     const [isLoading, setIsLoading] = useState(false);
+    const [isDeletePlayer, setIsDeletePlayer] = useState(false);
+    const [playerName, setPlayerName] = useState('');
     const [editedPlayers, setEditedPlayers] = useState({});
     const [updatedPlayingXiPlayer, setUpdatedPlayingXi] = useState({});
     const [showInningsModal, setShowInningsModal] = useState(false);
@@ -184,6 +187,11 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
     //     }
     // }
 
+  const handleCloseDeletePlayerCheck = (e) => {
+    setPlayerName(e)
+    setIsDeletePlayer(true)
+  }
+
   const handleDeletePlayer = async (playerId) => {
     if (updateAllInnings && allTeamPlayers) {
       // Delete player from all innings
@@ -289,6 +297,8 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
           });
       }
     }
+    setIsDeletePlayer(false)
+    setPlayerName('')
   };
 
     const handleReloadTeam = async () => {
@@ -711,7 +721,8 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                     //   player?.onStrike === false ||
                     //   player?.isBatterRetir
                     // }
-                    onClick={(e) => handleDeletePlayer(player.playerId)}
+                    onClick={() => handleCloseDeletePlayerCheck(player)}
+                    // onClick={(e) => handleDeletePlayer(player.playerId)}
                   >
                     <i className="ri-delete-bin-2-line"></i>
                   </Button>}
@@ -934,6 +945,7 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
           </Button>
         </ModalFooter>
       </Modal>
+      {isDeletePlayer && <DeletePlayerModal playerName={playerName} setIsDeletePlayer={setIsDeletePlayer} isDeletePlayer={isDeletePlayer} handleDeletePlayer={handleDeletePlayer}/>}
     </>
   );
 };
