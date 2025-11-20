@@ -17,6 +17,7 @@ import createSocket from '../../Features/socket.js';
 import { RiRefreshLine } from 'react-icons/ri';
 import { AUTO_STATUS, BALL_START_STATUS, CLOSE_VALUE, CUSTOM_STATUS, INACTIVE_VALUE, OPEN_VALUE, SCORING_STATUS, SUSPEND_VALUE } from './CommentartConst.js';
 import { calculateLayFromBack, decimalOddsTwoOutcomes, predictWinProbability } from '../../components/Helper/UpdateManualOddHelper.js';
+import { convertDateUTCToLocalWithSec24, convertDateUtcFormatWithSec24 } from '../../components/Common/Reusables/reusableMethods.js';
 
 // Styled Components
 const RateBox = styled(Box)(({ theme, type }) => ({
@@ -442,6 +443,7 @@ export const NewUpdateManualOdds = () => {
     const settingsRef = useRef(settings);
     const tempRateDiffRef = useRef(null);
     const runnersRef = useRef([]);
+    const dateTyp = JSON.parse(localStorage.getItem("DateType"));
     // console.log({ savedPrices })
 
     const handlePriceCalculations = (backPrice, isSelected) => {
@@ -3027,7 +3029,7 @@ export const NewUpdateManualOdds = () => {
                                         <Box sx={{ mb: 3 }}>
                                             <Typography variant="h6" className='manual-card-text'>{`${eventData.comDetails.eventName}/${eventData.market?.marketName} [${eventData.market?.eventMarketId}]`}</Typography>
                                             <Typography variant="body2" className='manual-card-text'>
-                                                {`Ref: ${eventData.comDetails.eventRefId} [ ${new Date(eventData.comDetails.eventDate).toLocaleString()} ]`}
+                                                {`Ref: ${eventData.comDetails.eventRefId} [ ${new Date(dateTyp?.value == 1 ? convertDateUTCToLocalWithSec24(eventData?.comDetails?.eventDate, "index") : convertDateUtcFormatWithSec24(eventData?.comDetails?.eventDate, "index")).toLocaleString()} ]`}
                                             </Typography>
                                         </Box>
                                     )}

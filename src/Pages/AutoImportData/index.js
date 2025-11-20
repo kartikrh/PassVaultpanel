@@ -21,6 +21,7 @@ import { isEmpty, isEqual } from "lodash";
 import { updateToastData } from "../../Features/toasterSlice";
 import { Tooltip } from "antd";
 import { Button } from "reactstrap";
+import { AutoImportErrorModel } from "../../components/Model/AutoImportErrorModel";
 
 const Index = () => {
   const globalPageSize = localStorage.getItem("pageSize")
@@ -62,7 +63,9 @@ const Index = () => {
   const [tableSearchedData, setTableSearchedData] = useState([]);
 
   const navigate = useNavigate();
-
+  const [showErrorModelVisible, setShowErrorModelVisible] = useState(false);
+  const [errorData, setErrorData] = useState("");
+  const [refType, setRefType] = useState("");
 
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
@@ -303,13 +306,13 @@ const Index = () => {
       sort: true,
       style: { width: "10%" },
     },
-    // {
-    //   title: "Ref Id",
-    //   dataIndex: "refId",
-    //   key: "refId",
-    //   sort: true,
-    //   style: { width: "10%" },
-    // },
+    {
+      title: "Ref Type Id",
+      dataIndex: "refId",
+      key: "refId",
+      sort: true,
+      style: { width: "10%" },
+    },
     {
       title: "Import",
       dataIndex: "isImported",
@@ -363,7 +366,26 @@ const Index = () => {
       ),
       style: { width: "10%" },
     },
-
+    {
+      title: "",
+      dataIndex: "errorStackData",
+      render: (text, record) =>
+        record?.errorStackData ? (
+          <Button
+            color={"primary"}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              setErrorData(record);
+              setRefType(mapRefType(record?.refType));
+              setShowErrorModelVisible(true);
+            }}
+          >
+            E
+          </Button>
+        ) : null,
+      style: { width: "10%" },
+    },
    
     // {
     //   title: "Import Start",
@@ -508,6 +530,14 @@ const Index = () => {
             addModelVisable={addModelVisable}
             setAddModelVisable={setAddModelVisable}
           />
+          {showErrorModelVisible && (
+            <AutoImportErrorModel
+              isOpen={showErrorModelVisible}
+              toggle={() => setShowErrorModelVisible(!showErrorModelVisible)}
+              recordData={errorData}
+              recordRefType={refType}
+            />
+          )}
           {/* {reqModelVisible && (
             <RequestModal
               isOpen={reqModelVisible}
