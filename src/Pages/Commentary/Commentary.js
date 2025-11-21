@@ -69,7 +69,7 @@ const Commentary = (props) => {
     const [isWicketChange, setIsWicketChange] = useState(undefined)
     const [playerUpdateList, setPlayerUpdateList] = useState(undefined)
     const [inningsChangePopup, setShowInningsChangePopup] = useState(undefined)
-    const [inningsChangeClosed, setInningsChangeClosed] = useState(undefined)
+    // const [inningsChangeClosed, setInningsChangeClosed] = useState(undefined)
     const [redirectOnScreenChange, setRedirectOnScreenChange] = useState(undefined)
     const [showUpdateInnings, setShowUpdateInnings] = useState(undefined)
     const [winnerAnnouncement, setWinnerAnnouncement] = useState(undefined)
@@ -2758,17 +2758,17 @@ const Commentary = (props) => {
     useEffect(() => {
         if (changeOverOnPopupClick) {
             // setOverBallByBallDisplay([])
-            if(!inningsChangeClosed) {
+            // if(!inningsChangeClosed) {
             checkInningsSwitch(OVER)
-            }
+            // }
             changePlayer(CURRENT_BOWLER)
             setOnPitchPlayers({ ...onPitchPlayers, [CURRENT_BOWLER]: null })
             changeOver()
             setOverPopUpForBowler(true)
             setChangeOverOnPopupClick(undefined)
-            setInningsChangeClosed(false);
+            // setInningsChangeClosed(false);
         }
-    }, [changeOverOnPopupClick, inningsChangeClosed])
+    }, [changeOverOnPopupClick])
     useEffect(() => {
         if (saveToDb) {
             if (updateRunsFromWicket) callWicketToDB()
@@ -3494,8 +3494,8 @@ const Commentary = (props) => {
         />}
         {(!props?.isNewUi && inningsChangePopup) && <ChangeInningsModal
             isOpen={inningsChangePopup}
-            toggle={() => { setShowInningsChangePopup(undefined); setInningsChangeClosed(true); }}
-            onNoClick={() => { setShowInningsChangePopup(undefined); setInningsChangeClosed(true); }}
+            toggle={() => { setShowInningsChangePopup(undefined); /* setInningsChangeClosed(true); */ }}
+            onNoClick={() => { setShowInningsChangePopup(undefined); /* setInningsChangeClosed(true); */ }}
             onYesClick={onInningsChange} />}
         {(!props?.isNewUi && showWicketModal) &&
             <WicketModal
