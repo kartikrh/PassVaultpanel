@@ -763,6 +763,7 @@ const Index = () => {
     } finally {
       setIsLoading(false);
       setIsAccessModalOpen(false);
+      setAccessPassword("");
     }
   };
 
@@ -3437,14 +3438,14 @@ const Index = () => {
               setSelectedCommentaryDay={setSelectedCommentaryDay}
             />
           )}
-          <SUpdateAccessModal
+          {isAccessModalOpen && <SUpdateAccessModal
             isOpen={isAccessModalOpen}
             toggle={handleAccessModalClose}
             onYesClick={handleAccessConfirm}
             onNoClick={handleAccessModalClose}
             password={accessPassword}
             setPassword={setAccessPassword}
-          />
+          />}
           {/* Scorecard Modal */}
           {/* {isScorecardShow &&
             activeScorecardCommentary &&

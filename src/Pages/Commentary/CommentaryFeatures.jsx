@@ -164,6 +164,16 @@ export const CommentaryFeatures = () => {
     };
     const handleConfirmUpdate = async () => {
         // const { objToSave, deleteObjToSave } = saveData;
+        if (!password.trim()) {
+            dispatch(
+                updateToastData({
+                    data: "Password is required",
+                    title: "Validation Error",
+                    type: ERROR,
+                })
+            );
+            return;
+        }
         const { objToSave } = saveData;
         setIsToggleLoading(true);
         try {
@@ -193,6 +203,16 @@ export const CommentaryFeatures = () => {
         }
     };
     const handleSafeDelete = async () => {
+        if (!password.trim()) {
+            dispatch(
+                updateToastData({
+                    data: "Password is required",
+                    title: "Validation Error",
+                    type: ERROR,
+                })
+            );
+            return;
+        }
         setIsToggleLoading(true);
         try {
             let success = false;
