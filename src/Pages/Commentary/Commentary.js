@@ -902,7 +902,9 @@ const Commentary = (props) => {
             "commentaryTeams": [updateBattingTeam],
         }
         // console.log("Final dispatch object:", objToSave);
-        dispatch(addCommentaryScreenData(objToSave))
+        dispatch(addCommentaryScreenData(objToSave));
+        _setTeams({});
+        _setCurrentOver({});
     }
     const changeStrike = () => {
         _setOnPitchPlayers((prevValue) => {
@@ -2895,7 +2897,21 @@ const Commentary = (props) => {
                     setIsWheelShowComplete(true);
                 }
             }
+            if (!isEmpty(commentaryDataToUpdate.commentaryTeams)) {
+                const updatedTeamsState = { ...teams };
+
+                commentaryDataToUpdate.commentaryTeams.forEach(teamUpdate => {
+                    if (teams[BATTING_TEAM] && compareNumStringValues(teamUpdate.teamId, teams[BATTING_TEAM].teamId)) {
+                        updatedTeamsState[BATTING_TEAM] = { ...teams[BATTING_TEAM], ...teamUpdate };
+                    } else if (teams[BOWLING_TEAM] && compareNumStringValues(teamUpdate.teamId, teams[BOWLING_TEAM].teamId)) {
+                        updatedTeamsState[BOWLING_TEAM] = { ...teams[BOWLING_TEAM], ...teamUpdate };
+                    }
+                });
+
+                setTeams(updatedTeamsState);
+            }
             if (!isEmpty(commentaryDataToUpdate.overdetails) && !isEqual(commentaryDataToUpdate.overdetails.overId, currentOver.overId)) {
+                _setCurrentOver({})
                 const updatedOverHistory = overHistory.slice(0, -1)
                 setOverHistory([].concat(updatedOverHistory || [], [currentOver, commentaryDataToUpdate.overdetails]))
                 const generatedBall = generateBall({ currentBall: { commentaryBallByBallId: "0", }, commentaryDetails, currentOver: { overId: commentaryDataToUpdate.overdetails.overId }, onPitchPlayers, teams, currentPartnership })
