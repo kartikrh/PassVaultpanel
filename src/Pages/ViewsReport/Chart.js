@@ -74,6 +74,7 @@ const Chart = ({ eventData = [] }) => {
           bar: {
             columnWidth: "40px",
             borderRadius: 6,
+            barHeight: "100%", 
             dataLabels: { position: "top" },
           },
         },
@@ -135,6 +136,9 @@ const Chart = ({ eventData = [] }) => {
           },
         },
         tooltip: {
+          shared: true,
+          intersect: false,
+          followCursor: true, 
           x: {
             formatter: (val, { dataPointIndex }) => {
               const rawDate = new Date(eventData[dataPointIndex].eventDate);
