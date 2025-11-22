@@ -50,7 +50,7 @@ export const PartnershipFeature = ({ partnershipList, handleValueChange, updated
                     <tbody>
                         {partnershipList.length === 0 && <tr><td colSpan={PARTNERSHIP_FIELD.length + 2} className="text-center">No partnership data to show</td></tr>}
                         {partnershipList?.sort((a,b)=>b?.order - a?.order)?.map((partnershipInfo, index) => {
-                            if (deletedList.includes(partnershipInfo.commentaryPartnershipId)) return null;
+                            if (deletedList?.includes(partnershipInfo.commentaryPartnershipId)) return null;
                             const currentValues = updatedData[partnershipInfo.commentaryPartnershipId] || partnershipInfo;
                             return (
                             <tr key={`${partnershipInfo.commentaryPartnershipId}-${index}`}>

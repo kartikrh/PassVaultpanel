@@ -53,6 +53,7 @@ import { ChangePythonType } from "../../components/Model/ChangePythonType";
 import { ChangeCompititionModel } from "../../components/Model/ChangeCompititionModel";
 import { ChangeScoringModel } from "../../components/Model/ChangeScoringModel";
 import PredictMarketPasswordModal from "../../components/Model/PredictMarketPasswordModal";
+import SUpdateAccessModal from "./CommentaryModels/SUpdateAccessModal";
 
 const Index = () => {
   const pageName = TAB_COMMENTARY;
@@ -143,6 +144,9 @@ const Index = () => {
   const [pageSize, setPageSize] = useState(globalPageSize || 10);
   const [currentPage, setCurrentPage] = useState(1);
   const [tableSearchedData, setTableSearchedData] = useState([]);
+  const [isAccessModalOpen, setIsAccessModalOpen] = useState(false);
+  const [accessPassword, setAccessPassword] = useState("");
+  const [commentaryIdToSend, setCommentaryIdToSend] = useState(null);
 
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
@@ -709,9 +713,64 @@ const Index = () => {
   };
   const handleUpdateCommentaryClick = (id) => {
     // navigate("/updateCommentaryFeature", { state: { commentaryId: id } });
-    localStorage.setItem("updateCommentaryId", "" + id);
-    const url = new URL(window.location.origin + "/updateCommentaryFeature");
-    window.open(url.href, "_blank");
+    // localStorage.setItem("updateCommentaryId", "" + id);
+    // const url = new URL(window.location.origin + "/updateCommentaryFeature");
+    // window.open(url.href, "_blank");
+    setCommentaryIdToSend(id);
+    setIsAccessModalOpen(true);
+  };
+  const handleAccessConfirm = async () => {
+    if (!accessPassword.trim()) {
+      dispatch(
+        updateToastData({
+          data: "Password is required",
+          title: "Validation Error",
+          type: ERROR,
+        })
+      );
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await axiosInstance.post("/admin/commentary/checkSUpdatePass", {
+        commentaryId: commentaryIdToSend,
+        password: accessPassword,
+      });
+
+      if (response?.success) {
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+
+        handleAccessModalClose();
+        localStorage.setItem("updateCommentaryId", "" + commentaryIdToSend);
+        const url = new URL(window.location.origin + "/updateCommentaryFeature");
+        window.open(url.href, "_blank");
+      }
+    } catch (error) {
+      dispatch(
+        updateToastData({
+          data: error?.message,
+          title: error?.title || "Error",
+          type: ERROR,
+        })
+      );
+    } finally {
+      setIsLoading(false);
+      setIsAccessModalOpen(false);
+      setAccessPassword("");
+    }
+  };
+
+  const handleAccessModalClose = () => {
+    setIsAccessModalOpen(false);
+    setAccessPassword("");
+    setCommentaryIdToSend(null);
   };
   const handleUpdateManualOddsClick = (details) => {
     // navigate("/updateCommentaryFeature", { state: { commentaryId: id } });
@@ -3379,6 +3438,14 @@ const Index = () => {
               setSelectedCommentaryDay={setSelectedCommentaryDay}
             />
           )}
+          {isAccessModalOpen && <SUpdateAccessModal
+            isOpen={isAccessModalOpen}
+            toggle={handleAccessModalClose}
+            onYesClick={handleAccessConfirm}
+            onNoClick={handleAccessModalClose}
+            password={accessPassword}
+            setPassword={setAccessPassword}
+          />}
           {/* Scorecard Modal */}
           {/* {isScorecardShow &&
             activeScorecardCommentary &&

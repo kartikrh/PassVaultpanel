@@ -87,7 +87,7 @@ export const BallFeature = ({ ballList, handleValueChange, updatedData, deletedL
                 <tbody>
                     {ballList.length === 0 && <tr><td colSpan={BALL_FIELDS.length + 3} className="text-center">No balls data to show</td></tr>}
                     {[...ballList, ...(updatedData[0] ? [updatedData[0]] : [])]?.map((ballInfo, index) => {
-                        if (deletedList.includes(ballInfo.commentaryBallByBallId)) return null;
+                        if (deletedList?.includes(ballInfo.commentaryBallByBallId)) return null;
                         const currentValues = updatedData[ballInfo.commentaryBallByBallId] || ballInfo;
                         return (
                         <tr key={`${ballInfo.commentaryBallByBallId}-${index}`}>

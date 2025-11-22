@@ -6,7 +6,7 @@ import { useState } from "react"
 import { SLFieldRenderer } from "../../../components/Common/Reusables/SLFieldRenderer"
 import { SELECT, SWITCH } from "../../../components/Common/Const"
 
-export const OverBallByBallFeature = ({ overList, ballList, handleValueChange, updatedData, deletedList, handleDeleteChange, ballByBallData, setBallByBallData, deleteBallByBall, setDeleteBallByBall, selectedItems, setSelectedItems, battingPlayers, bowlingPlayers, teamlist, overTypeList }) => {
+export const OverBallByBallFeature = ({ overList, ballList, handleValueChange, updatedData, deletedList, handleDeleteChange, ballByBallData, setBallByBallData, deleteBallByBall, setDeleteBallByBall, selectedItems, setSelectedItems, battingPlayers, bowlingPlayers, teamlist, overTypeList, setToDeleteObject, setIsDeleteRequest, setIsUpdateModalOpen, setDeleteType }) => {
     const [open, setOpen] = useState("");
     const [expandedOvers, setExpandedOvers] = useState([]);        
     const toggle = (id) => {
@@ -55,7 +55,7 @@ export const OverBallByBallFeature = ({ overList, ballList, handleValueChange, u
                     <tbody>
                         {overList.length === 0 && <tr><td colSpan={OVER_FIELD.length + 3} className="text-center">No over data to show</td></tr>}
                         {overList?.map((overInfo, index) => {
-                            if (deletedList.includes(overInfo.overId)) return null;
+                            if (deletedList?.includes(overInfo.overId)) return null;
                             const balls = getBallsForOver(overInfo.overId);
                             const currentValues = updatedData[overInfo.overId] || overInfo;
 
@@ -126,10 +126,16 @@ export const OverBallByBallFeature = ({ overList, ballList, handleValueChange, u
                                             ballList={balls.filter((item)=>item?.ballType !== 0) || []}
                                             updatedData={ballByBallData || {}}
                                             handleValueChange={updatedData => setBallByBallData({ ...updatedData })}
-                                            deletedList={deleteBallByBall}
-                                            handleDeleteChange={(ballId) => {
-                                                setDeleteBallByBall([].concat(deleteBallByBall, [ballId]))
-                                            }}
+                                            // deletedList={deleteBallByBall}
+                                            // handleDeleteChange={(ballId) => {
+                                            //     setDeleteBallByBall([].concat(deleteBallByBall, [ballId]))
+                                            // }}
+                                                handleDeleteChange={(ballId) => {
+                                                    setToDeleteObject({ "deleteBallByBall": [ballId] });
+                                                    setIsDeleteRequest(true);
+                                                    setDeleteType("ball");
+                                                    setIsUpdateModalOpen(true);
+                                                }}
                                             selectedItems={selectedItems}
                                             setSelectedItems={setSelectedItems}
                                             battingPlayers={battingPlayers}

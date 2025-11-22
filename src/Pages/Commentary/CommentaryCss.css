@@ -1594,3 +1594,38 @@ body[data-theme="dark"] {
   padding: 0 !important;
   margin: 0 !important;
 }
+
+.password-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.password-label {
+    white-space: nowrap;
+    margin: 0;
+}
+
+.password-input-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.password-input {
+    width: 100%;
+    padding-right: 40px !important;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 18px;
+    color: #555;
+}
+
+.password-toggle:hover {
+    color: #000;
+}
