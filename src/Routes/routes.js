@@ -58,6 +58,7 @@ import AddPhotoLibrary from "../Pages/PhotoLibrary/AddPhotoLibrary.jsx";
 import VideoLibrary from "../Pages/VideoLibrary";
 import AddVideoLibrary from "../Pages/VideoLibrary/AddVideoLibrary.jsx";
 import Banner from "../Pages/Banner";
+import CompetitionStatistics from "../Pages/CompetitionStatistics";
 import API from "../Pages/API";
 import APIEndpoints from "../Pages/APIEndpoints";
 import Notification from "../Pages/Notification";
@@ -176,6 +177,7 @@ import AddRankings from "../Pages/IccRankings/AddRankings.jsx";
 import StreamingList from "../Pages/Commentary/StreamingList.js";
 import StreamingTable from "../Pages/Commentary/StreamingTable.js";
 import StreamWatch from "../Pages/Commentary/StreamWatch.js";
+import AddCompetitionStatistics from "../Pages/CompetitionStatistics/AddCompetitionStatistics.jsx";
 
 const authProtectedRoutes = [
   //dashboard
@@ -303,6 +305,8 @@ const authProtectedRoutes = [
   { path: "/addEntitySocket", component: <AddEventSocket /> },
   { path: "/banner", component: <Banner /> },
   { path: "/addBanner", component: <AddBanner /> },
+  { path: "/competitionStatistics", component: <CompetitionStatistics /> },
+  { path: "/addCompetitionStatistics", component: <AddCompetitionStatistics /> },
   { path: "/apis", component: <API /> },
   { path: "/addApi", component: <AddAPI /> },
   { path: "/apiEndpoints", component: <APIEndpoints /> },

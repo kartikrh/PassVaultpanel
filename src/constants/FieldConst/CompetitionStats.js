@@ -1,0 +1,75 @@
+import {
+    DATE_TIME_PICKER,
+    IMAGE,
+    SELECT,
+    SWITCH,
+    TEXT,
+  } from "../../components/Common/Const";
+  
+  export const compStatsFields = [
+    {
+        name: "eventTypeId",
+        label: "Event Type",
+        options: [{ label: "Select a Event Type", value: "0" }],
+        defaultValue: "0",
+        type: SELECT,
+        isRequired: true,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
+    },
+    {
+        name: "typeId",
+        label: "Type",
+        isRequired: true,
+        defaultValue: 1,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
+        type: SELECT,
+        options: [
+            { label: "Select Type", value: "0" },
+            { label: "Batting", value: 1 },
+            { label: "Bowling", value: 2 },
+        ],
+    },
+    {
+      name: "keyName",
+      label: "Key Name",
+      isRequired: true,
+      type: TEXT,
+      labelColspan: { xs: 12, md: 2, lg: 2 },
+      fieldColspan: { xs: 12, md: 4, lg: 4 },
+    },
+    {
+      name: "name",
+      label: "Name",
+      isRequired: true,
+      type: TEXT,
+      labelColspan: { xs: 12, md: 2, lg: 2 },
+      fieldColspan: { xs: 12, md: 4, lg: 4 },
+    },
+    {
+      name: "displayOrder",
+      label: "Display Order",
+      isRequired: true,
+      type: TEXT,
+      labelColspan: { xs: 12, md: 2, lg: 2 },
+      fieldColspan: { xs: 12, md: 4, lg: 4 },
+    },
+    {
+      name: "description",
+      label: "Description",
+      isRequired: true,
+      type: TEXT,
+      labelColspan: { xs: 12, md: 2, lg: 2 },
+      fieldColspan: { xs: 12, md: 4, lg: 4 },
+    },
+    {
+      type: SWITCH,
+      name: "isActive",
+      label: "IsActive",
+      defaultValue: true,
+      labelColspan: { xs: 12, md: 2, lg: 2 },
+      fieldColspan: { xs: 12, md: 4, lg: 4 },
+    },
+  ];
+  

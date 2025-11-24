@@ -33,6 +33,7 @@ export const TAB_AUTO_EVENT = "Auto Event";
 export const TAB_AWARDS = "Awards";
 
 export const TAB_BANNER = "Banner";
+export const TAB_COMPETITION_STATISTICS_TYPE = "Competition Statistics Type";
 export const TAB_BLOCKS = "Blocks";
 export const TAB_AUTO_IMPORT = "Auto Import";
 
