@@ -388,7 +388,8 @@ export const ManualOddsMarket = () => {
                                                 {eventData.comDetails.eventName}
                                             </div>
                                             <div>
-                                                {`Ref: ${eventData.comDetails.eventRefId} [ ${new Date(dateTyp?.value == 1 ? convertDateUTCToLocalWithSec24(eventData?.comDetails?.eventDate, "index") : convertDateUtcFormatWithSec24(eventData?.comDetails?.eventDate, "index")).toLocaleString()} ]`}
+                                                {`Ref: ${eventData.comDetails.eventRefId} [ ${dateTyp?.value == 1 ? convertDateUTCToLocalWithSec24(eventData?.comDetails?.eventDate, "index") : convertDateUtcFormatWithSec24(eventData?.comDetails?.eventDate, "index")} ]`}
+                                                {/* {`Ref: ${eventData.comDetails.eventRefId} [ ${new Date(eventData.comDetails.eventDate).toLocaleString()} ]`} */}
                                             </div>
                                         </Col>
                                     )}
