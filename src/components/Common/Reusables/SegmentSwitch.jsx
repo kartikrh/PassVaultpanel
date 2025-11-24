@@ -13,7 +13,7 @@ const SegmentedSwitch = ({ options, selectedValue, onSelectionChange, label }) =
             <span className="segmented-switch-label">{label}</span>
             <div className="segmented-switch-container">
                 <div
-                    className={`segmented-switch-slider ${selectedIndex >= 0 ? 'visible' : 'hidden'}`}
+                    className={`segmented-switch-slider ${selectedIndex >= 0 ? 'opacity-100' : 'opacity-0'}`}
                     style={sliderStyle}
                 />
 

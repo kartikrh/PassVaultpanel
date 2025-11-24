@@ -5,7 +5,8 @@ import axiosInstance from "../../Features/axios.js"
 import { updateToastData } from "../../Features/toasterSlice.js"
 import { ERROR, PERMISSION_VIEW, SUCCESS, TAB_COMMENTARY } from "../../components/Common/Const.js"
 import SpinnerModel from "../../components/Model/SpinnerModel/index.js";
-import { checkPermission } from "../../components/Common/Reusables/reusableMethods.js"
+import { checkPermission, convertDateUTCToLocalWithSec24, convertDateUtcFormatWithSec24 } from "../../components/Common/Reusables/reusableMethods.js"
+import UpdateCommentaryModal from "./CommentaryModels/UpdateCommentaryModal.jsx";
 import { clearLoadingAndError, deleteCommentaryFeatures, saveCommentaryFeatures } from "../../Features/Tabs/commentarySlice.js"
 import { Card, Button, Row, Col, Container, CardBody, ButtonGroup } from 'reactstrap';
 import { TeamFeature } from "./CommentaryFeatures/TeamFeature.jsx"
@@ -53,10 +54,15 @@ export const CommentaryFeatures = () => {
     const permissionObj = useSelector(state => state.auth?.tabPermissionList);
     const { isLoading, isRedirect } = useSelector(state => state.tabsData.commentary);
     const commentaryId = +localStorage.getItem('updateCommentaryId') || "0";
+    const dateTyp = JSON.parse(localStorage.getItem("DateType"));
     const dispatch = useDispatch();
     let navigate = useNavigate();
+    const eventDate = commentaryData?.commentaryDetails?.eventDate;
+    const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+    const [password, setPassword] = useState("");
+    const [saveData, setSaveData] = useState({ objToSave: {}, deleteObjToSave: {} });
     if(commentaryData?.commentaryDetails){
-       document.title = `S-Update [ ${commentaryData.commentaryDetails?.ed + " " + commentaryData.commentaryDetails?.et} ] ${commentaryData.commentaryDetails?.en}`;
+       document.title = `S-Update [ ${dateTyp?.value == 1 ? convertDateUTCToLocalWithSec24(eventDate, "index") : convertDateUtcFormatWithSec24(eventDate, "index")} ] ${commentaryData.commentaryDetails?.en}`;
     } else {
        document.title = "S-Update";
     }
@@ -148,17 +154,23 @@ export const CommentaryFeatures = () => {
                 return;
             }
         }
+        setSaveData({ objToSave, deleteObjToSave });
+        setIsUpdateModalOpen(true);           
+    };
+    const handleConfirmUpdate = async () => {
+        const { objToSave, deleteObjToSave } = saveData;
+        setIsToggleLoading(true);
         try {
             let success = false;
             if (!isEmpty(objToSave)) {
-                const response = await axiosInstance.post("/admin/commentary/saveCommentaryDetails", { ...objToSave, commentaryId });
+                const response = await axiosInstance.post("/admin/commentary/saveCommentaryDetails", { ...objToSave, commentaryId, password });
                 if (response?.result) {
                     success = true;
                     dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
                 }
             }
             if (!isEmpty(deleteObjToSave)) {
-                const response = await axiosInstance.post("/admin/commentary/deleteCommentaryDetails", { ...deleteObjToSave, commentaryId });
+                const response = await axiosInstance.post("/admin/commentary/deleteCommentaryDetails", { ...deleteObjToSave, commentaryId, password });
                 if (response?.result) {
                     success = true;
                     dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
@@ -169,6 +181,9 @@ export const CommentaryFeatures = () => {
             }
         } catch (error) {
             dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+        } finally {
+            setIsToggleLoading(false);
+            handleCloseModal();
         }
         // if (!isEmpty(objToSave) || !isEmpty(deleteObjToSave)) {
         //     if (!isEmpty(objToSave)) {
@@ -182,6 +197,12 @@ export const CommentaryFeatures = () => {
         // if (isEmpty(objToSave) && isEmpty(deleteObjToSave)) {
         //     handleBackClick()
         // }
+    };
+
+    const handleCloseModal = () => {
+        setIsUpdateModalOpen(false);
+        setPassword("");
+        setSaveData({ objToSave: {}, deleteObjToSave: {} });
     };
 
     useEffect(() => {
@@ -213,7 +234,7 @@ export const CommentaryFeatures = () => {
                                 <Row>
                                     {!isEmpty(commentaryData?.commentaryDetails) && <Col xs={5} md={5} lg={5}>
                                         <div className='match-details-breadcrumbs'>{`${commentaryData?.commentaryDetails.ety}/ ${commentaryData?.commentaryDetails.com}/ ${commentaryData?.commentaryDetails.en}`}</div>
-                                        <div>{`Ref: ${commentaryData?.commentaryDetails.eid} [ ${commentaryData?.commentaryDetails.ed + " " + commentaryData?.commentaryDetails.et} ]`}</div>
+                                        <div>{`Ref: ${commentaryData?.commentaryDetails.eid} [ ${dateTyp?.value == 1 ? convertDateUTCToLocalWithSec24(eventDate, "index") : convertDateUtcFormatWithSec24(eventDate, "index")} ]`}</div>
                                     </Col>}
                                     <Col xs={2} md={2} lg={2}>
                                             <ButtonGroup className="me-3">
@@ -315,6 +336,14 @@ export const CommentaryFeatures = () => {
                             </CardBody>
                         </Card>
                     </Row>
+                    <UpdateCommentaryModal
+                        isOpen={isUpdateModalOpen}
+                        toggle={handleCloseModal}
+                        onYesClick={handleConfirmUpdate}
+                        onNoClick={handleCloseModal}
+                        password={password}
+                        setPassword={setPassword}
+                    />
                 </Container>
             </div>
         </React.Fragment >

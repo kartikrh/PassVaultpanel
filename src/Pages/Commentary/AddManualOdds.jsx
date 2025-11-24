@@ -11,7 +11,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import { useLocation, useNavigate } from 'react-router-dom';
 import createSocket from '../../Features/socket.js';
 import Select from "react-select";
-import { convertDateUTCToLocal } from '../../components/Common/Reusables/reusableMethods.js';
+import { convertDateUTCToLocal, convertDateUTCToLocalWithSec24, convertDateUtcFormatWithSec24 } from '../../components/Common/Reusables/reusableMethods.js';
 
 export const AddManualOdds = () => {
     const dispatch = useDispatch();
@@ -57,6 +57,7 @@ export const AddManualOdds = () => {
         rateSourceRefID: "",
         favRatio: 30,
     });
+    const dateTyp = JSON.parse(localStorage.getItem("DateType"));
 
     // const commentaryId = localStorage.getItem("updateManualOddsCommentaryId");
     // const commentaryDetails = JSON.parse(localStorage.getItem('updateManualOddsCommentaryDetails') || "{}");
@@ -685,7 +686,7 @@ export const AddManualOdds = () => {
                                                 {eventData.comDetails.eventName}
                                             </div> */}
                                             <div>
-                                                {`Ref: ${eventData.comDetails.eventRefId} [ ${new Date(eventData.comDetails.eventDate).toLocaleString()} ]`}
+                                                {`Ref: ${eventData.comDetails.eventRefId} [ ${new Date(dateTyp?.value == 1 ? convertDateUTCToLocalWithSec24(eventData?.comDetails?.eventDate, "index") : convertDateUtcFormatWithSec24(eventData?.comDetails?.eventDate, "index")).toLocaleString()} ]`}
                                             </div>
                                         </Col>
                                     )}

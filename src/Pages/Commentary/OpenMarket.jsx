@@ -17,6 +17,7 @@ import OpenMarketCategories from "./OpenMarketCategoryRendering";
 import Switch from "react-switch";
 import { loadInit } from "../../config";
 import { Tooltip } from "antd";
+import { convertDateUTCToLocalWithSec24 , convertDateUtcFormatWithSec24 } from '../../components/Common/Reusables/reusableMethods';
 
 export const OpenMarket = () => {
     const loadInitData = useSelector((state) => state.loadInit.loadInitData);
@@ -61,6 +62,7 @@ export const OpenMarket = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const marketTypeObj = useSelector((state) => state.marketType?.marketTypeList);
+    const dateTyp = JSON.parse(localStorage.getItem("DateType"));
 
     // const socket = createSocket();
     const statusListToInclude = [1, 2, 3]
@@ -2236,6 +2238,21 @@ export const OpenMarket = () => {
         };
     }, [data, selectedCategories, isKeyPressed, input, isPointsShow]);
 
+    const mergeDateTimeToUTC = (ed, et) => {
+        const [day, month, year] = ed.split("/");
+        return `${year}-${month}-${day}T${et}Z`;
+    };
+    let eventDate = "";
+
+    if (commentaryInfo?.ed && commentaryInfo?.et) {
+        const combinedUTC = mergeDateTimeToUTC(commentaryInfo.ed, commentaryInfo.et);
+
+        eventDate =
+            dateTyp?.value == 1
+                ? convertDateUTCToLocalWithSec24(combinedUTC, "index")
+                : convertDateUtcFormatWithSec24(combinedUTC, "index");
+    }
+
     return (
         <React.Fragment>
             <div className="page-content">
@@ -2246,7 +2263,7 @@ export const OpenMarket = () => {
                                 {isLoading && <SpinnerModel />}
                                 <Row>
                                     {!isEmpty(commentaryInfo) && <Col>
-                                        <div className='match-details-breadcrumbs'>{`${commentaryInfo.ety}/ ${commentaryInfo.com}/ `} <strong>{`${commentaryInfo.en}`}</strong>{`/ Ref: `} <strong>{`${commentaryInfo.eid}`}</strong> {`[ ${commentaryInfo.ed + " " + commentaryInfo.et} ]`}</div>
+                                        <div className='match-details-breadcrumbs'>{`${commentaryInfo.ety}/ ${commentaryInfo.com}/ `} <strong>{`${commentaryInfo.en}`}</strong>{`/ Ref: `} <strong>{`${commentaryInfo.eid}`}</strong> {`[ ${eventDate ? eventDate : commentaryInfo.ed + " " + commentaryInfo.et} ]`}</div>
                                     </Col>
                                     }
                                     {ballStatus === "ballstart" && <Col className="p-0 d-flex align-items-center" xs={2} md={1} lg={1}>

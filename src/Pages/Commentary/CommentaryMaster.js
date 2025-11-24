@@ -23,7 +23,7 @@ import {
 import axiosInstance from "../../Features/axios";
 import { updateToastData } from "../../Features/toasterSlice";
 import SpinnerModel from "../../components/Model/SpinnerModel";
-import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateUTCToLocalWithSec24,  convertDateUtcFormatWithSec24} from "../../components/Common/Reusables/reusableMethods";
 import Toss from "./Toss";
 import PlayerSelection from "./PlayerSelection";
 import {
@@ -86,6 +86,7 @@ function CommentaryMaster() {
   const loadInitData = useSelector((state) => state.loadInit.loadInitData);
   const commentaryId = +sessionStorage.getItem("commentaryMasterId") || "0";
   const commentaryList = sessionStorage.getItem("commentary");
+  const dateTyp = JSON.parse(localStorage.getItem("DateType"));
   let scorecardFrameUrl = loadInitData.find(item => item.key === loadInit.SCORECARD_FRAME_URL)?.value;
   if (scorecardFrameUrl) {
     scorecardFrameUrl = scorecardFrameUrl.replace("{commentaryId}", commentaryId);
@@ -344,6 +345,8 @@ function CommentaryMaster() {
     );
   };
 
+  const eventDate = commentaryData?.commentaryDetails?.eventDate;
+
   // const isSaveOrEditPermission = checkPermission(permissionObj, pageName, PERMISSION_ADD) || checkPermission(permissionObj, pageName, PERMISSION_EDIT)
   return (
     <React.Fragment>
@@ -468,7 +471,7 @@ function CommentaryMaster() {
                     <Col className="p-0 d-flex flex-wrap">
                       <div className="col-12 col-md-6">
                         {commentaryData ? <><div className='match-details-breadcrumbs'>{`${commentaryData?.commentaryDetails.ety}/ ${commentaryData?.commentaryDetails.com}/ ${commentaryData?.commentaryDetails.en}`}</div>
-                          <div>{`Ref: ${commentaryData?.commentaryDetails.eid} [ ${commentaryData?.commentaryDetails.ed + " " + commentaryData?.commentaryDetails.et} ]`}</div></> : null}
+                          <div>{`Ref: ${commentaryData?.commentaryDetails.eid} [ ${dateTyp?.value == 1 ? convertDateUTCToLocalWithSec24(eventDate, "index") : convertDateUtcFormatWithSec24(eventDate, "index")} ]`}</div></> : null}
                       </div>
                       <div className='col-12 col-md-6 d-flex align-items-center justify-content-md-end mt-2 mt-md-0'>
                         {(ALL_SCREENS[currentScreen] === COMMENTARY_PLAYER_SELECTION_SCREEN || ALL_SCREENS[currentScreen] === COMMENTARY_MAIN_SCREEN) && commentaryList === 'commentary' &&

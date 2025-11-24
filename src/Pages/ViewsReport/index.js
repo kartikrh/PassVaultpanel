@@ -227,9 +227,8 @@ const Index = () => {
       );
 
       // Step 3: Make API call
-      const response = await axiosInstance.post(`/admin/commentary/all`, payload);
+      const response = await axiosInstance.post(`/admin/commentary/viewsReport`, payload);
       const apiData = response?.result || [];
-
       setDataSource(apiData);
       setTotal(apiData.length);
       setDisplayedData(apiData)
