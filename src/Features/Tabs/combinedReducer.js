@@ -30,6 +30,7 @@ import displayStatusSlice from "./displayStatusSlice";
 import clientSocketSlice from "./clientSocketSlice";
 import entitySocketSlice from "./entitySocketSlice";
 import bannerSlice from "./bannerSlice";
+import competitionStatsSlice from "./competitionStatsSlice";
 import manualEventSlice from "./manualEventSlice";
 import addApiSlice from "./addApiSlice";
 import addApiEndpointSlice from "./addApiEndpointSlice";
@@ -78,6 +79,7 @@ const rootReducer = combineReducers({
   clientSocket: clientSocketSlice,
   entitySocket: entitySocketSlice,
   banner: bannerSlice,
+  competitionStats: competitionStatsSlice,
   manualEvent: manualEventSlice,
   apis: addApiSlice,
   apiEndpoints: addApiEndpointSlice,
