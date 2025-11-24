@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { CommentaryScreen } from "./Commentary.jsx"
 import _, { isEmpty, isEqual } from "lodash"
-import { BALL_BYE, BALL_LEG_BYE, BALL_START_STATUS, BALL_TYPE_BOWLER_RETIRED_HURT, BALL_TYPE_BYE, BALL_TYPE_LEG_BYE, BALL_TYPE_NO_BALL, BALL_TYPE_NO_BALL_BYE, BALL_TYPE_NO_BALL_LEG_BYE, BALL_TYPE_OVER_COMPLETE, BALL_TYPE_PANELTY_RUN, BALL_TYPE_REGULAR, BALL_TYPE_RETIRED_HURT, BALL_TYPE_WIDE, BALL_WIDE, BAT, BATTING_TEAM, BOWLING_TEAM, CHANGE_BOWLER, CURRENT_BOWLER, LIST_TO_EXCLUDE_WICKET_FOR_BOWLER, NON_STRIKE, NO_BALL, NO_BALL_BYE, NO_BALL_LEG_BYE, ON_STRIKE, OVER, PLAYER_LIST, PREV_NON_STRIKE, PREV_ON_STRIKE, RETIRED_HURT, RETIRED_HURT_BATTER, RETIRED_OUT, RUN, SCORING_STATUS, SWITCH_BOWLER, TIMED_OUT, WICKET } from "./CommentartConst.js"
+import { ALL, BALL_BYE, BALL_LEG_BYE, BALL_START_STATUS, BALL_TYPE_BOWLER_RETIRED_HURT, BALL_TYPE_BYE, BALL_TYPE_LEG_BYE, BALL_TYPE_NO_BALL, BALL_TYPE_NO_BALL_BYE, BALL_TYPE_NO_BALL_LEG_BYE, BALL_TYPE_OVER_COMPLETE, BALL_TYPE_PANELTY_RUN, BALL_TYPE_REGULAR, BALL_TYPE_RETIRED_HURT, BALL_TYPE_WIDE, BALL_WIDE, BAT, BATTING_TEAM, BOWLING_TEAM, CHANGE_BOWLER, CURRENT_BOWLER, LIST_TO_EXCLUDE_WICKET_FOR_BOWLER, NON_STRIKE, NO_BALL, NO_BALL_BYE, NO_BALL_LEG_BYE, ON_STRIKE, OVER, PLAYER_LIST, PREV_NON_STRIKE, PREV_ON_STRIKE, RETIRED_HURT, RETIRED_HURT_BATTER, RETIRED_OUT, RUN, SCORING_STATUS, SWITCH_BOWLER, TIMED_OUT, WICKET } from "./CommentartConst.js"
 import SelectPlayerModal from "./CommentaryModels/SelectPlayerModal.jsx"
 import ExtrasModal from "./CommentaryModels/ExtrasModal.jsx"
 import ChangeOverModal from "./CommentaryModels/ChangeOverModal.jsx"
@@ -69,6 +69,7 @@ const Commentary = (props) => {
     const [isWicketChange, setIsWicketChange] = useState(undefined)
     const [playerUpdateList, setPlayerUpdateList] = useState(undefined)
     const [inningsChangePopup, setShowInningsChangePopup] = useState(undefined)
+    // const [inningsChangeClosed, setInningsChangeClosed] = useState(undefined)
     const [redirectOnScreenChange, setRedirectOnScreenChange] = useState(undefined)
     const [showUpdateInnings, setShowUpdateInnings] = useState(undefined)
     const [winnerAnnouncement, setWinnerAnnouncement] = useState(undefined)
@@ -161,8 +162,10 @@ const Commentary = (props) => {
     }, [superOverText]);
 
     useEffect(() => {
-        checkForOverSwitch(); // Trigger check whenever currentOver or ball count changes
-    }, [syncOverCheck.ballCount, isWheelShowComplete, isWheelShow]);
+        if(!inningsChangePopup && !redirectOnScreenChange){
+            checkForOverSwitch(); // Trigger check whenever currentOver or ball count changes
+        }
+    }, [syncOverCheck.ballCount, isWheelShowComplete, isWheelShow, inningsChangePopup, redirectOnScreenChange]);
 
     const checkForOverSwitch = () => {
         const isBallCountExceeded = syncOverCheck.ballCount >= (matchTypeDetails?.ballsPerOver || 6);
@@ -180,7 +183,7 @@ const Commentary = (props) => {
         const maxNoOfWicket = matchTypeDetails?.noOfPlayer - (matchTypeDetails?.isLastManStand ? 0 : 1);
         const isOverLimitReached = () => {
             return matchTypeDetails.isLimitedOvers &&
-                (Math.ceil(+currentOver.over || 0) + 1) >= teamToCheck[BATTING_TEAM]?.teamMaxOver;
+                (currentOver?.ballCount >= 5 && Math.ceil(+currentOver.over || 0) + 1) >= teamToCheck[BATTING_TEAM]?.teamMaxOver;
         };
 
         const isWicketLimitReached = () => {
@@ -205,12 +208,19 @@ const Commentary = (props) => {
         }
         if (conditionsToCheck.some(condition => condition) && !isMatchCompleted) {
             const runDifference = (teams[BATTING_TEAM]?.teamScore || 0) + (teams[BATTING_TEAM]?.teamLeadRuns || 0) - (teams[BATTING_TEAM]?.teamTrialRuns || 0)
-            if (teamToCheck?.[BOWLING_TEAM].isBattingComplete && isLastInnigs) setCompleteMatchModal(true)
-            else if (!teams[BOWLING_TEAM].isBattingComplete && isLastInnigs && runDifference < 0) {
-                setIsWonByInnings(runDifference * -1)
-                setCompleteMatchModal(true)
+            if (teamToCheck?.[BOWLING_TEAM].isBattingComplete && isLastInnigs) {
+                setCompleteMatchModal(true);
+                setShowChangeOverModal(false);
             }
-            else setShowInningsChangePopup(true);
+            else if (!teams[BOWLING_TEAM].isBattingComplete && isLastInnigs && runDifference < 0) {
+                setIsWonByInnings(runDifference * -1);
+                setCompleteMatchModal(true);
+                setShowChangeOverModal(false);
+            }
+            else {
+                setShowInningsChangePopup(true);
+                setShowChangeOverModal(false);
+            }
         }
     }
     const completeMatch = () => {
@@ -501,6 +511,7 @@ const Commentary = (props) => {
         setPartnershipHistory([].concat((updaterPartnershipHistory || []), [updatedPartnership]))
         setUpdateRunFromWicket(undefined)
         // checkForOverSwitch(onPitchPlayers[CURRENT_BOWLER]?.bowlerOver)
+        checkInningsSwitch(ALL);
         setSaveToDb(false)
     }
     const updateRuns = ({ run, ball, batter, bowler, isBoundary, freezePlayers = false }) => {
@@ -2747,12 +2758,15 @@ const Commentary = (props) => {
     useEffect(() => {
         if (changeOverOnPopupClick) {
             // setOverBallByBallDisplay([])
+            // if(!inningsChangeClosed) {
             checkInningsSwitch(OVER)
+            // }
             changePlayer(CURRENT_BOWLER)
             setOnPitchPlayers({ ...onPitchPlayers, [CURRENT_BOWLER]: null })
             changeOver()
             setOverPopUpForBowler(true)
             setChangeOverOnPopupClick(undefined)
+            // setInningsChangeClosed(false);
         }
     }, [changeOverOnPopupClick])
     useEffect(() => {
@@ -2996,10 +3010,10 @@ const Commentary = (props) => {
         }
     }, [commentaryDataToUpdate])
     useEffect(() => {
-        if (!onPitchPlayers[ON_STRIKE]?.playerId || !onPitchPlayers[NON_STRIKE]?.playerId || !onPitchPlayers[CURRENT_BOWLER]?.playerId) {
+        if (!inningsChangePopup && !redirectOnScreenChange && !onPitchPlayers[ON_STRIKE]?.playerId || !onPitchPlayers[NON_STRIKE]?.playerId || !onPitchPlayers[CURRENT_BOWLER]?.playerId) {
             setSelectMissingPlayer(true)
         } else if (onPitchPlayers[ON_STRIKE]?.playerId && onPitchPlayers[NON_STRIKE]?.playerId && onPitchPlayers[CURRENT_BOWLER]?.playerId) setSelectMissingPlayer(false)
-    }, [onPitchPlayers])
+    }, [onPitchPlayers, inningsChangePopup, redirectOnScreenChange])
     useEffect(() => {
         if (matchTypeDetails?.isAutoChangeStriker
             && !changePlayerList
@@ -3480,8 +3494,8 @@ const Commentary = (props) => {
         />}
         {(!props?.isNewUi && inningsChangePopup) && <ChangeInningsModal
             isOpen={inningsChangePopup}
-            toggle={() => { setShowInningsChangePopup(undefined) }}
-            onNoClick={() => { setShowInningsChangePopup(undefined) }}
+            toggle={() => { setShowInningsChangePopup(undefined); /* setInningsChangeClosed(true); */ }}
+            onNoClick={() => { setShowInningsChangePopup(undefined); /* setInningsChangeClosed(true); */ }}
             onYesClick={onInningsChange} />}
         {(!props?.isNewUi && showWicketModal) &&
             <WicketModal
@@ -3522,7 +3536,7 @@ const Commentary = (props) => {
                 localStorage.setItem("superOverText", JSON.stringify(false));
             }}
         />}
-        {isChangeBowler.isChangePopup && <ChangeBowlerModal
+        {isChangeBowler.isChangePopup && !(completeMatchModal) && <ChangeBowlerModal
             toggle={() => { setIsChangeBowler({ isChange: null, isChangePopup: null, popupOption: null }) }}
             onBowlerChange={(selectedOption) => {
                 setIsChangeBowler({ isChange: true, isChangePopup: null, popupOption: selectedOption })
@@ -3542,7 +3556,7 @@ const Commentary = (props) => {
                 updateAfterOverUndo()
             }}
         />}
-        {selectMissingPlayer && !(changePlayerList || superOverModal || winnerAnnouncement) &&
+        {selectMissingPlayer && !(changePlayerList || superOverModal || winnerAnnouncement || completeMatchModal) &&
             <OnPitchPlayerModal
                 onPitchPlayers={onPitchPlayers}
                 players={players}

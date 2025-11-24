@@ -21,20 +21,20 @@ import "./CommentaryCss.css";
 const navigateTo = "/commentary"
 export const CommentaryFeatures = () => {
     const pageName = TAB_COMMENTARY
-    const [commentaryData, setCommentaryData] = useState(undefined);                                                                                                                                    
+    const [commentaryData, setCommentaryData] = useState(undefined);
     const [isDataLoading, setIsDataLoading] = useState(false)
     const [isToggleLoading, setIsToggleLoading] = useState(false)
     const [commentaryDetailsData, setCommentaryDetailsData] = useState({})
     const [teamsData, setTeamsData] = useState({})
     const [ballByBallData, setBallByBallData] = useState({})
-    const [deleteBallByBall, setDeleteBallByBall] = useState([])
+    // const [deleteBallByBall, setDeleteBallByBall] = useState([])
     const [overData, setOverData] = useState({})
-    const [deleteOver, setDeleteOver] = useState([])
+    // const [deleteOver, setDeleteOver] = useState([])
     const [wicketData, setWicketData] = useState({})
-    const [deleteWicket, setDeleteWicket] = useState([])
+    // const [deleteWicket, setDeleteWicket] = useState([])
     const [partnershipData, setPartnershipData] = useState({})
     const [playerData, setPlayerData] = useState({})
-    const [deletePartnership, setDeletePartnership] = useState([])
+    // const [deletePartnership, setDeletePartnership] = useState([])
     const [selectedInnings, setSelectedInnings] = useState(1)
     const [selectedBattingTeamId, setSelectedBattingTeamId] = useState(undefined)
     const [selectedBowlingTeamId, setSelectedBowlingTeamId] = useState(undefined)
@@ -42,6 +42,10 @@ export const CommentaryFeatures = () => {
     const [bowlingTeam, setBowlingTeam] = useState({})
     const [battingTeamPlayers, setBattingTeamPlayers] = useState([])
     const [bowlingTeamPlayers, setBowlingTeamPlayers] = useState([])
+    const [isDeleteRequest, setIsDeleteRequest] = useState(false)
+    const [toDeleteObject, setToDeleteObject] = useState({});
+    const [deleteType, setDeleteType] = useState("")
+
     const [selectedItems, setSelectedItems] = useState({
         details: {},
         teams: {},
@@ -62,9 +66,9 @@ export const CommentaryFeatures = () => {
     const [password, setPassword] = useState("");
     const [saveData, setSaveData] = useState({ objToSave: {}, deleteObjToSave: {} });
     if(commentaryData?.commentaryDetails){
-       document.title = `S-Update [ ${dateTyp?.value == 1 ? convertDateUTCToLocalWithSec24(eventDate, "index") : convertDateUtcFormatWithSec24(eventDate, "index")} ] ${commentaryData.commentaryDetails?.en}`;
+        document.title = `S-Update [ ${dateTyp?.value == 1 ? convertDateUTCToLocalWithSec24(eventDate, "index") : convertDateUtcFormatWithSec24(eventDate, "index")} ] ${commentaryData.commentaryDetails?.en}`;
     } else {
-       document.title = "S-Update";
+        document.title = "S-Update";
     }
     useEffect(() => {
         if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW) && !isEmpty(permissionObj)) {
@@ -100,14 +104,14 @@ export const CommentaryFeatures = () => {
                 setCommentaryDetailsData({})
                 setTeamsData({})
                 setBallByBallData({})
-                setDeleteBallByBall([])
+                // setDeleteBallByBall([])
                 setOverData({})
-                setDeleteOver([])
+                // setDeleteOver([])
                 setWicketData({})
-                setDeleteWicket([])
+                // setDeleteWicket([])
                 setPartnershipData({})
                 setPlayerData({})
-                setDeletePartnership([])
+                // setDeletePartnership([])
                 setIsDataLoading(false)
             }).catch((error) => {
                 dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
@@ -129,18 +133,18 @@ export const CommentaryFeatures = () => {
 
     const handleSaveClick = async () => {
         const objToSave = {}
-        const deleteObjToSave = {}
+        // const deleteObjToSave = {}
         if (!isEmpty(commentaryDetailsData)) objToSave["commentaryDetails"] = commentaryDetailsData;
         if (!isEmpty(teamsData)) objToSave["commentaryTeams"] = Object.values(teamsData)
         if (!isEmpty(playerData)) objToSave["commentaryPlayers"] = Object.values(playerData)
         if (!isEmpty(ballByBallData)) objToSave["commentaryBallByBall"] = Object.values(ballByBallData)
-        if (!isEmpty(deleteBallByBall)) deleteObjToSave["deleteBallByBall"] = Object.values(deleteBallByBall)
+        // if (!isEmpty(deleteBallByBall)) deleteObjToSave["deleteBallByBall"] = Object.values(deleteBallByBall)
         if (!isEmpty(overData)) objToSave["commentaryOvers"] = Object.values(overData)
-        if (!isEmpty(deleteOver)) deleteObjToSave["deleteOvers"] = Object.values(deleteOver)
+        // if (!isEmpty(deleteOver)) deleteObjToSave["deleteOvers"] = Object.values(deleteOver)
         if (!isEmpty(wicketData)) objToSave["commentaryWickets"] = Object.values(wicketData)
-        if (!isEmpty(deleteWicket)) deleteObjToSave["deleteWickets"] = Object.values(deleteWicket)
+        // if (!isEmpty(deleteWicket)) deleteObjToSave["deleteWickets"] = Object.values(deleteWicket)
         if (!isEmpty(partnershipData)) objToSave["commentaryPartnership"] = Object.values(partnershipData)
-        if (!isEmpty(deletePartnership)) deleteObjToSave["deletePartnership"] = Object.values(deletePartnership)
+        // if (!isEmpty(deletePartnership)) deleteObjToSave["deletePartnership"] = Object.values(deletePartnership)
         if (!isEmpty(teamsData)) {
             const invalidTeam = Object.values(teamsData).find(
                 (team) => team?.teamStatus && team?.teamBattingOrder
@@ -154,11 +158,23 @@ export const CommentaryFeatures = () => {
                 return;
             }
         }
-        setSaveData({ objToSave, deleteObjToSave });
-        setIsUpdateModalOpen(true);           
+        // setSaveData({ objToSave, deleteObjToSave });
+        setSaveData({ objToSave });
+        setIsUpdateModalOpen(true);
     };
     const handleConfirmUpdate = async () => {
-        const { objToSave, deleteObjToSave } = saveData;
+        // const { objToSave, deleteObjToSave } = saveData;
+        if (!password.trim()) {
+            dispatch(
+                updateToastData({
+                    data: "Password is required",
+                    title: "Validation Error",
+                    type: ERROR,
+                })
+            );
+            return;
+        }
+        const { objToSave } = saveData;
         setIsToggleLoading(true);
         try {
             let success = false;
@@ -169,12 +185,43 @@ export const CommentaryFeatures = () => {
                     dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
                 }
             }
-            if (!isEmpty(deleteObjToSave)) {
-                const response = await axiosInstance.post("/admin/commentary/deleteCommentaryDetails", { ...deleteObjToSave, commentaryId, password });
-                if (response?.result) {
-                    success = true;
-                    dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
-                }
+            // if (!isEmpty(deleteObjToSave)) {
+            //     const response = await axiosInstance.post("/admin/commentary/deleteCommentaryDetails", { ...deleteObjToSave, commentaryId, password });
+            //     if (response?.result) {
+            //         success = true;
+            //         dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+            //     }
+            // }
+            if (success) {
+                fetchData(commentaryId);
+            }
+        } catch (error) {
+            dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+        } finally {
+            setIsToggleLoading(false);
+            handleCloseModal();
+        }
+    };
+    const handleSafeDelete = async () => {
+        if (!password.trim()) {
+            dispatch(
+                updateToastData({
+                    data: "Password is required",
+                    title: "Validation Error",
+                    type: ERROR,
+                })
+            );
+            return;
+        }
+        setIsToggleLoading(true);
+        try {
+            let success = false;
+            const response = await axiosInstance.post("/admin/commentary/deleteCommentaryDetails", { ...toDeleteObject, commentaryId, password });
+            if (response?.result) {
+                success = true;
+                dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+                setIsDeleteRequest(false)
+                setToDeleteObject({})
             }
             if (success) {
                 fetchData(commentaryId);
@@ -202,7 +249,10 @@ export const CommentaryFeatures = () => {
     const handleCloseModal = () => {
         setIsUpdateModalOpen(false);
         setPassword("");
-        setSaveData({ objToSave: {}, deleteObjToSave: {} });
+        setIsDeleteRequest(false)
+        setToDeleteObject({})
+        // setSaveData({ objToSave: {}, deleteObjToSave: {} });
+        setSaveData({ objToSave: {}});
     };
 
     useEffect(() => {
@@ -237,16 +287,16 @@ export const CommentaryFeatures = () => {
                                         <div>{`Ref: ${commentaryData?.commentaryDetails.eid} [ ${dateTyp?.value == 1 ? convertDateUTCToLocalWithSec24(eventDate, "index") : convertDateUtcFormatWithSec24(eventDate, "index")} ]`}</div>
                                     </Col>}
                                     <Col xs={2} md={2} lg={2}>
-                                            <ButtonGroup className="me-3">
-                                                <Button color={selectedInnings === 1 ? "primary" : "secondary"} onClick={() => setSelectedInnings(1)}>Inning 1</Button>
-                                                <Button color={selectedInnings === 2 ? "primary" : "secondary"} disabled={commentaryData?.commentaryDetails?.currentInnings === 1} onClick={() => setSelectedInnings(2)}>Inning 2</Button>
-                                            </ButtonGroup>
+                                        <ButtonGroup className="me-3">
+                                            <Button color={selectedInnings === 1 ? "primary" : "secondary"} onClick={() => setSelectedInnings(1)}>Inning 1</Button>
+                                            <Button color={selectedInnings === 2 ? "primary" : "secondary"} disabled={commentaryData?.commentaryDetails?.currentInnings === 1} onClick={() => setSelectedInnings(2)}>Inning 2</Button>
+                                        </ButtonGroup>
                                     </Col>
                                     {battingTeam || bowlingTeam ? <Col xs={2} md={2} lg={2}>
-                                            <ButtonGroup>
+                                        <ButtonGroup>
                                                 <Button color={selectedBattingTeamId == battingTeam?.teamId ? "primary" : "secondary"} onClick={() => { setSelectedBattingTeamId(battingTeam?.teamId); setSelectedBowlingTeamId(bowlingTeam?.teamId); }}>{battingTeam?.teamName}</Button>
                                                 <Button color={selectedBattingTeamId == bowlingTeam?.teamId ? "primary" : "secondary"} onClick={() => { setSelectedBattingTeamId(bowlingTeam?.teamId); setSelectedBowlingTeamId(battingTeam?.teamId); }}>{bowlingTeam?.teamName}</Button>
-                                            </ButtonGroup>
+                                        </ButtonGroup>
                                     </Col> : null}
                                     <Col xs={3} md={3} lg={3}>
                                         <Button color='primary' className="table-header-button" onClick={handleSaveClick}>Save</Button>
@@ -263,7 +313,7 @@ export const CommentaryFeatures = () => {
                                             setSelectedItems={setSelectedItems}
                                             teamlist={commentaryData?.commentaryTeams?.filter((item)=> item?.currentInnings === selectedInnings)  || []}
                                         />
-                                       <TeamFeature
+                                        <TeamFeature
                                             teamlist={commentaryData?.commentaryTeams?.filter((item)=> item?.currentInnings === selectedInnings)  || []}
                                             updatedData={teamsData|| {}}
                                             handleValueChange={updatedData => setTeamsData({ ...updatedData })}
@@ -291,11 +341,17 @@ export const CommentaryFeatures = () => {
                                             bowlingStyleList={commentaryData?.bowlingStyles}
                                         />
                                         <PartnershipFeature
-                                            partnershipList={commentaryData?.commentaryPartnership?.filter((item)=> item?.currentInnings == selectedInnings && item?.teamId == selectedBattingTeamId) || []}
+                                            partnershipList={commentaryData?.commentaryPartnership?.filter((item) => item?.currentInnings == selectedInnings && item?.teamId == selectedBattingTeamId) || []}
                                             updatedData={partnershipData || {}}
                                             handleValueChange={updatedData => setPartnershipData({ ...updatedData })}
-                                            deletedList={deletePartnership}
-                                            handleDeleteChange={(partnershipId) => setDeletePartnership([].concat(deletePartnership, [partnershipId]))}
+                                            // deletedList={deletePartnership}
+                                            // handleDeleteChange={(partnershipId) => setDeletePartnership([].concat(deletePartnership, [partnershipId]))}
+                                            handleDeleteChange={(partnershipId) => {
+                                                setToDeleteObject({ "deletePartnership": [partnershipId] })
+                                                setIsDeleteRequest(true);
+                                                setDeleteType("partnership");
+                                                setIsUpdateModalOpen(true);
+                                            }}
                                             selectedItems={selectedItems}
                                             setSelectedItems={setSelectedItems}
                                             battingPlayers={battingTeamPlayers}
@@ -305,8 +361,14 @@ export const CommentaryFeatures = () => {
                                             wicketList={commentaryData?.commentaryWicket?.filter((item)=> item?.currentInnings == selectedInnings && item?.teamId == selectedBattingTeamId) || []}
                                             updatedData={wicketData || {}}
                                             handleValueChange={updatedData => setWicketData({ ...updatedData })}
-                                            deletedList={deleteWicket}
-                                            handleDeleteChange={(wicketId) => setDeleteWicket([].concat(deleteWicket, [wicketId]))}
+                                            // deletedList={deleteWicket}
+                                            // handleDeleteChange={(wicketId) => setDeleteWicket([].concat(deleteWicket, [wicketId]))}
+                                            handleDeleteChange={(wicketId) => {
+                                                setToDeleteObject({ "deleteWickets": [wicketId] })
+                                                setIsDeleteRequest(true);
+                                                setDeleteType("wicket");
+                                                setIsUpdateModalOpen(true);
+                                            }}
                                             selectedItems={selectedItems}
                                             setSelectedItems={setSelectedItems}
                                             battingPlayers={battingTeamPlayers}
@@ -318,18 +380,28 @@ export const CommentaryFeatures = () => {
                                             ballList={commentaryData?.commentaryBallByBall?.filter((item)=> item.currentInnings == selectedInnings && item?.teamId == selectedBattingTeamId) || []}
                                             updatedData={overData || {}}
                                             handleValueChange={updatedData => setOverData({ ...updatedData })}
-                                            deletedList={deleteOver}
-                                            handleDeleteChange={(overId) => setDeleteOver([].concat(deleteOver, [overId]))}
+                                            // deletedList={deleteOver}
+                                            // handleDeleteChange={(overId) => setDeleteOver([].concat(deleteOver, [overId]))}
+                                            handleDeleteChange={(overId) => {
+                                                setToDeleteObject({ "deleteOvers": [overId] })
+                                                setIsDeleteRequest(true);
+                                                setDeleteType("over");
+                                                setIsUpdateModalOpen(true);
+                                            }}
                                             ballByBallData={ballByBallData}
                                             setBallByBallData={setBallByBallData}
-                                            deleteBallByBall={deleteBallByBall}
-                                            setDeleteBallByBall={setDeleteBallByBall}
+                                            // deleteBallByBall={deleteBallByBall}
+                                            // setDeleteBallByBall={setDeleteBallByBall}
                                             selectedItems={selectedItems}
                                             setSelectedItems={setSelectedItems}
                                             battingPlayers={battingTeamPlayers}
                                             bowlingPlayers={bowlingTeamPlayers}
                                             teamlist={commentaryData?.commentaryTeams?.filter((item)=> item?.currentInnings === selectedInnings)  || []}
                                             overTypeList={commentaryData?.overTypes || []}
+                                            setToDeleteObject={setToDeleteObject}
+                                            setIsDeleteRequest={setIsDeleteRequest}
+                                            setIsUpdateModalOpen={setIsUpdateModalOpen}
+                                            setDeleteType={setDeleteType}
                                         />
                                     </Col>
                                 </Row>
@@ -339,10 +411,12 @@ export const CommentaryFeatures = () => {
                     <UpdateCommentaryModal
                         isOpen={isUpdateModalOpen}
                         toggle={handleCloseModal}
-                        onYesClick={handleConfirmUpdate}
+                        onYesClick={() => { isDeleteRequest ? handleSafeDelete() : handleConfirmUpdate() }}
                         onNoClick={handleCloseModal}
                         password={password}
                         setPassword={setPassword}
+                        isDelete={isDeleteRequest}
+                        deleteType={deleteType}
                     />
                 </Container>
             </div>
