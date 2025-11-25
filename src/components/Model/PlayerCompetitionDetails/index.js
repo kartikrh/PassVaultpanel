@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Button, Card, CardBody, CardHeader, Modal, ModalBody, ModalHeader } from "reactstrap";
+import { Accordion, AccordionBody, AccordionHeader, AccordionItem, Button, Card, CardBody, CardHeader, Modal, ModalBody, ModalHeader } from "reactstrap";
 import Table from "../../Common/Table";
 import axiosInstance from "../../../Features/axios";
 import { useDispatch, useSelector } from "react-redux";
@@ -20,10 +20,22 @@ const Index = ({
   const [isLoading, setIsLoading] = useState(false);
   const upcomingCompRef = useRef(null);
   const completedCompRef = useRef(null);
+  const [openCompDetails, setOpenCompDetails] = useState([
+    "upcoming-comp-details",
+    "completed-comp-details"
+  ]);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   const CommentaryListPage = TAB_COMMENTARY_LIST;
   const CommentaryPage = TAB_COMMENTARY;
   const dispatch = useDispatch();
+
+  const toggle = (id) => {
+    setOpenCompDetails((prev) =>
+      prev.includes(id)
+        ? prev.filter((item) => item !== id)
+        : [...prev, id]
+    );
+  };
 
   const fetchTemplateByComm = async (playerId) => {
     try {
@@ -195,22 +207,38 @@ const Index = ({
             id="modal-id"
           >
             {isLoading && <SpinnerModel />}
-            <Table
-              ref={upcomingCompRef}
-              columns={columns}
-              dataSource={upcomingComp}
-              tableElement={tableElement}
-              cardHeaderData={"Upcoming"}
-              maxTableHeight="300px"
-            />
-            <Table
-              ref={completedCompRef}
-              columns={columns}
-              dataSource={completedComp}
-              tableElement={tableElement}
-              cardHeaderData={"Completed"}
-              maxTableHeight="300px"
-            />
+            <Accordion open={openCompDetails} toggle={toggle}>
+              <AccordionItem>
+                <AccordionHeader targetId={"upcoming-comp-details"} className="market-category-header">
+                  <span style={{ color: "green", fontWeight: "600" }}>Upcoming Competition</span>
+                </AccordionHeader>
+                <AccordionBody accordionId={"upcoming-comp-details"} className="market-category-body p-0">
+                  <Table
+                    ref={upcomingCompRef}
+                    columns={columns}
+                    dataSource={upcomingComp}
+                    tableElement={tableElement}
+                    maxTableHeight="300px"
+                  />
+                </AccordionBody>
+              </AccordionItem>
+            </Accordion>
+           <Accordion open={openCompDetails} toggle={toggle}>
+              <AccordionItem>
+                <AccordionHeader targetId={"completed-comp-details"} className="market-category-header">
+                  <span style={{ color: "red", fontWeight: "600" }}>Completed Competition</span>
+                </AccordionHeader>
+                <AccordionBody accordionId={"completed-comp-details"} className="market-category-body p-0">
+                  <Table
+                    ref={completedCompRef}
+                    columns={columns}
+                    dataSource={completedComp}
+                    tableElement={tableElement}
+                    maxTableHeight="300px"
+                  />
+                </AccordionBody>
+              </AccordionItem>
+            </Accordion>
             <div className="hstack justify-content-end mt-4">
               <button
                 type="button"
