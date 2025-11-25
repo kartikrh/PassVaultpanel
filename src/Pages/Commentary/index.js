@@ -1651,7 +1651,7 @@ const Index = () => {
       title: "Date",
       dataIndex: "eventDate",
       render: (text, record) => (
-        <span>
+        <span style={{fontWeight: record.isPredictMarket ? "bold" : ""}}>
           {dateType?.value == 1
             ? convertDateUTCToLocalWithoutSec24(text, "index")
             : convertDateUtcFormatWithoutSec24(text, "index")}
@@ -2229,6 +2229,7 @@ const Index = () => {
                     // color={"danger"}
                     // style={{ backgroundColor: "#f579e0", color: "#fff", border: "#f579e0" }}
                     size="sm"
+                    // className={`bstn ${record.isPredictMarket ? 'eventMarketBtn' : 'eventMarketDullBtn'}`}
                     className="bstn eventMarketBtn"
                     onClick={() => {
                       handleEventMarketClick(record);

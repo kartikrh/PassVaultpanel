@@ -18,6 +18,7 @@ import {
   PERMISSION_VIEW,
   SUCCESS,
   TAB_COMMENTARY,
+  TAB_COMMENTARY_HISTORY,
   TAB_COMMENTARY_LIST,
   TAB_COMPETITION,
 } from "../../components/Common/Const";
@@ -34,6 +35,7 @@ const Index = () => {
   const pageName = TAB_COMPETITION;
   const CommentaryListPage = TAB_COMMENTARY_LIST
   const CommentaryPage = TAB_COMMENTARY
+  const CommentaryHistoryPage = TAB_COMMENTARY_HISTORY
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   document.title = "Competitions";
@@ -76,6 +78,7 @@ const Index = () => {
     label: "Local Timezone",
     value: 1,
   });
+  const commentaryHistoryPermission = checkPermission(permissionObj, CommentaryHistoryPage, PERMISSION_VIEW)
   const fetchUserPermission = () => {
     const refData = JSON.parse(localStorage.getItem("refData"));
     setUserRefData(refData);
@@ -291,6 +294,18 @@ const Index = () => {
     window.open(url.href, "_blank");
     sessionStorage.removeItem("eventResultCompetitionId");
     sessionStorage.removeItem("eventResultDetails");
+  };
+
+  const handleCommentaryHistoryClick = (details) => {
+    const url = new URL(window.location.origin + "/commentaryHistory");
+    sessionStorage.setItem("commentaryHistoryId", "" + details?.competitionId);
+    sessionStorage.setItem(
+      "commentaryHistoryDetails",
+      "" + JSON.stringify(details)
+    );
+    window.open(url.href, "_blank");
+    sessionStorage.removeItem("commentaryHistoryId");
+    sessionStorage.removeItem("commentaryHistoryDetails");
   };
 
   //permissions function
@@ -804,6 +819,34 @@ const Index = () => {
       style: { width: "10%" },
     },
     {
+      title: "Start Date",
+      dataIndex: "startDate",
+      render: (text, record) => (
+        <span style={{ cursor: "pointer" }}>
+          {dateType?.value == 1
+            ? convertDateUTCToLocalWithoutSec24(text, "index")
+            : convertDateUtcFormatWithoutSec24(text, "index")}
+        </span>
+      ),
+      key: "startDate",
+      style: { width: "10%" },
+      sort: true,
+    },
+    {
+      title: "End Date",
+      dataIndex: "endDate",
+      render: (text, record) => (
+        <span style={{ cursor: "pointer" }}>
+          {dateType?.value == 1
+            ? convertDateUTCToLocalWithoutSec24(text, "index")
+            : convertDateUtcFormatWithoutSec24(text, "index")}
+        </span>
+      ),
+      key: "endDate",
+      style: { width: "10%" },
+      sort: true,
+    },
+    {
       title: "Event Type",
       dataIndex: "eventType",
       render: (text, record) => (
@@ -1165,33 +1208,36 @@ const Index = () => {
 
       style: { width: "10%" },
     },
+    (commentaryPermission || commentaryHistoryPermission) &&
     {
-      title: "Start Date",
-      dataIndex: "startDate",
-      render: (text, record) => (
-        <span style={{ cursor: "pointer" }}>
-          {dateType?.value == 1
-            ? convertDateUTCToLocalWithoutSec24(text, "index")
-            : convertDateUtcFormatWithoutSec24(text, "index")}
-        </span>
-      ),
-      key: "startDate",
+      title: "",
+      dataIndex: "",
+      key: "",
+      render: (text, record) => {
+        // const isMatchingCompetition =
+        //   record?.competitionId === filledDropdownData?.competition?.value;
+          
+        // if (userRefData.competitionId != 0 && !isMatchingCompetition) return null; 
+
+        return (
+          <Tooltip
+            title={"Commentary History"}
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            <Button
+              // color={"#ff7703"}
+              size="sm"
+              className="btn commentary-history-button"
+              onClick={() => handleCommentaryHistoryClick(record)}
+            >
+              CH
+            </Button>
+          </Tooltip>
+        );
+      },
+      // sort: true,
       style: { width: "10%" },
-      sort: true,
-    },
-    {
-      title: "End Date",
-      dataIndex: "endDate",
-      render: (text, record) => (
-        <span style={{ cursor: "pointer" }}>
-          {dateType?.value == 1
-            ? convertDateUTCToLocalWithoutSec24(text, "index")
-            : convertDateUtcFormatWithoutSec24(text, "index")}
-        </span>
-      ),
-      key: "endDate",
-      style: { width: "10%" },
-      sort: true,
     },
   ];
 

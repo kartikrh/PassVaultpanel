@@ -63,6 +63,7 @@ const AddCompetitionStatistics = () => {
   }, [permissionObj]);
 
   useEffect(() => {
+    console.log("currentSaveAction", currentSaveAction)
     if (isSaved) {
       dispatch(updateSavedState(undefined));
       if (currentSaveAction === SAVE_AND_CLOSE) {
