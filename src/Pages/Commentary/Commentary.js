@@ -873,32 +873,36 @@ const Commentary = (props) => {
         checkInningsSwitch(RUN)
     }
     const changeOver = () => {
+        const syncOver = isEmpty(_currentOver) ? currentOver : _currentOver;
+        const syncTeams = isEmpty(_teams) ? teams : _teams;
+        const syncOnPitchPlayers = isEmpty(_onPitchPlayers) ? onPitchPlayers : _onPitchPlayers;
         // console.log("Starting changeOver - Initial states:", { currentTeamOver: teams[BATTING_TEAM].teamOver });
         let updateBattingTeam = {
-            ...teams[BATTING_TEAM],
-            "teamOver": Math.ceil(+teams[BATTING_TEAM].teamOver || 0)
+            ...syncTeams[BATTING_TEAM],
+            "teamOver": Math.ceil(+syncTeams[BATTING_TEAM].teamOver || 0)
         }
         // console.log("Updated batting team:", updateBattingTeam);
 
         const updateBowler = {
-            ...onPitchPlayers[CURRENT_BOWLER],
+            ...syncOnPitchPlayers[CURRENT_BOWLER],
             "isPlay": null,
-            "bowlerOver": Math.ceil(+onPitchPlayers[CURRENT_BOWLER].bowlerOver || 0),
-            "bowlerMaidenOver": currentOver.totalRun < 1 ? 1 : 0
+            "bowlerOver": Math.ceil(+syncOnPitchPlayers[CURRENT_BOWLER].bowlerOver || 0),
+            "bowlerMaidenOver": syncOver.totalRun < 1 ? 1 : 0
         }
         // console.log("Updated bowler details:", updateBowler);
 
         const updatedOver = {
-            ...currentOver,
-            "teamScore": `${teams[BATTING_TEAM]?.teamScore || 0}/${teams[BATTING_TEAM]?.teamWicket || 0}`,
-            "isMaiden": getBowlerOnlyRuns(currentOver) < 1,
+            ...syncOver,
+            "teamScore": `${syncTeams[BATTING_TEAM]?.teamScore || 0}/${syncTeams[BATTING_TEAM]?.teamWicket || 0}`,
+            "isMaiden": getBowlerOnlyRuns(syncOver) < 1,
             "isComplete": true
         }
         // console.log("Updated over details:", updatedOver);
 
         setPlayerUpdateList([].concat([updateBowler], playerUpdateList || []))
-        setTeams({ ...teams, [BATTING_TEAM]: updateBattingTeam })
+        setTeams({ ...syncTeams, [BATTING_TEAM]: updateBattingTeam })
         setPlayers((prevValue) => { return { ...prevValue, [BOWLING_TEAM]: prevValue?.[BOWLING_TEAM].map(player => compareNumStringValues(player.commentaryPlayerId, updateBowler.commentaryPlayerId) ? updateBowler : player), } })
+        // console.log("players in change over", players)
         setCurrentOver(updatedOver)
         const objToSave = {
             "commentaryId": commentaryDetails.commentaryId,
@@ -906,14 +910,18 @@ const Commentary = (props) => {
             "commentaryDetails": {
                 ...commentaryDetails,
                 "displayStatus": "Over",
-                "rmk": isRemainingBallsShow ? generateRemainingRuns(teams[BATTING_TEAM], matchTypeDetails.ballsPerOver, matchTypeDetails) : ""
+                "rmk": isRemainingBallsShow ? generateRemainingRuns(syncTeams[BATTING_TEAM], matchTypeDetails.ballsPerOver, matchTypeDetails) : ""
             },
             "commentaryOvers": updatedOver,
             "commentaryPlayers": [updateBowler],
             "commentaryTeams": [updateBattingTeam],
         }
         // console.log("Final dispatch object:", objToSave);
-        dispatch(addCommentaryScreenData(objToSave))
+        dispatch(addCommentaryScreenData(objToSave));
+        _setTeams({});
+        _setCurrentOver({});
+        _setOnPitchPlayers({});
+        _setPlayers({});
     }
     const changeStrike = () => {
         _setOnPitchPlayers((prevValue) => {
@@ -1106,28 +1114,32 @@ const Commentary = (props) => {
         } else secondPitchPlayerId = onPitchPlayers[NON_STRIKE]?.commentaryPlayerId
         // const playerToChangeId = onPitchPlayers[playerToChange]?.commentaryPlayerId
         const allPlayersToUpdate = []
-        const playerToUpdate = {
-            ...players,
-            [teamType]: players[teamType]?.map((player) => {
-                // condition to set for new selected player for both batter and bowler
-                if (isEqual(player.commentaryPlayerId, newPlayerId)) {
-                    const updatedPlayer = {
-                        ...player, "isPlay": true, "onStrike": playerToChange === ON_STRIKE ? true : false, "isPlayInEvent" : true,
-                        [updateOrderKey]: player[updateOrderKey] || fetchNextPlayerOrder(playerToChange, players[teamType])
+
+        setPlayers((prevValue) => {
+            return {
+                ...prevValue,
+                [teamType]: prevValue[teamType]?.map((player) => {
+                    // condition to set for new selected player for both batter and bowler
+                    if (isEqual(player.commentaryPlayerId, newPlayerId)) {
+                        const updatedPlayer = {
+                            ...player, "isPlay": true, "onStrike": playerToChange === ON_STRIKE ? true : false, "isPlayInEvent": true,
+                            [updateOrderKey]: player[updateOrderKey] || fetchNextPlayerOrder(playerToChange, prevValue[teamType])
+                        }
+                        updatedOnPitchPlayer[playerToChange] = updatedPlayer
+                        return updatedPlayer
                     }
-                    updatedOnPitchPlayer[playerToChange] = updatedPlayer
-                    return updatedPlayer
-                }
-                else if (!isEqual(player.commentaryPlayerId, secondPitchPlayerId) && (player.isPlay || player.onStrike)) {
-                    const playerToUpdate = { ...player, "isPlay": null, "onStrike": null }
-                    allPlayersToUpdate.push(playerToUpdate)
-                    return playerToUpdate
-                }
-                return player
-            })
-        }
-        setPlayers(playerToUpdate)
+                    else if (!isEqual(player.commentaryPlayerId, secondPitchPlayerId) && (player.isPlay || player.onStrike)) {
+                        const playerToUpdate = { ...player, "isPlay": null, "onStrike": null }
+                        allPlayersToUpdate.push(playerToUpdate)
+                        return playerToUpdate
+                    }
+                    return player
+                })
+            }
+        })
         setOnPitchPlayers(updatedOnPitchPlayer)
+        // console.log("players at player change", players)
+        // console.log("allPlayersToUpdate", allPlayersToUpdate, "playerUpdateList", playerUpdateList, "updatedOnPitchPlayer", updatedOnPitchPlayer);
         setPlayerUpdateList([].concat(allPlayersToUpdate, playerUpdateList || []))
         if (playerToChange === CURRENT_BOWLER) {
             setIsOverChange(true)
@@ -2757,12 +2769,13 @@ const Commentary = (props) => {
     }, [redirectOnScreenChange, isCommentaryDataUpdated])
     useEffect(() => {
         if (changeOverOnPopupClick) {
+            const syncOnPitchPlayers = isEmpty(_onPitchPlayers) ? onPitchPlayers : _onPitchPlayers;
             // setOverBallByBallDisplay([])
             // if(!inningsChangeClosed) {
             checkInningsSwitch(OVER)
             // }
             changePlayer(CURRENT_BOWLER)
-            setOnPitchPlayers({ ...onPitchPlayers, [CURRENT_BOWLER]: null })
+            setOnPitchPlayers({ ...syncOnPitchPlayers, [CURRENT_BOWLER]: null })
             changeOver()
             setOverPopUpForBowler(true)
             setChangeOverOnPopupClick(undefined)
@@ -2909,7 +2922,33 @@ const Commentary = (props) => {
                     setIsWheelShowComplete(true);
                 }
             }
+            if (!isEmpty(commentaryDataToUpdate.commentaryTeams)) {
+                const updatedTeamsState = { ...teams };
+
+                commentaryDataToUpdate.commentaryTeams.forEach(teamUpdate => {
+                    if (teams[BATTING_TEAM] && compareNumStringValues(teamUpdate.teamId, teams[BATTING_TEAM].teamId)) {
+                        const apiTeamOver = parseFloat(teamUpdate.teamOver || 0);
+                        const currentTeamOver = parseFloat(teams[BATTING_TEAM].teamOver || 0);
+
+                        if (apiTeamOver >= currentTeamOver) {
+                            updatedTeamsState[BATTING_TEAM] = { ...teams[BATTING_TEAM], ...teamUpdate };
+                        }
+                        else {
+                            updatedTeamsState[BATTING_TEAM] = {
+                                ...teams[BATTING_TEAM],
+                                ...teamUpdate,
+                                teamOver: teams[BATTING_TEAM].teamOver
+                            };
+                        }
+                    } else if (teams[BOWLING_TEAM] && compareNumStringValues(teamUpdate.teamId, teams[BOWLING_TEAM].teamId)) {
+                        updatedTeamsState[BOWLING_TEAM] = { ...teams[BOWLING_TEAM], ...teamUpdate };
+                    }
+                });
+
+                setTeams(updatedTeamsState);
+            }
             if (!isEmpty(commentaryDataToUpdate.overdetails) && !isEqual(commentaryDataToUpdate.overdetails.overId, currentOver.overId)) {
+                _setCurrentOver({})
                 const updatedOverHistory = overHistory.slice(0, -1)
                 setOverHistory([].concat(updatedOverHistory || [], [currentOver, commentaryDataToUpdate.overdetails]))
                 const generatedBall = generateBall({ currentBall: { commentaryBallByBallId: "0", }, commentaryDetails, currentOver: { overId: commentaryDataToUpdate.overdetails.overId }, onPitchPlayers, teams, currentPartnership })

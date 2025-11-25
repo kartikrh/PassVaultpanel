@@ -193,6 +193,7 @@ const Index = () => {
             value: competition?.competitionId,
             label: competition?.competition,
           };
+          setIsSearch(false)
         }
 
         return updated;
