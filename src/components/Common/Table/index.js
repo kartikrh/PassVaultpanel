@@ -2817,6 +2817,7 @@ const Index = forwardRef(
                               tableElement?.title == "Registration Pending" ||
                               tableElement?.title == "Commentary History" ||
                               tableElement?.title == "Registered Users" ||
+                              tableElement?.title == "Events" ||
                               tableElement?.dateTypeTitle == "Market data logs" ||
                               tableElement?.title == "Competition") ? (
                             <Select
