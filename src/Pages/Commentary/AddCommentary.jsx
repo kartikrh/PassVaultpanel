@@ -154,7 +154,7 @@ function AddCommentary() {
                 "eventTypeId": true,
             };
 
-            if(initialEditData?.competitionId) {
+            if(initialEditData?.competitionId && initialEditData?.competitionId != 0) {
                 disabled["competitionId"] = true;
             }
 
