@@ -17,12 +17,15 @@ const Index = ({
 }) => {
   const [upcomingComp, setUpcomingComp] = useState([]);
   const [completedComp, setCompletedComp] = useState([]);
+  const [competitions, setCompetitions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const upcomingCompRef = useRef(null);
   const completedCompRef = useRef(null);
+  const competitionRef = useRef(null);
   const [openCompDetails, setOpenCompDetails] = useState([
     "upcoming-comp-details",
-    "completed-comp-details"
+    "completed-comp-details",
+    "competition-details"
   ]);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   const CommentaryListPage = TAB_COMMENTARY_LIST;
@@ -46,8 +49,17 @@ const Index = ({
           playerId: playerId,
         }
       );
-      setUpcomingComp(response?.result?.notEnded || []);
-      setCompletedComp(response?.result?.ended || []);
+      // setUpcomingComp(response?.result?.notEnded || []);
+      // setCompletedComp(response?.result?.ended || []);
+
+      const list = response?.result?.commentaryList || [];
+
+      const upcoming = list.filter(c => [1, 2, 3].includes(c.commentaryStatus));
+      const completed = list.filter(c => [4, 5, 6].includes(c.commentaryStatus));
+
+      setUpcomingComp(upcoming);
+      setCompletedComp(completed);
+      setCompetitions(response?.result?.competitionList)
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
@@ -96,6 +108,13 @@ const Index = ({
     sessionStorage.removeItem("playerCompetitionDetails");
   };
 
+  const statusLabels = {
+    1: "Upcoming",
+    2: "Started",
+    3: "Completed",
+    4: "Stop",
+  };
+
   const columns = [
     {
         title: "",
@@ -130,6 +149,12 @@ const Index = ({
         sort: true,
       },
       {
+        title: "Event",
+        dataIndex: "eventName",
+        key: "eventName",
+        style: { width: "10%" },
+      },
+      {
         title: "Competition",
         dataIndex: "competition",
         render: (text, record) => (
@@ -152,30 +177,131 @@ const Index = ({
         sort: true,
       },
       {
-        title: "Start Date",
-        dataIndex: "startDate",
+        title: "Event Date",
+        dataIndex: "eventDate",
         render: (text, record) => (
           <span>
             {convertDateUTCToLocalWithoutSec24(text, "index")}
           </span>
         ),
-        key: "startDate",
+        key: "eventDate",
         style: { width: "10%" },
         sort: true,
       },
-      {
-        title: "End Date",
-        dataIndex: "endDate",
-        render: (text, record) => (
-          <span>
-            {convertDateUTCToLocalWithoutSec24(text, "index")}
-          </span>
-        ),
-        key: "endDate",
-        style: { width: "10%" },
-        sort: true,
-      },
+      // {
+      //   title: "Start Date",
+      //   dataIndex: "startDate",
+      //   render: (text, record) => (
+      //     <span>
+      //       {convertDateUTCToLocalWithoutSec24(text, "index")}
+      //     </span>
+      //   ),
+      //   key: "startDate",
+      //   style: { width: "10%" },
+      //   sort: true,
+      // },
+      // {
+      //   title: "End Date",
+      //   dataIndex: "endDate",
+      //   render: (text, record) => (
+      //     <span>
+      //       {convertDateUTCToLocalWithoutSec24(text, "index")}
+      //     </span>
+      //   ),
+      //   key: "endDate",
+      //   style: { width: "10%" },
+      //   sort: true,
+      // },
     ];
+
+  const competitionColumns = [
+    {
+      title: "",
+      dataIndex: "commentaryList",
+      key: "commentaryList",
+      render: (text, record) => {
+        return (
+          <Tooltip
+            title={"Commentary List"}
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            <Button
+              color={"primary"}
+              size="sm"
+              className="btn"
+              onClick={() => handleCommentaryClick(record)}
+            >
+              CL
+            </Button>
+          </Tooltip>
+        );
+      },
+      // sort: true,
+      style: { width: "5%" },
+    },
+    {
+      title: "CID",
+      dataIndex: "competitionId",
+      key: "competitionId",
+      style: { width: "10%" },
+      sort: true,
+    },
+    {
+      title: "Competition",
+      dataIndex: "competition",
+      render: (text, record) => (
+        <span style={{ cursor: "pointer" }} onClick={() => { handleCompetitionClick(record) }}>{text}</span>
+      ),
+      key: "competition",
+      style: { width: "10%" },
+    },
+    {
+      title: "Match Type",
+      dataIndex: "matchType",
+      key: "matchType",
+      style: { width: "10%" },
+    },
+    {
+      title: "TPID",
+      dataIndex: "tpId",
+      key: "tpId",
+      style: { width: "10%" },
+      sort: true,
+    },
+    {
+      title: "Start Date",
+      dataIndex: "startDate",
+      render: (text, record) => (
+        <span>
+          {convertDateUTCToLocalWithoutSec24(text, "index")}
+        </span>
+      ),
+      key: "startDate",
+      style: { width: "10%" },
+      sort: true,
+    },
+    {
+      title: "End Date",
+      dataIndex: "endDate",
+      render: (text, record) => (
+        <span>
+          {convertDateUTCToLocalWithoutSec24(text, "index")}
+        </span>
+      ),
+      key: "endDate",
+      style: { width: "10%" },
+      sort: true,
+    },
+    {
+      title: "Status",
+      dataIndex: "commStatus",
+      key: "commStatus",
+      render: (value) => statusLabels[value] || "",
+      style: { width: "10%" },
+      sort: true,
+    },
+  ];
 
   const tableElement = {
     title: "Player Competition Listing",
@@ -210,7 +336,7 @@ const Index = ({
             <Accordion open={openCompDetails} toggle={toggle}>
               <AccordionItem>
                 <AccordionHeader targetId={"upcoming-comp-details"} className="market-category-header">
-                  <span style={{ color: "green", fontWeight: "600" }}>Upcoming Competition</span>
+                  <span style={{ color: "green", fontWeight: "600" }}>Fixtures</span>
                 </AccordionHeader>
                 <AccordionBody accordionId={"upcoming-comp-details"} className="market-category-body p-0">
                   <Table
@@ -226,13 +352,29 @@ const Index = ({
            <Accordion open={openCompDetails} toggle={toggle}>
               <AccordionItem>
                 <AccordionHeader targetId={"completed-comp-details"} className="market-category-header">
-                  <span style={{ color: "red", fontWeight: "600" }}>Completed Competition</span>
+                  <span style={{ color: "red", fontWeight: "600" }}>Completed</span>
                 </AccordionHeader>
                 <AccordionBody accordionId={"completed-comp-details"} className="market-category-body p-0">
                   <Table
                     ref={completedCompRef}
                     columns={columns}
                     dataSource={completedComp}
+                    tableElement={tableElement}
+                    maxTableHeight="300px"
+                  />
+                </AccordionBody>
+              </AccordionItem>
+            </Accordion>
+            <Accordion open={openCompDetails} toggle={toggle}>
+              <AccordionItem>
+                <AccordionHeader targetId={"competition-details"} className="market-category-header">
+                  <span style={{ color: "blue", fontWeight: "600" }}>Competition</span>
+                </AccordionHeader>
+                <AccordionBody accordionId={"competition-details"} className="market-category-body p-0">
+                  <Table
+                    ref={competitionRef}
+                    columns={competitionColumns}
+                    dataSource={competitions}
                     tableElement={tableElement}
                     maxTableHeight="300px"
                   />
