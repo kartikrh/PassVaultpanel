@@ -1501,7 +1501,7 @@ const Commentary = (props) => {
     const handleUndoClick = () => {
         // console.log("currentBall", currentBall)
         // console.log("teams[BATTING_TEAM]", teams[BATTING_TEAM])
-        if (isSaving || isCommentaryBallLoading || !currentBall?.overCount || currentBall?.commentaryBallByBallId === lastUndoId) return;
+        if (isSaving || isCommentaryBallLoading || !currentBall?.overCount|| (currentBall?.overCount === 0) || currentBall?.commentaryBallByBallId === lastUndoId) return;
         if (currentBall?.commentaryBallByBallId && (+currentBall?.overCount === +teams[BATTING_TEAM].teamOver)) {
             setLastUndoId(currentBall?.commentaryBallByBallId);
 
@@ -1511,7 +1511,7 @@ const Commentary = (props) => {
             // } 
 
             if ((currentBall.ballType === BALL_TYPE_OVER_COMPLETE)
-                && (currentBall.currentOverBalls === 0) && (currentBall.ballRun === 0)) setUndoOverPopup(true)
+                && (currentBall.currentOverBalls === 0) && (currentBall.ballRun === 0) && (!currentBall?.overCount === 0)) setUndoOverPopup(true)
             else if (currentBall.ballType === BALL_TYPE_RETIRED_HURT) undoRetiredHurt()
             else if (currentBall.ballType === BALL_TYPE_BOWLER_RETIRED_HURT) undoSameOverNewBaller()
             else if (currentBall.ballType === BALL_TYPE_PANELTY_RUN) {
