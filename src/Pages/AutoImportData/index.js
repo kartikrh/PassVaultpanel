@@ -292,21 +292,6 @@ const Index = () => {
       style: { width: "10%" },
     },
     {
-      title: "Date",
-      dataIndex: "createdDate",
-      render: (text, record) => (
-        <span>
-          {dateType?.value == 1
-            ? convertDateUTCToLocal2_24(text, "index")
-            : convertDateUtcFormat24(text, "index")
-          }
-        </span>
-      ),
-      key: "createdDate",
-      sort: true,
-      style: { width: "10%" },
-    },
-    {
       title: "Ref Type Id",
       dataIndex: "refId",
       key: "refId",
@@ -334,6 +319,21 @@ const Index = () => {
           </Button>
         </Tooltip>
       ),
+      style: { width: "10%" },
+    },
+    {
+      title: "Created Date",
+      dataIndex: "createdDate",
+      render: (text, record) => (
+        <span>
+          {dateType?.value == 1
+            ? convertDateUTCToLocal2_24(text, "index")
+            : convertDateUtcFormat24(text, "index")
+          }
+        </span>
+      ),
+      key: "createdDate",
+      sort: true,
       style: { width: "10%" },
     },
     {
