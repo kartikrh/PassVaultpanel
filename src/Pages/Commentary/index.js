@@ -2229,8 +2229,8 @@ const Index = () => {
                     // color={"danger"}
                     // style={{ backgroundColor: "#f579e0", color: "#fff", border: "#f579e0" }}
                     size="sm"
-                    // className={`bstn ${record.isPredictMarket ? 'eventMarketBtn' : 'eventMarketDullBtn'}`}
-                    className="bstn eventMarketBtn"
+                    className={`bstn ${record.isPredictMarket ? 'eventMarketBtn' : 'marketsDisabledBtn'}`}
+                    // className="bstn eventMarketBtn"
                     onClick={() => {
                       handleEventMarketClick(record);
                     }}
@@ -2249,7 +2249,8 @@ const Index = () => {
                     color={"danger"}
                     size="sm"
                     // className="bstn"
-                    className="dls-button btn"
+                    className={`bstn ${record.isPredictMarket ? 'dls-button' : 'marketsDisabledBtn'}`}
+                    // className="dls-button btn"
                     onClick={() => {
                       handleManualOddsMarketClick(record);
                     }}
@@ -2265,9 +2266,11 @@ const Index = () => {
                 overlayInnerStyle={{ color: "#000" }}
               >
                 <Button
-                  color={"primary"}
+                  // color={"primary"}
+                  color={`${record.isPredictMarket ? 'primary' : ''}`}
                   size="sm"
-                  className="btn"
+                  className={`bstn ${record.isPredictMarket ? '' : 'marketsDisabledBtn'}`}
+                  // className="btn"
                   onClick={() => {
                     handleSessionResultClick(record);
                   }}
@@ -2282,9 +2285,11 @@ const Index = () => {
                 overlayInnerStyle={{ color: "#000" }}
               >
                 <Button
-                  color={"info"}
+                  // color={"info"}
+                  color={`${record.isPredictMarket ? 'info' : ''}`}
                   size="sm"
-                  className="btn"
+                  // className="btn"
+                  className={`bstn ${record.isPredictMarket ? '' : 'marketsDisabledBtn'}`}
                   onClick={() => {
                     handleMarketResultClick(record);
                   }}
@@ -2299,9 +2304,11 @@ const Index = () => {
                 overlayInnerStyle={{ color: "#000" }}
               >
                 <Button
-                  color={"danger"}
+                  // color={"danger"}
+                  color={`${record.isPredictMarket ? 'danger' : ''}`}
                   size="sm"
-                  className="btn"
+                  // className="btn"
+                  className={`bstn ${record.isPredictMarket ? '' : 'marketsDisabledBtn'}`}
                   onClick={() => {
                     handleCloseMarketClick(record);
                   }}
