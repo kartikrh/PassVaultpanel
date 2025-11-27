@@ -83,6 +83,10 @@ const Index = () => {
     label: "Local Timezone",
     value: 1,
   });
+  const [selectedTableElements, setSelectedTableElements] = useState({
+    eventType: null,
+    competition: null,
+  });
   const [matchType, setMatchType] = useState("");
   const [showAwardModel, setShowAwardModel] = useState(undefined);
   const [closeModelVisible, setCloseModelVisible] = useState(false);
@@ -112,6 +116,20 @@ const Index = () => {
   const [selectedResult, setSelectedResult] = useState({});
   const [pythonApis, setpythonApis] = useState([]);
 
+  const commentaryHistoryId = +sessionStorage.getItem('commentaryHistoryId') || 0;
+  const competitionDetails = JSON.parse(sessionStorage.getItem('commentaryHistoryDetails') || "{}");
+
+  useEffect(() => {
+    if (competitionDetails?.eventTypeId && competitionDetails?.competitionId) {
+      const event = eventTypes.find(e => e.eventTypeId === competitionDetails.eventTypeId)
+      const competition = competitions.find(c => c.competitionId === competitionDetails.competitionId)
+      setSelectedTableElements({
+        eventType: {value: event?.eventTypeId, label: event?.eventType},
+        competition: {value: competition?.competitionId, label: competition?.competition},
+      });
+    }
+  }, [competitionDetails.eventTypeId, competitionDetails.competitionId, eventTypes, competitions]);
+  console.log("sele", selectedTableElements)
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -417,8 +435,8 @@ const Index = () => {
       ...data,
       startDate: convertDateLocalToUTC(dateRange?.startDate, "index"),
       endDate: convertDateLocalToUTC(dateRange?.endDate, "index"),
-      eventTypeId: data?.eventTypeId || 0,
-      competitionId: data?.eventTypeId !== eventTypeId ? 0 : data?.competitionId || 0,
+      eventTypeId: selectedTableElements.eventType.value ? selectedTableElements.eventType.value : data?.eventTypeId || 0,
+      competitionId: selectedTableElements.competition.value ?  selectedTableElements.competition.value : data?.eventTypeId !== eventTypeId ? 0 : data?.competitionId || 0,
     };
     await axiosInstance
       .post(`/admin/commentary/history`, payload)
@@ -441,6 +459,11 @@ const Index = () => {
       fetchCompetitionData(data?.eventTypeId);
     }
   };
+  useEffect(() =>{
+    if(eventTypeId){
+      fetchCompetitionData(eventTypeId)
+    }
+  }, [eventTypeId])
   const fetchEventTypeData = async () => {
     await axiosInstance
       .post(`/admin/commentary/eventTypeList`, { isActive: true })
@@ -1065,7 +1088,7 @@ const Index = () => {
     // navigate("/updateCommentaryPlayer", {
     //   state: {
     //     commentaryId: details?.commentaryId,
-    //     commentaryDetails: details,
+    //     competitionDetails: details,
     //   },
     // });
     localStorage.setItem(
@@ -2373,6 +2396,11 @@ const Index = () => {
       setCompetitions([]);
     }
   },[eventTypeId]);
+  useEffect(() => {
+    if (!isEmpty(competitionDetails)) {
+      setEventTypeId(competitionDetails.eventTypeId)
+    }
+  }, [])
 
   const handleReload = (value) => {
     fetchData();
@@ -2409,6 +2437,7 @@ const Index = () => {
             loadDataModelFunction={setLoadDataModelVisable}
             dateRange={dateRange}
             setDateType={setDateType}
+            selectedTableElementsLogs={selectedTableElements}
             isDeletePermission={checkPermission(
               permissionObj,
               pageName,
