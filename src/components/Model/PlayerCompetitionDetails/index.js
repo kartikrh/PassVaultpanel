@@ -54,8 +54,8 @@ const Index = ({
 
       const list = response?.result?.commentaryList || [];
 
-      const upcoming = list.filter(c => [1, 2, 3].includes(c.commentaryStatus));
-      const completed = list.filter(c => [4, 5, 6].includes(c.commentaryStatus));
+      const upcoming = list.filter(c => [1, 2, 3, 5].includes(c.commentaryStatus));
+      const completed = list.filter(c => [4, 10].includes(c.commentaryStatus));
 
       setUpcomingComp(upcoming);
       setCompletedComp(completed);
