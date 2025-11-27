@@ -185,9 +185,12 @@ const Commentary = (props) => {
             return matchTypeDetails.isLimitedOvers &&
                 (currentOver?.ballCount >= 5 && Math.ceil(+currentOver.over || 0) + 1) >= teamToCheck[BATTING_TEAM]?.teamMaxOver;
         };
+        // const isWicketLimitReached = () => {
+        //     return teamToCheck?.[BATTING_TEAM]?.teamWicket > maxNoOfWicket - 2;
+        // };
 
         const isWicketLimitReached = () => {
-            return teamToCheck?.[BATTING_TEAM]?.teamWicket > maxNoOfWicket - 2;
+            return teamToCheck?.[BATTING_TEAM]?.teamWicket >= maxNoOfWicket;
         };
 
         const isRunTargetAchieved = () => {
