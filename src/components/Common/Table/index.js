@@ -168,7 +168,6 @@ const Index = forwardRef(
       setParentPageSize,
       setParentSearchedData,
       parentCurrentPage,
-      cardHeaderData,
       maxTableHeight,
     },
     ref
@@ -1553,10 +1552,9 @@ const Index = forwardRef(
         <Col lg={12}>
           <Card className="card">
             {tableElement?.title !== "Auto Events" && tableElement?.title !== "Dashboard" &&
-              tableElement?.title !== "Manual Events" &&
+              tableElement?.title !== "Manual Events" && tableElement?.title !== "Player Competition Listing" &&
               !tableElement.isNonCrud && (
                 <CardHeader className="p-0 p-md-2">
-                  {cardHeaderData ? <span style={{ color: cardHeaderData === "Upcoming" ? "green" : "red", fontWeight: "600" }}>{cardHeaderData} Competition</span> : 
                   <form>
                     {renderHeader && renderHeader()}
                     <Row className="g-2">
@@ -2817,6 +2815,7 @@ const Index = forwardRef(
                               tableElement?.title == "Registration Pending" ||
                               tableElement?.title == "Commentary History" ||
                               tableElement?.title == "Registered Users" ||
+                              tableElement?.title == "Events" ||
                               tableElement?.dateTypeTitle == "Market data logs" ||
                               tableElement?.title == "Competition") ? (
                             <Select
@@ -3501,7 +3500,7 @@ const Index = forwardRef(
                         </div>
                       </Row>
                     ) : null}
-                  </form>}
+                  </form>
                 </CardHeader>
               )}
 
@@ -4211,7 +4210,11 @@ const Index = forwardRef(
                     </Col>
                   </Row>
                 ) : (
-                  <div className="d-flex justify-content-center no-data-available">
+                  <div className="d-flex justify-content-center no-data-available" 
+                    style={maxTableHeight ? {
+                      minHeight: "100px",
+                    } : null}
+                  >
                     <span style={{ color: "lightgray" }}>
                       No Data Available
                     </span>

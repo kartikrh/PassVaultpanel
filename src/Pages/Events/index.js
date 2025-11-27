@@ -8,9 +8,9 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
 import { isEmpty, isEqual } from "lodash";
-import { ERROR, MODULE_EVENTS, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, TAB_COMMENTARY, TAB_COMMENTARY_LIST, TAB_EVENT } from "../../components/Common/Const";
+import { ERROR, MODULE_EVENTS, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, TAB_COMMENTARY, TAB_COMMENTARY_HISTORY, TAB_COMMENTARY_LIST, TAB_EVENT } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
-import { checkPermission, convertDateLocalToUTC, convertDateUTCToLocal, convertDateUTCToLocal24 } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateLocalToUTC, convertDateUtcFormat24, convertDateUtcFormatWithoutSec24, convertDateUTCToLocal, convertDateUTCToLocal24, convertDateUTCToLocal2_24, convertDateUTCToLocalWithoutSec24 } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import LoadDataModal from "../../components/Model/LoadDataModal";
 import moment from "moment";
@@ -19,7 +19,9 @@ import { Tooltip } from "antd";
 const Index = () => {
   const pageName = TAB_EVENT
   const CommentaryListPage = TAB_COMMENTARY_LIST
+  const CommentaryHistoryPage = TAB_COMMENTARY_HISTORY
   const CommentaryPage = TAB_COMMENTARY
+  const globalDateType = JSON.parse(localStorage.getItem("DateType"))
   const finalizeRef = useRef(null);
   const didInitialFetch = useRef(false);
   const permissionObj = useSelector(state => state.auth?.tabPermissionList); document.title = "Events";
@@ -32,6 +34,7 @@ const Index = () => {
   const [eventTypes, setEventTypes] = useState([]);
   const [competitions, setCompetitions] = useState([]);
   const [CompetitionId, setCompetitionId] = useState(0);
+  const [dateType, setDateType] = useState(globalDateType || { label: "Local Timezone", value: 1 });
   const [dateRange, setDateRange] = useState({
     startDate: `${new Date().toISOString().split('T')[0]}T00:00:00`,
     endDate: `${
@@ -53,6 +56,7 @@ const Index = () => {
 
   const commentaryPermission = checkPermission(permissionObj, CommentaryPage, PERMISSION_VIEW)
   const commentaryListPermission = checkPermission(permissionObj, CommentaryListPage, PERMISSION_VIEW)
+  const commentaryHistoryPermission = checkPermission(permissionObj, CommentaryHistoryPage, PERMISSION_VIEW)
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -222,6 +226,17 @@ const Index = () => {
     sessionStorage.removeItem("commentaryEventRefId");
     // sessionStorage.removeItem("commentaryManualOddsMarketDetails");
   };
+  const handleCommentaryHistoryClick = (details) => {
+    const url = new URL(window.location.origin + "/commentaryHistory");
+    sessionStorage.setItem("commentaryHistoryId", "" + details?.competitionId);
+    sessionStorage.setItem(
+      "commentaryHistoryDetails",
+      "" + JSON.stringify(details)
+    );
+    window.open(url.href, "_blank");
+    sessionStorage.removeItem("commentaryHistoryId");
+    sessionStorage.removeItem("commentaryHistoryDetails");
+  };
 
   //checkbox select
   const getSelectedItemsData = () => {
@@ -352,7 +367,13 @@ const Index = () => {
       title: "Event Date",
       dataIndex: "eventDate",
       render: (text, record) => (
-        <span style={{ cursor: "pointer" }}>{convertDateUTCToLocal24(text, 'index')}</span>
+        // <span style={{ cursor: "pointer" }}>{convertDateUTCToLocal24(text, 'index')}</span>
+        <span>
+          {dateType?.value == 1
+            ? convertDateUTCToLocalWithoutSec24(text, "index")
+            : convertDateUtcFormatWithoutSec24(text, "index")
+            }
+        </span>
       ),
       key: "eventDate",
       style: { width: "10%" },
@@ -367,10 +388,10 @@ const Index = () => {
       style: { width: "10%" },
     },
     {
-      title: "Reference Id",
-      dataIndex: "refId",
-      key: "refId",
-      style: { width: "10%" },
+      title: "Competition",
+      dataIndex: "competition",
+      key: "competition",
+      style: { width: "40%" },
     },
     {
       title: "Event Name",
@@ -382,10 +403,10 @@ const Index = () => {
       style: { width: "10%" },
     },
     {
-      title: "Competition",
-      dataIndex: "competition",
-      key: "competition",
-      style: { width: "40%" },
+      title: "Reference Id",
+      dataIndex: "refId",
+      key: "refId",
+      style: { width: "10%" },
     },
     {
       title: "Venue",
@@ -422,6 +443,37 @@ const Index = () => {
       key: "createdBy",
       style: { width: "10%", textAlign: "center"},
     },
+    (commentaryPermission || commentaryHistoryPermission) &&
+    {
+      title: "",
+      dataIndex: "",
+      key: "",
+      render: (text, record) => {
+        // const isMatchingCompetition =
+        //   record?.competitionId === filledDropdownData?.competition?.value;
+          
+        // if (userRefData.competitionId != 0 && !isMatchingCompetition) return null; 
+
+        return (
+          <Tooltip
+            title={"Commentary History"}
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
+          >
+            <Button
+              // color={"#ff7703"}
+              size="sm"
+              className="btn commentary-history-button"
+              onClick={() => handleCommentaryHistoryClick(record)}
+            >
+              CH
+            </Button>
+          </Tooltip>
+        );
+      },
+      // sort: true,
+      style: { width: "10%" },
+    },
   ];
 
   //elements required
@@ -435,6 +487,8 @@ const Index = () => {
     reloadButton: true,
     dateRange: true,
     loadData: true,
+    // isDateRange: true,
+    isDateTypeSelect: true,
   };
 
   useEffect(() => {
@@ -538,6 +592,8 @@ const Index = () => {
             setParentCurrentPage={handleCurrentPageChange}
             setParentPageSize={handlePageSizeChange}
             setParentSearchedData={handleTableSearchedDataChange}
+            dateType={dateType}
+            setDateType={setDateType}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

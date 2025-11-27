@@ -148,11 +148,15 @@ function AddCommentary() {
                 // "drsCount": true,
                 "isVirtual": true,
                 "isPredictMarket": true,
-                "competitionId": true,
+                // "competitionId": true,
                 "team1Players": true,
                 "team2Players": true,
                 "eventTypeId": true,
             };
+
+            if(initialEditData?.competitionId && initialEditData?.competitionId != 0) {
+                disabled["competitionId"] = true;
+            }
 
             // if (initialEditData?.commentaryStatus != 1) {
                 disabled["team1Id"] = true;

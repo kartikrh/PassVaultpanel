@@ -3028,8 +3028,12 @@ export const NewUpdateManualOdds = () => {
                                     {!isEmpty(eventData?.comDetails) && (
                                         <Box sx={{ mb: 3 }}>
                                             <Typography variant="h6" className='manual-card-text'>{`${eventData.comDetails.eventName}/${eventData.market?.marketName} [${eventData.market?.eventMarketId}]`}</Typography>
-                                            <Typography variant="body2" className='manual-card-text'>
-                                                {`Ref: ${eventData.comDetails.eventRefId} [ ${new Date(dateTyp?.value == 1 ? convertDateUTCToLocalWithSec24(eventData?.comDetails?.eventDate, "index") : convertDateUtcFormatWithSec24(eventData?.comDetails?.eventDate, "index")).toLocaleString()} ]`}
+                                            <Typography variant="body2" className="manual-card-text">
+                                                {`Ref: ${eventData.comDetails.eventRefId} [ ${dateTyp?.value == 1
+                                                        ? convertDateUTCToLocalWithSec24(eventData?.comDetails?.eventDate, "index")
+                                                        : convertDateUtcFormatWithSec24(eventData?.comDetails?.eventDate, "index")
+                                                    } ]`}
+                                                {/* {`Ref: ${eventData.comDetails.eventRefId} [ ${new Date(eventData.comDetails.eventDate).toLocaleString()} ]`} */}
                                             </Typography>
                                         </Box>
                                     )}
