@@ -147,6 +147,8 @@ const Index = () => {
   const [isAccessModalOpen, setIsAccessModalOpen] = useState(false);
   const [accessPassword, setAccessPassword] = useState("");
   const [commentaryIdToSend, setCommentaryIdToSend] = useState(null);
+  const playerCommentaryPlayed = +sessionStorage.getItem('playedCommentaryId');
+  const shouldSetStatusToAll = sessionStorage.getItem('setCommentaryStatusToAll') === 'true';
 
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
@@ -3198,7 +3200,7 @@ const Index = () => {
             columns={updatedColumns}
             dataSource={data}
             tableElement={tableElement}
-            defaultCommentrayStatus={EventRefId && {
+            defaultCommentrayStatus={(EventRefId || shouldSetStatusToAll) && {
               label: "All",
               value: 0,
             }
@@ -3225,7 +3227,7 @@ const Index = () => {
             setCompetitionId={setCompetitionId}
             dateType={dateType}
             setDateType={setDateType}
-            playerSearch={EventRefId}
+            playerSearch={EventRefId || playerCommentaryPlayed}
             setParentPageSize={handlePageSizeChange}
             setParentCurrentPage={handleCurrentPageChange}
             setParentSearchedData={handleTableSearchedDataChange}

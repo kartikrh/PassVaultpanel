@@ -18,6 +18,7 @@ import { UploadPlayerHistoryModal } from '../../components/Model/PlayerModal/Upl
 import LoadDataModal from "../../components/Model/LoadDataModal";
 import GenerateModal from "./GenerateModal";
 import PlayerCompetitionDetails from "../../components/Model/PlayerCompetitionDetails";
+import PlayerPlayedCommentary from "../../components/Model/PlayerPlayedCommentary";
 
 const Index = () => {
   const pageName = TAB_PLAYERS
@@ -57,6 +58,8 @@ const Index = () => {
   const [tableSearchedData, setTableSearchedData] = useState([]);
   const [competitionModelVisible, setCompetitionModelVisible] = useState(false);
   const [competitionRecord, setCompetitionRecord] = useState({});
+  const [commentaryPlayedModelVisible, setCommentaryPlayedModelVisible] = useState(false);
+  const [playerRecord, setPlayerRecord] = useState({});
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -621,6 +624,37 @@ const Index = () => {
       ),
       style: { width: "2%", textAlign: "center" },
     },
+    {
+      title: "Commentary Details",
+      key: "playedCommentaryDetails",
+      render: (text, record) => (
+      <Tooltip
+        title={"Commentary Played"}
+        color={"#e8e8ea"}
+        overlayInnerStyle={{ color: "#000" }}
+      >
+        <Button
+          color={"primary"}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            setCommentaryPlayedModelVisible(true);
+            setPlayerRecord(record);
+          }}
+        >
+          <i class='bx bxs-store' ></i>
+        </Button>
+      </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "PID",
+      dataIndex: "playerId",
+      key: "playerId",
+      style: { width: "10%" },
+      sort: true,
+    },
   ];
   const downloadExcelColumn = [
     {
@@ -909,6 +943,13 @@ const Index = () => {
               setCompetitionModelVisible={setCompetitionModelVisible}
               competitionRecord={competitionRecord}
               fetchData={fetchData}
+            />
+          )}
+          {commentaryPlayedModelVisible && (
+            <PlayerPlayedCommentary
+              commentaryPlayedModelVisible={commentaryPlayedModelVisible}
+              setCommentaryPlayedModelVisible={setCommentaryPlayedModelVisible}
+              playerRecord={playerRecord}
             />
           )}
         </Container>

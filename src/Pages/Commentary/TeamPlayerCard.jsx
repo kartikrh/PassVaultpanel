@@ -675,7 +675,7 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
               <div style={{ width: "7%"}}></div>
               <div style={{ width: "5%"}}></div>
               <div style={{ width: "5%"}}></div>
-              <div style={{ width: "10%"}}></div>
+              <div style={{ width: "8%"}}></div>
               <div style={{ width: "15%"}}>Player</div>
               <div style={{ width: "15%"}}>Bowling Style</div>
               <div style={{ width: "6%"}}>Avg</div>
@@ -683,9 +683,10 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
               <div style={{ width: "6%"}}>BDRY</div>
               <div style={{ width: "6%"}}>PBF</div>
               {/* <div style={{ width: "10%"}}>Delete</div> */}
-              <div style={{ width: "7%"}}>XI</div>
+              <div style={{ width: "6%"}}>XI</div>
               {/* <div style={{ width: "10%"}}>P-Event</div> */}
-              <div style={{ width: "18%"}}>Date</div>
+              <div style={{ width: "14%"}}>Date</div>
+              <div style={{ width: "7%"}}>PID</div>
             </div>
           </div>
         </div>
@@ -728,7 +729,7 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                   </Button>}
                 </div>
                 <div style={{ width: "5%"}}>{imageRender(player?.playerType)}</div>
-                <div style={{ width: "10%"}}>
+                <div style={{ width: "8%"}}>
                   {player?.jerseyPlayerImage ? (
                     <img
                       src={player.jerseyPlayerImage}
@@ -869,7 +870,7 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                     <i className="ri-delete-bin-2-line"></i>
                   </Button>
                 </div> */}
-                <div style={{ width: "7%"}}>
+                <div style={{ width: "6%"}}>
                   <div className="form-check form-switch form-switch-lg">
                     <input
                       className="form-check-input"
@@ -914,12 +915,13 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
                     />
                   </div>
                 </div> */}
-                <div style={{ width: "18%"}}>
+                <div style={{ width: "14%"}}>
                   {dateType?.value == 1
                     ? convertDateUTCToLocal2_24(player?.createdDate, "index")
                     : convertDateUtcFormat24(player?.createdDate, "index")
                   }
                 </div>
+                <div style={{ width: "7%", textAlign: "left"}}>{player?.playerId}</div>
               </div>
             </div>
           </div>

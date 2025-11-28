@@ -93,9 +93,19 @@ const Index = ({
       "commentaryEventTypeId",
       "" + details?.eventTypeId
     );
+    sessionStorage.setItem(
+      "setCommentaryStatusToAll",
+      "true"
+    );
+    sessionStorage.setItem(
+      "playedCommentaryId",
+      "" + details?.commentaryId
+    );
     window.open(url.href, "_blank");
     sessionStorage.removeItem("commentaryCompetitionId");
     sessionStorage.removeItem("commentaryEventTypeId");
+    sessionStorage.removeItem("setCommentaryStatusToAll");
+    sessionStorage.removeItem("playedCommentaryId");
   };
 
   const handleCompetitionClick = (details) => {
@@ -143,8 +153,8 @@ const Index = ({
       },
       {
         title: "CID",
-        dataIndex: "competitionId",
-        key: "competitionId",
+        dataIndex: "commentaryId",
+        key: "commentaryId",
         style: { width: "10%" },
         sort: true,
       },
