@@ -3538,7 +3538,20 @@ const Commentary = (props) => {
             isOpen={inningsChangePopup}
             toggle={() => { setShowInningsChangePopup(undefined); /* setInningsChangeClosed(true); */ }}
             onNoClick={() => { setShowInningsChangePopup(undefined); /* setInningsChangeClosed(true); */ }}
-            onYesClick={onInningsChange} />}
+            onYesClick={() => {
+                const isWicketBall = currentBall?.ballIsWicket;
+                const isLastBall = (currentOver?.ballCount) == matchTypeDetails?.ballsPerOver;
+                const syncOnPitchPlayers = isEmpty(_onPitchPlayers) ? onPitchPlayers : _onPitchPlayers;
+                const currentBowler = syncOnPitchPlayers?.[CURRENT_BOWLER]
+                const bowlerOver = currentBowler && Math.ceil(+currentBowler?.bowlerOver || 0);
+                if (isWicketBall && isLastBall && currentBowler && bowlerOver) {
+                    setChangeOverOnPopupClick(true);
+                    onInningsChange();
+                } else {
+                    onInningsChange();
+                }
+            }}
+        />}
         {(!props?.isNewUi && showWicketModal) &&
             <WicketModal
                 isOpen={showWicketModal}
