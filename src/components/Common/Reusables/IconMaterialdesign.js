@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { Card, CardBody, CardTitle, Col, Container, Row } from "reactstrap";
 
 //Import Breadcrumb
-// import Breadcrumbs from "../../components/Common/Breadcrumb";
+import Breadcrumbs from "../Breadcrumb";
 
 const IconMaterialdesign = () => {
   document.title = "Material Design Icon | Upzet - React Admin & Dashboard Template";
@@ -29329,7 +29329,7 @@ const IconMaterialdesign = () => {
       <div className="page-content">
 
         <Container fluid>
-          {/* <Breadcrumbs title="Icons" breadcrumbItem="Material Design Icon" /> */}
+          <Breadcrumbs title="Icons" breadcrumbItem="Material Design Icon" />
 
           <Row className="icons-demo-content">
             <Col xs="12">
