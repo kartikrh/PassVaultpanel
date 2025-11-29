@@ -229,7 +229,7 @@ const EditWicketDetails = ({ onClose, ballId, playersList }) => {
                                             maxMenuHeight={200}
                                             noOptionsMessage={() => "No players available"}
                                             loadingMessage={() => "Loading players..."}
-                                            isDisabled={!fielderList || fielderList.length === 0}
+                                            isDisabled={fielder2 || !fielderList || fielderList.length === 0}
                                         />
                                         <small className="text-muted">
                                             Current: {wicketData.fieldPlayer2Name || 'Not assigned'}
