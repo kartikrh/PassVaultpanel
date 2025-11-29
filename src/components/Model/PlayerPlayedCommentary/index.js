@@ -195,6 +195,7 @@ const Index = ({
 
     const tableElement = {
         title: "Player Commentary Listing",
+        isNonCrud: true,
     };
 
     return (
