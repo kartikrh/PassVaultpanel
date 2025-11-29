@@ -122,10 +122,21 @@ function AddTabs() {
     const handleSaveClick = async (saveAction) => {
         const dataToSave = finalizeRef.current.finalizeData()
         if (dataToSave) {
-            console.log("type", dataToSave.displayType);
+            // console.log("type", dataToSave.displayType);
+            let icon = dataToSave?.iconName || null;
+            if (icon) {
+                if (icon.startsWith("mdi mdi-")) {
+                    // already full
+                } else if (icon.startsWith("mdi-")) {
+                    icon = `mdi ${icon}`;
+                } else {
+                    icon = `mdi mdi-${icon}`;
+                }
+            }
             const extraData = {
               id: id,
-              iconName: dataToSave?.iconName && `mdi mdi-${dataToSave.iconName}`,
+            //   iconName: dataToSave?.iconName && `mdi mdi-${dataToSave.iconName}`,
+              iconName: icon,
               displayType: dataToSave?.displayType ?? 1,
             };
             const completeData = {};
@@ -199,6 +210,7 @@ function AddTabs() {
                                     masterData={masterData}
                                     disabledFields={disabledFields}
                                     onFormDataChange={handleFormDataChange}
+                                    pageName="Tabs"
                                 />
                             </CardBody>
                         </Card>
