@@ -52,14 +52,18 @@ const Index = ({
       // setUpcomingComp(response?.result?.notEnded || []);
       // setCompletedComp(response?.result?.ended || []);
 
-      const list = response?.result?.commentaryList || [];
+      const list = response?.result?.commentaryList.sort(
+        (a, b) => new Date(a.eventDate) - new Date(b.eventDate)
+      ) || [];
 
       const upcoming = list.filter(c => [1, 2, 3, 5].includes(c.commentaryStatus));
       const completed = list.filter(c => [4, 10].includes(c.commentaryStatus));
 
       setUpcomingComp(upcoming);
       setCompletedComp(completed);
-      setCompetitions(response?.result?.competitionList)
+      setCompetitions(response?.result?.competitionList.sort(
+        (a, b) => new Date(a.startDate) - new Date(b.startDate)
+      ))
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);

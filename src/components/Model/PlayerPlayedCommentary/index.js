@@ -42,7 +42,9 @@ const Index = ({
                     playerId: playerId,
                 }
             );
-            setPlayedCommentaries(response?.result)
+            setPlayedCommentaries(response?.result?.sort(
+                (a, b) => new Date(a.eventDate) - new Date(b.eventDate)
+            ))
             setIsLoading(false);
         } catch (error) {
             setIsLoading(false);
@@ -165,6 +167,14 @@ const Index = ({
             style: { width: "10%" },
         },
         {
+            title: "Status",
+            dataIndex: "commentaryStatus",
+            key: "commentaryStatus",
+            render: (value) => commentaryStatus[value] || "",
+            style: { width: "10%" },
+            sort: true,
+        },
+        {
             title: "TPID",
             dataIndex: "tpId",
             key: "tpId",
@@ -180,14 +190,6 @@ const Index = ({
                 </span>
             ),
             key: "eventDate",
-            style: { width: "10%" },
-            sort: true,
-        },
-        {
-            title: "Status",
-            dataIndex: "commentaryStatus",
-            key: "commentaryStatus",
-            render: (value) => commentaryStatus[value] || "",
             style: { width: "10%" },
             sort: true,
         },
