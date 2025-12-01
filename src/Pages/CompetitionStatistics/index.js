@@ -43,6 +43,7 @@ const Index = () => {
   const [tableSearchedData, setTableSearchedData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(globalPageSize || 10);
+  const [eventTypes, setEventTypes] = useState([]);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -70,15 +71,15 @@ const Index = () => {
       });
   };
 
-  //   const fetchEventTypeData = async () => {
-  //     await axiosInstance
-  //       .post(`/admin/player/eventTypeList`, {})
-  //       .then((response) => {
-  //         setEventTypes(response.result);
-  //         setIsLoading(false);
-  //       })
-  //       .catch((error) => { });
-  //   };
+  const fetchEventTypeData = async () => {
+    await axiosInstance
+      .post(`/admin/player/eventTypeList`, {})
+      .then((response) => {
+        setEventTypes(response.result);
+        setIsLoading(false);
+      })
+      .catch((error) => { });
+  };
   //   const fetchTeamsData = async () => {
   //     await axiosInstance
   //       .post(`/admin/player/teamList`, {})
@@ -401,6 +402,8 @@ const Index = () => {
     isActive: true,
     reloadButton: true,
     loadData: true,
+    eventTypeSelect: true,
+    compStatsTypeSelect: true,
   };
 
   useEffect(() => {
@@ -409,6 +412,10 @@ const Index = () => {
     }
     fetchData();
   }, [permissionObj]);
+
+  useEffect(() =>{
+    fetchEventTypeData();
+  },[])
 
   const handleReload = (value) => {
     fetchData();
@@ -444,6 +451,7 @@ const Index = () => {
             setParentPageSize={handlePageSizeChange}
             setParentCurrentPage={handleCurrentPageChange}
             setParentSearchedData={handleTableSearchedDataChange}
+            eventTypes={eventTypes}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

@@ -29,6 +29,7 @@ import {
             { label: "Select Type", value: "0" },
             { label: "Batting", value: 1 },
             { label: "Bowling", value: 2 },
+            { label: "Teams", value: 3 },
         ],
     },
     {
