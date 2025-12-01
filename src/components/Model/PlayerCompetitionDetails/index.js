@@ -245,16 +245,16 @@ const Index = ({
       // },
       {
         title: "XI",
-        dataIndex: "isPlayingInEleven",
-        key: "isPlayingInEleven",
+        dataIndex: "isInPlayingEleven",
+        key: "isInPlayingEleven",
         render: (text, record) => (
           <Button
-            color={`${record.isPlayingInEleven ? "primary" : "danger"}`}
+            color={`${record.isInPlayingEleven ? "primary" : "danger"}`}
             size="sm"
             className="btn"
             disabled
           >
-            <i className={`bx ${record.isPlayingInEleven ? "bx-check" : "bx-block"}`}></i>
+            <i className={`bx ${record.isInPlayingEleven ? "bx-check" : "bx-block"}`}></i>
           </Button>
         ),
         style: { width: "10%" },
