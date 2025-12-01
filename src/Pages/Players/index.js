@@ -294,6 +294,7 @@ const Index = () => {
       .catch((error) => {
         setIsLoading(false);
         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+        setDeleteModelVisable(false);
         setCheckedList([]);
       });
   };
@@ -601,7 +602,14 @@ const Index = () => {
       // sort: true,
     },
     {
-      title: "Competition Details",
+      title: "PID",
+      dataIndex: "playerId",
+      key: "playerId",
+      style: { width: "10%" },
+      sort: true,
+    },
+    {
+      title: " ",
       key: "competitionDetails",
       render: (text, record) => (
       <Tooltip
@@ -625,11 +633,11 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Commentary Details",
+      title: " ",
       key: "playedCommentaryDetails",
       render: (text, record) => (
       <Tooltip
-        title={"Commentary Played"}
+        title={"Commenatry Details"}
         color={"#e8e8ea"}
         overlayInnerStyle={{ color: "#000" }}
       >
@@ -647,13 +655,6 @@ const Index = () => {
       </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
-    },
-    {
-      title: "PID",
-      dataIndex: "playerId",
-      key: "playerId",
-      style: { width: "10%" },
-      sort: true,
     },
   ];
   const downloadExcelColumn = [

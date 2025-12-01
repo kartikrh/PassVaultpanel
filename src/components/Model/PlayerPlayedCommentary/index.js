@@ -105,7 +105,7 @@ const Index = ({
 
     const commentaryStatus = {
         1: "Open",
-        2: "Toss Done",
+        2: "Toss",
         3: "In-Progress",
         4: "Completed",
         5: "Innings Break",

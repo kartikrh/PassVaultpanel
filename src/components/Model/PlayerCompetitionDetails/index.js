@@ -129,6 +129,15 @@ const Index = ({
     4: "Stop",
   };
 
+  const commentaryStatus = {
+    1: "Open",
+    2: "Toss",
+    3: "In-Progress",
+    4: "Completed",
+    5: "Innings Break",
+    10: "Cancelled"
+  };
+
   const columns = [
     {
         title: "",
@@ -184,6 +193,14 @@ const Index = ({
         style: { width: "10%" },
       },
       {
+        title: "Status",
+        dataIndex: "commentaryStatus",
+        key: "commentaryStatus",
+        render: (value) => commentaryStatus[value] || "",
+        style: { width: "10%" },
+        sort: true,
+      },
+    {
         title: "TPID",
         dataIndex: "tpId",
         key: "tpId",
