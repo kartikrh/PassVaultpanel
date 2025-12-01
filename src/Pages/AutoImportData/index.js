@@ -22,6 +22,7 @@ import { updateToastData } from "../../Features/toasterSlice";
 import { Tooltip } from "antd";
 import { Button } from "reactstrap";
 import { AutoImportErrorModel } from "../../components/Model/AutoImportErrorModel";
+import ResponseModal from "./ResponseModal";
 
 const Index = () => {
   const globalPageSize = localStorage.getItem("pageSize")
@@ -66,6 +67,8 @@ const Index = () => {
   const [showErrorModelVisible, setShowErrorModelVisible] = useState(false);
   const [errorData, setErrorData] = useState("");
   const [refType, setRefType] = useState("");
+  const [resModelVisible, setResModelVisible] = useState(false);
+  const [responseData, setResponseData] = useState(null);
 
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
@@ -367,6 +370,38 @@ const Index = () => {
       style: { width: "10%" },
     },
     {
+      title: "Response",
+      dataIndex: "esApiResponseData",
+      render: (text, record) => {
+        const logObject = text;
+        const logItems =
+          logObject &&
+          Object.entries(logObject).map(([key, value]) => (
+            <span key={key}>
+              <strong>{key}:</strong>{" "}
+              {typeof value === "object" ? JSON.stringify(value) : typeof value === "boolean" ? value.toString() : value}{" "}
+            </span>
+          ));
+        return <div
+          onClick={() => {
+            setResModelVisible(true);
+            setRefType(mapRefType(record?.refType));
+            setResponseData({response: record?.esApiResponseData, refId: record?.refId, date: record?.createdDate});
+          }}
+          style={{
+            display: 'inline-block',
+            maxWidth: '400px',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            cursor: "pointer"
+          }}>{logItems}</div>;
+      },
+      key: "esApiResponseData",
+      sort: true,
+      style: { width: "20%" },
+    },
+    {
       title: "",
       dataIndex: "errorStackData",
       render: (text, record) =>
@@ -535,6 +570,14 @@ const Index = () => {
               isOpen={showErrorModelVisible}
               toggle={() => setShowErrorModelVisible(!showErrorModelVisible)}
               recordData={errorData}
+              recordRefType={refType}
+            />
+          )}
+          {resModelVisible && (
+            <ResponseModal
+              isOpen={resModelVisible}
+              toggle={() => setResModelVisible(!resModelVisible)}
+              data={responseData}
               recordRefType={refType}
             />
           )}

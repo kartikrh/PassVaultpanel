@@ -618,15 +618,15 @@ const Index = () => {
         overlayInnerStyle={{ color: "#000" }}
       >
         <Button
-          color={"info"}
+          // color={"info"}
           size="sm"
-          className="btn"
+          className="btn competitionDetailsBtn"
           onClick={() => {
             setCompetitionModelVisible(true);
             setCompetitionRecord(record);
           }}
         >
-          <i class='bx bxs-store' ></i>
+          <i class='bx bx-detail' ></i>
         </Button>
       </Tooltip>
       ),
@@ -642,15 +642,15 @@ const Index = () => {
         overlayInnerStyle={{ color: "#000" }}
       >
         <Button
-          color={"primary"}
+          // color={"primary"}
           size="sm"
-          className="btn"
+          className="btn commentaryDetailsBtn"
           onClick={() => {
             setCommentaryPlayedModelVisible(true);
             setPlayerRecord(record);
           }}
         >
-          <i class='bx bxs-store' ></i>
+          <i class='bx bx-info-circle' ></i>
         </Button>
       </Tooltip>
       ),

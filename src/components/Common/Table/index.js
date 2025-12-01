@@ -1277,6 +1277,10 @@ const Index = forwardRef(
           value: 0,
           label: "API",
         },
+        compStatsType: {
+          value: 0,
+          label: "Type",
+        },
       });
       setMenSwitch(null)
       setTrendingStatusSwitch(null)
@@ -2194,6 +2198,39 @@ const Index = forwardRef(
                                   { label: "Select Type", value: null },
                                   { label: "International", value: 1 },
                                   { label: "Domestic", value: 2 },
+                                ]}
+                                classNamePrefix="filter-dropdown"
+                              />
+                            </div>
+                          ) : null}
+                          {tableElement?.compStatsTypeSelect ? (
+                            <div className="">
+                              <Select
+                                styles={{
+                                  control: (provided) => ({
+                                    ...provided,
+                                    width: 180,
+                                  }), // Adjust width as needed
+                                }}
+                                value={selectedTableElements?.compStatsType}
+                                placeholder="Type"
+                                onChange={(e) => {
+                                  if (
+                                    e?.value !==
+                                    selectedTableElements?.compStatsType?.value
+                                  ) {
+                                    handleTableActions("typeId", e);
+                                    setSelectedTableElements({
+                                      ...selectedTableElements,
+                                      compStatsType: e,
+                                    });
+                                  }
+                                }}
+                                options={[
+                                  { label: "Select Type", value: null },
+                                  { label: "Batting", value: 1 },
+                                  { label: "Bowling", value: 2 },
+                                  { label: "Teams", value: 3 },
                                 ]}
                                 classNamePrefix="filter-dropdown"
                               />
@@ -3897,7 +3934,7 @@ const Index = forwardRef(
                   style={maxTableHeight ? {
                     maxHeight: maxTableHeight,
                     overflowY: 'auto',
-                    overflowX: 'hidden',
+                    // overflowX: 'hidden',
                   } : null}
                 >
                   {tableElement?.dragDrop ? (

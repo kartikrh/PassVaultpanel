@@ -106,7 +106,7 @@ const Index = ({
     const commentaryStatus = {
         1: "Open",
         2: "Toss",
-        3: "In-Progress",
+        3: "InProgress",
         4: "Completed",
         5: "Innings Break",
         10: "Cancelled"
@@ -172,7 +172,7 @@ const Index = ({
             key: "commentaryStatus",
             render: (value) => commentaryStatus[value] || "",
             style: { width: "10%" },
-            sort: true,
+            // sort: true,
         },
         {
             title: "TPID",
@@ -192,6 +192,28 @@ const Index = ({
             key: "eventDate",
             style: { width: "10%" },
             sort: true,
+        },
+        {
+            title: "XI",
+            dataIndex: "isPlayingInEleven",
+            key: "isPlayingInEleven",
+            render: (text, record) => (
+                <Button
+                    color={`${record.isPlayingInEleven ? "primary" : "danger"}`}
+                    size="sm"
+                    className="btn"
+                    disabled
+                >
+                    <i className={`bx ${record.isPlayingInEleven ? "bx-check" : "bx-block"}`}></i>
+                </Button>
+            ),
+            style: { width: "10%" },
+        },
+        {
+            title: "CI",
+            dataIndex: "currentInnings",
+            key: "currentInnings",
+            style: { width: "10%" },
         },
     ];
 
