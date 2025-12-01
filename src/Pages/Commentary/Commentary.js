@@ -1504,8 +1504,14 @@ const Commentary = (props) => {
     const handleUndoClick = () => {
         // console.log("currentBall", currentBall)
         // console.log("teams[BATTING_TEAM]", teams[BATTING_TEAM])
-        if (isSaving || isCommentaryBallLoading || !currentBall?.overCount|| (+currentBall?.overCount === 0) || currentBall?.commentaryBallByBallId === lastUndoId) return;
-        if (currentBall?.commentaryBallByBallId && (+currentBall?.overCount === +teams[BATTING_TEAM].teamOver)) {
+        if (isSaving || isCommentaryBallLoading || !currentBall?.overCount || currentBall?.commentaryBallByBallId === lastUndoId) return;
+        const syncTeam = isEmpty(_teams) ? teams : _teams;
+        const syncOnPitchPlayers = isEmpty(_onPitchPlayers) ? onPitchPlayers : _onPitchPlayers;
+        const syncPlayers = isEmpty(_players) ? players : _players;
+        const syncOver = isEmpty(_currentOver) ? currentOver : _currentOver;
+        const syncPartnership = isEmpty(_currentPartnership) ? currentPartnership : _currentPartnership;
+        
+        if (currentBall?.commentaryBallByBallId && (+currentBall?.overCount === +syncTeam[BATTING_TEAM].teamOver)) {
             setLastUndoId(currentBall?.commentaryBallByBallId);
 
             // if (((currentOver.over || 0) === 0) && ((currentOver.ballCount || 0) === 0) && (currentBall.ballType === BALL_TYPE_OVER_COMPLETE)
@@ -1518,29 +1524,29 @@ const Commentary = (props) => {
             else if (currentBall.ballType === BALL_TYPE_RETIRED_HURT) undoRetiredHurt()
             else if (currentBall.ballType === BALL_TYPE_BOWLER_RETIRED_HURT) undoSameOverNewBaller()
             else if (currentBall.ballType === BALL_TYPE_PANELTY_RUN) {
-                const updateBattingTeam = teams[BATTING_TEAM]
+                const updateBattingTeam = syncTeam[BATTING_TEAM]
                 const run = currentBall.ballExtraRun
-                updateBattingTeam["teamScore"] = getNonNegativeValue((+teams[BATTING_TEAM].teamScore || 0) - run)
-                updateBattingTeam["teamPenaltyRuns"] = getNonNegativeValue((+teams[BATTING_TEAM].teamPenaltyRuns || 0) - run)
-                updateBattingTeam["crr"] = getRunRate(updateBattingTeam.teamScore, { ...currentOver }, matchTypeDetails.ballsPerOver)
+                updateBattingTeam["teamScore"] = getNonNegativeValue((+syncTeam[BATTING_TEAM].teamScore || 0) - run)
+                updateBattingTeam["teamPenaltyRuns"] = getNonNegativeValue((+syncTeam[BATTING_TEAM].teamPenaltyRuns || 0) - run)
+                updateBattingTeam["crr"] = getRunRate(updateBattingTeam.teamScore, { ...syncOver }, matchTypeDetails.ballsPerOver)
                 if (matchTypeDetails.isLimitedOvers && (target > 0)) {
                     updateBattingTeam["rrr"] = getRequiredRunRate(updateBattingTeam.teamScore,
-                        currentOver, matchTypeDetails.ballsPerOver, target, teams[BATTING_TEAM]?.teamMaxOver)
+                        syncOver, matchTypeDetails.ballsPerOver, target, syncTeam[BATTING_TEAM]?.teamMaxOver)
                 }
-                _setTeams({ ...(_teams || teams), [BATTING_TEAM]: updateBattingTeam })
+                _setTeams({ ...syncTeam, [BATTING_TEAM]: updateBattingTeam })
                 const objToSave = {
                     "commentaryId": commentaryDetails.commentaryId,
                     "isCallPredict": props?.isPredictToggle,
                     "commentaryTeams": [updateBattingTeam],
                     "deleteCommentaryBallByBallId": currentBall.commentaryBallByBallId
                 }
-                // console.log("Called from : 16");
+                    // console.log("Called from : 16");
                 setIsSaving(true);
                 Promise.resolve(dispatch(addCommentaryScreenData(objToSave)))
                     .finally(() => {
                         setIsSaving(false);
                     });
-                // dispatch(addCommentaryScreenData(objToSave))
+                    // dispatch(addCommentaryScreenData(objToSave))
             }
             else {
                 const isBallCount = currentBall.ballIsCount
@@ -1548,14 +1554,14 @@ const Commentary = (props) => {
                 let updateBowler = {}
                 let undoType = RUN
                 const updateOver = {}
-                let updatePartnership = { ...currentPartnership }
-                let playersOnPitch = onPitchPlayers
+                let updatePartnership = { ...syncPartnership }
+                let playersOnPitch = syncOnPitchPlayers
                 if (currentBall.ballIsWicket) {
                     undoType = WICKET
-                    updateOver["totalWicket"] = (currentOver.totalWicket || 0) - 1
-                    updateBattingTeam["teamWicket"] = (teams[BATTING_TEAM].teamWicket || 0) - 1
+                    updateOver["totalWicket"] = (syncOver.totalWicket || 0) - 1
+                    updateBattingTeam["teamWicket"] = (syncTeam[BATTING_TEAM].teamWicket || 0) - 1
                     if (!LIST_TO_EXCLUDE_WICKET_FOR_BOWLER.includes(currentBall.ballWicketType))
-                        updateBowler["bowlerTotalWicket"] = (onPitchPlayers[CURRENT_BOWLER].bowlerTotalWicket || 0) - 1
+                        updateBowler["bowlerTotalWicket"] = (syncOnPitchPlayers[CURRENT_BOWLER].bowlerTotalWicket || 0) - 1
                     updatePartnership = { ...partnershipHistory[partnershipHistory.length - 2], isActive: true }
                     playersOnPitch = updatePlayerAfterUndoWicket()
                 }
@@ -1572,18 +1578,18 @@ const Commentary = (props) => {
                     if (isBallCount) {
                         updateBatter["batBall"] = (batter.batBall || 0) - (currentBall.ballIsCount ? 1 : 0)
                         updateBowler["bowlerTotalBall"] = (bowler.bowlerTotalBall || 0) - 1
-                        updateOver["ballCount"] = (currentOver.ballCount || 0) - 1
+                        updateOver["ballCount"] = (syncOver.ballCount || 0) - 1
                         updatePartnership["totalBalls"] = (updatePartnership?.totalBalls || 0) - 1
                         updatePartnership["batter1Balls"] = getNonNegativeValue((updatePartnership.batter1Balls || 0) -
-                            (compareNumStringValues(batter.commentaryPlayerId, currentPartnership.batter1Id) ? 1 : 0));
+                            (compareNumStringValues(batter.commentaryPlayerId, syncPartnership.batter1Id) ? 1 : 0));
                         updatePartnership["batter2Balls"] = getNonNegativeValue((updatePartnership.batter2Balls || 0) -
-                            (compareNumStringValues(batter.commentaryPlayerId, currentPartnership.batter2Id) ? 1 : 0));
+                            (compareNumStringValues(batter.commentaryPlayerId, syncPartnership.batter2Id) ? 1 : 0));
                         updateBowler["bowlerOver"] = updatedBowlerOver
                         updateBattingTeam["teamOver"] =
-                            ((+teams[BATTING_TEAM].teamOver || 0) - 0.1).toFixed(1)
+                            ((+syncTeam[BATTING_TEAM].teamOver || 0) - 0.1).toFixed(1)
                         if (run === 0) {
                             updateBatter["batDotBall"] = (batter.batDotBall || 0) - 1
-                            updateOver["dotBall"] = (currentOver.dotBall || 0) - 1
+                            updateOver["dotBall"] = (syncOver.dotBall || 0) - 1
                             updateBowler["bowlerDotBall"] = (bowler.bowlerDotBall || 0) - 1
                         }
                     }
@@ -1591,38 +1597,38 @@ const Commentary = (props) => {
                     updateBowler["bowlerRun"] = getNonNegativeValue((bowler.bowlerRun || 0) - run)
                     updatePartnership["totalRuns"] = getNonNegativeValue((updatePartnership?.totalRuns || 0) - run)
                     updatePartnership["batter1Runs"] = getNonNegativeValue((updatePartnership.batter1Runs || 0) -
-                        (compareNumStringValues(batter.commentaryPlayerId, currentPartnership.batter1Id) ? run : 0));
+                        (compareNumStringValues(batter.commentaryPlayerId, syncPartnership.batter1Id) ? run : 0));
                     updatePartnership["batter2Runs"] = getNonNegativeValue((updatePartnership.batter2Runs || 0) -
-                        (compareNumStringValues(batter.commentaryPlayerId, currentPartnership.batter2Id) ? run : 0));
-                    updateOver["totalRun"] = getNonNegativeValue((currentOver.totalRun || 0) - run)
-                    updateBattingTeam["teamScore"] = getNonNegativeValue((teams[BATTING_TEAM].teamScore || 0) - run)
+                        (compareNumStringValues(batter.commentaryPlayerId, syncPartnership.batter2Id) ? run : 0));
+                    updateOver["totalRun"] = getNonNegativeValue((syncOver.totalRun || 0) - run)
+                    updateBattingTeam["teamScore"] = getNonNegativeValue((syncTeam[BATTING_TEAM].teamScore || 0) - run)
                     if (matchTypeDetails.isLimitedOvers && (target > 0)) {
                         updateBattingTeam["rrr"] = getRequiredRunRate(updateBattingTeam.teamScore,
-                            currentOver, matchTypeDetails.ballsPerOver, target, teams[BATTING_TEAM]?.teamMaxOver)
+                            syncOver, matchTypeDetails.ballsPerOver, target, syncTeam[BATTING_TEAM]?.teamMaxOver)
                     }
                     if (currentBall.ballFour === 1 && currentBall.ballIsBoundry) {
                         updateBatter["batFour"] = getNonNegativeValue((batter.batFour || 0) - 1)
-                        updateOver["totalFour"] = getNonNegativeValue((currentOver.totalFour || 0) - 1)
-                        updatePartnership["totalFour"] = (currentPartnership.totalFour || 0) - 1
+                        updateOver["totalFour"] = getNonNegativeValue((syncOver.totalFour || 0) - 1)
+                        updatePartnership["totalFour"] = (syncPartnership.totalFour || 0) - 1
                         updateBowler["bowlerFour"] = getNonNegativeValue((bowler.bowlerFour || 0) - 1)
 
                     } else if (currentBall.ballSix === 1 && currentBall.ballIsBoundry) {
                         updateBatter["batSix"] = getNonNegativeValue((batter.batSix || 0) - 1)
-                        updateOver["totalSix"] = getNonNegativeValue((currentOver.totalSix || 0) - 1)
-                        updatePartnership["totalSix"] = (currentPartnership.totalSix || 0) - 1
+                        updateOver["totalSix"] = getNonNegativeValue((syncOver.totalSix || 0) - 1)
+                        updatePartnership["totalSix"] = (syncPartnership.totalSix || 0) - 1
                         updateBowler["bowlerSix"] = getNonNegativeValue((bowler.bowlerSix || 0) - 1)
                     }
                     updateBatter = { ...playersOnPitch[isOnStrikeSame ? ON_STRIKE : NON_STRIKE], ...updateBatter, onStrike: isOnStrikeSame ? false : true }
                     updateBowler = { ...playersOnPitch[CURRENT_BOWLER], ...updateBowler }
                     const updateNonStriker = { ...playersOnPitch[isOnStrikeSame ? NON_STRIKE : ON_STRIKE], onStrike: isOnStrikeSame ? true : false }
-                    updateBattingTeam["crr"] = getRunRate(updateBattingTeam.teamScore, { ...currentOver, ...updateOver }, matchTypeDetails.ballsPerOver)
+                    updateBattingTeam["crr"] = getRunRate(updateBattingTeam.teamScore, { ...syncOver, ...updateOver }, matchTypeDetails.ballsPerOver)
                     updateBowler["bowlerEconomy"] = getEconomyRate(updateBowler.bowlerRun, updateBowler.bowlerTotalBall, matchTypeDetails.ballsPerOver)
                     updateBowler["bowlerMaidenOver"] = 0
                     updateBatter["batsmanStrikeRate"] = getStrikeRate(updateBatter.batRun, updateBatter.batBall)
                     updateOver["isMaiden"] = false
                     _setOnPitchPlayers({ [ON_STRIKE]: updateBatter, [NON_STRIKE]: updateNonStriker, [CURRENT_BOWLER]: updateBowler })
                     _setPlayers((prevValue) => {
-                        const actualPlayerValue = prevValue || players
+                        const actualPlayerValue = isEmpty(prevValue) ? syncPlayers : prevValue
                         return {
                             [BOWLING_TEAM]: actualPlayerValue?.[BOWLING_TEAM]?.map(player => compareNumStringValues(player.commentaryPlayerId, updateBowler.commentaryPlayerId) ? updateBowler : player),
                             [BATTING_TEAM]: actualPlayerValue?.[BATTING_TEAM]?.map(player => {
@@ -1634,20 +1640,20 @@ const Commentary = (props) => {
                             })
                         }
                     })
-                    _setCurrentPartnership({ ...currentPartnership, ...updatePartnership, })
-                    _setTeams({ ...teams, [BATTING_TEAM]: { ...teams[BATTING_TEAM], ...updateBattingTeam } })
-                    _setCurrentOver({ ...currentOver, ...updateOver, })
+                    _setCurrentPartnership({ ...syncPartnership, ...updatePartnership, })
+                    _setTeams({ ...syncTeam, [BATTING_TEAM]: { ...syncTeam[BATTING_TEAM], ...updateBattingTeam } })
+                    _setCurrentOver({ ...syncOver, ...updateOver, })
                 } else {
                     if (type === BALL_TYPE_WIDE) {
                         updateBowler["bowlerWideBall"] = getNonNegativeValue((bowler.bowlerWideBall || 0) - 1)
                         updateBowler["bowlerWideBallRun"] = getNonNegativeValue((bowler.bowlerWideBallRun || 0) - totalWideRun)
                         updateBowler["bowlerRun"] = getNonNegativeValue((bowler.bowlerRun || 0) - totalWideRun)
                         updateBowler["bowlerEconomy"] = getEconomyRate(updateBowler.bowlerRun, bowler.bowlerTotalBall, matchTypeDetails.ballsPerOver)
-                        updateBattingTeam["teamWideRuns"] = getNonNegativeValue((teams[BATTING_TEAM].teamWideRuns || 0) - totalWideRun)
-                        updateBattingTeam["teamScore"] = getNonNegativeValue((teams[BATTING_TEAM].teamScore || 0) - totalWideRun)
-                        updateOver["totalWideBall"] = getNonNegativeValue((currentOver.totalWideBall || 0) - 1)
-                        updateOver["totalWideRun"] = getNonNegativeValue((currentOver.totalWideRun || 0) - totalWideRun)
-                        updateOver["totalRun"] = getNonNegativeValue((currentOver.totalRun || 0) - totalWideRun)
+                        updateBattingTeam["teamWideRuns"] = getNonNegativeValue((syncTeam[BATTING_TEAM].teamWideRuns || 0) - totalWideRun)
+                        updateBattingTeam["teamScore"] = getNonNegativeValue((syncTeam[BATTING_TEAM].teamScore || 0) - totalWideRun)
+                        updateOver["totalWideBall"] = getNonNegativeValue((syncOver.totalWideBall || 0) - 1)
+                        updateOver["totalWideRun"] = getNonNegativeValue((syncOver.totalWideRun || 0) - totalWideRun)
+                        updateOver["totalRun"] = getNonNegativeValue((syncOver.totalRun || 0) - totalWideRun)
                         updatePartnership["totalRuns"] = getNonNegativeValue(updatePartnership.totalRuns - totalWideRun)
                         updatePartnership["extras"] = getNonNegativeValue(updatePartnership.extras - totalWideRun)
                         updatePartnership["batter1Balls"] = updatePartnership.batter1Balls || 0;
@@ -1661,90 +1667,89 @@ const Commentary = (props) => {
                         batter["batBall"] = getNonNegativeValue((batter.batBall || 0) - 1)
                         updateBowler["bowlerNoBall"] = getNonNegativeValue((bowler.bowlerNoBall || 0) - 1)
                         updateBowler["bowlerNoBallRun"] = getNonNegativeValue((bowler.bowlerNoBallRun || 0) - noBallValue)
-                        updateBattingTeam["teamNoBallRuns"] = getNonNegativeValue((teams[BATTING_TEAM].teamNoBallRuns || 0) - noBallValue)
-                        updateBattingTeam["teamScore"] = getNonNegativeValue((teams[BATTING_TEAM].teamScore || 0) - totalRun)
-                        updateOver["totalNoball"] = getNonNegativeValue((currentOver.totalNoball || 0) - 1)
-                        updateOver["totalNoBallRun"] = getNonNegativeValue((currentOver.totalNoBallRun || 0) - noBallValue)
-                        updateOver["totalRun"] = getNonNegativeValue((currentOver.totalRun || 0) - totalRunToDelete)
+                        updateBattingTeam["teamNoBallRuns"] = getNonNegativeValue((syncTeam[BATTING_TEAM].teamNoBallRuns || 0) - noBallValue)
+                        updateBattingTeam["teamScore"] = getNonNegativeValue((syncTeam[BATTING_TEAM].teamScore || 0) - totalRun)
+                        updateOver["totalNoball"] = getNonNegativeValue((syncOver.totalNoball || 0) - 1)
+                        updateOver["totalNoBallRun"] = getNonNegativeValue((syncOver.totalNoBallRun || 0) - noBallValue)
+                        updateOver["totalRun"] = getNonNegativeValue((syncOver.totalRun || 0) - totalRunToDelete)
                         updatePartnership["totalRuns"] = getNonNegativeValue(updatePartnership.totalRuns - totalRunToDelete)
                         updatePartnership["totalBalls"] = getNonNegativeValue(updatePartnership.totalBalls - 1)
-                        updatePartnership["batter1Balls"] = getNonNegativeValue(currentPartnership.batter1Balls -
-                            (compareNumStringValues(onPitchPlayers[ON_STRIKE].commentaryPlayerId, currentPartnership.batter1Id) ? 1 : 0));
-                        updatePartnership["batter2Balls"] = getNonNegativeValue(currentPartnership.batter2Balls -
-                            (compareNumStringValues(onPitchPlayers[ON_STRIKE].commentaryPlayerId, currentPartnership.batter2Id) ? 1 : 0));
-                        updatePartnership["totalFour"] = getNonNegativeValue(currentPartnership.totalFour || 0) - 1
-                        // updatePartnership["extras"] = currentPartnership.extras - currentBall.ballExtraRun
+                        updatePartnership["batter1Balls"] = getNonNegativeValue(syncPartnership.batter1Balls -
+                            (compareNumStringValues(syncOnPitchPlayers[ON_STRIKE].commentaryPlayerId, syncPartnership.batter1Id) ? 1 : 0));
+                        updatePartnership["batter2Balls"] = getNonNegativeValue(syncPartnership.batter2Balls -
+                            (compareNumStringValues(syncOnPitchPlayers[ON_STRIKE].commentaryPlayerId, syncPartnership.batter2Id) ? 1 : 0));
+                        updatePartnership["totalFour"] = getNonNegativeValue(syncPartnership.totalFour || 0) - 1
                         if (type === BALL_TYPE_NO_BALL) {
                             updateBowler["bowlerRun"] = getNonNegativeValue((bowler.bowlerRun || 0) - totalRunToDelete)
                             batter["batRun"] = getNonNegativeValue((batter.batRun || 0) - run)
                             updatePartnership["extras"] = getNonNegativeValue(updatePartnership.extras - noBallValue)
                             updatePartnership["batter1Runs"] = getNonNegativeValue((updatePartnership.batter1Runs || 0) -
-                                (compareNumStringValues(batter.commentaryPlayerId, currentPartnership.batter1Id) ? run : 0));
+                                (compareNumStringValues(batter.commentaryPlayerId, syncPartnership.batter1Id) ? run : 0));
                             updatePartnership["batter2Runs"] = getNonNegativeValue((updatePartnership.batter2Runs || 0) -
-                                (compareNumStringValues(batter.commentaryPlayerId, currentPartnership.batter2Id) ? run : 0));
+                                (compareNumStringValues(batter.commentaryPlayerId, syncPartnership.batter2Id) ? run : 0));
                         } else if (type === BALL_TYPE_NO_BALL_BYE) {
                             updateBowler["bowlerRun"] = getNonNegativeValue((bowler.bowlerRun || 0) - noBallValue)
                             updateBowler["bowlerByeBallRun"] = getNonNegativeValue((bowler.bowlerByeBallRun || 0) - UpdatedBallRun)
-                            updateOver["totalByesRun"] = getNonNegativeValue((currentOver.totalByesRun || 0) - UpdatedBallRun)
+                            updateOver["totalByesRun"] = getNonNegativeValue((syncOver.totalByesRun || 0) - UpdatedBallRun)
                             updatePartnership["extras"] = getNonNegativeValue(updatePartnership.extras - totalRunToDelete)
-                            updateBattingTeam["teamByRuns"] = getNonNegativeValue((teams[BATTING_TEAM].teamByRuns || 0) - UpdatedBallRun)
+                            updateBattingTeam["teamByRuns"] = getNonNegativeValue((syncTeam[BATTING_TEAM].teamByRuns || 0) - UpdatedBallRun)
                             updatePartnership["batter1Balls"] = getNonNegativeValue((updatePartnership.batter1Balls || 0) -
-                                (compareNumStringValues(batter.commentaryPlayerId, currentPartnership.batter1Id) ? 1 : 0));
+                                (compareNumStringValues(batter.commentaryPlayerId, syncPartnership.batter1Id) ? 1 : 0));
                             updatePartnership["batter2Balls"] = getNonNegativeValue((updatePartnership.batter2Balls || 0) -
-                                (compareNumStringValues(batter.commentaryPlayerId, currentPartnership.batter2Id) ? 1 : 0));
+                                (compareNumStringValues(batter.commentaryPlayerId, syncPartnership.batter2Id) ? 1 : 0));
                         }
                         else if (type === BALL_TYPE_NO_BALL_LEG_BYE) {
                             updateBowler["bowlerRun"] = getNonNegativeValue((bowler.bowlerRun || 0) - noBallValue)
                             updateBowler["bowlerNoBallRun"] = getNonNegativeValue((bowler.bowlerNoBallRun || 0) - UpdatedBallRun)
-                            updateOver["totalLegByesRun"] = getNonNegativeValue((currentOver.totalNoBallRun || 0) - UpdatedBallRun)
+                            updateOver["totalLegByesRun"] = getNonNegativeValue((syncOver.totalNoBallRun || 0) - UpdatedBallRun)
                             updatePartnership["extras"] = getNonNegativeValue(updatePartnership.extras - totalRunToDelete)
-                            updateBattingTeam["teamLegByRuns"] = getNonNegativeValue((teams[BATTING_TEAM].teamLegByRuns || 0) - UpdatedBallRun)
+                            updateBattingTeam["teamLegByRuns"] = getNonNegativeValue((syncTeam[BATTING_TEAM].teamLegByRuns || 0) - UpdatedBallRun)
                             updatePartnership["batter1Balls"] = getNonNegativeValue((updatePartnership.batter1Balls || 0) -
-                                (compareNumStringValues(batter.commentaryPlayerId, currentPartnership.batter1Id) ? 1 : 0));
+                                (compareNumStringValues(batter.commentaryPlayerId, syncPartnership.batter1Id) ? 1 : 0));
                             updatePartnership["batter2Balls"] = getNonNegativeValue((updatePartnership.batter2Balls || 0) -
-                                (compareNumStringValues(batter.commentaryPlayerId, currentPartnership.batter2Id) ? 1 : 0));
+                                (compareNumStringValues(batter.commentaryPlayerId, syncPartnership.batter2Id) ? 1 : 0));
                         }
                     }
                     else {
                         batter["batBall"] = getNonNegativeValue((batter.batBall || 0) - 1)
                         updateBowler["bowlerOver"] = getNonNegativeValue(((+bowler.bowlerOver || 0) - 0.1).toFixed(1))
-                        updateBattingTeam["teamOver"] = getNonNegativeValue(((+teams[BATTING_TEAM].teamOver || 0) - 0.1).toFixed(1))
+                        updateBattingTeam["teamOver"] = getNonNegativeValue(((+syncTeam[BATTING_TEAM].teamOver || 0) - 0.1).toFixed(1))
                         updateBowler["bowlerTotalBall"] = getNonNegativeValue((bowler.bowlerTotalBall || 0) - 1)
-                        updateOver["ballCount"] = getNonNegativeValue((currentOver.ballCount || 0) - 1)
-                        updateOver["totalRun"] = getNonNegativeValue((currentOver.totalRun || 0) - run)
-                        updateBattingTeam["teamScore"] = getNonNegativeValue((teams[BATTING_TEAM].teamScore || 0) - run)
+                        updateOver["ballCount"] = getNonNegativeValue((syncOver.ballCount || 0) - 1)
+                        updateOver["totalRun"] = getNonNegativeValue((syncOver.totalRun || 0) - run)
+                        updateBattingTeam["teamScore"] = getNonNegativeValue((syncTeam[BATTING_TEAM].teamScore || 0) - run)
                         updatePartnership["totalRuns"] = getNonNegativeValue(updatePartnership.totalRuns - run)
                         updatePartnership["extras"] = getNonNegativeValue(updatePartnership.extras - run)
                         updatePartnership["totalBalls"] = getNonNegativeValue(updatePartnership.totalBalls - 1)
                         if (type === BALL_TYPE_BYE) {
                             updateBowler["bowlerByeBall"] = getNonNegativeValue((bowler.bowlerByeBall || 0) - 1)
                             updateBowler["bowlerByeBallRun"] = getNonNegativeValue((bowler.bowlerByeBallRun || 0) - run)
-                            updateOver["totalByesBall"] = getNonNegativeValue((currentOver.totalByesBall || 0) - 1)
-                            updateOver["totalByesRun"] = getNonNegativeValue((currentOver.totalByesRun || 0) - run)
-                            updateBattingTeam["teamByRuns"] = getNonNegativeValue((teams[BATTING_TEAM].teamByRuns || 0) - run)
+                            updateOver["totalByesBall"] = getNonNegativeValue((syncOver.totalByesBall || 0) - 1)
+                            updateOver["totalByesRun"] = getNonNegativeValue((syncOver.totalByesRun || 0) - run)
+                            updateBattingTeam["teamByRuns"] = getNonNegativeValue((syncTeam[BATTING_TEAM].teamByRuns || 0) - run)
                         }
                         else if (type === BALL_TYPE_LEG_BYE) {
                             updateBowler["bowlerLegByeBall"] = getNonNegativeValue((bowler.bowlerLegByeBall || 0) - 1)
                             updateBowler["bowlerLegByeBallRun"] = getNonNegativeValue((bowler.bowlerLegByeBallRun || 0) - run)
-                            updateOver["totalLegByesBall"] = getNonNegativeValue((currentOver.totalLegByesBall || 0) - 1)
-                            updateOver["totalLegByesRun"] = getNonNegativeValue((currentOver.totalLegByesRun || 0) - run)
-                            updateBattingTeam["teamLegByRuns"] = getNonNegativeValue((teams[BATTING_TEAM].teamLegByRuns || 0) - run)
+                            updateOver["totalLegByesBall"] = getNonNegativeValue((syncOver.totalLegByesBall || 0) - 1)
+                            updateOver["totalLegByesRun"] = getNonNegativeValue((syncOver.totalLegByesRun || 0) - run)
+                            updateBattingTeam["teamLegByRuns"] = getNonNegativeValue((syncTeam[BATTING_TEAM].teamLegByRuns || 0) - run)
                         }
                     }
                     if (matchTypeDetails.isLimitedOvers && (target > 0)) {
-                        updateBattingTeam["rrr"] = getRequiredRunRate(teams[BATTING_TEAM].teamScore,
-                            currentOver, matchTypeDetails.ballsPerOver, target, teams[BATTING_TEAM]?.teamMaxOver)
+                        updateBattingTeam["rrr"] = getRequiredRunRate(syncTeam[BATTING_TEAM].teamScore,
+                            syncOver, matchTypeDetails.ballsPerOver, target, syncTeam[BATTING_TEAM]?.teamMaxOver)
                     }
                     updateBatter["batsmanStrikeRate"] = getStrikeRate(updateBatter.batRun, updateBatter.batBall)
                     updateBowler["bowlerEconomy"] = getEconomyRate(updateBowler.bowlerRun, updateBowler.totalBalls, matchTypeDetails.ballsPerOver)
-                    updateBattingTeam["crr"] = getRunRate(updateBattingTeam.teamScore, { ...currentOver, ...updateOver }, matchTypeDetails.ballsPerOver)
+                    updateBattingTeam["crr"] = getRunRate(updateBattingTeam.teamScore, { ...syncOver, ...updateOver }, matchTypeDetails.ballsPerOver)
                     updateBatter = { ...playersOnPitch[isOnStrikeSame ? ON_STRIKE : NON_STRIKE], ...updateBatter, onStrike: isOnStrikeSame ? true : false }
                     const updateNonStriker = { ...playersOnPitch[isOnStrikeSame ? NON_STRIKE : ON_STRIKE], onStrike: isOnStrikeSame ? false : true }
-                    updateBowler = { ...onPitchPlayers[CURRENT_BOWLER], ...updateBowler }
+                    updateBowler = { ...syncOnPitchPlayers[CURRENT_BOWLER], ...updateBowler }
                     _setOnPitchPlayers({ [ON_STRIKE]: updateBatter, [NON_STRIKE]: updateNonStriker, [CURRENT_BOWLER]: updateBowler })
                     _setPlayers({
-                        [BOWLING_TEAM]: players?.[BOWLING_TEAM].map(player => compareNumStringValues(player.commentaryPlayerId, updateBowler.commentaryPlayerId) ? updateBowler : player),
-                        [BATTING_TEAM]: players?.[BATTING_TEAM].map(player => {
+                        [BOWLING_TEAM]: syncPlayers?.[BOWLING_TEAM].map(player => compareNumStringValues(player.commentaryPlayerId, updateBowler.commentaryPlayerId) ? updateBowler : player),
+                        [BATTING_TEAM]: syncPlayers?.[BATTING_TEAM].map(player => {
                             if (compareNumStringValues(player.commentaryPlayerId, updateBatter.commentaryPlayerId))
                                 return updateBatter
                             else if (compareNumStringValues(player.commentaryPlayerId, updateNonStriker.commentaryPlayerId))
@@ -1752,9 +1757,9 @@ const Commentary = (props) => {
                             else return player
                         })
                     })
-                    _setTeams({ ...teams, [BATTING_TEAM]: { ...teams[BATTING_TEAM], ...updateBattingTeam } })
-                    _setCurrentOver({ ...currentOver, ...updateOver })
-                    _setCurrentPartnership({ ...currentPartnership, ...updatePartnership })
+                    _setTeams({ ...syncTeam, [BATTING_TEAM]: { ...syncTeam[BATTING_TEAM], ...updateBattingTeam } })
+                    _setCurrentOver({ ...syncOver, ...updateOver })
+                    _setCurrentPartnership({ ...syncPartnership, ...updatePartnership })
                 }
                 if (isBallCount) {
                     setBallCountForStrike(currentBall.autoStrikeBallCount || 0)

@@ -52,14 +52,18 @@ const Index = ({
       // setUpcomingComp(response?.result?.notEnded || []);
       // setCompletedComp(response?.result?.ended || []);
 
-      const list = response?.result?.commentaryList || [];
+      const list = response?.result?.commentaryList.sort(
+        (a, b) => new Date(a.eventDate) - new Date(b.eventDate)
+      ) || [];
 
       const upcoming = list.filter(c => [1, 2, 3, 5].includes(c.commentaryStatus));
       const completed = list.filter(c => [4, 10].includes(c.commentaryStatus));
 
       setUpcomingComp(upcoming);
       setCompletedComp(completed);
-      setCompetitions(response?.result?.competitionList)
+      setCompetitions(response?.result?.competitionList.sort(
+        (a, b) => new Date(a.startDate) - new Date(b.startDate)
+      ))
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
@@ -93,9 +97,19 @@ const Index = ({
       "commentaryEventTypeId",
       "" + details?.eventTypeId
     );
+    sessionStorage.setItem(
+      "setCommentaryStatusToAll",
+      "true"
+    );
+    sessionStorage.setItem(
+      "playedCommentaryId",
+      "" + details?.commentaryId
+    );
     window.open(url.href, "_blank");
     sessionStorage.removeItem("commentaryCompetitionId");
     sessionStorage.removeItem("commentaryEventTypeId");
+    sessionStorage.removeItem("setCommentaryStatusToAll");
+    sessionStorage.removeItem("playedCommentaryId");
   };
 
   const handleCompetitionClick = (details) => {
@@ -143,8 +157,8 @@ const Index = ({
       },
       {
         title: "CID",
-        dataIndex: "competitionId",
-        key: "competitionId",
+        dataIndex: "commentaryId",
+        key: "commentaryId",
         style: { width: "10%" },
         sort: true,
       },

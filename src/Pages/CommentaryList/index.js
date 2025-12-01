@@ -51,6 +51,8 @@ const Index = () => {
   const EventTypeId = +sessionStorage.getItem('commentaryEventTypeId');
   const EventRefId = +sessionStorage.getItem('commentaryEventRefId');
   const EventCompetitionId = +sessionStorage.getItem('commentaryCompetitionId') || 0;
+  const playerCommentaryPlayed = +sessionStorage.getItem('playedCommentaryId');
+  const shouldSetStatusToAll = sessionStorage.getItem('setCommentaryStatusToAll') === 'true';
 
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
@@ -1923,7 +1925,7 @@ const Index = () => {
             columns={updatedColumns}
             dataSource={data}
             tableElement={tableElement}
-            defaultCommentrayStatus={EventRefId && {
+            defaultCommentrayStatus={(EventRefId || shouldSetStatusToAll) && {
                 label: "All",
                 value: 0,
               }
@@ -1966,6 +1968,7 @@ const Index = () => {
             setParentCurrentPage={handleCurrentPageChange}
             setParentPageSize={handlePageSizeChange}
             setParentSearchedData={handleTableSearchedDataChange}
+            playerSearch={playerCommentaryPlayed}
           />
           <CloseTabModel
             closeModelVisible={closeModelVisible}

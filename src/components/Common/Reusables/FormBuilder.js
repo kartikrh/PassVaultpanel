@@ -45,6 +45,7 @@ import { useDispatch } from "react-redux";
 import MyEditor from "./MyEditor.js";
 import { ColorPicker } from "antd";
 import VideoField from "./VideoField.jsx";
+import IconMaterialdesign from "./IconMaterialdesign.js";
 
 const FormBuilder = forwardRef(
   (
@@ -921,6 +922,27 @@ const FormBuilder = forwardRef(
             );
           })}
         </Row>
+        {pageName == "Tabs" &&
+          <>
+            <Button
+              size="sm"
+              color="info"
+              className="mt-2"
+              onClick={() =>
+                setFormData((prev) => ({
+                  ...prev,
+                  showIconGrid: !prev.showIconGrid,
+                }))
+              }
+            >
+              {formData?.showIconGrid ? "Hide Icons" : "Show Icons"}
+            </Button>
+
+            {formData.showIconGrid && (
+              <IconMaterialdesign />
+            )}
+          </>
+        }
       </Form>
     );
   }
