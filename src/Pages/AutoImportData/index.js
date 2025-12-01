@@ -444,6 +444,7 @@ const Index = () => {
           <div
             onClick={() => {
               setResModelVisible(true);
+              setRefType(mapRefType(record?.refType));
               setResponseData({response: record?.esApiResponseData, refId: record?.refId, date: record?.createdDate});
             }}
             style={{
