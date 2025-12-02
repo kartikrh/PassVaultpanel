@@ -374,10 +374,11 @@ const Index = () => {
       dataIndex: "errorStackData",
       render: (text, record) =>
         record?.errorStackData ? (
+          <Tooltip title={"Error"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
           <Button
-            color={"primary"}
+            // color={"primary"}
             size="sm"
-            className="btn"
+            className="btn errorBtn"
             onClick={() => {
               setErrorData(record);
               setRefType(mapRefType(record?.refType));
@@ -386,9 +387,33 @@ const Index = () => {
           >
             E
           </Button>
+          </Tooltip>
         ) : null,
       style: { width: "10%" },
     },
+    {
+      title: "",
+      dataIndex: "esApiResponseData",
+      render: (text, record) =>
+        record?.esApiResponseData ? (
+          <Tooltip title={"Response"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+            <Button
+              // color={"primary"}
+              size="sm"
+              className="btn responseBtn"
+              onClick={() => {
+                setResModelVisible(true);
+                setRefType(mapRefType(record?.refType));
+                setResponseData({ response: record?.esApiResponseData, refId: record?.refId, date: record?.createdDate });
+              }}
+            >
+              R
+            </Button>
+          </Tooltip>
+        ) : null,
+      key: "esApiResponseData",
+      style: { width: "10%" },
+    }
    
     // {
     //   title: "Import Start",
@@ -420,51 +445,6 @@ const Index = () => {
     //   style: { width: "10%" },
     // },
   ];
-
-  if (data?.some(item => item?.esApiResponseData)) {
-    columns.push({
-      title: "Response",
-      dataIndex: "esApiResponseData",
-      render: (text, record) => {
-        const logObject = text;
-        const logItems =
-          logObject &&
-          Object.entries(logObject).map(([key, value]) => (
-            <span key={key}>
-              <strong>{key}:</strong>{" "}
-              {typeof value === "object"
-                ? JSON.stringify(value)
-                : typeof value === "boolean"
-                  ? value.toString()
-                  : value}{" "}
-            </span>
-          ));
-
-        return (
-          <div
-            onClick={() => {
-              setResModelVisible(true);
-              setRefType(mapRefType(record?.refType));
-              setResponseData({response: record?.esApiResponseData, refId: record?.refId, date: record?.createdDate});
-            }}
-            style={{
-              display: "inline-block",
-              maxWidth: "400px",
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              cursor: "pointer",
-            }}
-          >
-            {logItems}
-          </div>
-        );
-      },
-      key: "esApiResponseData",
-      // sort: true,
-      style: { width: "20%" },
-    });
-  }
 
   //elements required
   const tableElement = {
