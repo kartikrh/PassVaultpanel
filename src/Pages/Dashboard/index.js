@@ -31,6 +31,8 @@ const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
   const [dataFetch, setDataFetch] = useState(false);
+  const [playersWithoutTeam, setPlayersWithoutTeam] = useState([]);
+  const [playersWithoutHomeTeam, setPlayersWithoutHomeTeam] = useState([]);
   document.title = "Dashboard ";
   const navigate = useNavigate();
 
@@ -43,14 +45,18 @@ const Dashboard = () => {
   const fetchData = async () => {
     setIsLoading(true)
     try {
-      const [res1, res2] = await Promise.all([
+      const [res1, res2, res3, res4] = await Promise.all([
         axiosInstance.post(`/admin/dashboard/imgNullData`),
         axiosInstance.post(`/admin/dashboard/dupPlayers`),
+        axiosInstance.post(`/admin/dashboard/playersWithoutTeam`),
+        axiosInstance.post(`/admin/dashboard/playersWithoutHomeTeam`),
       ]);
 
       setPlayersData(res1.result.players);
       setteamsData(res1.result.teams);
       setDupPlayersData(res2.result.playersData);
+      setPlayersWithoutTeam(res3?.result);
+      setPlayersWithoutHomeTeam(res4?.result);
       setIsLoading(false)
     } catch (error) {
       console.error("Error fetching data", error);
@@ -79,6 +85,18 @@ const Dashboard = () => {
   };
   const handleTeamEdit = (id) => {
     navigate("/addTeams", { state: { userId: id } });
+  };
+
+  const handleSetHomeTeam = (record) => {
+      const url = new URL(window.location.origin + "/playerDetails");
+
+      sessionStorage.setItem("playerId", "" + record?.playerId);
+      sessionStorage.setItem("playerDetails", JSON.stringify(record));
+
+      window.open(url.href, "_blank");
+
+      sessionStorage.removeItem("playerId");
+      sessionStorage.removeItem("playerDetails");
   };
 
   const missingPlayerColumns = [
@@ -225,6 +243,105 @@ const Dashboard = () => {
       style: { width: "10%", textAlign: "center" },
     },
   ]
+  // Players Without Team Columns
+  const playersWithoutTeamColumns = [
+    {
+      title: "Player Name",
+      dataIndex: "playerName",
+      render: (text, record) => (
+        <span>
+          {text}
+        </span>
+      ),
+      key: "playerName",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
+      title: "Short Name",
+      dataIndex: "displayName",
+      render: (text, record) => (
+        <span>
+          {text}
+        </span>
+      ),
+      key: "displayName",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
+      title: "Set Teams",
+      dataIndex: "set",
+      render: (text, record) => (
+        <Tooltip title={"Set Team"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Button
+            color="primary"
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleEdit(record.playerId);
+            }}
+            disabled={!checkPermission(permissionObj, playerPage, PERMISSION_EDIT)}
+          >
+            Set Team
+          </Button>
+        </Tooltip>
+      ),
+      key: "set",
+      sort: true,
+      style: { width: "10%" },
+    },
+  ]
+
+  // Players Without Home Team Columns
+  const playersWHTeamColumns = [
+    {
+      title: "Player Name",
+      dataIndex: "playerName",
+      render: (text, record) => (
+        <span>
+          {text}
+        </span>
+      ),
+      key: "playerName",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
+      title: "Short Name",
+      dataIndex: "displayName",
+      render: (text, record) => (
+        <span>
+          {text}
+        </span>
+      ),
+      key: "displayName",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
+      title: "Set Home Team",
+      dataIndex: "set",
+      render: (text, record) => (
+        <Tooltip title={"Set Home Team"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Button
+            color="primary"
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleSetHomeTeam(record);
+            }}
+            disabled={!checkPermission(permissionObj, playerPage, PERMISSION_EDIT)}
+          >
+            Set HomeTeam 
+          </Button>
+        </Tooltip>
+      ),
+      key: "set",
+      sort: true,
+      style: { width: "10%" },
+    },
+  ]
 
   const handleLoadData = async (password) => {
     setDataFetch(true)
@@ -297,6 +414,26 @@ const Dashboard = () => {
                 </CardHeader>
                 <CardBody style={{ maxHeight: "510px", overflowY: "auto",  }}>
                     <Table setStickHeader={true} isPagination={false} columns={missingPlayerColumns} dataSource={playersData}  tableElement={tableElement}/>
+                </CardBody>
+              </Card>
+            </Col>
+            <Col xs="12" lg="6">
+                <Card style={{ maxHeight: "510px", padding: '0px' }}>
+                <CardHeader>
+                    <h6 className="dashboard-headers">Players Without Team</h6>                
+                </CardHeader>
+                <CardBody style={{ maxHeight: "510px", overflowY: "auto",  }}>
+                    <Table setStickHeader={true} isPagination={false} columns={playersWithoutTeamColumns} dataSource={playersWithoutTeam}  tableElement={tableElement}/>
+                </CardBody>
+              </Card>
+            </Col>
+            <Col xs="12" lg="6">
+                <Card style={{ maxHeight: "510px", padding: '0px' }}>
+                <CardHeader>
+                    <h6 className="dashboard-headers">Players Without HomeTeam</h6>                
+                </CardHeader>
+                <CardBody style={{ maxHeight: "510px", overflowY: "auto",  }}>
+                    <Table setStickHeader={true} isPagination={false} columns={playersWHTeamColumns} dataSource={playersWithoutHomeTeam}  tableElement={tableElement}/>
                 </CardBody>
               </Card>
             </Col>
