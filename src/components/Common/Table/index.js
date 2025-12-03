@@ -169,6 +169,7 @@ const Index = forwardRef(
       setParentSearchedData,
       parentCurrentPage,
       maxTableHeight,
+      compStatsEntityEnums,
     },
     ref
   ) => {
@@ -1281,6 +1282,10 @@ const Index = forwardRef(
           value: 0,
           label: "Type",
         },
+        compStatsEntityType: {
+          value: 0,
+          label: "Entity",
+        },
       });
       setMenSwitch(null)
       setTrendingStatusSwitch(null)
@@ -2235,7 +2240,54 @@ const Index = forwardRef(
                                 classNamePrefix="filter-dropdown"
                               />
                             </div>
-                          ) : null}
+                        ) : null}
+                        {tableElement?.entityEnumSelect && selectedTableElements?.compStatsType?.value > 0 ? (
+                          <div className="">
+                            <Select
+                              styles={{
+                                control: (provided) => ({
+                                  ...provided,
+                                  width: 220,
+                                }),
+                              }}
+                              value={selectedTableElements?.compStatsEntityType}
+                              placeholder="Entity Type"
+                              onChange={(e) => {
+                                if (e?.value !== selectedTableElements?.compStatsEntityType?.value) {
+                                  handleTableActions("entityEnum", e);
+                                  setSelectedTableElements({
+                                    ...selectedTableElements,
+                                    compStatsEntityType: e,
+                                  });
+                                }
+                              }}
+                              options={[
+                                { label: "Select Entity Type", value: 0 },
+                                ...((() => {
+                                  const typeId = selectedTableElements?.compStatsType?.value;
+                                  if (typeId === 1 && compStatsEntityEnums?.batting) {
+                                    return Object.entries(compStatsEntityEnums.batting).map(([label, data]) => ({
+                                      label,
+                                      value: data.enum,
+                                    }));
+                                  } else if (typeId === 2 && compStatsEntityEnums?.bowling) {
+                                    return Object.entries(compStatsEntityEnums.bowling).map(([label, data]) => ({
+                                      label,
+                                      value: data.enum,
+                                    }));
+                                  } else if (typeId === 3 && compStatsEntityEnums?.team) {
+                                    return Object.entries(compStatsEntityEnums.team).map(([label, data]) => ({
+                                      label,
+                                      value: data.enum,
+                                    }));
+                                  }
+                                  return [];
+                                })()),
+                              ]}
+                              classNamePrefix="filter-dropdown"
+                            />
+                          </div>
+                        ) : null}
                           {tableElement.title !== "Event Markets" &&
                             tableElement.title !== "Manual Odds Markets" &&
                             tableElement?.marketTypeSelect ? (

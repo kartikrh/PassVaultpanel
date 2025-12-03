@@ -24,6 +24,7 @@ import {
   SAVE_AND_NEW,
   TAB_BANNER,
   TAB_COMPETITION_STATISTICS_TYPE,
+  EntityEnums
 } from "../../components/Common/Const";
 import { addCompetitionStatisticsToDb, updateSavedState } from "../../Features/Tabs/competitionStatsSlice";
 import axiosInstance from "../../Features/axios";
@@ -49,9 +50,19 @@ const AddCompetitionStatistics = () => {
   const [masterData, setMasterData] = useState({});
   const [competitionStatisticsTypeId, setCompetitionStatisticsTypeId] = useState(location.state?.competitionStatisticsTypeId || 0);
   const [fields, setFields] = useState(compStatsFields || [])
+  const nextDisplayOrder = Number(localStorage.getItem("nextDisplayOrder"));
+  const defaultData = {
+    displayOrder: nextDisplayOrder,
+    typeId: 1,
+    isActive: true,
+  }
+
   useEffect(() => {
     if (competitionStatisticsTypeId !== 0) {
       fetchData(competitionStatisticsTypeId);
+    } 
+    else { 
+      setInitialEditData(defaultData);
     }
   }, [competitionStatisticsTypeId]);
 
@@ -68,9 +79,19 @@ const AddCompetitionStatistics = () => {
       dispatch(updateSavedState(undefined));
       if (currentSaveAction === SAVE_AND_CLOSE) {
         navigate("/competitionStatistics");
+        localStorage.removeItem("nextDisplayOrder");
       } else if (currentSaveAction === SAVE_AND_NEW) {
-        setInitialEditData({});
+        // localStorage.removeItem("nextDisplayOrder");
+        const newDisplayOrder = Number(initialEditData?.displayOrder) + 1;
+        localStorage.setItem("nextDisplayOrder", newDisplayOrder);
+        const newDefaultData = {
+        displayOrder: newDisplayOrder,
+        typeId: 1,
+        isActive: true,
+      };
+        // setInitialEditData({});
         setCompetitionStatisticsTypeId("0");
+        setInitialEditData(newDefaultData);
         finalizeRef.current.resetForm();
       }
       setCurrentSaveAction(undefined);
@@ -109,20 +130,47 @@ const AddCompetitionStatistics = () => {
             setMasterData((preData) => ({
                 ...preData,
                 "eventTypeId": formattedData,
+                "entityEnum": getEntityEnumOptions(1),
             }));
             setIsApiLoading(false);
         }).catch((error) => {
             dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
             setIsApiLoading(false);
         });
-    };
-  
+  };
+
+  useEffect(() => {
+    if (initialEditData?.typeId) {
+      const typeId = Number(initialEditData.typeId);
+      const options = getEntityEnumOptions(typeId);
+
+      setMasterData(prev => ({
+        ...prev,
+        entityEnum: options
+      }));
+    }
+  }, [initialEditData?.typeId]);
+
+  const getEntityEnumOptions = (typeId) => {
+    const enumTypeMap = { 1: 'batting', 2: 'bowling', 3: 'team' };
+    const enumType = enumTypeMap[typeId];
+    return enumType && EntityEnums[enumType]
+      ? Object.entries(EntityEnums[enumType]).map(([label, data]) => ({
+        label,
+        value: data.enum,
+      }))
+      : [];
+  };
+
   const handleFormBDataChange = (val) => {
     if(val?.isPermanent){
       const filteredFields = compStatsFields.filter(obj => obj.name !== "startDate" && obj.name !== "endDate")
       setFields(filteredFields)
     }else if (!val?.isPermanent){
       setFields(compStatsFields)
+    }
+    if (val?.typeId !== undefined) {
+      setMasterData(prev => ({ ...prev, entityEnum: getEntityEnumOptions(Number(val.typeId)) }));
     }
   };
 
