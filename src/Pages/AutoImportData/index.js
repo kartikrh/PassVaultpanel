@@ -371,28 +371,6 @@ const Index = () => {
     },
     {
       title: "",
-      dataIndex: "errorStackData",
-      render: (text, record) =>
-        record?.errorStackData ? (
-          <Tooltip title={"Error"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
-          <Button
-            // color={"primary"}
-            size="sm"
-            className="btn errorBtn"
-            onClick={() => {
-              setErrorData(record);
-              setRefType(mapRefType(record?.refType));
-              setShowErrorModelVisible(true);
-            }}
-          >
-            E
-          </Button>
-          </Tooltip>
-        ) : null,
-      style: { width: "10%" },
-    },
-    {
-      title: "",
       dataIndex: "esApiResponseData",
       render: (text, record) =>
         record?.esApiResponseData ? (
@@ -412,8 +390,30 @@ const Index = () => {
           </Tooltip>
         ) : null,
       key: "esApiResponseData",
-      style: { width: "10%" },
-    }
+      style: { width: "2%" },
+    },
+    {
+      title: "",
+      dataIndex: "errorStackData",
+      render: (text, record) =>
+        record?.errorStackData ? (
+          <Tooltip title={"Error"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+            <Button
+              // color={"primary"}
+              size="sm"
+              className="btn errorBtn"
+              onClick={() => {
+                setErrorData(record);
+                setRefType(mapRefType(record?.refType));
+                setShowErrorModelVisible(true);
+              }}
+            >
+              E
+            </Button>
+          </Tooltip>
+        ) : null,
+      style: { width: "2%" },
+    },
    
     // {
     //   title: "Import Start",
