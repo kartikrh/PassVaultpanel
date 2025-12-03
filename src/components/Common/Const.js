@@ -219,3 +219,39 @@ export const MODULE_PYTHON_API = 43;
 export const MODULE_ENTITY_SOCKET = 44;
 
 export const LOG_ROCKET_TO_INCLUDE_ONLY = "CHG";
+
+
+export const EntityEnums = {
+  batting: {
+    "Most Runs": { key: "batting_most_runs", enum: 1 },
+    "Highest Individual Score": { key: "batting_most_runs_innings", enum: 2 },
+    "Highest Strike Rates": { key: "batting_highest_strikerate", enum: 3 },
+    "Highest Strike Rates (Innings)": { key: "batting_highest_strikerate_innings", enum: 4 },
+    "Highest Average": { key: "batting_highest_average", enum: 5 },
+    "Most Centuries": { key: "batting_most_run100", enum: 6 },
+    "Most Fifties": { key: "batting_most_run50", enum: 7 },
+    "Most Sixes": { key: "batting_most_run6", enum: 8 },
+    "Most Sixes (Innings)": { key: "batting_most_run6_innings", enum: 9 },
+    "Most Fours": { key: "batting_most_run4", enum: 10 },
+    "Most Fours (Innings)": { key: "batting_most_run4_innings", enum: 11 }
+  },
+  bowling: {
+    "Top Wicket Takers": { key: "bowling_top_wicket_takers", enum: 1 },
+    "Best Economy Rates": { key: "bowling_best_economy_rates", enum: 2 },
+    "Best Economy Rates (Innings)": { key: "bowling_best_economy_rates_innings", enum: 3 },
+    "Best Bowling Figures": { key: "bowling_best_bowling_figures", enum: 4 },
+    "Best Strike Rates": { key: "bowling_best_strike_rates", enum: 5 },
+    "Best Strike Rates (Innings)": { key: "bowling_best_strike_rates_innings", enum: 6 },
+    "Best Averages": { key: "bowling_best_averages", enum: 7 },
+    "Most runs conceded in an innings": { key: "bowling_most_runs_conceded_innings", enum: 8 },
+    "Four Wickets": { key: "bowling_four_wickets", enum: 9 },
+    "Five Wickets": { key: "bowling_five_wickets", enum: 10 },
+    "Maidens": { key: "bowling_maidens", enum: 11 }
+  },
+  team: {
+    "Total Runs": { key: "team_total_runs", enum: 1 },
+    "Most Centuries": { key: "team_total_run100", enum: 2 },
+    "Most Fifties": { key: "team_total_run50", enum: 3 },
+    "Total Wickets": { key: "team_total_wickets", enum: 4 }
+  }
+};
