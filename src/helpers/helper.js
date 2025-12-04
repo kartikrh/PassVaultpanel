@@ -36,6 +36,11 @@ export const filterOrderChange = (items, name) => {
           id: item.id,
           displayOrder: index + 1,
         };
+      } else if (name === "competitionStatisticsType") {
+        return {
+          competitionStatisticsTypeId: item.competitionStatisticsTypeId,
+          displayOrder: index + 1,
+        };
       }
     }
   });
