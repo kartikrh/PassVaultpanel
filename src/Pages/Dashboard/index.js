@@ -18,7 +18,7 @@ import { ERROR, MODULE_PLAYERS, MODULE_TEAMS, SUCCESS, TAB_PLAYERS, TAB_TEAMS, P
 import { updateToastData } from "../../Features/toasterSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { Tooltip } from "antd";
+import { Avatar, Tooltip } from "antd";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 
 const Dashboard = () => {
@@ -149,6 +149,35 @@ const Dashboard = () => {
   ]
   const dupPlayerColumns = [
     {
+      title: "Image",
+      dataIndex: "image",
+      printType: "ignore",
+      render: (text, record) => (
+        // <img src={process.env.REACT_APP_BASE_URL+text}/>
+        <div className="flex-shrink-0">
+          {text ? (
+            <div /* className="cursor-pointer" */
+              // onClick={() => {
+              //   handlePlayerClick(record);
+              // }}
+            >
+              <img
+                className="avatar-sm "
+                alt=""
+                src={text}
+              />
+            </div>
+          ) : (
+            <Avatar src="#" alt="ET">
+              Image
+            </Avatar>
+          )}
+        </div>
+      ),
+      key: "tabName",
+      style: { width: "10%", textAlign: "left" },
+    },
+    {
       title: "Player Name",
       dataIndex: "playername",
       render: (text, record) => (
@@ -246,6 +275,35 @@ const Dashboard = () => {
   // Players Without Team Columns
   const playersWithoutTeamColumns = [
     {
+      title: "Image",
+      dataIndex: "image",
+      printType: "ignore",
+      render: (text, record) => (
+        // <img src={process.env.REACT_APP_BASE_URL+text}/>
+        <div className="flex-shrink-0">
+          {text ? (
+            <div /* className="cursor-pointer" */
+              // onClick={() => {
+              //   handlePlayerClick(record);
+              // }}
+            >
+              <img
+                className="avatar-sm "
+                alt=""
+                src={text}
+              />
+            </div>
+          ) : (
+            <Avatar src="#" alt="ET">
+              Image
+            </Avatar>
+          )}
+        </div>
+      ),
+      key: "tabName",
+      style: { width: "10%", textAlign: "left" },
+    },
+    {
       title: "Player Name",
       dataIndex: "playerName",
       render: (text, record) => (
@@ -295,6 +353,35 @@ const Dashboard = () => {
 
   // Players Without Home Team Columns
   const playersWHTeamColumns = [
+    {
+      title: "Image",
+      dataIndex: "image",
+      printType: "ignore",
+      render: (text, record) => (
+        // <img src={process.env.REACT_APP_BASE_URL+text}/>
+        <div className="flex-shrink-0">
+          {text ? (
+            <div /* className="cursor-pointer" */
+              // onClick={() => {
+              //   handlePlayerClick(record);
+              // }}
+            >
+              <img
+                className="avatar-sm "
+                alt=""
+                src={text}
+              />
+            </div>
+          ) : (
+            <Avatar src="#" alt="ET">
+              Image
+            </Avatar>
+          )}
+        </div>
+      ),
+      key: "tabName",
+      style: { width: "10%", textAlign: "left" },
+    },
     {
       title: "Player Name",
       dataIndex: "playerName",
