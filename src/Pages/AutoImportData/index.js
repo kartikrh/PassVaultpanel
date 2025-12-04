@@ -22,6 +22,7 @@ import { updateToastData } from "../../Features/toasterSlice";
 import { Tooltip } from "antd";
 import { Button } from "reactstrap";
 import { AutoImportErrorModel } from "../../components/Model/AutoImportErrorModel";
+import ResponseModal from "./ResponseModal";
 
 const Index = () => {
   const globalPageSize = localStorage.getItem("pageSize")
@@ -66,6 +67,8 @@ const Index = () => {
   const [showErrorModelVisible, setShowErrorModelVisible] = useState(false);
   const [errorData, setErrorData] = useState("");
   const [refType, setRefType] = useState("");
+  const [resModelVisible, setResModelVisible] = useState(false);
+  const [responseData, setResponseData] = useState(null);
 
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
@@ -368,23 +371,48 @@ const Index = () => {
     },
     {
       title: "",
+      dataIndex: "esApiResponseData",
+      render: (text, record) =>
+        record?.esApiResponseData ? (
+          <Tooltip title={"Response"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+            <Button
+              // color={"primary"}
+              size="sm"
+              className="btn responseBtn"
+              onClick={() => {
+                setResModelVisible(true);
+                setRefType(mapRefType(record?.refType));
+                setResponseData({ response: record?.esApiResponseData, refId: record?.refId, date: record?.createdDate });
+              }}
+            >
+              R
+            </Button>
+          </Tooltip>
+        ) : null,
+      key: "esApiResponseData",
+      style: { width: "2%" },
+    },
+    {
+      title: "",
       dataIndex: "errorStackData",
       render: (text, record) =>
         record?.errorStackData ? (
-          <Button
-            color={"primary"}
-            size="sm"
-            className="btn"
-            onClick={() => {
-              setErrorData(record);
-              setRefType(mapRefType(record?.refType));
-              setShowErrorModelVisible(true);
-            }}
-          >
-            E
-          </Button>
+          <Tooltip title={"Error"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+            <Button
+              // color={"primary"}
+              size="sm"
+              className="btn errorBtn"
+              onClick={() => {
+                setErrorData(record);
+                setRefType(mapRefType(record?.refType));
+                setShowErrorModelVisible(true);
+              }}
+            >
+              E
+            </Button>
+          </Tooltip>
         ) : null,
-      style: { width: "10%" },
+      style: { width: "2%" },
     },
    
     // {
@@ -417,6 +445,7 @@ const Index = () => {
     //   style: { width: "10%" },
     // },
   ];
+
   //elements required
   const tableElement = {
     title: "Auto Import",
@@ -535,6 +564,14 @@ const Index = () => {
               isOpen={showErrorModelVisible}
               toggle={() => setShowErrorModelVisible(!showErrorModelVisible)}
               recordData={errorData}
+              recordRefType={refType}
+            />
+          )}
+          {resModelVisible && (
+            <ResponseModal
+              isOpen={resModelVisible}
+              toggle={() => setResModelVisible(!resModelVisible)}
+              data={responseData}
               recordRefType={refType}
             />
           )}

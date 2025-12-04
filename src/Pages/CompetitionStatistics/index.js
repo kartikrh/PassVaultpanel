@@ -19,6 +19,7 @@ import {
   ERROR,
   MODULE_BANNERS,
   TAB_COMPETITION_STATISTICS_TYPE,
+  EntityEnums,
 } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
@@ -43,6 +44,11 @@ const Index = () => {
   const [tableSearchedData, setTableSearchedData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(globalPageSize || 10);
+  const [eventTypes, setEventTypes] = useState([]);
+  const maxOrder = data.length > 0 
+    ? Math.max(...data.map(item => item.displayOrder || 0))
+    : 0;
+  localStorage.setItem("nextDisplayOrder", maxOrder + 1);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -70,15 +76,15 @@ const Index = () => {
       });
   };
 
-  //   const fetchEventTypeData = async () => {
-  //     await axiosInstance
-  //       .post(`/admin/player/eventTypeList`, {})
-  //       .then((response) => {
-  //         setEventTypes(response.result);
-  //         setIsLoading(false);
-  //       })
-  //       .catch((error) => { });
-  //   };
+  const fetchEventTypeData = async () => {
+    await axiosInstance
+      .post(`/admin/player/eventTypeList`, {})
+      .then((response) => {
+        setEventTypes(response.result);
+        setIsLoading(false);
+      })
+      .catch((error) => { });
+  };
   //   const fetchTeamsData = async () => {
   //     await axiosInstance
   //       .post(`/admin/player/teamList`, {})
@@ -251,6 +257,25 @@ const Index = () => {
     setCheckedList([]);
   };
 
+  const getEntityEnumLabel = (typeId, enumValue) => {
+    const enumTypeMap = { 1: 'batting', 2: 'bowling', 3: 'team' };
+    const enumType = enumTypeMap[typeId];
+    
+    if (!enumType || !EntityEnums[enumType]) return " ";
+    
+    const found = Object.entries(EntityEnums[enumType]).find(
+      ([_, data]) => data.enum === enumValue
+    );
+    
+    return found ? found[0] : " ";
+  };
+
+  const typeVal ={
+    1: "Batting",
+    2: "Bowling",
+    3: "Teams",
+  }
+
   //table columns
   const columns = [
     {
@@ -315,6 +340,24 @@ const Index = () => {
       key: "name",
       render: (text, record) => (
         <span>{text}</span>
+      ),
+      style: { width: "20%" },
+      sort: true,
+    },
+    {
+      title: "Type",
+      dataIndex: "typeId",
+      key: "typeId",
+      render: (value) => typeVal[value] || "",
+      style: { width: "10%" },
+      sort: true,
+    },
+    {
+      title: "Entity",
+      dataIndex: "entityEnum",
+      key: "entityEnum",
+      render: (text, record) => (
+        <span>{getEntityEnumLabel(record?.typeId, text)}</span>
       ),
       style: { width: "20%" },
       sort: true,
@@ -401,6 +444,10 @@ const Index = () => {
     isActive: true,
     reloadButton: true,
     loadData: true,
+    eventTypeSelect: true,
+    compStatsTypeSelect: true,
+    entityEnumSelect: true,
+    dragDrop: true,
   };
 
   useEffect(() => {
@@ -409,6 +456,10 @@ const Index = () => {
     }
     fetchData();
   }, [permissionObj]);
+
+  useEffect(() =>{
+    fetchEventTypeData();
+  },[])
 
   const handleReload = (value) => {
     fetchData();
@@ -444,6 +495,8 @@ const Index = () => {
             setParentPageSize={handlePageSizeChange}
             setParentCurrentPage={handleCurrentPageChange}
             setParentSearchedData={handleTableSearchedDataChange}
+            eventTypes={eventTypes}
+            compStatsEntityEnums={EntityEnums}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

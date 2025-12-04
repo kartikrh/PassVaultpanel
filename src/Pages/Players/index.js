@@ -294,6 +294,7 @@ const Index = () => {
       .catch((error) => {
         setIsLoading(false);
         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+        setDeleteModelVisable(false);
         setCheckedList([]);
       });
   };
@@ -601,7 +602,14 @@ const Index = () => {
       // sort: true,
     },
     {
-      title: "Competition Details",
+      title: "PID",
+      dataIndex: "playerId",
+      key: "playerId",
+      style: { width: "10%" },
+      sort: true,
+    },
+    {
+      title: " ",
       key: "competitionDetails",
       render: (text, record) => (
       <Tooltip
@@ -610,50 +618,43 @@ const Index = () => {
         overlayInnerStyle={{ color: "#000" }}
       >
         <Button
-          color={"info"}
+          // color={"info"}
           size="sm"
-          className="btn"
+          className="btn competitionDetailsBtn"
           onClick={() => {
             setCompetitionModelVisible(true);
             setCompetitionRecord(record);
           }}
         >
-          <i class='bx bxs-store' ></i>
+          <i class='bx bx-detail' ></i>
         </Button>
       </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Commentary Details",
+      title: " ",
       key: "playedCommentaryDetails",
       render: (text, record) => (
       <Tooltip
-        title={"Commentary Played"}
+        title={"Commenatry Details"}
         color={"#e8e8ea"}
         overlayInnerStyle={{ color: "#000" }}
       >
         <Button
-          color={"primary"}
+          // color={"primary"}
           size="sm"
-          className="btn"
+          className="btn commentaryDetailsBtn"
           onClick={() => {
             setCommentaryPlayedModelVisible(true);
             setPlayerRecord(record);
           }}
         >
-          <i class='bx bxs-store' ></i>
+          <i class='bx bx-info-circle' ></i>
         </Button>
       </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
-    },
-    {
-      title: "PID",
-      dataIndex: "playerId",
-      key: "playerId",
-      style: { width: "10%" },
-      sort: true,
     },
   ];
   const downloadExcelColumn = [

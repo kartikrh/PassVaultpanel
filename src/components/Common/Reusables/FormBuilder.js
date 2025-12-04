@@ -497,7 +497,7 @@ const FormBuilder = forwardRef(
                         disabled={disabledFields?.[field.name]}
                         id={field.name}
                         name={field.name}
-                        value={formData[field.name] || ""}
+                        value={formData[field.name] ?? ""}
                         onChange={(e) => handleChange(field, e.target.value)}
                         required={field.isRequired}
                         invalid={fieldErrors[field.name]}
