@@ -497,6 +497,7 @@ const Index = () => {
             setParentSearchedData={handleTableSearchedDataChange}
             eventTypes={eventTypes}
             compStatsEntityEnums={EntityEnums}
+            changeOrderApiName="competitionStatisticsType"
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
