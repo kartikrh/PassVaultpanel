@@ -1088,7 +1088,7 @@ const Index = () => {
         "scoringType": selectedTableElements?.scoringType?.value ? selectedTableElements?.scoringType?.value : null,
         // "competitionId": selectedTableElements?.competition?.value,
         "commentaryId": selectedCompititon?.commentaryId,
-        "tpId": selectedTableElements?.scoringType?.value == 2 ? selectedTableElements?.tpId : null
+        "tpId":  selectedTableElements?.scoringType?.value == 2 ? selectedTableElements?.tpId : selectedCompititon?.tpId 
       })
       .then((response) => {
         fetchData();

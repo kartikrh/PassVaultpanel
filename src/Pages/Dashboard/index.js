@@ -211,7 +211,7 @@ const Dashboard = () => {
       ),
       key: "total",
       sort: true,
-      style: { width: "10%", textAlign: "center" },
+      style: { width: "10%" },
     },
     {
       title: "Remove",
