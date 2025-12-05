@@ -1069,7 +1069,11 @@ const Commentary = (props) => {
                 const playerDataToList = {
                     ...player,
                     "isBatterOut": true,
-                    "isBatterRetir": wicketData.wicketType === RETIRED_OUT,
+                    // "isBatterRetir": wicketData.wicketType === RETIRED_OUT,
+                    "isBatterRetir": (
+                        wicketData.wicketType === RETIRED_OUT ||
+                        wicketData.wicketType === RETIRED_HURT
+                    ),
                     "wicketType": wicketData.wicketType,
                     "bowlerId": onPitchPlayers[CURRENT_BOWLER].commentaryPlayerId,
                     "fielderId1": wicketData.fielder1,
