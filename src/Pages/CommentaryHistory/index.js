@@ -50,6 +50,7 @@ import CommentaryMarketTemplateModel from "../../components/Model/CommentaryMark
 import { DlsModal } from "../Commentary/CommentaryModels/DlsModal";
 import { ChangeRunnerModel } from "../../components/Model/ChangeRunnerModel";
 import { ChangeEventRefIdModel } from "../../components/Model/ChangeEventRefId";
+import SUpdateAccessModal from "../Commentary/CommentaryModels/SUpdateAccessModal";
 
 
 const Index = () => {
@@ -118,6 +119,9 @@ const Index = () => {
 
   const commentaryHistoryId = +sessionStorage.getItem('commentaryHistoryId') || 0;
   const competitionDetails = JSON.parse(sessionStorage.getItem('commentaryHistoryDetails') || "{}");
+  const [isAccessModalOpen, setIsAccessModalOpen] = useState(false);
+  const [accessPassword, setAccessPassword] = useState("");
+  const [commentaryIdToSend, setCommentaryIdToSend] = useState(null);
 
   useEffect(() => {
     if (competitionDetails?.eventTypeId && competitionDetails?.competitionId) {
@@ -990,9 +994,64 @@ const Index = () => {
 
   const handleUpdateCommentaryClick = (id) => {
     // navigate("/updateCommentaryFeature", { state: { commentaryId: id } });
-    localStorage.setItem("updateCommentaryId", "" + id);
-    const url = new URL(window.location.origin + "/updateCommentaryFeature");
-    window.open(url.href, "_blank");
+    // localStorage.setItem("updateCommentaryId", "" + id);
+    // const url = new URL(window.location.origin + "/updateCommentaryFeature");
+    // window.open(url.href, "_blank");
+    setCommentaryIdToSend(id);
+    setIsAccessModalOpen(true);
+  };
+  const handleAccessConfirm = async () => {
+    if (!accessPassword.trim()) {
+      dispatch(
+        updateToastData({
+          data: "Password is required",
+          title: "Validation Error",
+          type: ERROR,
+        })
+      );
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await axiosInstance.post("/admin/commentary/checkSUpdatePass", {
+        commentaryId: commentaryIdToSend,
+        password: accessPassword,
+      });
+
+      if (response?.success) {
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+
+        handleAccessModalClose();
+        localStorage.setItem("updateCommentaryId", "" + commentaryIdToSend);
+        const url = new URL(window.location.origin + "/updateCommentaryFeature");
+        window.open(url.href, "_blank");
+      }
+    } catch (error) {
+      dispatch(
+        updateToastData({
+          data: error?.message,
+          title: error?.title || "Error",
+          type: ERROR,
+        })
+      );
+    } finally {
+      setIsLoading(false);
+      setIsAccessModalOpen(false);
+      setAccessPassword("");
+    }
+  };
+
+  const handleAccessModalClose = () => {
+    setIsAccessModalOpen(false);
+    setAccessPassword("");
+    setCommentaryIdToSend(null);
   };
 
   const handleActiveInactiveTest = async (pType, record, cState) => {
@@ -2600,6 +2659,14 @@ const Index = () => {
             setSelectedCommentaryDay={setSelectedCommentaryDay}
             />
           )}
+          {isAccessModalOpen && <SUpdateAccessModal
+            isOpen={isAccessModalOpen}
+            toggle={handleAccessModalClose}
+            onYesClick={handleAccessConfirm}
+            onNoClick={handleAccessModalClose}
+            password={accessPassword}
+            setPassword={setAccessPassword}
+          />}
         </Container>
       </div>
     </React.Fragment>
