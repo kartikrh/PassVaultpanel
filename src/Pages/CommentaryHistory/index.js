@@ -439,8 +439,8 @@ const Index = () => {
       ...data,
       startDate: convertDateLocalToUTC(dateRange?.startDate, "index"),
       endDate: convertDateLocalToUTC(dateRange?.endDate, "index"),
-      eventTypeId: selectedTableElements.eventType.value ? selectedTableElements.eventType.value : data?.eventTypeId || 0,
-      competitionId: selectedTableElements.competition.value ?  selectedTableElements.competition.value : data?.eventTypeId !== eventTypeId ? 0 : data?.competitionId || 0,
+      eventTypeId: selectedTableElements?.eventType?.value ? selectedTableElements?.eventType?.value : data?.eventTypeId || 0,
+      competitionId: selectedTableElements?.competition?.value ?  selectedTableElements?.competition?.value : data?.eventTypeId !== eventTypeId ? 0 : data?.competitionId || 0,
     };
     await axiosInstance
       .post(`/admin/commentary/history`, payload)
