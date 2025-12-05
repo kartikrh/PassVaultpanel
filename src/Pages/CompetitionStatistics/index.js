@@ -61,7 +61,7 @@ const Index = () => {
         ...(latestValueFromTable || tableActions),
       })
       .then((response) => {
-        const apiData = response?.result?.sort((a,b)=>a?.competitionStatisticsTypeId - b?.competitionStatisticsTypeId);
+        const apiData = response?.result?.sort((a,b)=>a?.displayOrder - b?.displayOrder);
         let apiDataIdList = [];
         apiData.forEach((ele) => {
           apiDataIdList.push(ele?.competitionStatisticsTypeId);
@@ -337,11 +337,11 @@ const Index = () => {
     {
       title: "Event Type",
       dataIndex: "eventType",
-      key: "name",
+      key: "eventType",
       render: (text, record) => (
         <span>{text}</span>
       ),
-      style: { width: "20%" },
+      style: { width: "10%" },
       sort: true,
     },
     {
@@ -369,7 +369,7 @@ const Index = () => {
       render: (text, record) => (
         <span>{text}</span>
       ),
-      style: { width: "20%" },
+      style: { width: "10%" },
       sort: true,
     },
     {
@@ -435,7 +435,7 @@ const Index = () => {
       title: "Created By",
       dataIndex: "createdBy",
       key: "createdBy",
-      style: { width: "30%" },
+      style: { width: "10%" },
     },
   ];
   //elements required
@@ -497,6 +497,7 @@ const Index = () => {
             setParentSearchedData={handleTableSearchedDataChange}
             eventTypes={eventTypes}
             compStatsEntityEnums={EntityEnums}
+            changeOrderApiName="competitionStatisticsType"
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
