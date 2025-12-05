@@ -191,6 +191,7 @@ export default function ImportEntity() {
       }
 
       const response = await axios.get(endpoint, { params });
+       const result = response?.data?.result;
 
       const items = response?.data?.result?.items;
       const totalItems = response?.data?.result?.total_items;
@@ -209,15 +210,58 @@ export default function ImportEntity() {
         setData(apiData);
         setTotal(totalCount);
       } else if (selectedLevel.level === "competitionMatches") {
-        apiData = apiData.sort(
-          (a, b) => new Date(a.date_start_ist) - new Date(b.date_start_ist)
-        );
+        // apiData = apiData.sort(
+        //   (a, b) => new Date(a.date_start_ist) - new Date(b.date_start_ist)
+        // );
 
-        // Store raw data for client-side filtering
-        setRawData(apiData);
+        // // Store raw data for client-side filtering
+        // setRawData(apiData);
 
-        // Apply client-side filtering
-        const filteredData = filterMatchData(apiData, selectedFilter.status);
+        // // Apply client-side filtering
+        // const filteredData = filterMatchData(apiData, selectedFilter.status);
+        // setData(filteredData);
+        // setTotal(filteredData.length);
+        const totalPages = result?.total_pages || 1;
+
+        let mergedMatches = [...(result?.items || [])];
+
+        // Fetch remaining pages: 2 → totalPages
+        if (totalPages > 1) {
+          const requests = [];
+
+          for (let page = 2; page <= totalPages; page++) {
+            requests.push(
+              axios.get(endpoint, {
+                params: {
+                  cid: selectedLevel.competitionId,
+                  paged: page,
+                  per_page: pageSize,
+                },
+              })
+            );
+          }
+
+          const responses = await Promise.all(requests);
+
+          responses.forEach((res) => {
+            const items = res?.data?.result?.items || [];
+            mergedMatches.push(...items);
+          });
+        }
+
+        // Remove duplicates by match_id
+        const uniqueMatches = _.uniqBy(mergedMatches, "match_id");
+
+        // Add "key" field & sort
+        const sortedMatches = uniqueMatches
+          .map((item) => ({ ...item, key: item.match_id }))
+          .sort((a, b) => new Date(a.date_start_ist) - new Date(b.date_start_ist));
+
+        // Store raw data for filters
+        setRawData(sortedMatches);
+
+        // Apply filter
+        const filteredData = filterMatchData(sortedMatches, selectedFilter.status);
         setData(filteredData);
         setTotal(filteredData.length);
       }
