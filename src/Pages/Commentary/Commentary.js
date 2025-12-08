@@ -2330,6 +2330,7 @@ const Commentary = (props) => {
                 updatedPlayer["isPlay"] = null
                 if (isPlayerNew(player)) {
                     updatedPlayer["isPlayInEvent"] = false;
+                    updatedPlayer["bowlerOrder"] = null;
                 }
                 setPlayerUpdateList([].concat([updatedPlayer], playerUpdateList || []))
             }
