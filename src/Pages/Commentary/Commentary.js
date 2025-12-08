@@ -518,13 +518,14 @@ const Commentary = (props) => {
         setSaveToDb(false)
     }
     const updateRuns = ({ run, ball, batter, bowler, isBoundary, freezePlayers = false }) => {
-        if (isCommentaryBallLoading || isSaving) return;
+        const syncOver = isEmpty(_currentOver) ? currentOver : _currentOver
+        if (isCommentaryBallLoading || isSaving || syncOver?.isComplete) return;
         setIsSaving(true);
         setBallStatus(SCORING_STATUS);
         setIsUndoingLastOver(false);
         if (!freezePlayers) setCurrentBall({})
         const syncTeam = isEmpty(_teams) ? teams : _teams
-        const syncOver = isEmpty(_currentOver) ? currentOver : _currentOver
+        // const syncOver = isEmpty(_currentOver) ? currentOver : _currentOver
         const syncPartnership = isEmpty(_currentPartnership) ? currentPartnership : _currentPartnership
         const syncOnPitchPlayer = isEmpty(_onPitchPlayers) ? onPitchPlayers : _onPitchPlayers
         const updateBattingTeam = {}
@@ -907,6 +908,7 @@ const Commentary = (props) => {
         setPlayers((prevValue) => { return { ...prevValue, [BOWLING_TEAM]: prevValue?.[BOWLING_TEAM].map(player => compareNumStringValues(player.commentaryPlayerId, updateBowler.commentaryPlayerId) ? updateBowler : player), } })
         // console.log("players in change over", players)
         setCurrentOver(updatedOver)
+        setIsSaving(true);
         const objToSave = {
             "commentaryId": commentaryDetails.commentaryId,
             "isCallPredict": props?.isPredictToggle,

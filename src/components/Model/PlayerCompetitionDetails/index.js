@@ -260,6 +260,22 @@ const Index = ({
         style: { width: "10%" },
       },
       {
+        title: "Play In Event",
+        dataIndex: "isPlayInEvent",
+        key: "isPlayInEvent",
+        render: (text, record) => (
+          <Button
+            color={`${record.isPlayInEvent ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            disabled
+          >
+            <i className={`bx ${record.isPlayInEvent ? "bx-check" : "bx-block"}`}></i>
+          </Button>
+        ),
+        style: { width: "5%", textAlign: "center" },
+      },
+      {
         title: "CI",
         dataIndex: "currentInnings",
         key: "currentInnings",

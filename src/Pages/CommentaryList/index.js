@@ -44,6 +44,7 @@ import LoadDataModal from "../../components/Model/LoadDataModal";
 import GenerateModal from "../Commentary/GenerateModal";
 import { ChangePythonType } from "../../components/Model/ChangePythonType";
 import { loadInit } from "../../config";
+import SUpdateAccessModal from "../Commentary/CommentaryModels/SUpdateAccessModal";
 
 const Index = () => {
   const pageName = TAB_COMMENTARY_LIST;
@@ -120,6 +121,9 @@ const Index = () => {
       tpId: null
     });
   const didInitialFetch = useRef(false);
+  const [isAccessModalOpen, setIsAccessModalOpen] = useState(false);
+  const [accessPassword, setAccessPassword] = useState("");
+  const [commentaryIdToSend, setCommentaryIdToSend] = useState(null);
   let scorecardFrameUrl = null;
 
   const navigate = useNavigate();
@@ -450,9 +454,64 @@ const Index = () => {
   };
   const handleUpdateCommentaryClick = (id) => {
     // navigate("/updateCommentaryFeature", { state: { commentaryId: id } });
-    localStorage.setItem("updateCommentaryId", "" + id);
-    const url = new URL(window.location.origin + "/updateCommentaryFeature");
-    window.open(url.href, "_blank");
+    // localStorage.setItem("updateCommentaryId", "" + id);
+    // const url = new URL(window.location.origin + "/updateCommentaryFeature");
+    // window.open(url.href, "_blank");
+    setCommentaryIdToSend(id);
+    setIsAccessModalOpen(true);
+  };
+  const handleAccessConfirm = async () => {
+    if (!accessPassword.trim()) {
+      dispatch(
+        updateToastData({
+          data: "Password is required",
+          title: "Validation Error",
+          type: ERROR,
+        })
+      );
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await axiosInstance.post("/admin/commentary/checkSUpdatePass", {
+        commentaryId: commentaryIdToSend,
+        password: accessPassword,
+      });
+
+      if (response?.success) {
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+
+        handleAccessModalClose();
+        localStorage.setItem("updateCommentaryId", "" + commentaryIdToSend);
+        const url = new URL(window.location.origin + "/updateCommentaryFeature");
+        window.open(url.href, "_blank");
+      }
+    } catch (error) {
+      dispatch(
+        updateToastData({
+          data: error?.message,
+          title: error?.title || "Error",
+          type: ERROR,
+        })
+      );
+    } finally {
+      setIsLoading(false);
+      setIsAccessModalOpen(false);
+      setAccessPassword("");
+    }
+  };
+
+  const handleAccessModalClose = () => {
+    setIsAccessModalOpen(false);
+    setAccessPassword("");
+    setCommentaryIdToSend(null);
   };
   const handleStreamingListClick = (details) => {
     const url = new URL(window.location.origin + "/streamingList");
@@ -2081,6 +2140,14 @@ const Index = () => {
               setSelectedCommentaryDay={setSelectedCommentaryDay}
             />
           )}
+          {isAccessModalOpen && <SUpdateAccessModal
+            isOpen={isAccessModalOpen}
+            toggle={handleAccessModalClose}
+            onYesClick={handleAccessConfirm}
+            onNoClick={handleAccessModalClose}
+            password={accessPassword}
+            setPassword={setAccessPassword}
+          />}
         </Container>
       </div>
     </React.Fragment>
