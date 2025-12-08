@@ -2,16 +2,23 @@ import React, { useState } from 'react'
 import { Button, Col, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap';
 import "../CommentaryCss.css"
 import CardComponent from '../CardComponent';
-import { NON_STRIKE, ON_STRIKE, PLAYER_LIST, PREV_NON_STRIKE, PREV_ON_STRIKE, RETIRED_HURT_BATTER } from '../CommentartConst';
+import { NON_STRIKE, ON_STRIKE, PLAYER_LIST, PREV_NON_STRIKE, PREV_ON_STRIKE, RETIRED_HURT_BATTER, RETIRED_HURT } from '../CommentartConst';
 import SelectPlayerModal from './SelectPlayerModal';
 const RetiredHurtModal = ({ toggle, onsubmit, onPitchplayers, playerList, allBattingPlayers, retiringHurtPartnership }) => {
     const [changePlayerType, setChangePlayerType] = useState(false);
 
     const onSubmitClick = (newPlayerId) => {
         const oldPlayer = onPitchplayers[changePlayerType]
+
+        const maxBatterOrder = Math.max(
+            onPitchplayers[ON_STRIKE]?.batterOrder || 0,
+            onPitchplayers[NON_STRIKE]?.batterOrder || 0
+        );
+        const newBatterOrder = maxBatterOrder + 1;
+
         let toSend = {
             ...onPitchplayers,
-            [RETIRED_HURT_BATTER]: { ...oldPlayer, "isPlay": null, "onStrike": null },
+            [RETIRED_HURT_BATTER]: { ...oldPlayer, "isPlay": null, "onStrike": null, "isBatterRetir": true, },
             [PREV_ON_STRIKE]: onPitchplayers[ON_STRIKE],
             [PREV_NON_STRIKE]: onPitchplayers[NON_STRIKE],
         }
@@ -21,7 +28,9 @@ const RetiredHurtModal = ({ toggle, onsubmit, onPitchplayers, playerList, allBat
                 updatedPlayer = {
                     ...player,
                     "isPlay": true,
-                    "onStrike": changePlayerType === ON_STRIKE ? true : null
+                    "onStrike": changePlayerType === ON_STRIKE ? true : null,
+                    "batterOrder": newBatterOrder,
+                    "isPlayInEvent": true 
                 }
                 toSend[changePlayerType] = updatedPlayer
             }
