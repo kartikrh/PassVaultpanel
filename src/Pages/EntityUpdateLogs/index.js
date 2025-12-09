@@ -36,12 +36,9 @@ const Index = () => {
   const [competitions, setCompetitions] = useState([]);
   const [commentary, setCommentary] = useState([]);
   const [eventTypeId, setEventTypeId] = useState(null);
-  const [createdByList, setCreatedByList] = useState([]);
   const [competitionId, setCompetitionId] = useState(null);
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
-  const [reqModelVisible, setReqModelVisible] = useState(false);
-  const [reqBodyData, setReqBodyData] = useState(null);
   const [isSearch, setIsSearch] = useState(EventCommentaryUpdateLogsId ? false : true);
   const [dateType, setDateType] = useState(globalDateType || { label: "Local Timezone", value: 1 });
   const [dateRange, setDateRange] = useState({
@@ -56,7 +53,6 @@ const Index = () => {
     eventType: null,
     competition: null,
     commentary: null,
-    createdById: null
   });
   const navigate = useNavigate();
   const [cloneValues, setCloneValues] = useState({
@@ -79,7 +75,6 @@ const Index = () => {
       eventTypeId: data?.eventTypeId || 0,
       competitionId: data?.eventTypeId !== eventTypeId ? 0 : data?.competitionId || 0,
       commentaryId: (data?.eventTypeId !== eventTypeId || data?.competitionId !== competitionId) ? 0 : data?.commentaryId || 0,
-      createdById: data?.createdById || 0,
       // ...(EventCommentaryUpdateLogsId && { commentaryId : EventCommentaryUpdateLogsId })
     }
     if (EventCommentaryUpdateLogsId !== 0) {
@@ -120,16 +115,6 @@ const Index = () => {
     if (data?.competitionId && latestValueFromTable) {
       fetchCommentaryData(data?.competitionId);
     }
-  };
-
-  const fetchCreatedByListData = async () => {
-    await axiosInstance
-      .post(`/admin/list/userList`, { isActive: true })
-      .then((response) => {
-        const formattedList = response.result?.map(ele => { return { createdBy: ele.name, createdById: ele.userId } })
-        setCreatedByList(formattedList);
-      })
-      .catch((error) => { });
   };
 
   const handleMatchCard = (recordData) => {
@@ -264,9 +249,6 @@ const Index = () => {
       objectToSave['competition'] = { value: competition?.competitionId, label: competition?.competition }
       objectToSave['commentary'] = { value: commentaryData?.commentaryId, label: commentaryData && commentaryData?.eventName && commentaryData?.eventDate ? `${commentaryData.eventName} (${convertDateUTCToLocal2_24(commentaryData.eventDate, "index")})` : "" }
     }
-    // if (createdUserId && createdUserId !== 0 && userDetailsToFind.createdById && userDetailsToFind.createdBy) {
-    //   objectToSave['createdById'] = { value: userDetailsToFind?.createdById, label: userDetailsToFind.createdBy }
-    // }
     if (!isEmpty(objectToSave))
       setSelectedTableElements(objectToSave);
   }, [commentaryDetails.eventTypeId, commentaryDetails.competitionId, commentaryDetails.commentaryId, eventTypes, competitions, commentary]);
@@ -274,7 +256,6 @@ const Index = () => {
 
   useEffect(() => {
     fetchEventTypeData();
-    fetchCreatedByListData();
   }, []);
 
   //table columns
@@ -428,7 +409,6 @@ const Index = () => {
     eventTypeSelect: true,
     competitionsSelect: true,
     commentarySelect: true,
-    createdByIdSelect: true,
     resetButton: true,
   };
 
@@ -466,7 +446,6 @@ const Index = () => {
             eventTypes={eventTypes}
             competitions={competitions}
             commentary={commentary}
-            createdByList={createdByList}
             handleReload={handleReload}
             setDateRange={setDateRange}
             dateRange={dateRange}
