@@ -13,7 +13,7 @@ import {
   TAB_ENTITY_UPDATE_LOGS,
 } from "../../components/Common/Const";
 import { useSelector } from "react-redux";
-import { checkPermission, convertDateLocalToUTC, convertDateUtcFormat, convertDateUtcFormat24, convertDateUTCToLocal2, convertDateUTCToLocal2_24, convertDateUTCToLocalWithSec24 } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateLocalToUTC, convertDateUtcFormat, convertDateUtcFormat24, convertDateUtcFormatWithSec24, convertDateUTCToLocal2, convertDateUTCToLocal2_24, convertDateUTCToLocalWithSec24 } from "../../components/Common/Reusables/reusableMethods";
 import RequestModal from "./RequestModal";
 import { isEmpty, isEqual } from "lodash";
 import ResponseModal from "./ResponseModal";
@@ -421,7 +421,7 @@ const Index = () => {
   ];
   //elements required
   const tableElement = {
-    title: commentaryDetails ? `Commentary Action Logs [ ${convertDateUTCToLocalWithSec24(commentaryDetails?.eventDate, "index")} ] ${commentaryDetails?.eventName}` : "Commentary Action Logs",
+    title: !isEmpty(commentaryDetails) ? `Commentary Action Logs [ ${dateType?.value == 1 ? convertDateUTCToLocalWithSec24(commentaryDetails?.eventDate, "index") : convertDateUtcFormatWithSec24(commentaryDetails?.eventDate, "index")} ] ${commentaryDetails?.eventName}` : "Commentary Action Logs",
     isServerPagination: true,
     reloadButton: true,
     isDateRange: true,
@@ -452,7 +452,7 @@ const Index = () => {
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Commentary Action Logs" />
           {!isEmpty(commentaryDetails) && <>
               <div className='match-details-breadcrumbs'>{`${commentaryDetails?.eventType}/ ${commentaryDetails?.competition}/ ${commentaryDetails?.eventName}`}</div>
-              <div>{`Ref: ${commentaryDetails?.eventRefId || ""} [ ${convertDateUTCToLocalWithSec24(commentaryDetails?.eventDate, "index")} ]`}</div>
+              <div>{`Ref: ${commentaryDetails?.eventRefId || ""} [ ${dateType?.value == 1 ? convertDateUTCToLocalWithSec24(commentaryDetails?.eventDate, "index") : convertDateUtcFormatWithSec24(commentaryDetails?.eventDate, "index")} ]`}</div>
           </>}
           {isLoading && <SpinnerModel />}
           <Table
