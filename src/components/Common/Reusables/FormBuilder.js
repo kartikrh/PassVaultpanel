@@ -58,6 +58,7 @@ const FormBuilder = forwardRef(
       generateAlias,
       handleFieldChange,
       pageName,
+      setDisabledFields
     },
     ref
   ) => {
@@ -325,6 +326,19 @@ const FormBuilder = forwardRef(
       }
       const errors = { ...fieldErrors };
       const dependentFieldValue = formData[field.dependsOnField];
+      if(field.name == "tpId"){
+        if (selected != editFormData.tpId) {
+            setDisabledFields(prev => ({
+                ...prev,
+                teamName: false
+            }));
+        } else {
+            setDisabledFields(prev => ({
+                ...prev,
+                teamName: true
+            }));
+        }
+      }
       if (
         (!field.dependsOnField ||
           dependentFieldValue === field.dependsOnValue) &&
