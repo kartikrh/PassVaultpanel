@@ -326,7 +326,7 @@ const FormBuilder = forwardRef(
       }
       const errors = { ...fieldErrors };
       const dependentFieldValue = formData[field.dependsOnField];
-      if(field.name == "tpId"){
+      if(field.name == "tpId" && editFormData && setDisabledFields){
         if (selected != editFormData.tpId) {
             setDisabledFields(prev => ({
                 ...prev,
