@@ -41,6 +41,7 @@ const Index = () => {
       new Date().toISOString().split("T")[0]
     }T23:59`
   })
+  const [isSearch, setIsSearch] = useState(true);
   const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
   const [selectedTableElements, setSelectedTableElements] = useState({
     eventType: null,
@@ -69,8 +70,12 @@ const Index = () => {
         ...(value || tableActions),
         eventTypeId: EventTypeId ? EventTypeId : (value?.eventTypeId || tableActions?.eventTypeId) || 0,
         competitionId: EventCompetitionId ? EventCompetitionId : (value?.competitionId || tableActions?.competitionId) || 0,
-        startDate: convertDateLocalToUTC(dateRange?.startDate, "index"),
-        endDate: convertDateLocalToUTC(dateRange?.endDate, "index"),
+        // startDate: convertDateLocalToUTC(dateRange?.startDate, "index"),
+        // endDate: convertDateLocalToUTC(dateRange?.endDate, "index"),
+        ...(isSearch && {
+          startDate: convertDateLocalToUTC(dateRange?.startDate, "index"),
+          endDate: convertDateLocalToUTC(dateRange?.endDate, "index"),
+        }),
       })
       .then((response) => {
         const apiData = response?.result?.sort((a,b)=>a?.eventId - b?.eventId);
@@ -198,6 +203,7 @@ const Index = () => {
 
   const handleReset = (value) => {
     fetchData(value)
+    setIsSearch(true)
     fetchCompetitionData()
   }
 
@@ -485,9 +491,9 @@ const Index = () => {
     isActive: true,
     resetButton: true,
     reloadButton: true,
-    dateRange: true,
+    // dateRange: true,
     loadData: true,
-    // isDateRange: true,
+    isDateRange: true,
     isDateTypeSelect: true,
   };
 
@@ -498,7 +504,7 @@ const Index = () => {
     fetchData({ isActive: true });
     fetchEventTypeData();
     fetchCompetitionData();
-  }, [permissionObj]);
+  }, [permissionObj, isSearch]);
 
   useEffect(() => {
     const objToSave = {};
@@ -594,6 +600,8 @@ const Index = () => {
             setParentSearchedData={handleTableSearchedDataChange}
             dateType={dateType}
             setDateType={setDateType}
+            isSearch={isSearch}
+            setIsSearch={setIsSearch}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
