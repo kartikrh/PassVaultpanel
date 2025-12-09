@@ -15,7 +15,7 @@ import {
   TAB_ENTITY_UPDATE_LOGS,
 } from "../../components/Common/Const";
 import { useSelector, useDispatch } from "react-redux";
-import { checkPermission, convertDateLocalToUTC, convertDateUtcFormat, convertDateUtcFormat24, convertDateUTCToLocal2, convertDateUTCToLocal2_24 } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateLocalToUTC, convertDateUtcFormat, convertDateUtcFormat24, convertDateUTCToLocal2, convertDateUTCToLocal2_24, convertDateUTCToLocalWithSec24 } from "../../components/Common/Reusables/reusableMethods";
 // import RequestModal from "./RequestModal";
 import { isEmpty, isEqual } from "lodash";
 import { updateToastData } from "../../Features/toasterSlice";
@@ -26,15 +26,19 @@ const Index = () => {
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   document.title = "Entity Commentary Update Logs";
   const EventCommentaryUpdateLogsId = sessionStorage.getItem("eventCommentaryUpdateLogsId")
+  const commentaryDetails = JSON.parse(sessionStorage.getItem('eventCommentaryUpdateLogsDetails') || "{}");
   const globalPageSize = localStorage.getItem("pageSize")
   const globalDateType = JSON.parse(localStorage.getItem("DateType"))
   const [data, setData] = useState([]);
   const [checekedList, setCheckedList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [eventTypes, setEventTypes] = useState([]);
+  const [competitions, setCompetitions] = useState([]);
+  const [commentary, setCommentary] = useState([]);
+  const [eventTypeId, setEventTypeId] = useState(null);
+  const [competitionId, setCompetitionId] = useState(null);
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
-  const [reqModelVisible, setReqModelVisible] = useState(false);
-  const [reqBodyData, setReqBodyData] = useState(null);
   const [isSearch, setIsSearch] = useState(EventCommentaryUpdateLogsId ? false : true);
   const [dateType, setDateType] = useState(globalDateType || { label: "Local Timezone", value: 1 });
   const [dateRange, setDateRange] = useState({
@@ -45,6 +49,11 @@ const Index = () => {
   const [pageSize, setPageSize] = useState(globalPageSize || 10);
   const [tableSearchedData, setTableSearchedData] = useState([]);
   const [total, setTotal] = useState(0);
+  const [selectedTableElements, setSelectedTableElements] = useState({
+    eventType: null,
+    competition: null,
+    commentary: null,
+  });
   const navigate = useNavigate();
   const [cloneValues, setCloneValues] = useState({
         eventName: "",
@@ -58,11 +67,23 @@ const Index = () => {
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
+    const data = latestValueFromTable || tableActions
     let payload = {
-      ...(latestValueFromTable || tableActions),
+      ...data,
       page: currentPage == 0 ? 1 : currentPage,
       limit: pageSize,
-      ...(EventCommentaryUpdateLogsId && { commentaryId : EventCommentaryUpdateLogsId })
+      eventTypeId: data?.eventTypeId || 0,
+      competitionId: data?.eventTypeId !== eventTypeId ? 0 : data?.competitionId || 0,
+      commentaryId: (data?.eventTypeId !== eventTypeId || data?.competitionId !== competitionId) ? 0 : data?.commentaryId || 0,
+      // ...(EventCommentaryUpdateLogsId && { commentaryId : EventCommentaryUpdateLogsId })
+    }
+    if (EventCommentaryUpdateLogsId !== 0) {
+      payload = {
+        ...data,
+        page: currentPage == 0 ? 1 : currentPage,
+        limit: pageSize,
+        commentaryId: EventCommentaryUpdateLogsId
+      };
     }
     if (isSearch) {
       payload = {
@@ -88,6 +109,12 @@ const Index = () => {
       .catch((error) => {
         setIsLoading(false);
       });
+    if (data?.eventTypeId && latestValueFromTable) {
+      fetchCompetitionData(data?.eventTypeId);
+    }
+    if (data?.competitionId && latestValueFromTable) {
+      fetchCommentaryData(data?.competitionId);
+    }
   };
 
   const handleMatchCard = (recordData) => {
@@ -158,6 +185,78 @@ const Index = () => {
     setTableSearchedData(data);
     setCheckedList([]);
   };
+
+  useEffect(() => {
+    if (EventCommentaryUpdateLogsId !== 0) {
+      setEventTypeId(commentaryDetails.eventTypeId)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!eventTypeId) {
+      setCompetitions([]);
+      setCommentary([]);
+    }
+  }, [eventTypeId]);
+
+  const fetchEventTypeData = async () => {
+    await axiosInstance
+      .post(`/admin/log/eventTypeList`, { isActive: true })
+      .then((response) => {
+        setEventTypes(response.result);
+      })
+      .catch((error) => { });
+  };
+  const fetchCompetitionData = async (value) => {
+    await axiosInstance
+      .post(`/admin/log/competitionListByEventTypeId`, {
+        eventTypeId: value,
+      })
+      .then((response) => {
+        setCompetitions(response.result);
+      })
+      .catch((error) => { });
+  };
+  const fetchCommentaryData = async (value) => {
+    await axiosInstance
+      .post(`/admin/log/getComByCompetition`, {
+        competitionId: value,
+      })
+      .then((response) => {
+        setCommentary(response.result);
+      })
+      .catch((error) => { });
+  };
+  
+  useEffect(() => {
+    if (EventCommentaryUpdateLogsId !== 0 && commentaryDetails?.eventTypeId && commentaryDetails?.competitionId) {
+      setIsSearch(false)
+      fetchCompetitionData(commentaryDetails?.eventTypeId);
+      fetchCommentaryData(commentaryDetails?.competitionId);
+    } else {
+      setIsSearch(true)
+    }
+  }, [EventCommentaryUpdateLogsId, commentaryDetails?.eventTypeId, commentaryDetails?.competitionId])
+
+  useEffect(() => {
+    const objectToSave = {}
+    if (commentaryDetails?.eventTypeId && commentaryDetails?.competitionId && commentaryDetails?.commentaryId) {
+      const event = eventTypes.find(e => e.eventTypeId === commentaryDetails.eventTypeId)
+      const competition = competitions.find(c => c.competitionId === commentaryDetails.competitionId)
+      const commentaryData = commentary.find(c => c.commentaryId === commentaryDetails.commentaryId)
+
+      objectToSave['eventType'] = { value: event?.eventTypeId, label: event?.eventType }
+      objectToSave['competition'] = { value: competition?.competitionId, label: competition?.competition }
+      objectToSave['commentary'] = { value: commentaryData?.commentaryId, label: commentaryData && commentaryData?.eventName && commentaryData?.eventDate ? `${commentaryData.eventName} (${convertDateUTCToLocal2_24(commentaryData.eventDate, "index")})` : "" }
+    }
+    if (!isEmpty(objectToSave))
+      setSelectedTableElements(objectToSave);
+  }, [commentaryDetails.eventTypeId, commentaryDetails.competitionId, commentaryDetails.commentaryId, eventTypes, competitions, commentary]);
+
+
+  useEffect(() => {
+    fetchEventTypeData();
+  }, []);
 
   //table columns
   const columns = [
@@ -234,6 +333,19 @@ const Index = () => {
       style: { width: "10%" },
     },
     {
+      title: "Event",
+      key: "event",
+      render: (text, record) => (
+        <span style={{ cursor: "pointer" }}>
+          {`${record.eventTypeName || ""}/ ${record.competitionName || ""}/ ${
+            record.eventName || ""
+          }`}
+        </span>
+      ),
+      style: { width: "10%" },
+      sort: true,
+    },
+    {
       title: "Message",
       dataIndex: "message",
       key: "message",
@@ -254,7 +366,7 @@ const Index = () => {
       render: (text, record) => (
         <span>
           {text == 1
-            ? 'Start' : text == 2 ? "No update" : text == 3 ? "Success" : text == 4 ? "failed"
+            ? 'Start' : text == 2 ? "No update" : text == 3 ? "Success" : text == 4 ? "Failed" : text == 5 ? "Imported"
             : ""
           }
         </span>
@@ -289,11 +401,15 @@ const Index = () => {
   ];
   //elements required
   const tableElement = {
-    title: "Entity Commentary Update Logs",
+    title: commentaryDetails ? `Entity Commentary Update Logs [ ${convertDateUTCToLocalWithSec24(commentaryDetails?.eventDate, "index")} ] ${commentaryDetails?.eventName}` : "Entity Commentary Update Logs",
     isServerPagination: true,
     reloadButton: true,
     isDateRange: true,
     isDateTypeSelect: true,
+    eventTypeSelect: true,
+    competitionsSelect: true,
+    commentarySelect: true,
+    resetButton: true,
   };
 
   useEffect(() => {
@@ -313,6 +429,10 @@ const Index = () => {
       <div className="page-content">
         <Container fluid={true}>
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Entity Commentary Update Logs" />
+          {!isEmpty(commentaryDetails) && <>
+              <div className='match-details-breadcrumbs'>{`${commentaryDetails?.eventType}/ ${commentaryDetails?.competition}/ ${commentaryDetails?.eventName}`}</div>
+              <div>{`Ref: ${commentaryDetails?.eventRefId || ""} [ ${convertDateUTCToLocalWithSec24(commentaryDetails?.eventDate, "index")} ]`}</div>
+          </>}
           {isLoading && <SpinnerModel />}
           <Table
             ref={finalizeRef}
@@ -322,6 +442,10 @@ const Index = () => {
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
             reFetchData={fetchData}
+            selectedTableElementsLogs={selectedTableElements}
+            eventTypes={eventTypes}
+            competitions={competitions}
+            commentary={commentary}
             handleReload={handleReload}
             setDateRange={setDateRange}
             dateRange={dateRange}
@@ -343,6 +467,8 @@ const Index = () => {
             setParentSearchedData={handleTableSearchedDataChange}
             isSearch={isSearch}
             setIsSearch={setIsSearch}
+            setEventTypeId={setEventTypeId}
+            setCompetitionId={setCompetitionId}
             dateType={dateType}
             setDateType={setDateType}
           />

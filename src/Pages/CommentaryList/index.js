@@ -430,14 +430,18 @@ const Index = () => {
   const handleEventCommentaryUpdateLogsClick = (details) => {
     const url = new URL(window.location.origin + "/EntityUpdateLogs");
     sessionStorage.setItem("eventCommentaryUpdateLogsId", "" + details?.commentaryId);
+    sessionStorage.setItem("eventCommentaryUpdateLogsDetails", "" + JSON.stringify(details));
     window.open(url.href, "_blank");
     sessionStorage.removeItem("eventCommentaryUpdateLogsId");
+    sessionStorage.removeItem("eventCommentaryUpdateLogsDetails");
   };
   const handleActionLogsClick = (details) => {
     const url = new URL(window.location.origin + "/ActionLogs");
     sessionStorage.setItem("actionLogsId", "" + details?.commentaryId);
+    sessionStorage.setItem("actionLogsDetails", "" + JSON.stringify(details));
     window.open(url.href, "_blank");
     sessionStorage.removeItem("actionLogsId");
+    sessionStorage.removeItem("actionLogsDetails");
   };
   const handleCommentaryEventSnapClick = (details) => {
     const url = new URL(window.location.origin + "/commentaryEventSnap");

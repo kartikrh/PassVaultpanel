@@ -2330,6 +2330,7 @@ const Commentary = (props) => {
                 updatedPlayer["isPlay"] = null
                 if (isPlayerNew(player)) {
                     updatedPlayer["isPlayInEvent"] = false;
+                    updatedPlayer["bowlerOrder"] = null;
                 }
                 setPlayerUpdateList([].concat([updatedPlayer], playerUpdateList || []))
             }
@@ -2484,16 +2485,17 @@ const Commentary = (props) => {
                 updatedPlayer = { ...updatedPlayer, isPlay: null, onStrike: null }
                 if (isPlayerNew(player)) {
                     updatedPlayer["isPlayInEvent"] = false;
+                    updatedPlayer["batterOrder"] = null;
                 }
                 playersToChange[updatedPlayer.commentaryPlayerId] = updatedPlayer
             }
 
             if (player.commentaryPlayerId === currentBall.batStrikeId) {
-                updatedPlayer = { ...updatedPlayer, isPlay: true, onStrike: true, isPlayInEvent: true }
+                updatedPlayer = { ...updatedPlayer, isPlay: true, onStrike: true, isPlayInEvent: true, isBatterRetir: null }
                 updatedOnPitchPlayer[ON_STRIKE] = updatedPlayer
                 playersToChange[updatedPlayer.commentaryPlayerId] = updatedPlayer
             } else if (player.commentaryPlayerId === currentBall.batNonStrikeId) {
-                updatedPlayer = { ...updatedPlayer, isPlay: true, onStrike: null, isPlayInEvent: true }
+                updatedPlayer = { ...updatedPlayer, isPlay: true, onStrike: null, isPlayInEvent: true, isBatterRetir: null }
                 updatedOnPitchPlayer[NON_STRIKE] = updatedPlayer
                 playersToChange[updatedPlayer.commentaryPlayerId] = updatedPlayer
             }
