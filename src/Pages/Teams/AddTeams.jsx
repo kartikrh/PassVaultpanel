@@ -74,6 +74,16 @@ function AddTeams() {
   }, [teamId]);
 
   useEffect(() => {
+    if (initialEditData) {
+      if (initialEditData.tpId) {
+        setDisabledFields({
+          teamName: true,
+        })
+      }
+    }
+  },[initialEditData])
+
+  useEffect(() => {
     if (isSaved) {
       dispatch(updateSavedState(undefined))
       if (currentSaveAction === SAVE_AND_CLOSE) navigate("/teams");
@@ -225,6 +235,7 @@ function AddTeams() {
                   editFormData={initialEditData}
                   masterData={masterData}
                   disabledFields={disabledFields}
+                  setDisabledFields={setDisabledFields}
                 />
               </CardBody>
             </Card>
