@@ -60,8 +60,8 @@ const Index = () => {
         eventRefId: "",
     });
   const [dataIndexList, setDataIndexList] = useState([]);
-  const [matchModalVisible, setMatchModalVisible] = useState(false);
-  const [matchData, setMatchData] = useState(null);
+  // const [matchModalVisible, setMatchModalVisible] = useState(false);
+  // const [matchData, setMatchData] = useState(null);
   const dispatch = useDispatch();
 
   const fetchData = async (latestValueFromTable) => {
@@ -123,8 +123,23 @@ const Index = () => {
     try {
       if (recordData?.responseData) {
         // console.log("recordData", recordData);
-        setMatchData(recordData.responseData);
-        setMatchModalVisible(true);
+        // setMatchData(recordData.responseData);
+        // setMatchModalVisible(true);
+
+        // create unique id for this window
+        const uniqueId = "matchCardData_" + Date.now() + "_" + Math.random();
+
+        // store unique data in localStorage
+        localStorage.setItem(uniqueId, JSON.stringify(recordData.responseData));
+
+        // open popup window (ALWAYS new)
+        const popupUrl = `/match-card-view?id=${uniqueId}`;  
+
+        window.open(
+            popupUrl,
+            "_blank",   // ALWAYS opens a new window
+            "width=900,height=700,top=100,left=200,resizable=yes,scrollbars=yes"
+        );
       } else {
         dispatch(
           updateToastData({
@@ -145,7 +160,6 @@ const Index = () => {
       setIsLoading(false);
     }
   };
-
 
   const handleSingleCheck = (e) => {
     let updateSingleCheck = [];
@@ -490,7 +504,7 @@ const Index = () => {
             />
           )} */}
           {/* Match Details Modal */}
-          <Modal
+          {/* <Modal
             open={matchModalVisible}
             onCancel={() => setMatchModalVisible(false)}
             footer={null}
@@ -511,7 +525,7 @@ const Index = () => {
           >
             <MatchCard matchData={matchData} 
             onClose={() => setMatchModalVisible(false)} />
-          </Modal>
+          </Modal> */}
         </Container>
       </div>
     </React.Fragment>
