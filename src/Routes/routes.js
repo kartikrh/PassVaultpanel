@@ -178,6 +178,7 @@ import StreamingList from "../Pages/Commentary/StreamingList.js";
 import StreamingTable from "../Pages/Commentary/StreamingTable.js";
 import StreamWatch from "../Pages/Commentary/StreamWatch.js";
 import AddCompetitionStatistics from "../Pages/CompetitionStatistics/AddCompetitionStatistics.jsx";
+import MatchCardView from "../Pages/EntityUpdateLogs/MatchCardView.js";
 
 const authProtectedRoutes = [
   //dashboard
@@ -362,6 +363,7 @@ const authProtectedRoutes = [
 const streamingRoutes = [
   { path: "/streamwatch", component: <StreamWatch /> },
   { path: "/streamingTable", component: <StreamingTable /> },
+  { path: "/match-card-view", component: <MatchCardView /> },
 ]
 
 const publicRoutes = [
