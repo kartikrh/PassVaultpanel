@@ -13,7 +13,7 @@ import {
   TAB_ENTITY_UPDATE_LOGS,
 } from "../../components/Common/Const";
 import { useSelector } from "react-redux";
-import { checkPermission, convertDateLocalToUTC, convertDateUtcFormat, convertDateUtcFormat24, convertDateUTCToLocal2, convertDateUTCToLocal2_24 } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateLocalToUTC, convertDateUtcFormat, convertDateUtcFormat24, convertDateUtcFormatWithSec24, convertDateUTCToLocal2, convertDateUTCToLocal2_24, convertDateUTCToLocalWithSec24 } from "../../components/Common/Reusables/reusableMethods";
 import RequestModal from "./RequestModal";
 import { isEmpty, isEqual } from "lodash";
 import ResponseModal from "./ResponseModal";
@@ -24,12 +24,19 @@ const Index = () => {
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   document.title = "Commentary Action Logs";
   const ActionLogsId = sessionStorage.getItem("actionLogsId")
+  const commentaryDetails = JSON.parse(sessionStorage.getItem('actionLogsDetails') || "{}");
   const globalPageSize = localStorage.getItem("pageSize")
   const globalDateType = JSON.parse(localStorage.getItem("DateType"))
   const [data, setData] = useState([]);
   const [resModelVisible, setResModelVisible] = useState(false);
   const [checekedList, setCheckedList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [eventTypes, setEventTypes] = useState([]);
+  const [competitions, setCompetitions] = useState([]);
+  const [commentary, setCommentary] = useState([]);
+  const [eventTypeId, setEventTypeId] = useState(null);
+  const [createdByList, setCreatedByList] = useState([]);
+  const [competitionId, setCompetitionId] = useState(null);
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [reqModelVisible, setReqModelVisible] = useState(false);
@@ -45,21 +52,40 @@ const Index = () => {
   const [pageSize, setPageSize] = useState(globalPageSize || 10);
   const [tableSearchedData, setTableSearchedData] = useState([]);
   const [total, setTotal] = useState(0);
+  const [selectedTableElements, setSelectedTableElements] = useState({
+    eventType: null,
+    competition: null,
+    commentary: null,
+    createdById: null
+  });
   const navigate = useNavigate();
   const [cloneValues, setCloneValues] = useState({
         eventName: "",
         eventRefId: "",
     });
-    const [dataIndexList, setDataIndexList] = useState([]);
+  const [dataIndexList, setDataIndexList] = useState([]);
 
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
+    const data = latestValueFromTable || tableActions
     let payload = {
-      ...(latestValueFromTable || tableActions),
+      ...data,
       page: currentPage == 0 ? 1 : currentPage,
       limit: pageSize,
-      ...(ActionLogsId && { commentaryId : ActionLogsId })
+      eventTypeId: data?.eventTypeId || 0,
+      competitionId: data?.eventTypeId !== eventTypeId ? 0 : data?.competitionId || 0,
+      commentaryId: (data?.eventTypeId !== eventTypeId || data?.competitionId !== competitionId) ? 0 : data?.commentaryId || 0,
+      createdById: data?.createdById || 0,
+      // ...(ActionLogsId && { commentaryId : ActionLogsId })
+    }
+    if (ActionLogsId !== 0) {
+      payload = {
+        ...data,
+        page: currentPage == 0 ? 1 : currentPage,
+        limit: pageSize,
+        commentaryId: ActionLogsId
+      };
     }
     if (isSearch) {
       payload = {
@@ -85,6 +111,22 @@ const Index = () => {
       .catch((error) => {
         setIsLoading(false);
       });
+    if (data?.eventTypeId && latestValueFromTable) {
+      fetchCompetitionData(data?.eventTypeId);
+    }
+    if (data?.competitionId && latestValueFromTable) {
+      fetchCommentaryData(data?.competitionId);
+    }
+  };
+
+  const fetchCreatedByListData = async () => {
+    await axiosInstance
+      .post(`/admin/list/userList`, { isActive: true })
+      .then((response) => {
+        const formattedList = response.result?.map(ele => { return { createdBy: ele.name, createdById: ele.userId } })
+        setCreatedByList(formattedList);
+      })
+      .catch((error) => { });
   };
 
   const handleSingleCheck = (e) => {
@@ -125,6 +167,82 @@ const Index = () => {
     setTableSearchedData(data);
     setCheckedList([]);
   };
+
+  useEffect(() => {
+    if (ActionLogsId !== 0) {
+      setEventTypeId(commentaryDetails.eventTypeId)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!eventTypeId) {
+      setCompetitions([]);
+      setCommentary([]);
+    }
+  }, [eventTypeId]);
+
+  const fetchEventTypeData = async () => {
+    await axiosInstance
+      .post(`/admin/log/eventTypeList`, { isActive: true })
+      .then((response) => {
+        setEventTypes(response.result);
+      })
+      .catch((error) => { });
+  };
+  const fetchCompetitionData = async (value) => {
+    await axiosInstance
+      .post(`/admin/log/competitionListByEventTypeId`, {
+        eventTypeId: value,
+      })
+      .then((response) => {
+        setCompetitions(response.result);
+      })
+      .catch((error) => { });
+  };
+  const fetchCommentaryData = async (value) => {
+    await axiosInstance
+      .post(`/admin/log/getComByCompetition`, {
+        competitionId: value,
+      })
+      .then((response) => {
+        setCommentary(response.result);
+      })
+      .catch((error) => { });
+  };
+  
+  useEffect(() => {
+    if (ActionLogsId !== 0 && commentaryDetails?.eventTypeId && commentaryDetails?.competitionId) {
+      setIsSearch(false)
+      fetchCompetitionData(commentaryDetails?.eventTypeId);
+      fetchCommentaryData(commentaryDetails?.competitionId);
+    } else {
+      setIsSearch(true)
+    }
+  }, [ActionLogsId, commentaryDetails?.eventTypeId, commentaryDetails?.competitionId])
+
+  useEffect(() => {
+    const objectToSave = {}
+    if (commentaryDetails?.eventTypeId && commentaryDetails?.competitionId && commentaryDetails?.commentaryId) {
+      const event = eventTypes.find(e => e.eventTypeId === commentaryDetails.eventTypeId)
+      const competition = competitions.find(c => c.competitionId === commentaryDetails.competitionId)
+      const commentaryData = commentary.find(c => c.commentaryId === commentaryDetails.commentaryId)
+
+      objectToSave['eventType'] = { value: event?.eventTypeId, label: event?.eventType }
+      objectToSave['competition'] = { value: competition?.competitionId, label: competition?.competition }
+      objectToSave['commentary'] = { value: commentaryData?.commentaryId, label: commentaryData && commentaryData?.eventName && commentaryData?.eventDate ? `${commentaryData.eventName} (${convertDateUTCToLocal2_24(commentaryData.eventDate, "index")})` : "" }
+    }
+    // if (createdUserId && createdUserId !== 0 && userDetailsToFind.createdById && userDetailsToFind.createdBy) {
+    //   objectToSave['createdById'] = { value: userDetailsToFind?.createdById, label: userDetailsToFind.createdBy }
+    // }
+    if (!isEmpty(objectToSave))
+      setSelectedTableElements(objectToSave);
+  }, [commentaryDetails.eventTypeId, commentaryDetails.competitionId, commentaryDetails.commentaryId, eventTypes, competitions, commentary]);
+
+
+  useEffect(() => {
+    fetchEventTypeData();
+    fetchCreatedByListData();
+  }, []);
 
   //table columns
   const columns = [
@@ -201,6 +319,19 @@ const Index = () => {
       style: { width: "10%" },
     },
     {
+      title: "Event",
+      key: "event",
+      render: (text, record) => (
+        <span style={{ cursor: "pointer" }}>
+          {`${record.eventTypeName || ""}/ ${record.competitionName || ""}/ ${
+            record.eventName || ""
+          }`}
+        </span>
+      ),
+      style: { width: "10%" },
+      sort: true,
+    },
+    {
       title: "apiName",
       dataIndex: "apiName",
       key: "apiName",
@@ -248,7 +379,7 @@ const Index = () => {
       },
       key: "requestBody",
       sort: true,
-      style: { width: "40%" },
+      style: { width: "30%" },
     },
     {
       title: "Response",
@@ -290,11 +421,16 @@ const Index = () => {
   ];
   //elements required
   const tableElement = {
-    title: "Commentary Action Logs",
+    title: !isEmpty(commentaryDetails) ? `Commentary Action Logs [ ${dateType?.value == 1 ? convertDateUTCToLocalWithSec24(commentaryDetails?.eventDate, "index") : convertDateUtcFormatWithSec24(commentaryDetails?.eventDate, "index")} ] ${commentaryDetails?.eventName}` : "Commentary Action Logs",
     isServerPagination: true,
     reloadButton: true,
     isDateRange: true,
     isDateTypeSelect: true,
+    eventTypeSelect: true,
+    competitionsSelect: true,
+    commentarySelect: true,
+    createdByIdSelect: true,
+    resetButton: true,
   };
 
   useEffect(() => {
@@ -314,6 +450,10 @@ const Index = () => {
       <div className="page-content">
         <Container fluid={true}>
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Commentary Action Logs" />
+          {!isEmpty(commentaryDetails) && <>
+              <div className='match-details-breadcrumbs'>{`${commentaryDetails?.eventType}/ ${commentaryDetails?.competition}/ ${commentaryDetails?.eventName}`}</div>
+              <div>{`Ref: ${commentaryDetails?.eventRefId || ""} [ ${dateType?.value == 1 ? convertDateUTCToLocalWithSec24(commentaryDetails?.eventDate, "index") : convertDateUtcFormatWithSec24(commentaryDetails?.eventDate, "index")} ]`}</div>
+          </>}
           {isLoading && <SpinnerModel />}
           <Table
             ref={finalizeRef}
@@ -323,6 +463,11 @@ const Index = () => {
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
             reFetchData={fetchData}
+            selectedTableElementsLogs={selectedTableElements}
+            eventTypes={eventTypes}
+            competitions={competitions}
+            commentary={commentary}
+            createdByList={createdByList}
             handleReload={handleReload}
             setDateRange={setDateRange}
             dateRange={dateRange}
@@ -344,6 +489,8 @@ const Index = () => {
             setParentSearchedData={handleTableSearchedDataChange}
             isSearch={isSearch}
             setIsSearch={setIsSearch}
+            setEventTypeId={setEventTypeId}
+            setCompetitionId={setCompetitionId}
             dateType={dateType}
             setDateType={setDateType}
           />
