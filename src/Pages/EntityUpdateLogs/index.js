@@ -380,7 +380,7 @@ const Index = () => {
       render: (text, record) => (
         <span>
           {text == 1
-            ? 'Start' : text == 2 ? "No update" : text == 3 ? "Success" : text == 4 ? "Failed" : text == 5 ? "Imported"
+            ? 'Start' : text == 2 ? "No update" : text == 3 ? "Success" : text == 4 ? "Failed" : text == 5 ? "Added"
             : ""
           }
         </span>
