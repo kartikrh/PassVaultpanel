@@ -15,7 +15,7 @@ import {
   TAB_ENTITY_UPDATE_LOGS,
 } from "../../components/Common/Const";
 import { useSelector, useDispatch } from "react-redux";
-import { checkPermission, convertDateLocalToUTC, convertDateUtcFormat, convertDateUtcFormat24, convertDateUTCToLocal2, convertDateUTCToLocal2_24, convertDateUTCToLocalWithSec24 } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateLocalToUTC, convertDateUtcFormat, convertDateUtcFormat24, convertDateUtcFormatWithSec24, convertDateUTCToLocal2, convertDateUTCToLocal2_24, convertDateUTCToLocalWithSec24 } from "../../components/Common/Reusables/reusableMethods";
 // import RequestModal from "./RequestModal";
 import { isEmpty, isEqual } from "lodash";
 import { updateToastData } from "../../Features/toasterSlice";
@@ -138,7 +138,7 @@ const Index = () => {
         window.open(
             popupUrl,
             "_blank",   // ALWAYS opens a new window
-            "width=900,height=700,top=100,left=200,resizable=yes,scrollbars=yes"
+            "width=850,height=600,top=200,left=300,resizable=yes,scrollbars=yes"
         );
       } else {
         dispatch(
@@ -380,7 +380,7 @@ const Index = () => {
       render: (text, record) => (
         <span>
           {text == 1
-            ? 'Start' : text == 2 ? "No update" : text == 3 ? "Success" : text == 4 ? "Failed" : text == 5 ? "Imported"
+            ? 'Start' : text == 2 ? "No update" : text == 3 ? "Success" : text == 4 ? "Failed" : text == 5 ? "Added"
             : ""
           }
         </span>
@@ -415,7 +415,7 @@ const Index = () => {
   ];
   //elements required
   const tableElement = {
-    title: commentaryDetails ? `Entity Commentary Update Logs [ ${convertDateUTCToLocalWithSec24(commentaryDetails?.eventDate, "index")} ] ${commentaryDetails?.eventName}` : "Entity Commentary Update Logs",
+    title: !isEmpty(commentaryDetails) ? `Entity Commentary Update Logs [ ${dateType?.value == 1 ? convertDateUTCToLocalWithSec24(commentaryDetails?.eventDate, "index") : convertDateUtcFormatWithSec24(commentaryDetails?.eventDate, "index")} ] ${commentaryDetails?.eventName}` : "Entity Commentary Update Logs",
     isServerPagination: true,
     reloadButton: true,
     isDateRange: true,
@@ -445,7 +445,7 @@ const Index = () => {
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Entity Commentary Update Logs" />
           {!isEmpty(commentaryDetails) && <>
               <div className='match-details-breadcrumbs'>{`${commentaryDetails?.eventType}/ ${commentaryDetails?.competition}/ ${commentaryDetails?.eventName}`}</div>
-              <div>{`Ref: ${commentaryDetails?.eventRefId || ""} [ ${convertDateUTCToLocalWithSec24(commentaryDetails?.eventDate, "index")} ]`}</div>
+              <div>{`Ref: ${commentaryDetails?.eventRefId || ""} [ ${dateType?.value == 1 ? convertDateUTCToLocalWithSec24(commentaryDetails?.eventDate, "index") : convertDateUtcFormatWithSec24(commentaryDetails?.eventDate, "index")} ]`}</div>
           </>}
           {isLoading && <SpinnerModel />}
           <Table
