@@ -330,10 +330,33 @@ const Commentary = (props) => {
     const onInningsChange = () => {
         let teamUpdates = undefined
         let commentaryUpdates = undefined
+        let extraOverUpdate = null;
+        const isWicketBall = currentBall?.ballIsWicket;
+        const isLastBall = (currentOver?.ballCount) == matchTypeDetails?.ballsPerOver;
+        const syncOnPitchPlayers = isEmpty(_onPitchPlayers) ? onPitchPlayers : _onPitchPlayers;
+        const currentBowler = syncOnPitchPlayers?.[CURRENT_BOWLER]
+        const bowlerOver = currentBowler && Math.ceil(+currentBowler?.bowlerOver || 0);
         if (teams[BOWLING_TEAM].isBattingComplete && !isLastInnigs) {
             setShowUpdateInnings(true)
         }
         else {
+            if(isWicketBall && isLastBall && currentBowler && bowlerOver) {
+                const syncOver = isEmpty(_currentOver) ? currentOver : _currentOver;
+                const syncTeams = isEmpty(_teams) ? teams : _teams;
+                const updatedOver = {
+                    ...syncOver,
+                    "teamScore": `${syncTeams[BATTING_TEAM]?.teamScore || 0}/${syncTeams[BATTING_TEAM]?.teamWicket || 0}`,
+                    "isMaiden": getBowlerOnlyRuns(syncOver) < 1,
+                    "isComplete": true
+                }
+                // const updateBowler = {
+                //     ...syncOnPitchPlayers[CURRENT_BOWLER],
+                //     "isPlay": null,
+                //     "bowlerOver": Math.ceil(+syncOnPitchPlayers[CURRENT_BOWLER].bowlerOver || 0),
+                //     "bowlerMaidenOver": syncOver.totalRun < 1 ? 1 : 0
+                // }
+                extraOverUpdate = updatedOver;
+            } 
             const runDifference = (teams[BATTING_TEAM]?.teamScore || 0) + (teams[BATTING_TEAM]?.teamLeadRuns || 0) - (teams[BATTING_TEAM]?.teamTrialRuns || 0)
             const trialRuns = Math.max(runDifference, 0)
             const leadRuns = Math.max(runDifference * -1, 0)
@@ -364,7 +387,8 @@ const Commentary = (props) => {
             "commentaryPartnership": updatedPartnership,
             "commentaryPlayers": setAllPlayerToNull(),
             "updateTeamStatus": extractRequiredFieldsForTeamStatus(teamUpdates),
-            "isEndInnings": true
+            "isEndInnings": true,
+            ...(extraOverUpdate && { commentaryOvers: extraOverUpdate })
         }
         if (!objToSave?.commentaryPartnership?.batter1Id && !objToSave?.commentaryPartnership?.batter2Id) {
             // handleCommentaryConsole(_currentOver, currentOver, objToSave, currentPartnership);
@@ -1132,7 +1156,7 @@ const Commentary = (props) => {
                     if (isEqual(player.commentaryPlayerId, newPlayerId)) {
                         const updatedPlayer = {
                             ...player, "isPlay": true, "onStrike": playerToChange === ON_STRIKE ? true : false, "isPlayInEvent": true,
-                            [updateOrderKey]: player[updateOrderKey] || fetchNextPlayerOrder(playerToChange, prevValue[teamType])
+                            [updateOrderKey]: player[updateOrderKey] || fetchNextPlayerOrder(playerToChange, prevValue[teamType], player?.currentInnings)
                         }
                         updatedOnPitchPlayer[playerToChange] = updatedPlayer
                         return updatedPlayer
@@ -3552,17 +3576,17 @@ const Commentary = (props) => {
             toggle={() => { setShowInningsChangePopup(undefined); /* setInningsChangeClosed(true); */ }}
             onNoClick={() => { setShowInningsChangePopup(undefined); /* setInningsChangeClosed(true); */ }}
             onYesClick={() => {
-                const isWicketBall = currentBall?.ballIsWicket;
-                const isLastBall = (currentOver?.ballCount) == matchTypeDetails?.ballsPerOver;
-                const syncOnPitchPlayers = isEmpty(_onPitchPlayers) ? onPitchPlayers : _onPitchPlayers;
-                const currentBowler = syncOnPitchPlayers?.[CURRENT_BOWLER]
-                const bowlerOver = currentBowler && Math.ceil(+currentBowler?.bowlerOver || 0);
-                if (isWicketBall && isLastBall && currentBowler && bowlerOver) {
-                    setChangeOverOnPopupClick(true);
+                // const isWicketBall = currentBall?.ballIsWicket;
+                // const isLastBall = (currentOver?.ballCount) == matchTypeDetails?.ballsPerOver;
+                // const syncOnPitchPlayers = isEmpty(_onPitchPlayers) ? onPitchPlayers : _onPitchPlayers;
+                // const currentBowler = syncOnPitchPlayers?.[CURRENT_BOWLER]
+                // const bowlerOver = currentBowler && Math.ceil(+currentBowler?.bowlerOver || 0);
+                // if (isWicketBall && isLastBall && currentBowler && bowlerOver) {
+                //     setChangeOverOnPopupClick(true);
+                //     onInningsChange();
+                // } else {
                     onInningsChange();
-                } else {
-                    onInningsChange();
-                }
+                // }
             }}
         />}
         {(!props?.isNewUi && showWicketModal) &&

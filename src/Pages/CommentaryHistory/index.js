@@ -435,12 +435,15 @@ const Index = () => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
     const data = latestValueFromTable || tableActions
+    console.log("selectedTableElements", selectedTableElements)
     let payload = {
       ...data,
       startDate: convertDateLocalToUTC(dateRange?.startDate, "index"),
       endDate: convertDateLocalToUTC(dateRange?.endDate, "index"),
-      eventTypeId: selectedTableElements?.eventType?.value ? selectedTableElements?.eventType?.value : data?.eventTypeId || 0,
-      competitionId: selectedTableElements?.competition?.value ?  selectedTableElements?.competition?.value : data?.eventTypeId !== eventTypeId ? 0 : data?.competitionId || 0,
+      eventTypeId: competitionDetails?.eventTypeId || data?.eventTypeId || 0,
+      competitionId: competitionDetails?.competitionId || data?.competitionId || 0,
+      // eventTypeId: selectedTableElements?.eventType?.value ? selectedTableElements?.eventType?.value : data?.eventTypeId || 0,
+      // competitionId: selectedTableElements?.competition?.value ?  selectedTableElements?.competition?.value : data?.eventTypeId !== eventTypeId ? 0 : data?.competitionId || 0,
     };
     await axiosInstance
       .post(`/admin/commentary/history`, payload)
@@ -2313,6 +2316,48 @@ const Index = () => {
         </Button>
       ),
       style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "Scoring Type",
+      dataIndex: "scoringType",
+      key: "scoringType",
+      sort: true,
+      render: (text, record) => (
+        <div className="">
+          <div className="d-flex align-items-center gap-2">
+            <span
+              style={{ cursor: record.isPredictMarket && "pointer" }}
+            // onClick={() => {
+            //   if (record.isPredictMarket) {
+            //     handleOddsViewClick(record.commentaryId);
+            //   }
+            // }}
+            >
+              {text == 1 ? "Manual" : text == 2 ? "Entity" : ""}
+            </span>
+            {/* <span
+              style={{ cursor: "pointer" }}
+              onClick={() => {
+                setScoringModelVisible(true);
+                setSelectedCompititon(record);
+              }}
+            >
+              {" "}
+              <Tooltip
+                title="Edit Scoring type"
+                color={"#e8e8ea"}
+                overlayInnerStyle={{ color: "#000" }}
+              >
+                {<a className="bx bx-edit-alt"></a>}
+              </Tooltip>
+            </span> */}
+          </div>
+          <div>
+            {record?.tpId}
+          </div>
+        </div>
+      ),
+      style: { width: "10%" },
     },
     {
       title: "Load Data",

@@ -343,10 +343,14 @@ export const generateBallLabelFromBall = (ballType, isWicket) => {
   return toReturn
 }
 
-export const fetchNextPlayerOrder = (playerType, playerList) => {
+export const fetchNextPlayerOrder = (playerType, playerList, currentInnings) => {
   const searchFor = playerType === CURRENT_BOWLER ? "bowlerOrder" : "batterOrder"
   let highestNumber = 1
-  playerList?.map(player => {
+
+  const currentInningsPlayers = playerList?.filter(
+    player => player.currentInnings === currentInnings
+  ) || []
+  currentInningsPlayers?.map(player => {
     if (player[searchFor]) highestNumber = Math.max(+player[searchFor], +highestNumber)
   })
   return highestNumber + 1
