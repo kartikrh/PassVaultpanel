@@ -1156,7 +1156,7 @@ const Commentary = (props) => {
                     if (isEqual(player.commentaryPlayerId, newPlayerId)) {
                         const updatedPlayer = {
                             ...player, "isPlay": true, "onStrike": playerToChange === ON_STRIKE ? true : false, "isPlayInEvent": true,
-                            [updateOrderKey]: player[updateOrderKey] || fetchNextPlayerOrder(playerToChange, prevValue[teamType])
+                            [updateOrderKey]: player[updateOrderKey] || fetchNextPlayerOrder(playerToChange, prevValue[teamType], player?.currentInnings)
                         }
                         updatedOnPitchPlayer[playerToChange] = updatedPlayer
                         return updatedPlayer
