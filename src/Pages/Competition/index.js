@@ -133,9 +133,9 @@ const Index = () => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
     const data = latestValueFromTable || tableActions;
-    const isDragValue =
-      data?.isTrending !== undefined ? data?.isTrending : isDrag;
-    setIsDrag(isDragValue);
+    // const isDragValue =
+    //   data?.isTrending !== undefined ? data?.isTrending : isDrag;
+    // setIsDrag(isDragValue);
     const countryData = isEmpty(countryList)
       ? await fetchCountryData()
       : countryList;
@@ -1258,7 +1258,8 @@ const Index = () => {
   //elements required
   const tableElement = {
     title: "Competition",
-    dragDrop: isDrag,
+    // dragDrop: isDrag,
+    dragDrop: true,
     headerSelect: false,
     eventTypeSelect: true,
     matchTypeSelect: true,

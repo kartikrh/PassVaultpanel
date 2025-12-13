@@ -61,7 +61,7 @@ const Index = () => {
   const globalDateType = JSON.parse(localStorage.getItem("DateType"))
   const [data, setData] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
-  const [dateRange, setDateRange] = useState(() => getDateRange(5));
+  // const [dateRange, setDateRange] = useState(() => getDateRange(5));
   const [checekedList, setCheckedList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [eventTypes, setEventTypes] = useState([]);
@@ -83,6 +83,10 @@ const Index = () => {
   const [dateType, setDateType] = useState(globalDateType || {
     label: "Local Timezone",
     value: 1,
+  });
+  const [dateRange, setDateRange] = useState({
+    startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
+    endDate: `${new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split("T")[0]}T23:59:00`,
   });
   const [selectedTableElements, setSelectedTableElements] = useState({
     eventType: null,
@@ -122,6 +126,7 @@ const Index = () => {
   const [isAccessModalOpen, setIsAccessModalOpen] = useState(false);
   const [accessPassword, setAccessPassword] = useState("");
   const [commentaryIdToSend, setCommentaryIdToSend] = useState(null);
+  const [isSearch, setIsSearch] = useState(commentaryHistoryId || competitionDetails?.competitionId ? false : true);
 
   useEffect(() => {
     if (competitionDetails?.eventTypeId && competitionDetails?.competitionId) {
@@ -436,15 +441,23 @@ const Index = () => {
     const tableActions = finalizeRef.current.getTableAction();
     const data = latestValueFromTable || tableActions
     console.log("selectedTableElements", selectedTableElements)
+    console.log("data", data)
     let payload = {
       ...data,
-      startDate: convertDateLocalToUTC(dateRange?.startDate, "index"),
-      endDate: convertDateLocalToUTC(dateRange?.endDate, "index"),
+      // startDate: convertDateLocalToUTC(dateRange?.startDate, "index"),
+      // endDate: convertDateLocalToUTC(dateRange?.endDate, "index"),
       eventTypeId: competitionDetails?.eventTypeId || data?.eventTypeId || 0,
       competitionId: competitionDetails?.competitionId || data?.competitionId || 0,
       // eventTypeId: selectedTableElements?.eventType?.value ? selectedTableElements?.eventType?.value : data?.eventTypeId || 0,
       // competitionId: selectedTableElements?.competition?.value ?  selectedTableElements?.competition?.value : data?.eventTypeId !== eventTypeId ? 0 : data?.competitionId || 0,
     };
+    if (isSearch) {
+      payload = {
+        ...payload,
+        startDate: convertDateLocalToUTC(latestValueFromTable?.startDate ? latestValueFromTable?.startDate : dateRange?.startDate, "index"),
+        endDate: convertDateLocalToUTC(latestValueFromTable?.endDate ? latestValueFromTable?.endDate : dateRange?.endDate, "index"),
+      };
+    }
     await axiosInstance
       .post(`/admin/commentary/history`, payload)
       .then((response) => {
@@ -966,7 +979,21 @@ const Index = () => {
   };
 
   const handleReset = (value) => {
-    fetchData(value);
+    const newDateRange = {
+      startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
+      endDate: `${new Date(Date.now() + 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split("T")[0]}T23:59:00`,
+    };
+
+    setDateRange(newDateRange);
+    setIsSearch(true)
+    fetchData({
+      ...value,
+      startDate: convertDateLocalToUTC(newDateRange.startDate, "index"),
+      endDate: convertDateLocalToUTC(newDateRange.endDate, "index"),
+    });
+    // fetchData(value);
     fetchEventTypeData();
     fetchPythonAPIData();
   };
@@ -2479,7 +2506,8 @@ const Index = () => {
         value: false,
       },
     ],
-    dateRange: true,
+    // dateRange: true,
+    isDateRange: true,
     compToRender: tabelNoteDisplay
   };
 
@@ -2488,7 +2516,7 @@ const Index = () => {
       navigate("/dashboard");
     }
     fetchData();
-  }, [permissionObj]);
+  }, [isSearch, permissionObj]);
 
   useEffect(() => {
     fetchEventTypeData();
@@ -2540,7 +2568,10 @@ const Index = () => {
             setDateRange={setDateRange}
             loadDataModelFunction={setLoadDataModelVisable}
             dateRange={dateRange}
+            dateType={dateType}
             setDateType={setDateType}
+            isSearch={isSearch}           
+            setIsSearch={setIsSearch}
             selectedTableElementsLogs={selectedTableElements}
             isDeletePermission={checkPermission(
               permissionObj,
