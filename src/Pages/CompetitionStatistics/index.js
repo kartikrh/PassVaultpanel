@@ -192,7 +192,7 @@ const Index = () => {
       });
   };
   const handleEdit = (id) => {
-    navigate("/addCompetitionStatistics", { state: { competitionStatisticsTypeId: id } });
+    navigate("/addCompetitionStatisticsType", { state: { competitionStatisticsTypeId: id } });
   };
   const handleReset = (value) => {
     fetchData(value);
@@ -477,7 +477,7 @@ const Index = () => {
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
-            onAddNavigate={"/addCompetitionStatistics"}
+            onAddNavigate={"/addCompetitionStatisticsType"}
             handleReset={handleReset}
             handleReload={handleReload}
             loadDataModelFunction={setLoadDataModelVisable}
