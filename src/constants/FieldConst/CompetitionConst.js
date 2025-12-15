@@ -143,15 +143,15 @@ export const CompetitionFields = [
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
-  { //added just for alignment
-    name: "dummy",
-    label: "Dummy",
-    type: TEXT,
-    dependsOnField: "dependOnDummyData",
-    dependsOnValue: true,
-    labelColspan: { xs: 12, md: 2, lg: 2 },
-    fieldColspan: { xs: 12, md: 4, lg: 4 },
-  },
+  // { //added just for alignment
+  //   name: "dummy",
+  //   label: "Dummy",
+  //   type: TEXT,
+  //   dependsOnField: "dependOnDummyData",
+  //   dependsOnValue: true,
+  //   labelColspan: { xs: 12, md: 2, lg: 2 },
+  //   fieldColspan: { xs: 12, md: 4, lg: 4 },
+  // },
   {
     name: "isVirtual",
     label: "Virtual",
@@ -190,6 +190,13 @@ export const CompetitionFields = [
   {
     name: "isPointTable",
     label: "Is Point Table",
+    defaultValue: false,
+    parentclassName: "",
+    type: SWITCH,
+  },
+  {
+    name: "isCompetitionStatisticsCalculation",
+    label: "Calc Competition Stats",
     defaultValue: false,
     parentclassName: "",
     type: SWITCH,

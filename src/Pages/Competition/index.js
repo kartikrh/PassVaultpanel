@@ -30,6 +30,7 @@ import LoadDataModal from "../../components/Model/LoadDataModal";
 import { mapType } from "../Commentary/functions";
 import { ChangeStatusModel } from "../../components/Model/ChangeStatusModel";
 import Item from "antd/es/list/Item";
+import { isCompositeComponentWithType } from "react-dom/test-utils";
 
 const Index = () => {
   const pageName = TAB_COMPETITION;
@@ -453,6 +454,34 @@ const Index = () => {
     setIsLoading(true);
     await axiosInstance
       .post(`/admin/competition/isPointTable`, {
+        competitionId: record.competitionId,
+        [pType]: cState ? false : true,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+  const handleCompStatsCalculation = async (pType, record, cState) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/competition/isCompetitionStatisticsCalculation`, {
         competitionId: record.competitionId,
         [pType]: cState ? false : true,
       })
@@ -1141,6 +1170,29 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
+      title: "Competition Stats",
+      key: "isCompetitionStatisticsCalculation",
+      render: (text, record) => (
+        <Tooltip
+          title={"Competition Stats"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
+          <Button
+            color={`${record?.isCompetitionStatisticsCalculation ? "primary" : "danger"}`}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              handleCompStatsCalculation("isCompetitionStatisticsCalculation", record, record?.isCompetitionStatisticsCalculation);
+            }}
+          >
+            <i className={`bx ${record.isCompetitionStatisticsCalculation ? "bx-check" : "bx-block"}`}></i>
+          </Button>
+        </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
       title: "Teams",
       key: "competitionId",
       render: (text, record) => (
@@ -1274,6 +1326,7 @@ const Index = () => {
     isVirtual: true,
     isDateTypeSelect: true,
     commStatus: true,
+    isCompetitionStatisticsCalculation: true,
     commStatusOptions: [
       {
         label: "All",
@@ -1310,6 +1363,20 @@ const Index = () => {
         value: false,
       },
     ],
+    competitionStatsCalcOptions: [
+      {
+        label: "All",
+        value: 0,
+      },
+      {
+        label: "true",
+        value: true,
+      },
+      {
+        label: "false",
+        value: false,
+      },
+    ],  
   };
 
   useEffect(() => {
