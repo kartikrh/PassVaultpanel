@@ -1286,6 +1286,10 @@ const Index = forwardRef(
           value: 0,
           label: "Entity",
         },
+        isCompetitionStatisticsCalculation: {
+          value: 0,
+          label: "Competition Stats",
+        },
       });
       setMenSwitch(null)
       setTrendingStatusSwitch(null)
@@ -2804,6 +2808,37 @@ const Index = forwardRef(
                                 classNamePrefix="filter-dropdown"
                               />
                             </div>
+                          ) : null}
+                          {tableElement?.isCompetitionStatisticsCalculation ? (
+                            <Select
+                              value={selectedTableElements?.isCompetitionStatisticsCalculation}
+                              placeholder="Competition Stats"
+                              styles={{
+                                control: (provided) => ({
+                                  ...provided,
+                                  width: 200,
+                                }), // Adjust width as needed
+                              }}
+                              onChange={(e) => {
+                                if (
+                                  e?.value !==
+                                  selectedTableElements?.isCompetitionStatisticsCalculation?.value
+                                ) {
+                                  handleTableActions("isCompetitionStatisticsCalculation", e);
+                                  setSelectedTableElements({
+                                    ...selectedTableElements,
+                                    isCompetitionStatisticsCalculation: e,
+                                  });
+                                }
+                              }}
+                              options={tableElement?.competitionStatsCalcOptions?.map(
+                                (item) => ({
+                                  label: item?.label,
+                                  value: item?.value,
+                                })
+                              )}
+                              classNamePrefix="filter-dropdown"
+                            />
                           ) : null}
                           {tableElement?.isShowContent ? (
                             <div className="d-flex align-items-center">
