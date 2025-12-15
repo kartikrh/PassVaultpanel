@@ -196,7 +196,7 @@ export const CompetitionFields = [
   },
   {
     name: "isCompetitionStatisticsCalculation",
-    label: "Calc Competition Stats",
+    label: "Competition Stats",
     defaultValue: false,
     parentclassName: "",
     type: SWITCH,

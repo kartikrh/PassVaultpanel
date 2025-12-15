@@ -149,6 +149,7 @@ const Index = () => {
   const [commentaryIdToSend, setCommentaryIdToSend] = useState(null);
   const playerCommentaryPlayed = +sessionStorage.getItem('playedCommentaryId');
   const shouldSetStatusToAll = sessionStorage.getItem('setCommentaryStatusToAll') === 'true';
+  const [matchTypes, setMatchTypes] = useState([]);
 
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
@@ -287,6 +288,24 @@ const Index = () => {
         setCompetitions(response.result);
       })
       .catch((error) => { });
+  };
+  const fetchMatchTypeData = async () => {
+    await axiosInstance
+      .post(`/admin/competition/getMatchTypes`, {})
+      .then((response) => {
+        setMatchTypes(response.result);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
   };
   const handleSingleCheck = (e) => {
     let updateSingleCheck = [];
@@ -3077,6 +3096,7 @@ const Index = () => {
     loadData: true,
     isDateTypeSelect: true,
     pythonApiSelect: true,
+    matchTypeSelect: true,
     statusOptions: [
       {
         label: "All",
@@ -3140,6 +3160,7 @@ const Index = () => {
     fetchEventTypeData();
     fetchUserPermission();
     fetchPythonAPIData();
+    fetchMatchTypeData()
   }, []);
 
   useEffect(() => {
@@ -3191,6 +3212,7 @@ const Index = () => {
   const handleReload = (value) => {
     fetchData();
     fetchEventTypeData();
+    fetchMatchTypeData();
     fetchPythonAPIData();
   };
   return (
@@ -3216,6 +3238,7 @@ const Index = () => {
             cancelModelFunction={setCancelModelVisible}
             cloneModelFunction={setCloneModelVisible}
             eventTypes={eventTypes}
+            matchType={matchTypes}
             singleCheck={checekedList}
             reFetchData={fetchData}
             handleReset={handleReset}
