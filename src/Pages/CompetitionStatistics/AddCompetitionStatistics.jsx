@@ -78,7 +78,7 @@ const AddCompetitionStatistics = () => {
     if (isSaved) {
       dispatch(updateSavedState(undefined));
       if (currentSaveAction === SAVE_AND_CLOSE) {
-        navigate("/competitionStatistics");
+        navigate("/competitionStatisticsType");
         localStorage.removeItem("nextDisplayOrder");
       } else if (currentSaveAction === SAVE_AND_NEW) {
         // localStorage.removeItem("nextDisplayOrder");
@@ -200,7 +200,7 @@ const AddCompetitionStatistics = () => {
     }
   };
   const handleBackClick = () => {
-    navigate("/competitionStatistics");
+    navigate("/competitionStatisticsType");
   };
 
   return (

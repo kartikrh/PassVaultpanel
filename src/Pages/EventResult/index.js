@@ -15,7 +15,7 @@ import {
 } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
 import { isEqual } from "lodash";
-import { checkPermission, convertDateLocalToUTC, convertDateUTCToLocal2, convertDateUTCToLocal2_24 } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateLocalToUTC, convertDateUTCToLocal2, convertDateUTCToLocal2_24, convertDateUTCToLocalWithoutSec24, convertDateUtcFormatWithoutSec24 } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 
 const Index = () => {
@@ -48,6 +48,11 @@ const Index = () => {
   const teamId = +sessionStorage.getItem('eventResultTeamId') || 0;
   const competitionId = +sessionStorage.getItem('eventResultCompetitionId') || 0;
   const competitionDetails = JSON.parse(sessionStorage.getItem('eventResultDetails') || "{}");
+  const globalDateType = JSON.parse(localStorage.getItem("DateType"));
+  const [dateType, setDateType] = useState(globalDateType || {
+    label: "Local Timezone",
+    value: 1,
+  });
   
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -289,9 +294,16 @@ const Index = () => {
     {
       title: "Date",
       dataIndex: "eventDate",
+      // render: (text, record) => (
+      //   <span>
+      //     {convertDateUTCToLocal2_24(text, "index")}
+      //   </span>
+      // ),
       render: (text, record) => (
-        <span>
-          {convertDateUTCToLocal2_24(text, "index")}
+        <span style={{ fontWeight: record.isPredictMarket ? "bold" : "" }}>
+          {dateType?.value == 1
+            ? convertDateUTCToLocalWithoutSec24(text, "index")
+            : convertDateUtcFormatWithoutSec24(text, "index")}
         </span>
       ),
       key: "eventDate",
@@ -396,6 +408,7 @@ const Index = () => {
     isServerPagination: true,
     isNotCalculate: true,
     isDateRange: true,
+    isDateTypeSelect: true,
   };
 
   useEffect(() => {
@@ -479,6 +492,8 @@ const Index = () => {
             isSearch={isSearch}
             setIsSearch={setIsSearch}
             setCompetitionId={setCompetitionId}
+            dateType={dateType}
+            setDateType={setDateType}
           />
           <CancelCalculationModel
             cancelCalculateModelVisable={cancelCalculateModelVisable}

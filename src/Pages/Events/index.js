@@ -41,7 +41,6 @@ const Index = () => {
       new Date().toISOString().split("T")[0]
     }T23:59`
   })
-  const [isSearch, setIsSearch] = useState(true);
   const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
   const [selectedTableElements, setSelectedTableElements] = useState({
     eventType: null,
@@ -54,6 +53,7 @@ const Index = () => {
   const [tableSearchedData, setTableSearchedData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(globalPageSize || 10);
+  const [isSearch, setIsSearch] = useState(EventTypeId || EventCompetitionId ? false : true);
 
   const commentaryPermission = checkPermission(permissionObj, CommentaryPage, PERMISSION_VIEW)
   const commentaryListPermission = checkPermission(permissionObj, CommentaryListPage, PERMISSION_VIEW)
