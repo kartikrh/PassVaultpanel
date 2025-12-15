@@ -63,6 +63,7 @@ const Index = () => {
   const [playerRecord, setPlayerRecord] = useState({});
   const [createdDetailsModelVisible, setCreatedDetailsModelVisible] = useState(false);
   const [createdDetailsData, setCreatedDetailsData] = useState({});
+  const [createdPlayerId, setCreatedPlayerId] = useState(null);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -388,6 +389,7 @@ const Index = () => {
       });
       if (response?.success) {
         setCreatedDetailsData(response?.result || {});
+        setCreatedPlayerId(playerId);
         setCreatedDetailsModelVisible(true);
       }
       setIsLoading(false);
@@ -1005,8 +1007,12 @@ const Index = () => {
           {createdDetailsModelVisible && (
             <PlayerCreationDetails
               isOpen={createdDetailsModelVisible}
-              toggle={() => setCreatedDetailsModelVisible(false)}
+              toggle={() => {
+                setCreatedDetailsModelVisible(false);
+                setCreatedPlayerId(null);
+              }}
               createdDetailsData={createdDetailsData}
+              playerId={createdPlayerId}
             />
           )}
         </Container>

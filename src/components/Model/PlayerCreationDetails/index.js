@@ -1,12 +1,11 @@
 import React from "react";
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from "reactstrap";
 
-export const PlayerCreationDetails = ({ isOpen, toggle, createdDetailsData }) => {
+export const PlayerCreationDetails = ({ isOpen, toggle, createdDetailsData, playerId }) => {
 
     return (
         <Modal isOpen={isOpen} toggle={toggle} size="md" centered>
-            <ModalHeader toggle={toggle}>Player Creation Details
-            </ModalHeader>
+            <ModalHeader toggle={toggle}>Player Creation Details{" "}  {playerId ? `(${playerId})` : ""}</ModalHeader>
             <ModalBody>
                 <div className="p-2">
                     <div className="mb-1">
