@@ -678,6 +678,19 @@ const Index = () => {
     // sessionStorage.removeItem("commentaryManualOddsMarketDetails");
   };
 
+  const handleCompKeyStatsClick = async (details) => {
+    localStorage.setItem(
+      "keyStatscompetitionId",
+      "" + details?.competitionId
+    );
+    localStorage.setItem(
+      "competitionStatisticsDetails",
+      "" + JSON.stringify(details)
+    );
+    const url = new URL(window.location.origin + "/competitionKeyStats");
+    window.open(url.href, "_blank");
+  };
+
   //checkbox select
   const getSelectedItemsData = () => {
     const newCurrentPage = currentPage > 0 ? currentPage : 1;
@@ -1170,28 +1183,74 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Competition Stats",
-      key: "isCompetitionStatisticsCalculation",
+      title: "C Stats",
+      key: "competitionStats",
       render: (text, record) => (
-        <Tooltip
-          title={"Competition Stats"}
-          color={"#e8e8ea"}
-          overlayInnerStyle={{ color: "#000" }}
-        >
-          <Button
-            color={`${record?.isCompetitionStatisticsCalculation ? "primary" : "danger"}`}
-            size="sm"
-            className="btn"
-            onClick={() => {
-              handleCompStatsCalculation("isCompetitionStatisticsCalculation", record, record?.isCompetitionStatisticsCalculation);
-            }}
+        <div className="d-flex justify-content-center gap-1">
+          <Tooltip
+            title={"Competition Stats"}
+            color={"#e8e8ea"}
+            overlayInnerStyle={{ color: "#000" }}
           >
-            <i className={`bx ${record.isCompetitionStatisticsCalculation ? "bx-check" : "bx-block"}`}></i>
-          </Button>
-        </Tooltip>
+            <Button
+              color={`${record?.isCompetitionStatisticsCalculation ? "primary" : "danger"}`}
+              size="sm"
+              className="btn"
+              onClick={() => {
+                handleCompStatsCalculation("isCompetitionStatisticsCalculation", record, record?.isCompetitionStatisticsCalculation);
+              }}
+            >
+              <i className={`bx ${record.isCompetitionStatisticsCalculation ? "bx-check" : "bx-block"}`}></i>
+            </Button>
+          </Tooltip>
+          {record?.isCompetitionStatisticsCalculation && record?.tpId && (
+            <Tooltip
+              title={"Competition Key Stats"}
+              color={"#e8e8ea"}
+              overlayInnerStyle={{ color: "#000" }}
+            >
+              <Button
+                color={"info"}
+                size="sm"
+                className="btn"
+                onClick={() => {
+                  handleCompKeyStatsClick(record);
+                }}
+              >
+                <i className="bx bxs-up-arrow-square"></i>
+              </Button>
+            </Tooltip>
+          )}
+        </div>
       ),
-      style: { width: "2%", textAlign: "center" },
+      style: { width: "3%", textAlign: "center" },
     },
+    // {
+    //   title: "Stats",
+    //   key: "keyStats",
+    //   printType: "ignore",
+    //   render: (text, record) => {
+    //     if (record?.isCompetitionStatisticsCalculation && record?.tpId) {
+    //       return <Tooltip
+    //         title={"Competition Key Stats"}
+    //         color={"#e8e8ea"}
+    //         overlayInnerStyle={{ color: "#000" }}
+    //       >
+    //         <Button
+    //           color={"info"}
+    //           size="sm"
+    //           className="btn"
+    //           onClick={() => {
+    //             handleUpdateStatsClick(record);
+    //           }}
+    //         >
+    //           <i class="bx bxs-up-arrow-square"></i>
+    //         </Button>
+    //       </Tooltip>
+    //     }
+    //   },
+    //   style: { width: "2%", textAlign: "center" },
+    // },
     {
       title: "Teams",
       key: "competitionId",
