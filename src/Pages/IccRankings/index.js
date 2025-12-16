@@ -736,7 +736,7 @@ const Index = () => {
                   options={sportList}
                   classNamePrefix="filter-dropdown"
                 />
-                <Tooltip title={"Update icc ranking"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+                <Tooltip title={"Import ICC Ranking"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
                   <Button
                     color={"success"}
                     className="btn border"
@@ -745,7 +745,7 @@ const Index = () => {
                     // className="btn border"
                   >
                     <i className="bx bx-plus"></i>
-                    Import Ranking
+                    Import
                   </Button>
                 </Tooltip>
               </>
