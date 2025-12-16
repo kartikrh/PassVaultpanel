@@ -179,6 +179,7 @@ import StreamingTable from "../Pages/Commentary/StreamingTable.js";
 import StreamWatch from "../Pages/Commentary/StreamWatch.js";
 import AddCompetitionStatistics from "../Pages/CompetitionStatistics/AddCompetitionStatistics.jsx";
 import MatchCardView from "../Pages/EntityUpdateLogs/MatchCardView.js";
+import CompetitionKeyStatistics from "../Pages/Competition/CompetitionKeyStatistics.jsx";
 
 const authProtectedRoutes = [
   //dashboard
@@ -210,6 +211,7 @@ const authProtectedRoutes = [
   { path: "/addPenalty", component: <AddPenaltyRuns /> },
   { path: "/competition", component: <Competition /> },
   { path: "/tournamentTeamPoints", component: <TournamentTeamPoints /> },
+  { path: "/competitionKeyStats", component: <CompetitionKeyStatistics /> },
   {
     path: "/tournamentCompetitionPoints",
     component: <TournamentCompetitionPoints />,
