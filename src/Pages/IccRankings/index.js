@@ -163,10 +163,40 @@ const Index = () => {
         );
       });
   };
-  const updatedImportData = async () => {
+  // const updatedImportData = async () => {
+  //   setIsLoading(true)
+  //   await axiosInstance
+  //     .get(`/admin/iccRanking/import`)
+  //     .then((response) => {
+  //       fetchData()
+  //       dispatch(
+  //         updateToastData({
+  //           data: response.result,
+  //           title: response?.title,
+  //           type: SUCCESS,
+  //         })
+  //       );
+  //       setIsLoading(false);
+  //     })
+  //     .catch((error) => {
+  //       setIsLoading(false);
+  //       dispatch(
+  //         updateToastData({
+  //           data: error?.message,
+  //           title: error?.title,
+  //           type: ERROR,
+  //         })
+  //       );
+  //     });
+  // };
+  const importData = async () => {
     setIsLoading(true)
     await axiosInstance
-      .get(`/admin/iccRanking/import`)
+      .post(`/admin/autoImportData/save`, {
+        "refId": null,
+        "refType": 9,
+        "sourceId": 3
+      })
       .then((response) => {
         fetchData()
         dispatch(
@@ -708,10 +738,14 @@ const Index = () => {
                 />
                 <Tooltip title={"Update icc ranking"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
                   <Button
-                  onClick={() => updatedImportData()}
+                    color={"success"}
                     className="btn border"
+                    onClick={() => importData()}
+                  // onClick={() => updatedImportData()}
+                    // className="btn border"
                   >
-                    Update
+                    <i className="bx bx-plus"></i>
+                    Import Ranking
                   </Button>
                 </Tooltip>
               </>
