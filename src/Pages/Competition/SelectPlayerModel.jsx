@@ -18,6 +18,7 @@ export const SelectPlayersModel = ({
   const [playerList, setPlayerList] = useState([]);
   const [selectedPlayers, setSelectedPlayers] = useState([]);
   const [selectedTournamentVals, setSelectedTournamentVals] = useState({});
+  const [originalTournamentPlayers, setOriginalTournamentPlayers] = useState([]);
   const dispatch = useDispatch();
   useEffect(() => {
     setSelectedTournamentVals(selectedTournament);
@@ -49,6 +50,7 @@ export const SelectPlayersModel = ({
           value: player.playerId,
         }))
       );
+      setOriginalTournamentPlayers(tournamentTeamPlayers);
       setIsLoading(false);
     } catch (error) {
       dispatch(
@@ -81,7 +83,19 @@ export const SelectPlayersModel = ({
       competitionId: selectedTournamentVals.competitionId,
     }));
 
-    setSelectedTournament({teamId : selectedTournamentVals?.teamId, competitionId: selectedTournamentVals?.competitionId, teamPlayers: selectedPlayersArray});
+    const addPlayers = selectedPlayersArray.filter(
+      (player) => !originalTournamentPlayers.some((orig) => orig.playerId === player.playerId)
+    ).map((player) => ({
+      ...player,
+    }));
+
+    const removePlayers = originalTournamentPlayers.filter(
+      (orig) => !selectedPlayersArray.some((player) => player.playerId === orig.playerId)
+    ).map((player) => ({
+      ...player,
+    }));
+
+    setSelectedTournament({teamId : selectedTournamentVals?.teamId, competitionId: selectedTournamentVals?.competitionId, teamPlayers: selectedPlayersArray, addPlayers, removePlayers});
   };
 
   return (

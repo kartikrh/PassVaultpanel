@@ -19,6 +19,7 @@ import LoadDataModal from "../../components/Model/LoadDataModal";
 import GenerateModal from "./GenerateModal";
 import PlayerCompetitionDetails from "../../components/Model/PlayerCompetitionDetails";
 import PlayerPlayedCommentary from "../../components/Model/PlayerPlayedCommentary";
+import { PlayerCreationDetails } from "../../components/Model/PlayerCreationDetails";
 
 const Index = () => {
   const pageName = TAB_PLAYERS
@@ -60,6 +61,9 @@ const Index = () => {
   const [competitionRecord, setCompetitionRecord] = useState({});
   const [commentaryPlayedModelVisible, setCommentaryPlayedModelVisible] = useState(false);
   const [playerRecord, setPlayerRecord] = useState({});
+  const [createdDetailsModelVisible, setCreatedDetailsModelVisible] = useState(false);
+  const [createdDetailsData, setCreatedDetailsData] = useState({});
+  const [createdPlayerId, setCreatedPlayerId] = useState(null);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -377,6 +381,30 @@ const Index = () => {
     setCheckedList([]);
   };
 
+  const handleCreatedDetails = async (playerId) => {
+    try {
+      setIsLoading(true);
+      const response = await axiosInstance.post(`/admin/player/createdDetails`, {
+        playerId: playerId
+      });
+      if (response?.success) {
+        setCreatedDetailsData(response?.result || {});
+        setCreatedPlayerId(playerId);
+        setCreatedDetailsModelVisible(true);
+      }
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
+      dispatch(
+        updateToastData({
+          data: error?.message,
+          title: error?.title,
+          type: ERROR,
+        })
+      );
+    }
+  };
+
   //table columns
   const columns = [
     {
@@ -651,6 +679,29 @@ const Index = () => {
           }}
         >
           <i class='bx bx-info-circle' ></i>
+        </Button>
+      </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: " ",
+      key: "createdDetails",
+      render: (text, record) => (
+      <Tooltip
+        title={"Player Created Details"}
+        color={"#e8e8ea"}
+        overlayInnerStyle={{ color: "#000" }}
+      >
+        <Button
+          // color={"info"}
+          size="sm"
+          className="btn errorBtn"
+          onClick={() => {
+            handleCreatedDetails(record?.playerId);
+          }}
+        >
+          <i class='bx bx-store' ></i>
         </Button>
       </Tooltip>
       ),
@@ -951,6 +1002,17 @@ const Index = () => {
               commentaryPlayedModelVisible={commentaryPlayedModelVisible}
               setCommentaryPlayedModelVisible={setCommentaryPlayedModelVisible}
               playerRecord={playerRecord}
+            />
+          )}
+          {createdDetailsModelVisible && (
+            <PlayerCreationDetails
+              isOpen={createdDetailsModelVisible}
+              toggle={() => {
+                setCreatedDetailsModelVisible(false);
+                setCreatedPlayerId(null);
+              }}
+              createdDetailsData={createdDetailsData}
+              playerId={createdPlayerId}
             />
           )}
         </Container>
