@@ -912,7 +912,7 @@ const FormBuilder = forwardRef(
                     {field.type === BUTTON && (
                       <>
                         {field.isFileButton ? (
-                          <label className="btn btn-primary mb-0">
+                          <label className="btn btn-primary mb-0 mx-2">
                             {field.btnLable}
                             <input
                               type="file"
