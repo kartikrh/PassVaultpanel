@@ -536,6 +536,14 @@ const Index = () => {
     const url = new URL(window.location.origin + "/commentaryMaster");
     window.open(url.href, "_blank");
   };
+
+  const handleCommentaryDetailsClick = (id) => {
+    // navigate("/commentaryScoring", { state: { commentaryId: id } });
+    sessionStorage.setItem("commentaryScoringId", "" + id);
+    sessionStorage.setItem("commentary", "commentary");
+    const url = new URL(window.location.origin + "/commentaryScoring");
+    window.open(url.href, "_blank");
+  };
   // const handleScorerDetailsClick = (id) => {
   //   // navigate("/commentaryMaster", { state: { commentaryId: id } });
   //   localStorage.setItem('commentaryScorerId', "" + id);
@@ -1882,6 +1890,30 @@ const Index = () => {
             className="btn"
             onClick={() => {
               handleDetailsClick(record.commentaryId);
+            }}
+          >
+            <i class="bx bxs-right-arrow"></i>
+          </Button>
+        </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "New Scoring",
+      key: "newCommentaryScoring",
+      printType: "ignore",
+      render: (text, record) => (
+        <Tooltip
+          title={"Go to new scoring"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
+          <Button
+            // color={"warning"}
+            size="sm"
+            className="btn generateImageBtn"
+            onClick={() => {
+              handleCommentaryDetailsClick(record.commentaryId);
             }}
           >
             <i class="bx bxs-right-arrow"></i>
