@@ -139,11 +139,21 @@ const MatchTypePredictor = () => {
       });
 
       const result = response?.result || {};
+      const predictorList = result?.predictorData || [];
+
+      const predictorMaxOver = predictorList.length > 0
+        ? Math.max(...predictorList.map(p => Number(p.over)))
+        : 0;
+      
+      const oversPerIningsData = predictorMaxOver > 0
+          ? predictorMaxOver
+          : result?.isLimitedOvers
+            ? result?.oversPerInings
+            : result?.maxOversInFirstInings;
+
       const newData = {
         ...result,
-        oversPerInings: result?.isLimitedOvers
-          ? result?.oversPerInings
-          : result?.maxOversInFirstInings,
+        oversPerInings: oversPerIningsData,
         balls: 6,
       };
       setInitialEditData(newData);
