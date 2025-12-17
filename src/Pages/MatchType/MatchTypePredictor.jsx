@@ -41,6 +41,7 @@ import * as XLSX from "xlsx";
 const MatchTypePredictor = () => {
   const pageName = TAB_MATCH_TYPE;
   const finalizeRef = useRef(null);
+  const finalizeRefTable = useRef(null);
   const [drp_up, setDrp_up] = useState(false);
   const [initialEditData, setInitialEditData] = useState(undefined);
   const [data, setData] = useState([]);
@@ -139,11 +140,21 @@ const MatchTypePredictor = () => {
       });
 
       const result = response?.result || {};
+      const predictorList = result?.predictorData || [];
+
+      const predictorMaxOver = predictorList.length > 0
+        ? Math.max(...predictorList.map(p => Number(p.over)))
+        : 0;
+      
+      const oversPerIningsData = predictorMaxOver > 0
+          ? predictorMaxOver
+          : result?.isLimitedOvers
+            ? result?.oversPerInings
+            : result?.maxOversInFirstInings;
+
       const newData = {
         ...result,
-        oversPerInings: result?.isLimitedOvers
-          ? result?.oversPerInings
-          : result?.maxOversInFirstInings,
+        oversPerInings: oversPerIningsData,
         balls: 6,
       };
       setInitialEditData(newData);
@@ -310,10 +321,10 @@ const MatchTypePredictor = () => {
 
   const handleExport = () => {
     const exportData = data.map((row) => ({
+      Order: row.order,
       Over: row.over,
       Ball: row.ball,
       RunPerBall: row.runPerBall,
-      Order: row.order,
     }));
 
     const ws = XLSX.utils.json_to_sheet(exportData);
@@ -460,7 +471,7 @@ const MatchTypePredictor = () => {
                 />
                 {initialEditData && (
                   <PredictorTable
-                    ref={finalizeRef}
+                    ref={finalizeRefTable}
                     columns={columns}
                     dataSource={data}
                     tableElement={tableElement}
