@@ -27,6 +27,7 @@ export const MatchTypePredictorFields = [
     name: "generate",
     type: BUTTON,
     btnLable:"Generate",
+    action: "GENERATE",
     isRequired: true,
     labelColspan: { xs: 12, md: 1, lg: 1 },
     fieldColspan: { xs: 12, md: 1, lg: 1 }
