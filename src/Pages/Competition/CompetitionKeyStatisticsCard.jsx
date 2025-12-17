@@ -2,7 +2,7 @@ import React from 'react';
 import { Row } from 'reactstrap';
 import "../Commentary/CommentaryCss.css";
 
-const CompetitionStatisticsCard = ({ statisticsTypeId, statisticsData }) => {
+const CompetitionStatisticsCard = ({ statisticsType, statisticsData }) => {
     // Sort data by displayOrder
     const sortedData = [...statisticsData].sort((a, b) => a.displayOrder - b.displayOrder);
 
@@ -14,7 +14,7 @@ const CompetitionStatisticsCard = ({ statisticsTypeId, statisticsData }) => {
                         <div className="row fw-bold">
                             <div style={{ width: "10%" }}>Order</div>
                             <div style={{ width: "20%" }}>Team Name</div>
-                            {(statisticsTypeId === 1 || statisticsTypeId === 2) ? <div style={{ width: "20%" }}>Player Name</div> : null}
+                            {(statisticsType?.typeId === 1 || statisticsType?.typeId === 2) ? <div style={{ width: "20%" }}>Player Name</div> : null}
                             <div style={{ width: "10%" }}>Value</div>
                             {/* <div style={{ width: "12%" }}>Active</div> */}
                         </div>
@@ -30,7 +30,7 @@ const CompetitionStatisticsCard = ({ statisticsTypeId, statisticsData }) => {
                                 <div style={{ width: "20%" }} className="d-flex align-items-center">
                                     {stat?.teamName || 'N/A'}
                                 </div>
-                                {(statisticsTypeId === 1 || statisticsTypeId === 2) ?<div style={{ width: "20%" }} className="d-flex align-items-center">
+                                {(statisticsType?.typeId === 1 || statisticsType?.typeId === 2) ?<div style={{ width: "20%" }} className="d-flex align-items-center">
                                     {stat?.playerName || 'N/A'}
                                 </div> : null}
                                 <div style={{ width: "10%" }} className="d-flex align-items-center">
