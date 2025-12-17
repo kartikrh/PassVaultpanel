@@ -70,7 +70,13 @@ const MatchTypePredictor = () => {
         const oversAndBallsData = [];
 
         const ballsPerOver = initialEditData?.ballsPerOver;
-        const oversPerMatch = initialEditData?.isLimitedOvers ? initialEditData?.oversPerInings : initialEditData?.maxOversInFirstInings;
+        const formOvers = initialEditData?.isLimitedOvers ? initialEditData?.oversPerInings : initialEditData?.maxOversInFirstInings;
+
+        const predictorMaxOver = predictorData?.length > 0
+          ? Math.max(...predictorData.map(p => Number(p.over)))
+          : 0;
+
+        const oversPerMatch = Math.max(formOvers || 0, predictorMaxOver || 0);
 
         for (let i = 1; i <= oversPerMatch; i++) {
           for (let j = 1; j <= ballsPerOver; j++) {
@@ -330,7 +336,6 @@ const MatchTypePredictor = () => {
 
       if (!rows || rows.length === 0) return;
 
-      // ✅ Build predictor data directly from Excel
       const importedData = rows.map((r, index) => ({
         over: Number(r.Over),
         ball: r.Ball,
@@ -339,12 +344,9 @@ const MatchTypePredictor = () => {
         order: Number(r.Order ?? index + 1),
       }));
 
-      // ✅ Set full imported data (NOT merge)
       setData(importedData);
 
-      // ✅ Auto-update overs field based on Excel
       const maxOver = Math.max(...importedData.map((i) => i.over));
-
       finalizeRef.current?.updateFormFromParent({
         oversPerInings: maxOver,
       });
