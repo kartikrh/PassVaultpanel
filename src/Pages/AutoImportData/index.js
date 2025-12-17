@@ -181,6 +181,10 @@ const Index = () => {
         return "Player Update";
       case 8:
         return "Tournament Team";
+      case 9: 
+        return "ICC Ranking";
+      case 10:
+        return "Competition Statistics";
       default:
         return "-";
     }

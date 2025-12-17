@@ -36,6 +36,7 @@ import SpinnerModel from "../../components/Model/SpinnerModel";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import PredictorTable from "./PredictorTable";
 import { isEmpty } from "lodash";
+import * as XLSX from "xlsx";
 
 const MatchTypePredictor = () => {
   const pageName = TAB_MATCH_TYPE;
@@ -69,7 +70,13 @@ const MatchTypePredictor = () => {
         const oversAndBallsData = [];
 
         const ballsPerOver = initialEditData?.ballsPerOver;
-        const oversPerMatch = initialEditData?.isLimitedOvers ? initialEditData?.oversPerInings : initialEditData?.maxOversInFirstInings;
+        const formOvers = initialEditData?.isLimitedOvers ? initialEditData?.oversPerInings : initialEditData?.maxOversInFirstInings;
+
+        const predictorMaxOver = predictorData?.length > 0
+          ? Math.max(...predictorData.map(p => Number(p.over)))
+          : 0;
+
+        const oversPerMatch = Math.max(formOvers || 0, predictorMaxOver || 0);
 
         for (let i = 1; i <= oversPerMatch; i++) {
           for (let j = 1; j <= ballsPerOver; j++) {
@@ -156,6 +163,16 @@ const MatchTypePredictor = () => {
       const isValidData = data.every(
         (item) => item.runPerBall !== null && item.runPerBall !== ""
       );
+      if (!isValidData) {
+        dispatch(
+          updateToastData({
+            data: "Please enter Run Per Ball for all overs and balls before saving.",
+            title: "Match Type Predictor Error",
+            type: ERROR,
+          })
+        );
+        return;
+      }
 
       if (isValidData) {
         const payload = {
@@ -291,6 +308,54 @@ const MatchTypePredictor = () => {
     }
   };
 
+  const handleExport = () => {
+    const exportData = data.map((row) => ({
+      Over: row.over,
+      Ball: row.ball,
+      RunPerBall: row.runPerBall,
+      Order: row.order,
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Predictor");
+
+    XLSX.writeFile(wb, "match_type_predictor.xlsx");
+  };
+
+  const handleImport = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = (evt) => {
+      const workbook = XLSX.read(evt.target.result, { type: "binary" });
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(sheet);
+
+      if (!rows || rows.length === 0) return;
+
+      const importedData = rows.map((r, index) => ({
+        over: Number(r.Over),
+        ball: r.Ball,
+        runPerBall:
+          r.RunPerBall === "" || r.RunPerBall === 0 ? null : r.RunPerBall,
+        order: Number(r.Order ?? index + 1),
+      }));
+
+      setData(importedData);
+
+      const maxOver = Math.max(...importedData.map((i) => i.over));
+      finalizeRef.current?.updateFormFromParent({
+        oversPerInings: maxOver,
+      });
+    };
+
+    reader.readAsBinaryString(file);
+  };
+
+
   const tableElement = {
     title: "Match Type",
     headerSelect: false,
@@ -390,6 +455,8 @@ const MatchTypePredictor = () => {
                   generateAlias={onGenerateClick}
                   onFormDataChange={onFormDataChange}
                   disabledFields={disabledFields}
+                  onExport={handleExport}
+                  onImport={handleImport}  
                 />
                 {initialEditData && (
                   <PredictorTable

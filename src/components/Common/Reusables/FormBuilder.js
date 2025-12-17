@@ -58,7 +58,9 @@ const FormBuilder = forwardRef(
       generateAlias,
       handleFieldChange,
       pageName,
-      setDisabledFields
+      setDisabledFields,
+      onExport,
+      onImport,
     },
     ref
   ) => {
@@ -898,7 +900,7 @@ const FormBuilder = forwardRef(
                         className="ml-2"
                       />
                     )}
-                    {field.type === BUTTON && (
+                    {/* {field.type === BUTTON && (
                       <Button
                         type="button"
                         onClick={generateAlias}
@@ -906,6 +908,32 @@ const FormBuilder = forwardRef(
                       >
                         {field?.btnLable}
                       </Button>
+                    )} */}
+                    {field.type === BUTTON && (
+                      <>
+                        {field.isFileButton ? (
+                          <label className="btn btn-primary mb-0 mx-2">
+                            {field.btnLable}
+                            <input
+                              type="file"
+                              accept=".xls,.xlsx"
+                              hidden
+                              onChange={(e) => onImport && onImport(e)}
+                            />
+                          </label>
+                        ) : (
+                          <Button
+                            type="button"
+                            onClick={() => {
+                              if (field.action === "GENERATE") generateAlias?.();
+                              if (field.action === "EXPORT") onExport?.();
+                            }}
+                            disabled={disabledFields?.[field.name]}
+                          >
+                            {field.btnLable}
+                          </Button>
+                        )}
+                      </>
                     )}
                     {/* {field.type === IFRAME_BUTTON && (
                       <Button
