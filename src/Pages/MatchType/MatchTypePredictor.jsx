@@ -41,6 +41,7 @@ import * as XLSX from "xlsx";
 const MatchTypePredictor = () => {
   const pageName = TAB_MATCH_TYPE;
   const finalizeRef = useRef(null);
+  const finalizeRefTable = useRef(null);
   const [drp_up, setDrp_up] = useState(false);
   const [initialEditData, setInitialEditData] = useState(undefined);
   const [data, setData] = useState([]);
@@ -320,10 +321,10 @@ const MatchTypePredictor = () => {
 
   const handleExport = () => {
     const exportData = data.map((row) => ({
+      Order: row.order,
       Over: row.over,
       Ball: row.ball,
       RunPerBall: row.runPerBall,
-      Order: row.order,
     }));
 
     const ws = XLSX.utils.json_to_sheet(exportData);
@@ -470,7 +471,7 @@ const MatchTypePredictor = () => {
                 />
                 {initialEditData && (
                   <PredictorTable
-                    ref={finalizeRef}
+                    ref={finalizeRefTable}
                     columns={columns}
                     dataSource={data}
                     tableElement={tableElement}
