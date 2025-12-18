@@ -39,6 +39,7 @@ import UpdateWicketDismisalMarket from "../Pages/MarketTemplate/DismisalDataTemp
 import ChangePassword from "../Pages/ChangePassword";
 import Toss from "../Pages/Commentary/Toss.jsx";
 import CommentaryMaster from "../Pages/Commentary/CommentaryMaster.js";
+import CommentaryScoring from "../Pages/Commentary/CommentaryScoring.js";
 import AddBlock from "../Pages/Blocks/AddBlock.jsx";
 import Blocks from "../Pages/Blocks";
 import CardType from "../Pages/CardType";
@@ -179,6 +180,7 @@ import StreamingTable from "../Pages/Commentary/StreamingTable.js";
 import StreamWatch from "../Pages/Commentary/StreamWatch.js";
 import AddCompetitionStatistics from "../Pages/CompetitionStatistics/AddCompetitionStatistics.jsx";
 import MatchCardView from "../Pages/EntityUpdateLogs/MatchCardView.js";
+import CompetitionKeyStatistics from "../Pages/Competition/CompetitionKeyStatistics.jsx";
 
 const authProtectedRoutes = [
   //dashboard
@@ -210,6 +212,7 @@ const authProtectedRoutes = [
   { path: "/addPenalty", component: <AddPenaltyRuns /> },
   { path: "/competition", component: <Competition /> },
   { path: "/tournamentTeamPoints", component: <TournamentTeamPoints /> },
+  { path: "/competitionKeyStats", component: <CompetitionKeyStatistics /> },
   {
     path: "/tournamentCompetitionPoints",
     component: <TournamentCompetitionPoints />,
@@ -226,6 +229,7 @@ const authProtectedRoutes = [
   { path: "/commentaryHistory", component: <CommentaryHistory /> },
   { path: "/addCommentary", component: <AddCommentary /> },
   { path: "/commentaryMaster", component: <CommentaryMaster /> },
+  { path: "/commentaryScoring", component: <CommentaryScoring /> },
   { path: "/shortCommentary", component: <ShortCommentary /> },
   { path: "/updateCommentaryFeature", component: <CommentaryFeatures /> },
   { path: "/updateCommentaryPlayer", component: <UpdateCommentaryPlayer /> },
