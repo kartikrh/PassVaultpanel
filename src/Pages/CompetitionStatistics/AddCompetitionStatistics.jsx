@@ -56,6 +56,7 @@ const AddCompetitionStatistics = () => {
     typeId: 1,
     isActive: true,
   }
+  const [lastSubmittedDisplayOrder, setLastSubmittedDisplayOrder] = useState(null);
 
   useEffect(() => {
     if (competitionStatisticsTypeId !== 0) {
@@ -74,15 +75,15 @@ const AddCompetitionStatistics = () => {
   }, [permissionObj]);
 
   useEffect(() => {
-    console.log("currentSaveAction", currentSaveAction)
+    // console.log("currentSaveAction", currentSaveAction)
     if (isSaved) {
       dispatch(updateSavedState(undefined));
       if (currentSaveAction === SAVE_AND_CLOSE) {
-        navigate("/competitionStatisticsType");
         localStorage.removeItem("nextDisplayOrder");
+        navigate("/competitionStatisticsType");
       } else if (currentSaveAction === SAVE_AND_NEW) {
-        // localStorage.removeItem("nextDisplayOrder");
-        const newDisplayOrder = Number(initialEditData?.displayOrder) + 1;
+        localStorage.removeItem("nextDisplayOrder");
+        const newDisplayOrder = lastSubmittedDisplayOrder  + 1;
         localStorage.setItem("nextDisplayOrder", newDisplayOrder);
         const newDefaultData = {
         displayOrder: newDisplayOrder,
@@ -92,11 +93,15 @@ const AddCompetitionStatistics = () => {
         // setInitialEditData({});
         setCompetitionStatisticsTypeId("0");
         setInitialEditData(newDefaultData);
-        finalizeRef.current.resetForm();
+        // finalizeRef.current.resetForm();
+        setTimeout(() => {
+        finalizeRef.current?.resetForm();
+      }, 50);
       }
       setCurrentSaveAction(undefined);
+      setLastSubmittedDisplayOrder(null);
     }
-  }, [isSaved]);
+  }, [isSaved, lastSubmittedDisplayOrder, currentSaveAction]);
 
   const fetchData = async (competitionStatisticsTypeId) => {
     await axiosInstance
@@ -176,7 +181,8 @@ const AddCompetitionStatistics = () => {
 
   const handleSaveClick = async (saveAction) => {
     let dataToSave = finalizeRef.current.finalizeData();
-    if(Number(dataToSave.displayOrder) == null){
+    const displayOrderNum = Number(dataToSave.displayOrder);
+    if(dataToSave.displayOrder == null || isNaN(displayOrderNum)){
         dispatch(
           updateToastData({
             data: "Display order should be integer",
@@ -193,10 +199,12 @@ const AddCompetitionStatistics = () => {
       const extraData = {
         competitionStatisticsTypeId: competitionStatisticsTypeId,
       };
+      setLastSubmittedDisplayOrder(displayOrderNum);
+      setCurrentSaveAction(saveAction);
       dispatch(
         addCompetitionStatisticsToDb({...dataToSave, ...extraData })
       );
-      setCurrentSaveAction(saveAction);
+      // setCurrentSaveAction(saveAction);
     }
   };
   const handleBackClick = () => {

@@ -589,6 +589,54 @@ const Index = () => {
       });
   };
 
+  const updatedImportData = async () => {
+    const selectedCompetitions = data.filter(comp => checekedList.includes(comp.competitionId));
+
+    const competitionsWithNullTpId = selectedCompetitions.filter(comp => !comp.tpId);
+    const competitionsWithValidTpId = selectedCompetitions.filter(comp => comp.tpId);
+
+    if (competitionsWithNullTpId.length > 0) {
+      const errorMessages = competitionsWithNullTpId.map(comp =>
+        `Competition: ${comp.competition}(${comp.competitionId}) tpId is null`
+      ).join(', ');
+
+      dispatch(
+        updateToastData({
+          data: errorMessages,
+          title: "Error",
+          type: ERROR,
+        })
+      );
+    }
+
+    setIsLoading(true);
+    const validCompetitionIds = competitionsWithValidTpId.map(comp => comp.competitionId);
+
+    await axiosInstance
+      .post(`/admin/autoImportData/saveAll`, { refType: 11, refIds: validCompetitionIds, sourceId: 3 })
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response.result,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+
   const handleTournament = (details) => {
     const url = new URL(window.location.origin + "/tournamentTeamPoints");
     sessionStorage.setItem("competitionId", "" + details?.competitionId);
@@ -847,7 +895,7 @@ const Index = () => {
         );
       },
       // sort: true,
-      style: { width: "10%" },
+      style: { width: "5%" },
     },
     {
       title: "Image",
@@ -1233,7 +1281,7 @@ const Index = () => {
           )}
         </div>
       ),
-      style: { width: "3%", textAlign: "center" },
+      style: { width: "5%", textAlign: "center" },
     },
     // {
     //   title: "Stats",
@@ -1263,7 +1311,7 @@ const Index = () => {
     // },
     {
       title: "Teams",
-      key: "competitionId",
+      key: "competitionTeams",
       render: (text, record) => (
         <>
           <Tooltip
@@ -1290,14 +1338,14 @@ const Index = () => {
       title: "TPID",
       dataIndex: "tpId",
       key: "tpId",
-      style: { width: "10%" },
+      style: { width: "5%" },
       sort: true,
     },
     {
       title: "CID",
       dataIndex: "competitionId",
       key: "competitionId",
-      style: { width: "10%" },
+      style: { width: "5%" },
       sort: true,
     },
     
@@ -1502,6 +1550,18 @@ const Index = () => {
             setParentCurrentPage={handleCurrentPageChange}
             setParentPageSize={handlePageSizeChange}
             setParentSearchedData={handleTableSearchedDataChange}
+            renderCustomFilter={() => {
+              return <>
+                <Tooltip title={"Update Competition"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+                  <Button
+                    className="btn border"
+                    onClick={() => updatedImportData()}
+                  >
+                    Update
+                  </Button>
+                </Tooltip>
+              </>
+            }}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
