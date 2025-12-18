@@ -46,7 +46,7 @@ const Index = () => {
   const [checekedList, setCheckedList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
-  const [isDrag, setIsDrag] = useState(false);
+  // const [isDrag, setIsDrag] = useState(false);
   const [eventTypes, setEventTypes] = useState([]);
   const [matchTypes, setMatchTypes] = useState([]);
   const [countryList, setCountryList] = useState([]);
@@ -773,11 +773,21 @@ const Index = () => {
               handleSingleCheck(record);
             }}
           />
-          {isDrag ? <i className="bx bx-move ms-1 mt-1"></i> : null}
+          {/* {isDrag ? <i className="bx bx-move ms-1 mt-1"></i> : null} */}
         </div>
       ), // Use 'select' as a placeholder key for the checkbox column
       key: "select",
       style: { width: "2%" },
+    },
+    {
+      title: "",
+      key: "dragHandle",
+      render: (text, record) => (
+        <div className="drag-handle-icon" style={{ cursor: "grab" }}>
+          <i className="bx bx-move" style={{ fontSize: "20px" }}></i>
+        </div>
+      ),
+      style: { width: "2%", textAlign: "center" },
     },
     checkPermission(permissionObj, pageName, PERMISSION_EDIT) && {
       title: "Edit",
@@ -1386,6 +1396,7 @@ const Index = () => {
     isDateTypeSelect: true,
     commStatus: true,
     isCompetitionStatisticsCalculation: true,
+    isDragHandle: true,
     commStatusOptions: [
       {
         label: "All",
