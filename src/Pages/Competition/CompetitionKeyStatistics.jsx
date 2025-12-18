@@ -33,7 +33,8 @@ const CompetitionKeyStatistics = () => {
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
   let navigate = useNavigate();
   const [isDataLoading, setIsDataLoading] = useState(false);
-  const [open, setOpen] = useState([]);
+  const [openTypeAccordions, setOpenTypeAccordions] = useState({});
+  const [openStatsAccordions, setOpenStatsAccordions] = useState({});
   const competitionId = +localStorage.getItem("keyStatscompetitionId") || "0";
   const competitionDetails = JSON.parse(
     localStorage.getItem("competitionStatisticsDetails")
@@ -41,10 +42,19 @@ const CompetitionKeyStatistics = () => {
   const [statisticsData, setStatisticsData] = useState([]);
   const dispatch = useDispatch();
 
-  const toggle = (id) => {
-    setOpen((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
-    );
+  const toggleTypeAccordion = (typeId) => {
+    setOpenTypeAccordions(prev => ({
+      ...prev,
+      [typeId]: !prev[typeId]
+    }));
+  };
+
+  const toggleStatsAccordion = (typeId, statsTypeId) => {
+    const key = `${typeId}-${statsTypeId}`;
+    setOpenStatsAccordions(prev => ({
+      ...prev,
+      [key]: !prev[key]
+    }));
   };
 
   useEffect(() => {
@@ -138,32 +148,74 @@ const CompetitionKeyStatistics = () => {
                   </div>
                 </div>
                 <Row>
-                  {statisticsData.map((statsType, index) => (
-                    <div
-                      key={index}
-                      className="col-12 col-lg-12 col-sm-12 col-md-12"
-                    >
-                      <Accordion open={open} toggle={toggle}>
-                        <AccordionItem>
-                          <AccordionHeader
-                            targetId={`stats-accordion-${index}`}
-                            className="market-category-header"
-                          >
-                            {statsType?.competitionStatisticsType?.name || `Statistics Type ${index + 1}`}
-                          </AccordionHeader>
-                          <AccordionBody
-                            accordionId={`stats-accordion-${index}`}
-                            className="market-category-body p-2"
-                          >
-                            <CompetitionKeyStatisticsCard
-                              statisticsType={statsType?.competitionStatisticsType}
-                              statisticsData={statsType?.competitionStatisticsData}
-                            />
-                          </AccordionBody>
-                        </AccordionItem>
-                      </Accordion>
+                  {statisticsData && statisticsData.length > 0 ? (
+                      statisticsData 
+                    .sort((a, b) => a.typeId - b.typeId)
+                        .map((typeGroup) => {
+                          const typeId = typeGroup?.typeId;
+                          const typeName = typeGroup?.type;
+                          const statsType = typeGroup?.data;
+                          const isTypeOpen = openTypeAccordions[typeId];
+                          // { console.log("statsData", statisticsData); }
+                          // { console.log("statsType", statsType); }
+
+                          // Check if data exists
+                          if (!statsType || !statsType.competitionStatisticsType) {
+                            return null;
+                          }
+
+                          const statsTypeId = statsType?.competitionStatisticsType?.competitionStatisticsTypeId;
+                          const accordionKey = `${typeId}-${statsTypeId}`;
+                          const isStatsOpen = openStatsAccordions[accordionKey];
+
+                          return (
+                            <div key={typeId} className="col-12 col-lg-12 col-sm-12 col-md-12">
+                              <Accordion
+                                open={isTypeOpen ? `type-${typeId}` : ""}
+                                toggle={() => toggleTypeAccordion(typeId)}
+                              >
+                                <AccordionItem>
+                                  <AccordionHeader
+                                    targetId={`type-${typeId}`}
+                                    className="market-category-header"
+                                  >
+                                    {typeName}
+                                  </AccordionHeader>
+                                  <AccordionBody accordionId={`type-${typeId}`}>
+                                    <Accordion
+                                      open={isStatsOpen ? accordionKey : ""}
+                                      toggle={() => toggleStatsAccordion(typeId, statsTypeId)}
+                                    // className="mb-2"
+                                    >
+                                      <AccordionItem>
+                                        <AccordionHeader
+                                          targetId={accordionKey}
+                                          className="market-category-header"
+                                        >
+                                          <strong>{statsType?.competitionStatisticsType?.name}</strong>
+                                        </AccordionHeader>
+                                        <AccordionBody
+                                          accordionId={accordionKey}
+                                        // className="market-category-body p-2"
+                                        >
+                                          <CompetitionKeyStatisticsCard
+                                            statisticsType={statsType?.competitionStatisticsType}
+                                            statisticsData={statsType?.competitionStatisticsData}
+                                          />
+                                        </AccordionBody>
+                                      </AccordionItem>
+                                    </Accordion>
+                                  </AccordionBody>
+                                </AccordionItem>
+                              </Accordion>
+                            </div>
+                          );
+                        }) 
+                  ) : (
+                    <div className="text-center py-3 text-muted">
+                      No statistics data available
                     </div>
-                  ))}
+                  )}
                 </Row>
               </CardBody>
             </Card>

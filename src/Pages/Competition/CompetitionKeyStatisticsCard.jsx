@@ -12,12 +12,11 @@ const CompetitionStatisticsCard = ({ statisticsType, statisticsData }) => {
                 <div className="row d-flex align-items-center my-2">
                     <div style={{ width: "100%" }}>
                         <div className="row fw-bold">
-                            <div style={{ width: "8%" }}>Index</div>
-                            <div style={{ width: "25%" }}>Team Name</div>
-                            <div style={{ width: "25%" }}>Player Name</div>
-                            <div style={{ width: "15%" }}>Display Order</div>
-                            <div style={{ width: "15%" }}>Value</div>
-                            <div style={{ width: "12%" }}>Active</div>
+                            <div style={{ width: "10%" }}>Order</div>
+                            <div style={{ width: "20%" }}>Team Name</div>
+                            {(statisticsType?.typeId === 1 || statisticsType?.typeId === 2) ? <div style={{ width: "20%" }}>Player Name</div> : null}
+                            <div style={{ width: "10%" }}>Value</div>
+                            {/* <div style={{ width: "12%" }}>Active</div> */}
                         </div>
                     </div>
                 </div>
@@ -25,22 +24,19 @@ const CompetitionStatisticsCard = ({ statisticsType, statisticsData }) => {
                     <div key={stat.competitionStatisticsId} className="row d-flex align-items-center my-2">
                         <div style={{ width: "100%" }}>
                             <div className="row">
-                                <div style={{ width: "8%" }} className="d-flex align-items-center">
-                                    <span>{index + 1}</span>
-                                </div>
-                                <div style={{ width: "25%" }} className="d-flex align-items-center">
-                                    {stat?.teamName || 'N/A'}
-                                </div>
-                                <div style={{ width: "25%" }} className="d-flex align-items-center">
-                                    {stat?.playerName || 'N/A'}
-                                </div>
-                                <div style={{ width: "15%" }} className="d-flex align-items-center">
+                                <div style={{ width: "10%" }} className="d-flex align-items-center">
                                     {stat?.displayOrder}
                                 </div>
-                                <div style={{ width: "15%" }} className="d-flex align-items-center">
+                                <div style={{ width: "20%" }} className="d-flex align-items-center">
+                                    {stat?.teamName || 'N/A'}
+                                </div>
+                                {(statisticsType?.typeId === 1 || statisticsType?.typeId === 2) ?<div style={{ width: "20%" }} className="d-flex align-items-center">
+                                    {stat?.playerName || 'N/A'}
+                                </div> : null}
+                                <div style={{ width: "10%" }} className="d-flex align-items-center">
                                     {stat?.value}
                                 </div>
-                                <div style={{ width: "12%" }} className="d-flex align-items-center">
+                                {/* <div style={{ width: "12%" }} className="d-flex align-items-center">
                                     <div className="form-check form-switch form-switch-lg">
                                         <input
                                             className="form-check-input"
@@ -49,7 +45,7 @@ const CompetitionStatisticsCard = ({ statisticsType, statisticsData }) => {
                                             disabled
                                         />
                                     </div>
-                                </div>
+                                </div> */}
                             </div>
                         </div>
                     </div>
