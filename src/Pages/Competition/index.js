@@ -46,7 +46,7 @@ const Index = () => {
   const [checekedList, setCheckedList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
-  const [isDrag, setIsDrag] = useState(false);
+  // const [isDrag, setIsDrag] = useState(false);
   const [eventTypes, setEventTypes] = useState([]);
   const [matchTypes, setMatchTypes] = useState([]);
   const [countryList, setCountryList] = useState([]);
@@ -589,6 +589,53 @@ const Index = () => {
       });
   };
 
+  const updatedImportData = async () => {
+    const selectedCompetitions = data.filter(comp => checekedList.includes(comp.competitionId));
+
+    const competitionsWithNullTpId = selectedCompetitions.filter(comp => !comp.tpId);
+    const competitionsWithValidTpId = selectedCompetitions.filter(comp => comp.tpId);
+
+    if (competitionsWithNullTpId.length > 0 &&
+      competitionsWithValidTpId.length === 0) {
+      dispatch(
+        updateToastData({
+          data: "tpId is null",
+          title: "Error",
+          type: ERROR,
+        })
+      );
+      return;
+    }
+
+
+    setIsLoading(true);
+    const validCompetitionIds = competitionsWithValidTpId.map(comp => comp.competitionId);
+
+    await axiosInstance
+      .post(`/admin/autoImportData/saveAll`, { refType: 11, refIds: validCompetitionIds, sourceId: 3 })
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response.result,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+
   const handleTournament = (details) => {
     const url = new URL(window.location.origin + "/tournamentTeamPoints");
     sessionStorage.setItem("competitionId", "" + details?.competitionId);
@@ -773,11 +820,21 @@ const Index = () => {
               handleSingleCheck(record);
             }}
           />
-          {isDrag ? <i className="bx bx-move ms-1 mt-1"></i> : null}
+          {/* {isDrag ? <i className="bx bx-move ms-1 mt-1"></i> : null} */}
         </div>
       ), // Use 'select' as a placeholder key for the checkbox column
       key: "select",
       style: { width: "2%" },
+    },
+    {
+      title: "",
+      key: "dragHandle",
+      render: (text, record) => (
+        <div className="drag-handle-icon" style={{ cursor: "grab" }}>
+          <i className="bx bx-move" style={{ fontSize: "20px" }}></i>
+        </div>
+      ),
+      style: { width: "2%", textAlign: "center" },
     },
     checkPermission(permissionObj, pageName, PERMISSION_EDIT) && {
       title: "Edit",
@@ -837,7 +894,7 @@ const Index = () => {
         );
       },
       // sort: true,
-      style: { width: "10%" },
+      style: { width: "5%" },
     },
     {
       title: "Image",
@@ -1223,7 +1280,7 @@ const Index = () => {
           )}
         </div>
       ),
-      style: { width: "3%", textAlign: "center" },
+      style: { width: "5%", textAlign: "center" },
     },
     // {
     //   title: "Stats",
@@ -1253,7 +1310,7 @@ const Index = () => {
     // },
     {
       title: "Teams",
-      key: "competitionId",
+      key: "competitionTeams",
       render: (text, record) => (
         <>
           <Tooltip
@@ -1280,14 +1337,14 @@ const Index = () => {
       title: "TPID",
       dataIndex: "tpId",
       key: "tpId",
-      style: { width: "10%" },
+      style: { width: "5%" },
       sort: true,
     },
     {
       title: "CID",
       dataIndex: "competitionId",
       key: "competitionId",
-      style: { width: "10%" },
+      style: { width: "5%" },
       sort: true,
     },
     
@@ -1386,6 +1443,7 @@ const Index = () => {
     isDateTypeSelect: true,
     commStatus: true,
     isCompetitionStatisticsCalculation: true,
+    isDragHandle: true,
     commStatusOptions: [
       {
         label: "All",
@@ -1491,6 +1549,18 @@ const Index = () => {
             setParentCurrentPage={handleCurrentPageChange}
             setParentPageSize={handlePageSizeChange}
             setParentSearchedData={handleTableSearchedDataChange}
+            renderCustomFilter={() => {
+              return <>
+                <Tooltip title={"Update Competition"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+                  <Button
+                    className="btn border"
+                    onClick={() => updatedImportData()}
+                  >
+                    Update
+                  </Button>
+                </Tooltip>
+              </>
+            }}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

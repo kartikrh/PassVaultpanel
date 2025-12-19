@@ -45,7 +45,7 @@ import CancelTabModel from "../../components/Model/CancelModel";
 import { CommentaryClone } from "../../components/Model/Clone";
 import GenerateModal from "../Commentary/GenerateModal";
 import { ChangePythonType } from "../../components/Model/ChangePythonType";
-import LoadDataModal from "../../components/Model/LoadDataModal";
+// import LoadDataModal from "../../components/Model/LoadDataModal";
 import CommentaryMarketTemplateModel from "../../components/Model/CommentaryMarketTemplateModel";
 import { DlsModal } from "../Commentary/CommentaryModels/DlsModal";
 import { ChangeRunnerModel } from "../../components/Model/ChangeRunnerModel";
@@ -73,7 +73,7 @@ const Index = () => {
   const [dlsModalCommentary, setDlsModalCommentary] = useState(false);
   const [selectedCommentaryRunner, setSelectedCommentaryRunner] = useState({});
   const [selectedCommentaryId, setSelectedCommentaryId] = useState(null);
-  const [loadSingleDataModelVisible, setLoadSingleDataModelVisible] = useState(false);
+  // const [loadSingleDataModelVisible, setLoadSingleDataModelVisible] = useState(false);
   const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
   const [generateModalData, setGenerateModalData] = useState(null);
   const loadInitData = useSelector((state) => state.loadInit.loadInitData);
@@ -106,7 +106,7 @@ const Index = () => {
   const [delayModelVisible, setDelayModelVisible] = useState(false);
   const [selectedCommentaryDay, setSelectedCommentaryDay] = useState({});
   const [cancelModelVisible, setCancelModelVisible] = useState(false);
-  const [loadModelVisable, setLoadModelVisable] = useState(false);
+  // const [loadModelVisable, setLoadModelVisable] = useState(false);
   const [cloneModelVisible, setCloneModelVisible] = useState(false);
   const globalPageSize = localStorage.getItem("pageSize");
   const [tableSearchedData, setTableSearchedData] = useState([]);
@@ -116,7 +116,7 @@ const Index = () => {
     eventName: "",
     eventRefId: "",
   });
-  const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
+  // const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
   const [resultModelVisible, setResultModelVisible] = useState(false);
   const [selectedResult, setSelectedResult] = useState({});
   const [pythonApis, setpythonApis] = useState([]);
@@ -249,35 +249,35 @@ const Index = () => {
       });
   };
 
-  const handleLoadSingleCommentaryData = async (commentaryId, password) => {
-    setIsLoading(true);
-    try {
-      const response = await axiosInstance.post(`/loadPanelData`, {
-        module: [MODULE_SINGLE_COMMENTARY],
-        password,
-        commentaryId,
-      });
+  // const handleLoadSingleCommentaryData = async (commentaryId, password) => {
+  //   setIsLoading(true);
+  //   try {
+  //     const response = await axiosInstance.post(`/loadPanelData`, {
+  //       module: [MODULE_SINGLE_COMMENTARY],
+  //       password,
+  //       commentaryId,
+  //     });
 
-      // setLoadDataModelVisable(false); // This will be handled by the wrapper function
-      dispatch(
-        updateToastData({
-          data: response?.message,
-          title: response?.title,
-          type: SUCCESS,
-        })
-      );
-    } catch (error) {
-      dispatch(
-        updateToastData({
-          data: error?.message,
-          title: error?.title,
-          type: ERROR,
-        })
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  //     // setLoadDataModelVisable(false); // This will be handled by the wrapper function
+  //     dispatch(
+  //       updateToastData({
+  //         data: response?.message,
+  //         title: response?.title,
+  //         type: SUCCESS,
+  //       })
+  //     );
+  //   } catch (error) {
+  //     dispatch(
+  //       updateToastData({
+  //         data: error?.message,
+  //         title: error?.title,
+  //         type: ERROR,
+  //       })
+  //     );
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   const handleChangeResult = async (dataToSend) => {
     setIsLoading(true);
@@ -308,50 +308,50 @@ const Index = () => {
       });
   };
 
-  const handleLoadCommentary = async (e) => {
-    setIsLoading(true);
-    await axiosInstance
-      .post(`/admin/commentary/loadMultiCommentary`, {
-        commentaryId: checekedList,
-      })
-      .then((response) => {
-        fetchData();
-        setLoadModelVisable(false);
-        if (response?.result?.callPredictions?.length > 0) {
-          response.result.callPredictions.forEach((prediction) => {
-            if (prediction?.predictioncallSuccess === false) {
-              const predictionMessage = prediction?.predictionMessage;
-              const endPoint = prediction?.endPoint;
-              dispatch(
-                updateToastData({
-                  data: `${endPoint}\n${predictionMessage}`,
-                  title: "Call Prediction",
-                  type: WARNING,
-                })
-              );
-            }
-          });
-        } else {
-          dispatch(
-            updateToastData({
-              data: response?.message,
-              title: response?.title,
-              type: SUCCESS,
-            })
-          );
-        }
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
-      });
-  };
+  // const handleLoadCommentary = async (e) => {
+  //   setIsLoading(true);
+  //   await axiosInstance
+  //     .post(`/admin/commentary/loadMultiCommentary`, {
+  //       commentaryId: checekedList,
+  //     })
+  //     .then((response) => {
+  //       fetchData();
+  //       setLoadModelVisable(false);
+  //       if (response?.result?.callPredictions?.length > 0) {
+  //         response.result.callPredictions.forEach((prediction) => {
+  //           if (prediction?.predictioncallSuccess === false) {
+  //             const predictionMessage = prediction?.predictionMessage;
+  //             const endPoint = prediction?.endPoint;
+  //             dispatch(
+  //               updateToastData({
+  //                 data: `${endPoint}\n${predictionMessage}`,
+  //                 title: "Call Prediction",
+  //                 type: WARNING,
+  //               })
+  //             );
+  //           }
+  //         });
+  //       } else {
+  //         dispatch(
+  //           updateToastData({
+  //             data: response?.message,
+  //             title: response?.title,
+  //             type: SUCCESS,
+  //           })
+  //         );
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       setIsLoading(false);
+  //       dispatch(
+  //         updateToastData({
+  //           data: error?.message,
+  //           title: error?.title,
+  //           type: ERROR,
+  //         })
+  //       );
+  //     });
+  // };
 
   const handleChangeEventRef = async () => {
     setIsLoading(true);
@@ -713,39 +713,39 @@ const Index = () => {
     }
   };
 
-  const handleLoadSingleCommentaryDataWithModal = async (password) => {
-    if (selectedCommentaryId) {
-      await handleLoadSingleCommentaryData(selectedCommentaryId, password);
-      setLoadSingleDataModelVisible(false);
-      setSelectedCommentaryId(null);
-    }
-  };
-  const handleLoadData = async (password) => {
-    setIsLoading(true);
-    await axiosInstance
-      .post(`/loadPanelData`, { module: [MODULE_COMMENTARY], password })
-      .then((response) => {
-        fetchData();
-        setLoadDataModelVisable(false);
-        dispatch(
-          updateToastData({
-            data: response?.message,
-            title: response?.title,
-            type: SUCCESS,
-          })
-        );
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
-      });
-  };
+  // const handleLoadSingleCommentaryDataWithModal = async (password) => {
+  //   if (selectedCommentaryId) {
+  //     await handleLoadSingleCommentaryData(selectedCommentaryId, password);
+  //     setLoadSingleDataModelVisible(false);
+  //     setSelectedCommentaryId(null);
+  //   }
+  // };
+  // const handleLoadData = async (password) => {
+  //   setIsLoading(true);
+  //   await axiosInstance
+  //     .post(`/loadPanelData`, { module: [MODULE_COMMENTARY], password })
+  //     .then((response) => {
+  //       fetchData();
+  //       setLoadDataModelVisable(false);
+  //       dispatch(
+  //         updateToastData({
+  //           data: response?.message,
+  //           title: response?.title,
+  //           type: SUCCESS,
+  //         })
+  //       );
+  //     })
+  //     .catch((error) => {
+  //       setIsLoading(false);
+  //       dispatch(
+  //         updateToastData({
+  //           data: error?.message,
+  //           title: error?.title,
+  //           type: ERROR,
+  //         })
+  //       );
+  //     });
+  // };
   const handleChangeDelay = async () => {
     setIsLoading(true);
     await axiosInstance
@@ -2418,31 +2418,31 @@ const Index = () => {
       ),
       style: { width: "10%" },
     },
-    {
-      title: "Load Data",
-      key: "loadSingleData",
-      printType: "ignore",
-      render: (text, record) => (
-        <Tooltip
-          title="Load Data"
-          color="#e8e8ea"
-          overlayInnerStyle={{ color: "#000" }}
-        >
-          <Button
-            color="warning"
-            size="sm"
-            className="btn"
-            onClick={() => {
-              setSelectedCommentaryId(record.commentaryId); // Store the commentaryId
-              setLoadSingleDataModelVisible(true); // Open the modal
-            }}
-          >
-            <i className="bx bx-cloud-download"></i>
-          </Button>
-        </Tooltip>
-      ),
-      style: { width: "2%", textAlign: "center" },
-    },
+    // {
+    //   title: "Load Data",
+    //   key: "loadSingleData",
+    //   printType: "ignore",
+    //   render: (text, record) => (
+    //     <Tooltip
+    //       title="Load Data"
+    //       color="#e8e8ea"
+    //       overlayInnerStyle={{ color: "#000" }}
+    //     >
+    //       <Button
+    //         color="warning"
+    //         size="sm"
+    //         className="btn"
+    //         onClick={() => {
+    //           setSelectedCommentaryId(record.commentaryId); // Store the commentaryId
+    //           setLoadSingleDataModelVisible(true); // Open the modal
+    //         }}
+    //       >
+    //         <i className="bx bx-cloud-download"></i>
+    //       </Button>
+    //     </Tooltip>
+    //   ),
+    //   style: { width: "2%", textAlign: "center" },
+    // },
   ];
 
   const getColumns = (data) => {
@@ -2495,7 +2495,7 @@ const Index = () => {
     resetButton: true,
     reloadButton: true,
     isDateTypeSelect: true,
-    loadData: true,
+    // loadData: true,
     isVirtual: true,
     pythonApiSelect: true,
     statusOptions: [
@@ -2583,7 +2583,7 @@ const Index = () => {
             dataSource={data}
             tableElement={tableElement}
             deleteModelFunction={setDeleteModelVisable}
-            loadModelFunction={setLoadModelVisable}
+            // loadModelFunction={setLoadModelVisable}
             suspendModelFunction={setSuspendModelVisable}
             closeModelFunction={setCloseModelVisible}
             cancelModelFunction={setCancelModelVisible}
@@ -2598,7 +2598,7 @@ const Index = () => {
             setEventTypeId={setEventTypeId}
             setCompetitionId={setCompetitionId}
             setDateRange={setDateRange}
-            loadDataModelFunction={setLoadDataModelVisable}
+            // loadDataModelFunction={setLoadDataModelVisable}
             dateRange={dateRange}
             dateType={dateType}
             setDateType={setDateType}
@@ -2638,11 +2638,11 @@ const Index = () => {
             handleCancel={handleCancel}
             singleCheck={checekedList}
           />
-          <LoadCommentaryModel
+          {/* <LoadCommentaryModel
             loadModelVisable={loadModelVisable}
             setLoadModelVisable={setLoadModelVisable}
             handleLoad={handleLoadCommentary}
-          />
+          /> */}
           <CommentaryClone
             cloneModelVisible={cloneModelVisible}
             setCloneModelVisible={setCloneModelVisible}
@@ -2734,22 +2734,22 @@ const Index = () => {
               fetchData={fetchData}
             />
           )}
-          {loadDataModelVisable && (
+          {/* {loadDataModelVisable && (
             <LoadDataModal
               loadDataModelVisable={loadDataModelVisable}
               setLoadDataModelVisable={setLoadDataModelVisable}
               handleLoadData={handleLoadData}
               moduleName={"Commentary"}
             />
-          )}
-          {loadSingleDataModelVisible && (
+          )} */}
+          {/* {loadSingleDataModelVisible && (
             <LoadDataModal
               loadDataModelVisable={loadSingleDataModelVisible}
               setLoadDataModelVisable={setLoadSingleDataModelVisible}
               handleLoadData={handleLoadSingleCommentaryDataWithModal}
               moduleName={"Single Commentary"}
             />
-          )}
+          )} */}
           {isGenerateModalOpen && (
             <GenerateModal
               isOpen={isGenerateModalOpen}
