@@ -595,19 +595,18 @@ const Index = () => {
     const competitionsWithNullTpId = selectedCompetitions.filter(comp => !comp.tpId);
     const competitionsWithValidTpId = selectedCompetitions.filter(comp => comp.tpId);
 
-    if (competitionsWithNullTpId.length > 0) {
-      const errorMessages = competitionsWithNullTpId.map(comp =>
-        `Competition: ${comp.competition}(${comp.competitionId}) tpId is null`
-      ).join(', ');
-
+    if (competitionsWithNullTpId.length > 0 &&
+      competitionsWithValidTpId.length === 0) {
       dispatch(
         updateToastData({
-          data: errorMessages,
+          data: "tpId is null",
           title: "Error",
           type: ERROR,
         })
       );
+      return;
     }
+
 
     setIsLoading(true);
     const validCompetitionIds = competitionsWithValidTpId.map(comp => comp.competitionId);
