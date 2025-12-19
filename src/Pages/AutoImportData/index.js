@@ -185,6 +185,8 @@ const Index = () => {
         return "ICC Ranking";
       case 10:
         return "Competition Statistics";
+      case 11:
+        return "Competition Update";
       default:
         return "-";
     }

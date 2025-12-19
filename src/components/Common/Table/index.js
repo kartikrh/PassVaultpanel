@@ -4113,7 +4113,7 @@ const Index = forwardRef(
                                       <tr
                                         ref={provided.innerRef}
                                         {...provided.draggableProps}
-                                        {...provided.dragHandleProps}
+                                        {...(!tableElement?.isDragHandle && provided.dragHandleProps)}
                                         className={`hover ${record.isIncluded && "selected"
                                           }`}
                                       >
@@ -4122,6 +4122,9 @@ const Index = forwardRef(
                                             <td
                                               key={column.key}
                                               style={column.style}
+                                              {...(tableElement?.isDragHandle &&
+                                                column.key === "dragHandle" &&
+                                                provided.dragHandleProps)}
                                             >
                                               {column.render
                                                 ? column.render(

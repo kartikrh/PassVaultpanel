@@ -320,6 +320,16 @@ const Index = () => {
       key: "select",
       style: { width: "2%" },
     },
+    {
+      title: "",
+      key: "dragHandle",
+      render: (text, record) => (
+        <div className="drag-handle-icon" style={{ cursor: "grab" }}>
+          <i className="bx bx-move" style={{ fontSize: "20px" }}></i>
+        </div>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
     checkPermission(permissionObj, pageName, PERMISSION_EDIT) && {
       title: "Edit",
       key: "edit",
@@ -448,6 +458,7 @@ const Index = () => {
     compStatsTypeSelect: true,
     entityEnumSelect: true,
     dragDrop: true,
+    isDragHandle: true,
   };
 
   useEffect(() => {
