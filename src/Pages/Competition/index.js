@@ -609,10 +609,10 @@ const Index = () => {
 
 
     setIsLoading(true);
-    const validCompetitionIds = competitionsWithValidTpId.map(comp => comp.competitionId);
+    const validCompetitionTpIds = competitionsWithValidTpId.map(comp => comp.tpId);
 
     await axiosInstance
-      .post(`/admin/autoImportData/saveAll`, { refType: 11, refIds: validCompetitionIds, sourceId: 3 })
+      .post(`/admin/autoImportData/saveAll`, { refType: 11, refIds: validCompetitionTpIds, sourceId: 3 })
       .then((response) => {
         fetchData();
         dispatch(
