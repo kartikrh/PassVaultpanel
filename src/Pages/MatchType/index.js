@@ -48,6 +48,8 @@ const ENTITY_OPTIONS = [
   { label: "T100", value: 18 },
   { label: "Women T100", value: 19 },
   { label: "TB-10", value: 20 },
+  { label: "Women T20I", value: 21 },
+  { label: "Women T10", value: 22 },
 ];
 
 const Index = () => {
