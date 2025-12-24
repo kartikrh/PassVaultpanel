@@ -46,6 +46,7 @@ const AddBanner = () => {
   const location = useLocation();
   const [bannerId, setBannerId] = useState(location.state?.bannerId || "0");
   const [fields, setFields] = useState(bannerFields || [])
+  const [masterData, setMasterData] = useState({});
   useEffect(() => {
     if (bannerId !== 0) {
       fetchData(bannerId);
@@ -56,6 +57,7 @@ const AddBanner = () => {
     if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard");
     }
+    fetchMasterData();
   }, [permissionObj]);
 
   useEffect(() => {
@@ -86,6 +88,21 @@ const AddBanner = () => {
             type: ERROR,
           })
         );
+      });
+  };
+  const fetchMasterData = async () => {
+    await axiosInstance
+      .post("/admin/whitelabel/all", {isActive: true})
+      .then((response) => {
+        setMasterData((preData) => ({
+          ...preData,
+          whitelabelId: response.result?.map((item) => {
+            return { label: item.domain, value: item.id };
+          }),
+        }));
+      })
+      .catch((error) => {
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
       });
   };
   
@@ -204,6 +221,7 @@ const AddBanner = () => {
                   ref={finalizeRef}
                   fields={fields}
                   editFormData={initialEditData}
+                  masterData={masterData}
                   onFormDataChange={handleFormBDataChange}
                 />
               </CardBody>

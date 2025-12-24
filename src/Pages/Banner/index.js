@@ -250,6 +250,12 @@ const Index = () => {
     setCheckedList([]);
   };
 
+  const deviceType = {
+    1: "Both",
+    2: "Web",
+    3: "Android",
+  };
+
   //table columns
   const columns = [
     {
@@ -339,7 +345,7 @@ const Index = () => {
       render: (text, record) => (
         <span>{text.length > 30 ? `${text.substring(0, 30)}...` : text}</span>
       ),
-      style: { width: "20%" },
+      style: { width: "15%" },
       sort: true,
     },
     {
@@ -348,6 +354,19 @@ const Index = () => {
       key: "bannerType",
       style: { width: "5%" },
       render: (text, record) => <span>{getBannerType(record.bannerType)}</span>,
+    },
+    {
+      title: "Device Type",
+      dataIndex: "deviceTypeId",
+      key: "deviceTypeId",
+      render: (value) => deviceType[value] || "",
+      style: { width: "5%", textAlign: "center" },
+    },
+    {
+      title: "White Label",
+      dataIndex: "domain",
+      key: "domain",
+      style: { width: "5%", textAlign: "center" },
     },
     {
       title: "Views",
@@ -359,7 +378,7 @@ const Index = () => {
       title: "Link",
       dataIndex: "link",
       key: "link",
-      style: { width: "20%" },
+      style: { width: "15%" },
     },
     {
       title: "Start Date",
@@ -370,7 +389,7 @@ const Index = () => {
         </span>
       ),
       key: "startDate",
-      style: { width: "20%" },
+      style: { width: "10%" },
     },
     {
       title: "End Date",
@@ -381,7 +400,7 @@ const Index = () => {
         </span>
       ),
       key: "endDate",
-      style: { width: "20%" },
+      style: { width: "10%" },
     },
     // {
     //   title: "Created By",
