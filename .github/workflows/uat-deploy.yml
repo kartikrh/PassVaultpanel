@@ -1,0 +1,33 @@
+name: scoreapi uat  workflow
+on:
+  push:
+    branches:
+      - 'UAT'
+
+jobs:
+  run-entity:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Prepare SSH key & known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -t rsa,ed25519 ${{ secrets.REMOTE_HOST }} >> ~/.ssh/known_hosts || true
+          chmod 644 ~/.ssh/known_hosts
+
+      - name: Run scoreapi
+        uses: appleboy/ssh-action@v1.2.1
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.REMOTE_PORT || 22 }}
+          timeout: "60s"         
+          command_timeout: "10m" 
+          script: |
+            cd /home/amit8439941788/jenkins
+            bash scorepanel.sh
