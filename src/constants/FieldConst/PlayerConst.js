@@ -182,11 +182,14 @@ export const PlayerFields = [
         fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
-        name: "tpId",
-        label: "TPID",
-        type: COUNTER,
+        type: TEXT,
+        name: "birthPlace",
+        label: "Birth Place",
+        // isRequired: true,
+        regex: /^[^']{1,100}$/,
+        regexErrorMessage: "Max allowed Characters 100, No Spacial(') Character",
         labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 4, lg: 4 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 }
     },
     {
         type: IMAGE,
@@ -197,6 +200,13 @@ export const PlayerFields = [
         isValidateImage: true,
         validateWidth:310,
         validateHeight:300
+    },
+    {
+        name: "tpId",
+        label: "TPID",
+        type: COUNTER,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
     },
     
 ]
