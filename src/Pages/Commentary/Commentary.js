@@ -1341,13 +1341,21 @@ const Commentary = (props) => {
         const currentBowlerRemainingOver = +(currentBowler.bowlerOver || 0) - +(currentOver.ballCount / 10)
         let currentBowlerOrder = currentBowler.bowlerOrder
         let newBowlerOrder = newBowler.bowlerOrder
-        const newOrder = fetchNextPlayerOrder(CURRENT_BOWLER, players[BOWLING_TEAM])
-        if (!newBowlerOrder) {
-            newBowlerOrder = newOrder
-        }
+        // const newOrder = fetchNextPlayerOrder(CURRENT_BOWLER, players[BOWLING_TEAM], currentBowler?.currentInnings)
+        // if (!newBowlerOrder) {
+        //     newBowlerOrder = newOrder
+        // }
+        // if (!currentBowlerRemainingOver || +currentBowlerRemainingOver === 0) {
+        //     currentBowlerOrder = null
+        // }
+
         if (!currentBowlerRemainingOver || +currentBowlerRemainingOver === 0) {
+            newBowlerOrder = currentBowlerOrder
             currentBowlerOrder = null
+        } else if (!newBowlerOrder) {
+            newBowlerOrder = fetchNextPlayerOrder(CURRENT_BOWLER, players[BOWLING_TEAM], currentBowler?.currentInnings)
         }
+        console.log("final orders", { currentBowlerOrder, newBowlerOrder })
 
         const updatedPerviousBowler = {
             ...currentBowler,
