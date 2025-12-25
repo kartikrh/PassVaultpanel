@@ -1,4 +1,4 @@
-name: scoreapi uat  workflow
+name: scorepanel uat workflow
 on:
   push:
     branches:
