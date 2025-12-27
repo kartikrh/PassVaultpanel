@@ -1439,6 +1439,8 @@ const Commentary = (props) => {
             "ballType": BALL_TYPE_BOWLER_RETIRED_HURT
         }
         let updatedOnPitchPlayer = onPitchPlayers
+        const nextBowlerOrder = fetchNextPlayerOrder(CURRENT_BOWLER, players[BOWLING_TEAM], commentaryDetails.currentInnings)
+
         const updatedPlayerList = players[BOWLING_TEAM]?.map(player => {
             const updatedPlayer = player
             if (player.isPlay || player.onStrike) {
@@ -1449,6 +1451,9 @@ const Commentary = (props) => {
             if (updatedPlayer.commentaryPlayerId === newPlayerId) {
                 updatedPlayer["isPlay"] = true
                 updatedPlayer["isPlayInEvent"] = true
+                if (!updatedPlayer.bowlerOrder) {
+                    updatedPlayer.bowlerOrder = nextBowlerOrder
+                }
                 playersToChangeList.push(updatedPlayer)
                 updatedOnPitchPlayer[CURRENT_BOWLER] = updatedPlayer
             }
@@ -1490,6 +1495,8 @@ const Commentary = (props) => {
                 updatedPlayer["onStrike"] = null
                 if (isPlayerNew(player)) {
                     updatedPlayer["isPlayInEvent"] = false;
+                    updatedPlayer["bowlerOrder"] = null;
+                    updatedPlayer["bowlerOver"] = 0;
                 }
                 playersToChangeList.push(updatedPlayer)
             }
