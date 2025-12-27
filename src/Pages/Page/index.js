@@ -277,7 +277,7 @@ const Index = () => {
 
   //elements required
   const tableElement = {
-    title: "Page Format",
+    title: "Page",
     // headerSelect: false,
     reloadButton: true,
     loadData: true,
