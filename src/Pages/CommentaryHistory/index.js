@@ -2394,30 +2394,30 @@ const Index = () => {
       ),
       style: { width: "10%" },
     },
-    {
-      title: "New Scoring",
-      key: "newCommentaryScoring",
-      printType: "ignore",
-      render: (text, record) => (
-        <Tooltip
-          title={"Go to new scoring"}
-          color={"#e8e8ea"}
-          overlayInnerStyle={{ color: "#000" }}
-        >
-          <Button
-            // color={"warning"}
-            size="sm"
-            className="btn generateImageBtn"
-            onClick={() => {
-              handleCommentaryDetailsClick(record.commentaryId);
-            }}
-          >
-            <i class="bx bxs-right-arrow"></i>
-          </Button>
-        </Tooltip>
-      ),
-      style: { width: "2%", textAlign: "center" },
-    },
+    // {
+    //   title: "New Scoring",
+    //   key: "newCommentaryScoring",
+    //   printType: "ignore",
+    //   render: (text, record) => (
+    //     <Tooltip
+    //       title={"Go to new scoring"}
+    //       color={"#e8e8ea"}
+    //       overlayInnerStyle={{ color: "#000" }}
+    //     >
+    //       <Button
+    //         // color={"warning"}
+    //         size="sm"
+    //         className="btn generateImageBtn"
+    //         onClick={() => {
+    //           handleCommentaryDetailsClick(record.commentaryId);
+    //         }}
+    //       >
+    //         <i class="bx bxs-right-arrow"></i>
+    //       </Button>
+    //     </Tooltip>
+    //   ),
+    //   style: { width: "2%", textAlign: "center" },
+    // },
     // {
     //   title: "Load Data",
     //   key: "loadSingleData",
