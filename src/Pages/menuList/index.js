@@ -88,7 +88,7 @@ const Index = () => {
         const apiData = response?.result
         let apiDataIdList = [];
         apiData.forEach(ele => {
-          const uniqueId = +selectedMenuType?.level === 0 ? ele?.menuTypeId : ele?.displayOrder
+          const uniqueId = +selectedMenuType?.level === 0 ? ele?.menuTypeId : ele?.menuItemId
           apiDataIdList.push(uniqueId)
         })
         setDataIndexList(apiDataIdList)
@@ -251,11 +251,10 @@ const Index = () => {
     let sourceList;
 
     if (tableSearchedData && tableSearchedData.length > 0) {
-      // Extract IDs based on selectedMenuType level - matching dataIndexList logic
       sourceList = tableSearchedData.map(item => {
         return +selectedMenuType?.level === 0
           ? item?.menuTypeId
-          : item?.displayOrder; 
+          : item?.menuItemId; 
       });
     } else {
       sourceList = dataIndexList;
@@ -279,7 +278,6 @@ const Index = () => {
       checekedList?.length > 0 &&
       isEqual(checekedList?.sort(), currentItems?.sort());
   };
-  console.log("checekedList: ", checekedList);
 
   const handleTableSearchedDataChange = (data) => {
     setTableSearchedData(data);
@@ -554,7 +552,7 @@ const Index = () => {
 
   const tableElement = {
     title: "Menu",
-    dragDrop: true,
+    dragDrop: +selectedMenuType.level === 0 ? false : true,
     // displayTypeDropDown: true,
     switch: false,
     subTable: true,

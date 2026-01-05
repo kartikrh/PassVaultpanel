@@ -1355,7 +1355,6 @@ const Commentary = (props) => {
         } else if (!newBowlerOrder) {
             newBowlerOrder = fetchNextPlayerOrder(CURRENT_BOWLER, players[BOWLING_TEAM], currentBowler?.currentInnings)
         }
-        console.log("final orders", { currentBowlerOrder, newBowlerOrder })
 
         const updatedPerviousBowler = {
             ...currentBowler,
