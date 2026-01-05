@@ -27,6 +27,7 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [eventTypes, setEventTypes] = useState([]);
+  const [competitions, setCompetitions] = useState([]);
   const [eventTypeId, setEventTypeId] = useState(null);
   const [competitionId, setCompetitionId] = useState(null);
   const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
@@ -76,6 +77,17 @@ const Index = () => {
       .then((response) => {
         setEventTypes(response.result);
         setIsLoading(false);
+      })
+      .catch((error) => { });
+  };
+
+  const fetchCompetitionData = async (value) => {
+    await axiosInstance
+      .post(`/admin/team/competitionListByEventTypeId`, {
+        eventTypeId: value,
+      })
+      .then((response) => {
+        setCompetitions(response.result || []);
       })
       .catch((error) => { });
   };
@@ -208,7 +220,6 @@ const Index = () => {
   }
 
   const handlePlayerClick = (details) => {
-    console.log("players", details)
     const url = new URL(window.location.origin + '/Players');
     sessionStorage.setItem(
       "PlayerTeamId",
@@ -575,6 +586,7 @@ const Index = () => {
     headerSelect: false,
     switch: false,
     eventTypeSelect: true,
+    competitionsSelect: true,
     resetButton: true,
     reloadButton: true,
     loadData: true,
@@ -615,6 +627,18 @@ const Index = () => {
     fetchData();
     fetchEventTypeData()
   }, [permissionObj]);
+
+  useEffect(() => {
+    if(eventTypeId){
+      fetchCompetitionData(eventTypeId)
+    }
+  }, [eventTypeId])
+
+  useEffect(() => {
+    if (!eventTypeId) {
+      setCompetitions([]);
+    }
+  }, [eventTypeId]);
 
   const handleReload = (value) => {
     fetchData();
@@ -663,6 +687,7 @@ const handleBrokenImageToggle = async () => {
             handleReload={handleReload}
             loadDataModelFunction={setLoadDataModelVisable}
             eventTypes={eventTypes}
+            competitions={competitions}
             setEventTypeId={setEventTypeId}
             onAddNavigate={"/addTeams"}
             reFetchData={fetchData}
