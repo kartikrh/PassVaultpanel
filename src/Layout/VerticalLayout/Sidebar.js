@@ -20,6 +20,8 @@ import {
   LOG_ROCKET_TO_INCLUDE_ONLY,
   USER_DATA_KEY,
 } from "../../components/Common/Const";
+import createSocket from "../../Features/socket"; 
+import SocketNotificationHandler from "../../components/Common/SocketNotificationHandler";
 
 // HorizontalMenu Component
 const HorizontalMenu = ({ menuData, t, onItemClick }) => {
@@ -194,6 +196,7 @@ const Sidebar = (props) => {
   const [openMenus, setOpenMenus] = useState({});
   const loadInitData = useSelector((state) => state.loadInit.loadInitData);
   const [isLogRocketInitialized, setIsLogRocketInitialized] = useState(false);
+  const [socketInstance, setSocketInstance] = useState(null); 
 
   let initLogRocket = loadInitData.find(
     (item) => item.key === loadInit.ENABLE_LOGROCKET
@@ -233,6 +236,13 @@ const Sidebar = (props) => {
       setIsLogRocketInitialized(true);
     }
   }, [initLogRocket, isLogRocketInitialized, loadInitData]);
+
+  useEffect(() => {
+    if (process.env.REACT_APP_IS_SOCKET === "true") {
+      const socket = createSocket();
+      setSocketInstance(socket);
+    }
+  }, []);
 
   useEffect(() => {
     dispatch(getAuthorisedTabs());
@@ -433,6 +443,7 @@ const Sidebar = (props) => {
   // Default vertical layout 
   return (
     <React.Fragment>
+      {socketInstance && <SocketNotificationHandler socket={socketInstance} />}
       <div className="vertical-menu">
         <SimpleBar className="h-100" ref={ref}>
           <div id="sidebar-menu">

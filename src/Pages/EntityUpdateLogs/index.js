@@ -433,6 +433,20 @@ const Index = () => {
     fetchData();
   },[isSearch, currentPage, pageSize, permissionObj]);
 
+  const handleReset = (value) => {
+    const newDateRange = {
+      startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
+      endDate: `${new Date().toISOString().split("T")[0]}T23:59:00`,
+    };
+    setDateRange(newDateRange);
+    setIsSearch(true)
+    fetchData({ isActive: true,
+      startDate: convertDateLocalToUTC(newDateRange.startDate, "index"),
+      endDate: convertDateLocalToUTC(newDateRange.endDate, "index"),
+      });
+    fetchEventTypeData();
+  };
+
   const handleReload = (value) => {
     // setIsSearch(true)
     fetchData();
@@ -461,6 +475,7 @@ const Index = () => {
             competitions={competitions}
             commentary={commentary}
             handleReload={handleReload}
+            handleReset={handleReset}
             setDateRange={setDateRange}
             dateRange={dateRange}
             serverCurrentPage={currentPage}
