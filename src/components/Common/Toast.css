@@ -27,6 +27,10 @@
   border-left: 4px solid #f46a6a;
 }
 
+.custom-toast-success {
+  border-left: 4px solid #34c38f;
+}
+
 .custom-toast-warning {
   border-left: 4px solid #f1b44c;
 }
@@ -48,6 +52,10 @@
 
 .custom-toast-error .toast-icon {
   color: #f46a6a;
+}
+
+.custom-toast-success .toast-icon {
+  color: #34c38f;
 }
 
 .custom-toast-warning .toast-icon {
