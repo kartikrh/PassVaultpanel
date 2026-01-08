@@ -21,8 +21,9 @@ import {
 } from "../../components/Common/Const";
 import { useNavigate } from "react-router-dom";
 import { Avatar, Tooltip } from "antd";
-import { convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
+import { convertDateUTCToLocal, convertDateUTCToLocalWithoutSec24, convertDateUtcFormatWithoutSec24 } from "../../components/Common/Reusables/reusableMethods";
 import DeletePlayerEventHistoryModel from "../../components/Model/DeletePlayerEventHistoryModel";
+import Select from "react-select";
 
 const MatchHistory = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -43,6 +44,11 @@ const MatchHistory = () => {
   const matchTypeDetails = JSON.parse(
     sessionStorage.getItem("matchHistoryDetails") || "{}"
   );
+  const globalDateType = JSON.parse(localStorage.getItem("DateType"));
+  const [dateType, setDateType] = useState(globalDateType || {
+      label: "Local Timezone",
+      value: 1,
+    });
   let navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -119,10 +125,11 @@ const MatchHistory = () => {
       .then((response) => {
         if (response?.result?.length > 0  && response?.result?.some(item => !item.eventName || !item.eventDate)) {
           setBattingHistory(
-            response?.result?.sort((a, b) => a.matchTypeId - b.matchTypeId),
+            response?.result?.sort((a, b) => new Date(b.eventDate) - new Date(a.eventDate)),
           );
         } else if(response?.result?.length > 0){
           setBattingHistory([
+            ...response?.result?.sort((a, b) => new Date(b.eventDate) - new Date(a.eventDate)),
             {
               id: 0,
               matchTypeId: matchTypeId,
@@ -151,7 +158,6 @@ const MatchHistory = () => {
               fastest50Balls: 0,
               fastest100Balls: 0,
             },
-            ...response?.result?.sort((a, b) => a.matchTypeId - b.matchTypeId),
           ]);
         } else {
           setBattingHistory([
@@ -209,10 +215,11 @@ const MatchHistory = () => {
       .then((response) => {
         if (response?.result?.length > 0 && response?.result?.some(item => !item.eventName || !item.eventDate)) {
           setBowlingHistory(
-            response?.result?.sort((a, b) => a.matchTypeId - b.matchTypeId),
+            response?.result?.sort((a, b) => new Date(b.eventDate) - new Date(a.eventDate)),
           );
         } else if(response?.result?.length > 0){
           setBowlingHistory([
+            ...response?.result?.sort((a, b) => new Date(b.eventDate) - new Date(a.eventDate)),
             {
               id: 0,
               matchTypeId: matchTypeId,
@@ -240,7 +247,6 @@ const MatchHistory = () => {
               hattrickCount: 0,
               expensiveOverRuns: 0,
             },
-            ...response?.result?.sort((a, b) => a.matchTypeId - b.matchTypeId),
           ]);
         } else {
           setBowlingHistory([
@@ -339,7 +345,9 @@ const MatchHistory = () => {
           className="form-control medium-text-fields"
           disabled
           type="text"
-          value={text ? convertDateUTCToLocal(text, "index") : "-"}
+          value={text ? (dateType?.value == 1
+            ? convertDateUTCToLocalWithoutSec24(text, "index")
+            : convertDateUtcFormatWithoutSec24(text, "index")) : "-"}
         />
       ),
       key: "eventDate",
@@ -775,7 +783,10 @@ const MatchHistory = () => {
           className="form-control medium-text-fields"
           disabled
           type="text"
-          value={text ? convertDateUTCToLocal(text, "index") : "-"}
+          // value={text ? convertDateUTCToLocal(text, "index") : "-"}
+          value={text ? (dateType?.value == 1
+            ? convertDateUTCToLocalWithoutSec24(text, "index")
+            : convertDateUtcFormatWithoutSec24(text, "index")) : "-"}
         />
       ),
       key: "eventDate",
@@ -1498,7 +1509,26 @@ const MatchHistory = () => {
                       </div>
                     </Col>
                   )}
-                  <Col className="float-right">
+                  <Col className="d-flex justify-content-end align-items-center gap-3">
+                    <Select
+                      value={dateType}
+                      placeholder="Date Type"
+                      styles={{
+                        control: (provided) => ({
+                          ...provided,
+                          width: 200,
+                        }),
+                      }}
+                      onChange={(e) => {
+                        localStorage.setItem("DateType", JSON.stringify(e))
+                        setDateType(e)
+                      }}
+                      options={[
+                        { label: "Local Timezone", value: 1 },
+                        { label: "UTC Timezone", value: 2 },
+                      ]}
+                      classNamePrefix="filter-dropdown"
+                    />
                     <Button
                       className="btn btn-danger text-right mx-2"
                       onClick={handleBackClick}
