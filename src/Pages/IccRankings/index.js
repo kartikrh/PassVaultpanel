@@ -466,6 +466,14 @@ const Index = () => {
       style: { width: "10%" },
     },
     {
+      title: "Player Type",
+      dataIndex: "playerTypeName",
+      render: (text, record) => <span>{record?.playerTypeName ? text : " "}</span>,
+      key: "playerTypeName",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
       title: "Player",
       dataIndex: "playerName",
       render: (text, record) => <span>{text}</span>,
