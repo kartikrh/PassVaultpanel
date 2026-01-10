@@ -336,6 +336,18 @@ const Commentary = (props) => {
         const syncOnPitchPlayers = isEmpty(_onPitchPlayers) ? onPitchPlayers : _onPitchPlayers;
         const currentBowler = syncOnPitchPlayers?.[CURRENT_BOWLER]
         const bowlerOver = currentBowler && Math.ceil(+currentBowler?.bowlerOver || 0);
+        // console.log("isLastInnings", isLastInnigs)
+        if (isLastInnigs && teams[BOWLING_TEAM]?.isBattingComplete) {
+            const runDifference = (teams[BATTING_TEAM]?.teamScore || 0) +
+                (teams[BATTING_TEAM]?.teamLeadRuns || 0) -
+                (teams[BATTING_TEAM]?.teamTrialRuns || 0);
+            if (runDifference < 0) {
+                setIsWonByInnings(runDifference * -1);
+            }
+            setCompleteMatchModal(true);
+            setShowInningsChangePopup(undefined);
+            return;
+        }
         if (teams[BOWLING_TEAM].isBattingComplete && !isLastInnigs) {
             setShowUpdateInnings(true)
         }
