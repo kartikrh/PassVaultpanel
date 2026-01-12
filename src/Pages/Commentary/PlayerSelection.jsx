@@ -242,7 +242,9 @@ const PlayerSelection = forwardRef((props, ref) => {
                 ...isPlayPlayers,
                 ...otherPlayers
               ],
-              commentaryOvers: [{ ...commentaryOvers, overId }]
+              commentaryOvers: [...(data.commentaryOvers || []), { ...commentaryOvers, overId }],
+              commentaryBallByBall: [...(data.commentaryBallByBall || []), commentaryBallByBall]
+              // commentaryOvers: [{ ...commentaryOvers, overId }]
             })
           }
           if (response?.result?.callPredictions?.length > 0) {
