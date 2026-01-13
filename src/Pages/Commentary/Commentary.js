@@ -2631,10 +2631,10 @@ const Commentary = (props) => {
         });
         const ballData = propsData.commentaryData.commentaryBallByBall || []
         let ballByBallHistoryData = ballData?.commentaryBallByBallId ? [ballData] : ballData
-        ballByBallHistoryData = _.orderBy(ballByBallHistoryData, ["commentaryBallByBallId"], ["asc"])
+        ballByBallHistoryData = _.orderBy(ballByBallHistoryData, ["currentInnings", "commentaryBallByBallId"], ["asc", "asc"])
         const overData = propsData.commentaryData.commentaryOvers || []
         let overHistoryData = overData.overId ? [overData] : overData
-        overHistoryData = _.orderBy(overHistoryData, ["overId"], ["asc"])
+        overHistoryData = _.orderBy(overHistoryData, ["currentInnings", "overId"], ["asc", "asc"])
         const partnershipData = propsData.commentaryData.commentaryPartnership || []
         let currentBallToUpdate = currentBall.commentaryBallByBallId ? currentBall : _.isArray(ballByBallHistoryData) ? ballByBallHistoryData[ballByBallHistoryData.length - 1] : undefined
         let partnershipHistoryData = partnershipData.commentaryPartnershipId ? [partnershipData] : (!isEmpty(partnershipData) && !isEmpty(partnershipFromApi))
@@ -3239,7 +3239,8 @@ const Commentary = (props) => {
     const isAnyPopupOpen = showChangeOverModal || showWicketModal || isOverChange || isPaneltyPopup || undoOverPopup || isWicketChange || inningsChangePopup || showUpdateInnings || winnerAnnouncement || isUndoBall || undoErrorModal || undoInningsPopup || completeMatchModal || selectMissingPlayer || showRretiredHurt || superOverModal || retryModel || showCricketFieldModal;
 
     const hasBattingComplete = allInningaTeams.some(t => t.isBattingComplete);
-    const showInningsButton = hasBattingComplete && (currentBall?.ballType === BALL_TYPE_OVER_COMPLETE) && (currentBall?.overCount == 0);
+    const currentInningsBalls = ballHistory.filter(b => b.currentInnings == commentaryDetails.currentInnings);
+    const showInningsButton = hasBattingComplete && ((currentBall?.ballType === BALL_TYPE_OVER_COMPLETE && currentBall?.overCount == 0) || currentInningsBalls.length === 0);
     return <>
         {props?.isNewUi ?
             <NewCommentaryScreen
