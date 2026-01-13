@@ -463,7 +463,7 @@ const OversAccordion = ({ overBalls, teamDetails, overHistory, playersList, curr
                                                             }} className='overHeadTextColor accordian-text'>
                                                                 {`${overDetails?.totalRun || 0}/${overDetails?.totalWicket || 0} ${overDetails?.isComplete
                                                                     ? `[${overDetails?.teamScore}]`
-                                                                    : `[${teamDetails?.[BATTING_TEAM]?.teamScore || 0}/${teamDetails?.[BATTING_TEAM]?.teamWicket || 0}]`
+                                                                    : `[${team?.teamScore || 0}/${team?.teamWicket || 0}]`
                                                                     }`}
                                                             </Typography>
                                                         </Typography>
