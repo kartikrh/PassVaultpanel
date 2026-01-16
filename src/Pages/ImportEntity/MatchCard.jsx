@@ -23,6 +23,8 @@ const MatchCard = ({ matchData, onClose }) => {
     teamb,
     date_start_ist,
     date_end_ist,
+    date_start,
+    date_end,
     venue,
     competition,
     result,
@@ -31,6 +33,8 @@ const MatchCard = ({ matchData, onClose }) => {
     weather,
     pitch,
   } = matchData.match_info;
+
+  const dateTyp = JSON.parse(localStorage.getItem("DateType"));
 
   // Status color mapping
   const getStatusColor = (status) => {
@@ -185,13 +189,13 @@ const MatchCard = ({ matchData, onClose }) => {
             <div className="d-flex align-items-center mb-2 matchCardText">
               <CalendarOutlined className="me-2 text-primary" />
               <span>
-                <strong>Start:</strong> {formatDateTime(date_start_ist)}
+                <strong>Start:</strong> {dateTyp?.value == 1 ? formatDateTime(date_start_ist) : formatDateTime(date_start)}
               </span>
             </div>
             <div className="d-flex align-items-center mb-2 matchCardText">
               <CalendarOutlined className="me-2 text-primary" />
               <span>
-                <strong>End:</strong> {formatDateTime(date_end_ist)}
+                <strong>End:</strong> {dateTyp?.value == 1 ? formatDateTime(date_end_ist) : formatDateTime(date_end)}
               </span>
             </div>
             <div className="d-flex align-items-center mb-2 matchCardText">
