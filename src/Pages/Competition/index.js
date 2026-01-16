@@ -1079,17 +1079,11 @@ const Index = () => {
       style: { width: "10%" },
     },
     {
-      title: "API",
-      dataIndex: "developerName",
-      // render: (text, record) => {
-      //   const pythonApiNames =
-      //     pythonApis.length > 0 &&
-      //     pythonApis.find((item) => item.id == record?.pythonId)?.developerName;
-      //   return <span>{pythonApiNames}</span>;
-      // },
-      key: "developerName",
+      title: "TPID",
+      dataIndex: "tpId",
+      key: "tpId",
+      style: { width: "5%" },
       sort: true,
-      style: { width: "10%" },
     },
     {
       title: "Country",
@@ -1341,11 +1335,17 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "TPID",
-      dataIndex: "tpId",
-      key: "tpId",
-      style: { width: "5%" },
+      title: "API",
+      dataIndex: "developerName",
+      // render: (text, record) => {
+      //   const pythonApiNames =
+      //     pythonApis.length > 0 &&
+      //     pythonApis.find((item) => item.id == record?.pythonId)?.developerName;
+      //   return <span>{pythonApiNames}</span>;
+      // },
+      key: "developerName",
       sort: true,
+      style: { width: "10%" },
     },
     {
       title: "CID",
