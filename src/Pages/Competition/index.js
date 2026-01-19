@@ -46,7 +46,7 @@ const Index = () => {
   const [checekedList, setCheckedList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
-  // const [isDrag, setIsDrag] = useState(false);
+  const [isDrag, setIsDrag] = useState(false);
   const [eventTypes, setEventTypes] = useState([]);
   const [matchTypes, setMatchTypes] = useState([]);
   const [countryList, setCountryList] = useState([]);
@@ -85,7 +85,7 @@ const Index = () => {
     setUserRefData(refData);
     fetchData(refData);
   };
-  
+
   useEffect(() => {
     fetchUserPermission()
   }, [])
@@ -134,9 +134,9 @@ const Index = () => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
     const data = latestValueFromTable || tableActions;
-    // const isDragValue =
-    //   data?.isTrending !== undefined ? data?.isTrending : isDrag;
-    // setIsDrag(isDragValue);
+    const isDragValue =
+      data?.isTrending !== undefined ? data?.isTrending : false;
+    setIsDrag(isDragValue);
     const countryData = isEmpty(countryList)
       ? await fetchCountryData()
       : countryList;
@@ -153,7 +153,14 @@ const Index = () => {
       )
       .then((response) => {
         let apiData = [...response?.result]?.sort(
-          (a, b) => a.displayOrder - b.displayOrder
+          (a, b) => {
+            if (isDragValue) {
+              return a.displayOrder - b.displayOrder
+            }
+            else {
+              return new Date(a.startDate) - new Date(b.startDate)
+            }
+          }
         );
         let apiDataIdList = [];
         apiData = apiData.map((ele) => {
@@ -683,7 +690,7 @@ const Index = () => {
 
   const commentaryPermission = checkPermission(permissionObj, CommentaryPage, PERMISSION_VIEW)
   const commentaryListPermission = checkPermission(permissionObj, CommentaryListPage, PERMISSION_VIEW)
-    
+
   const handleCommentaryClick = (details) => {
     const navUrl = (commentaryPermission && commentaryListPermission) ? "/Commentary" : commentaryPermission ? "/Commentary" : commentaryListPermission ? "/CommentaryList" : ''
     const url = new URL(window.location.origin + navUrl);
@@ -826,7 +833,7 @@ const Index = () => {
       key: "select",
       style: { width: "2%" },
     },
-    {
+    isDrag && {
       title: "",
       key: "dragHandle",
       render: (text, record) => (
@@ -859,7 +866,7 @@ const Index = () => {
         const isMatchingCompetition =
           record?.competitionId === filledDropdownData?.competition?.value;
           
-        if (userRefData.competitionId != 0 && !isMatchingCompetition) return null; 
+        if (userRefData.competitionId != 0 && !isMatchingCompetition) return null;
 
         return (
           <div className="d-flex align-items-center justify-content-start gap-2">
@@ -1072,17 +1079,11 @@ const Index = () => {
       style: { width: "10%" },
     },
     {
-      title: "API",
-      dataIndex: "developerName",
-      // render: (text, record) => {
-      //   const pythonApiNames =
-      //     pythonApis.length > 0 &&
-      //     pythonApis.find((item) => item.id == record?.pythonId)?.developerName;
-      //   return <span>{pythonApiNames}</span>;
-      // },
-      key: "developerName",
+      title: "TPID",
+      dataIndex: "tpId",
+      key: "tpId",
+      style: { width: "5%" },
       sort: true,
-      style: { width: "10%" },
     },
     {
       title: "Country",
@@ -1334,11 +1335,17 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "TPID",
-      dataIndex: "tpId",
-      key: "tpId",
-      style: { width: "5%" },
+      title: "API",
+      dataIndex: "developerName",
+      // render: (text, record) => {
+      //   const pythonApiNames =
+      //     pythonApis.length > 0 &&
+      //     pythonApis.find((item) => item.id == record?.pythonId)?.developerName;
+      //   return <span>{pythonApiNames}</span>;
+      // },
+      key: "developerName",
       sort: true,
+      style: { width: "10%" },
     },
     {
       title: "CID",
@@ -1347,7 +1354,7 @@ const Index = () => {
       style: { width: "5%" },
       sort: true,
     },
-    
+
     {
       title: "",
       dataIndex: "",
@@ -1384,7 +1391,7 @@ const Index = () => {
       render: (text, record) => {
         // const isMatchingCompetition =
         //   record?.competitionId === filledDropdownData?.competition?.value;
-          
+
         // if (userRefData.competitionId != 0 && !isMatchingCompetition) return null; 
 
         return (
@@ -1407,7 +1414,7 @@ const Index = () => {
       // sort: true,
       style: { width: "10%" },
     },
-  ];
+  ].filter(Boolean);
 
   const handleReset = (value) => {
     fetchData(value);
@@ -1417,17 +1424,16 @@ const Index = () => {
       if (EventTypeId) {
         const event = eventTypes.find(e => e.eventTypeId === EventTypeId)
         setSelectedTableElements({
-          eventType: {value: event?.eventTypeId, label: event?.eventType},
+            eventType: {value: event?.eventTypeId, label: event?.eventType},
         });
       }
     }, [eventTypes,EventTypeId]);
-  
 
   //elements required
   const tableElement = {
     title: "Competition",
     // dragDrop: isDrag,
-    dragDrop: true,
+    dragDrop: isDrag,
     headerSelect: false,
     eventTypeSelect: true,
     matchTypeSelect: true,
@@ -1443,7 +1449,7 @@ const Index = () => {
     isDateTypeSelect: true,
     commStatus: true,
     isCompetitionStatisticsCalculation: true,
-    isDragHandle: true,
+    isDragHandle: isDrag,
     commStatusOptions: [
       {
         label: "All",
@@ -1493,7 +1499,7 @@ const Index = () => {
         label: "false",
         value: false,
       },
-    ],  
+    ],
   };
 
   useEffect(() => {

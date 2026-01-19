@@ -1824,6 +1824,10 @@ const Commentary = (props) => {
                 setSaveToDb(true)
             }
         } else {
+            const isStartOfInnings = (+syncTeam[BATTING_TEAM].teamOver === 0 || +syncTeam[BATTING_TEAM].teamOver === 0.0)
+            if (isStartOfInnings) {
+                return;
+            }
             // setUndoErrorModal(`OverCount in ball: ${+currentBall?.overCount} is not equal to teamOver : ${+teams[BATTING_TEAM].teamOver}. please correct it from update feature screen`)
             setIsSaving(true);
             setUndoErrorModal(`There is some data mismatched, Please click Retry.`)
@@ -3239,7 +3243,7 @@ const Commentary = (props) => {
     const isAnyPopupOpen = showChangeOverModal || showWicketModal || isOverChange || isPaneltyPopup || undoOverPopup || isWicketChange || inningsChangePopup || showUpdateInnings || winnerAnnouncement || isUndoBall || undoErrorModal || undoInningsPopup || completeMatchModal || selectMissingPlayer || showRretiredHurt || superOverModal || retryModel || showCricketFieldModal;
 
     const hasBattingComplete = allInningaTeams.some(t => t.isBattingComplete);
-    const showInningsButton = hasBattingComplete && (currentBall?.ballType === BALL_TYPE_OVER_COMPLETE) && (currentBall?.overCount == 0);
+    const showInningsButton = hasBattingComplete && ((currentBall?.ballType === BALL_TYPE_OVER_COMPLETE) && (currentBall?.overCount == 0)) || (+teams?.[BATTING_TEAM]?.teamOver == 0) || (+teams?.[BATTING_TEAM]?.teamOver == 0.0);
     return <>
         {props?.isNewUi ?
             <NewCommentaryScreen
