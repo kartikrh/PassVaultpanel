@@ -345,6 +345,8 @@ const MatchCard = ({ matchData, onClose }) => {
       </Row>
 
       <Divider style={{ marginTop: "5px", marginBottom: "8px" }} />
+
+      {/* Team Player Details */}
       <Row gutter={[24, 16]}>
         <Col xs={24} md={12}>
           <Card
@@ -355,7 +357,11 @@ const MatchCard = ({ matchData, onClose }) => {
             <div /* className="overflow-auto" style={{ maxHeight: '100px' }} */>
             {matchData["match-playing11"].teama.squads.map((player, index) => (
               <span key={index}>
-                {index + 1}{')'} {player.name}
+                {index + 1}{')'} {player.playing11 === "true" ? (
+                    <strong>{player.name}</strong>
+                  ) : (
+                    player.name
+                  )}
                 {index < matchData["match-playing11"].teama.squads.length - 1 && ', '}
               </span>
             ))}
@@ -366,7 +372,6 @@ const MatchCard = ({ matchData, onClose }) => {
           </Card>
         </Col>
 
-        {/* Pitch Details */}
         <Col xs={24} md={12}>
           <Card
             title={<span className="matchCardText">{teamb?.name} </span>}
@@ -376,7 +381,11 @@ const MatchCard = ({ matchData, onClose }) => {
             <div /* className="overflow-auto" style={{ maxHeight: '100px' }} */>
               {matchData["match-playing11"].teamb.squads.map((player, index) => (
                 <span key={index}>
-                  {index + 1}{')'} {player.name}
+                  {index + 1}{')'} {player.playing11 === "true" ? (
+                    <strong>{player.name}</strong>
+                  ) : (
+                    player.name
+                  )}
                   {index < matchData["match-playing11"].teamb.squads.length - 1 && ', '}
                 </span>
               ))}
