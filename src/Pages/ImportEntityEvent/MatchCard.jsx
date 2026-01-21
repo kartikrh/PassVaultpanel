@@ -240,11 +240,13 @@ const MatchCard = ({ matchData, onClose }) => {
         </Col>
       </Row>
 
-      <Divider style={{ marginTop: "5px", marginBottom: "8px" }} />
+      {(pitch || weather) && (
+        <Divider style={{ marginTop: "5px", marginBottom: "8px" }} />
+      )}
 
       {/* Weather Details */}
       <Row gutter={[24, 16]}>
-        <Col xs={24} md={12}>
+        { weather && <Col xs={24} md={12}>
           <Card
             title={<span className="matchCardText">Weather Details: </span>}
             size="small"
@@ -299,10 +301,10 @@ const MatchCard = ({ matchData, onClose }) => {
               <div className="mb-2 matchCardText">No data available</div>
             )}
           </Card>
-        </Col>
+        </Col>}
 
         {/* Pitch Details */}
-        <Col xs={24} md={12}>
+        { pitch && <Col xs={24} md={12}>
           <Card
             title={<span className="matchCardText">Pitch Details: </span>}
             size="small"
@@ -341,7 +343,7 @@ const MatchCard = ({ matchData, onClose }) => {
               <div className="mb-2 matchCardText">No data available</div>
             )}
           </Card>
-        </Col>
+        </Col>}
       </Row>
 
       <Divider style={{ marginTop: "5px", marginBottom: "8px" }} />
