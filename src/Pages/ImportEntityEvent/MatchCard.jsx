@@ -53,6 +53,10 @@ const MatchCard = ({ matchData, onClose }) => {
     return moment(dateTime).format("DD MMM YYYY, HH:mm");
   };
 
+  const hasAnySquad =
+  matchData["match-playing11"]?.teama?.squads?.length > 0 ||
+  matchData["match-playing11"]?.teamb?.squads?.length > 0;
+
   return (
     <>
       <div className="mb-4">
@@ -346,10 +350,10 @@ const MatchCard = ({ matchData, onClose }) => {
         </Col>}
       </Row>
 
-      <Divider style={{ marginTop: "5px", marginBottom: "8px" }} />
+      {hasAnySquad && <Divider style={{ marginTop: "5px", marginBottom: "8px" }} />}
 
       {/* Team Player Details */}
-      <Row gutter={[24, 16]}>
+      { hasAnySquad && <Row gutter={[24, 16]}>
         <Col xs={24} md={12}>
           <Card
             title={<span className="matchCardText">{teama?.name} </span>}
@@ -357,16 +361,20 @@ const MatchCard = ({ matchData, onClose }) => {
             className="team-card h-100"
           >
             <div /* className="overflow-auto" style={{ maxHeight: '100px' }} */>
-            {matchData["match-playing11"].teama.squads.map((player, index) => (
-              <span key={index}>
-                {index + 1}{')'} {player.playing11 === "true" ? (
-                    <strong>{player.name}</strong>
-                  ) : (
-                    player.name
-                  )}
-                {index < matchData["match-playing11"].teama.squads.length - 1 && ', '}
-              </span>
-            ))}
+              {matchData["match-playing11"]?.teama?.squads?.length > 0 ? (
+                matchData["match-playing11"].teama.squads.map((player, index) => (
+                  <span key={index}>
+                    {index + 1}{')'} {player.playing11 === "true" ? (
+                      <strong>{player.name}</strong>
+                    ) : (
+                      player.name
+                    )}
+                    {index < matchData["match-playing11"].teama.squads.length - 1 && ', '}
+                  </span>
+                ))
+              ) : (
+                <span className="matchCardText">No Data Available</span>
+              )}
             </div>
             {/* ) : (
               <div className="mb-2 matchCardText">No data available</div>
@@ -381,20 +389,24 @@ const MatchCard = ({ matchData, onClose }) => {
             className="team-card h-100"
           >
             <div /* className="overflow-auto" style={{ maxHeight: '100px' }} */>
-              {matchData["match-playing11"].teamb.squads.map((player, index) => (
-                <span key={index}>
-                  {index + 1}{')'} {player.playing11 === "true" ? (
-                    <strong>{player.name}</strong>
-                  ) : (
-                    player.name
-                  )}
-                  {index < matchData["match-playing11"].teamb.squads.length - 1 && ', '}
-                </span>
-              ))}
+              {matchData["match-playing11"]?.teamb?.squads?.length > 0 ? (
+                matchData["match-playing11"].teamb.squads.map((player, index) => (
+                  <span key={index}>
+                    {index + 1}{')'} {player.playing11 === "true" ? (
+                      <strong>{player.name}</strong>
+                    ) : (
+                      player.name
+                    )}
+                    {index < matchData["match-playing11"].teamb.squads.length - 1 && ', '}
+                  </span>
+                ))
+              ) : (
+                <span className="matchCardText">No Data Available</span>
+              )}
             </div>
           </Card>
         </Col>
-      </Row>
+      </Row>}
 
     </>
   );
