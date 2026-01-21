@@ -500,7 +500,7 @@ function AddCommentary() {
                     const resultData = fetchResult(response);
                     // setCompetitionList(resultData);
                     const formattedData = resultData?.map(item => {
-                        return { label: item?.name, value: item?.venueId }
+                        return { label: `${item?.name}, ${item?.city}`, value: item?.venueId }
                     })
                     setMasterData((preData) => ({
                         ...preData,
