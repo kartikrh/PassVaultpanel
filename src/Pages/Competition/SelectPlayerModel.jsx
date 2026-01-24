@@ -73,10 +73,38 @@ export const SelectPlayersModel = ({
     }
   }, [selectedTournamentVals]);
 
-  const handlePlayerChange = (selectedOptions) => {
-    setSelectedPlayers(selectedOptions);
+  const getDropdownOptions = () => {
+    if (playerList.length > 1) {
+      return [
+        { label: "Select All", value: "select-all" },
+        ...playerList
+      ];
+    }
+    return playerList;
+  };
 
-    const selectedPlayersArray = selectedOptions.map((option) => ({
+  const handlePlayerChange = (selectedOptions) => {
+    // setSelectedPlayers(selectedOptions);
+    const selectAllOption = selectedOptions?.find(option => option.value === "select-all");
+  
+    let newSelectedPlayers;
+    
+    if (selectAllOption) {
+      newSelectedPlayers = [
+        ...selectedPlayers, // Keep existing selected players
+        ...playerList       // Add all remaining players
+      ];
+      
+      newSelectedPlayers = newSelectedPlayers.filter((player, index, self) =>
+        index === self.findIndex((p) => p.value === player.value)
+      );
+    } else {
+      newSelectedPlayers = selectedOptions || [];
+    }
+    
+    setSelectedPlayers(newSelectedPlayers);
+
+    const selectedPlayersArray = newSelectedPlayers.map((option) => ({
       playerId: option.value,
       playerName: option.label,
       teamId: selectedTournamentVals.teamId,
@@ -124,7 +152,7 @@ export const SelectPlayersModel = ({
               id="players"
               name="players"
               isMulti
-              options={playerList}
+              options={getDropdownOptions()}
               value={selectedPlayers}
               onChange={handlePlayerChange}
               required={true}

@@ -73,15 +73,15 @@ function AddTeams() {
     }
   }, [teamId]);
 
-  useEffect(() => {
-    if (initialEditData) {
-      if (initialEditData.tpId) {
-        setDisabledFields({
-          teamName: true,
-        })
-      }
-    }
-  },[initialEditData])
+  // useEffect(() => {
+  //   if (initialEditData) {
+  //     if (initialEditData.tpId) {
+  //       setDisabledFields({
+  //         teamName: true,
+  //       })
+  //     }
+  //   }
+  // },[initialEditData])
 
   useEffect(() => {
     if (isSaved) {
@@ -235,7 +235,7 @@ function AddTeams() {
                   editFormData={initialEditData}
                   masterData={masterData}
                   disabledFields={disabledFields}
-                  setDisabledFields={setDisabledFields}
+                  // setDisabledFields={setDisabledFields}
                 />
               </CardBody>
             </Card>
