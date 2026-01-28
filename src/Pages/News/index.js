@@ -8,7 +8,7 @@ import DeleteTabModel from "../../components/Model/DeleteModel";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
-import { isEqual, isEmpty } from "lodash";
+import { isEqual, isEmpty, isDate } from "lodash";
 import {
   TAB_NEWS,
   PERMISSION_ADD,
@@ -20,7 +20,7 @@ import {
   MODULE_NEWS,
 } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
-import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateUTCToLocal, convertDateUTCToLocalWithoutSec24, convertDateUtcFormatWithoutSec24 } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import LoadDataModal from "../../components/Model/LoadDataModal";
 
@@ -42,6 +42,11 @@ const Index = () => {
   const [tableSearchedData, setTableSearchedData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(globalPageSize || 10);
+  const globalDateType = JSON.parse(localStorage.getItem("DateType"))
+  const [dateType, setDateType] = useState(globalDateType || {
+    label: "Local Timezone",
+    value: 1,
+  });
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -348,9 +353,16 @@ const Index = () => {
       dataIndex: "startDate",
       render: (text, record) => (
         <span style={{ cursor: "pointer" }}>
-          {convertDateUTCToLocal(text, "index")}
+          {dateType?.value == 1
+            ? convertDateUTCToLocalWithoutSec24(text, "index")
+            : convertDateUtcFormatWithoutSec24(text, "index")}
         </span>
       ),
+      // render: (text, record) => (
+      //   <span style={{ cursor: "pointer" }}>
+      //     {convertDateUTCToLocal(text, "index")}
+      //   </span>
+      // ),
       key: "startDate",
       style: { width: "20%" },
     },
@@ -359,7 +371,9 @@ const Index = () => {
       dataIndex: "endDate",
       render: (text, record) => (
         <span style={{ cursor: "pointer" }}>
-          {convertDateUTCToLocal(text, "index")}
+          {dateType?.value == 1
+            ? convertDateUTCToLocalWithoutSec24(text, "index")
+            : convertDateUtcFormatWithoutSec24(text, "index")}
         </span>
       ),
       key: "endDate",
@@ -431,6 +445,8 @@ const Index = () => {
     isActive: true,
     reloadButton: true,
     loadData: true,
+    isDateTypeSelect: true,
+    dateTypeButNoDateRange: true,
   };
 
   useEffect(() => {
@@ -474,6 +490,8 @@ const Index = () => {
             setParentCurrentPage={handleCurrentPageChange}
             setParentPageSize={handlePageSizeChange}
             setParentSearchedData={handleTableSearchedDataChange}
+            dateType={dateType}
+            setDateType={setDateType}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
