@@ -16,6 +16,18 @@ import { updateToastData } from "../../Features/toasterSlice";
 import {ImportExportModel} from '../../components/Model/ImportExportModel'
 import SubDomainsModels from '../../components/Model/SubdomainsModel'
 import LoadDataModal from "../../components/Model/LoadDataModal";
+import Select from "react-select";
+
+const  SCORECARD_OPTIONS = [
+  { label: "Approved", value: true },
+  { label: "Decline", value: false },
+];
+
+const STREAM_OPTIONS = [
+  { label: "All", value: null },
+  { label: "Approved", value: true },
+  { label: "Decline", value: false },
+];
 
 const Index = () => {
   const pageName = TAB_SUBSCRIBERS
@@ -34,6 +46,8 @@ const Index = () => {
   const [tableSearchedData, setTableSearchedData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(globalPageSize || 10);
+  const [scorecardFilter, setScorecardFilter] = useState({ label: "Approved", value: true });
+  const [streamFilter, setStreamFilter] = useState({ label: "All", value: null });
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -42,11 +56,21 @@ const Index = () => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction()
     const data = latestValueFromTable || tableActions
+    const payload = {
+      ...data,
+      isApproved: scorecardFilter.value !== null ? scorecardFilter.value : true,
+    };
+    
+    // Only add isVideoApproved if stream filter is not "All"
+    if (streamFilter.value !== null) {
+      payload.isVideoApproved = streamFilter.value;
+    }
     await axiosInstance
-      .post(`/admin/subscribeDomain/all`, {
-        ...data,
-        isApproved: data?.isApproved !== undefined ? data?.isApproved : tableActions?.isApproved !== undefined ? tableActions?.isApproved : true
-      })
+      .post(`/admin/subscribeDomain/all`, payload)
+      // .post(`/admin/subscribeDomain/all`, {
+      //   ...data,
+      //   isApproved: data?.isApproved !== undefined ? data?.isApproved : tableActions?.isApproved !== undefined ? tableActions?.isApproved : true
+      // })
       .then((response) => {
         const apiData = response?.result?.sort((a,b)=>a?.subScribesDomainId - b?.subScribesDomainId);
         let apiDataIdList = [];
@@ -78,6 +102,23 @@ const Index = () => {
     setIsLoading(true);
     await axiosInstance
       .post(`/admin/subscribeDomain/isDomainApprove`, {
+        subScribesDomainId: record.subScribesDomainId,
+        [pType]: cState ? false : true,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+      });
+  };
+
+  const handleVideoPermissions = async (pType, record, cState) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/subscribeDomain/activeInactiveVideoApproved`, {
         subScribesDomainId: record.subScribesDomainId,
         [pType]: cState ? false : true,
       })
@@ -189,6 +230,19 @@ const Index = () => {
     setCheckedList([]);
   };
 
+  const handleFilterChange = (filterType, selectedOption) => {
+    if (filterType === "scorecard") {
+      setScorecardFilter(selectedOption);
+    } else if (filterType === "stream") {
+      setStreamFilter(selectedOption);
+    }
+  };
+
+  const handleCustomReset = () => {
+    setScorecardFilter({ label: "Approved", value: true });
+    setStreamFilter({ label: "All", value: null });
+  };
+
   //table columns
   const columns = [
     {
@@ -268,7 +322,7 @@ const Index = () => {
         sort: true,
       },
     {
-      title: "IsApproved",
+      title: "Scorecard",
       key: "isApproved",
       render: (text, record) => (
         <Button
@@ -284,13 +338,37 @@ const Index = () => {
       ),
       style: { width: "2%", textAlign: "center" },
     },
+    {
+      title: "Stream",
+      key: "isVideoApproved",
+      render: (text, record) => (
+        <Button
+          color={`${record.isVideoApproved ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handleVideoPermissions("isVideoApproved", record, record.isVideoApproved);
+          }}
+        >
+          <i className={`bx ${record.isVideoApproved ? "bx-check" : "bx-block"}`}></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
   ];
+
+  const handleReload = (value) => {
+    fetchData();
+  };
+  
   //elements required
   const tableElement = {
     title: "Subscribers",
     // isActive: true,
-    isApproved: true,
+    // isApproved: true,
     loadData: true,
+    reloadButton: true,
+    resetButton: true,
   };
 
   useEffect(() => {
@@ -298,7 +376,7 @@ const Index = () => {
       navigate("/dashboard")
     }
     fetchData();
-  }, [permissionObj]);
+  }, [permissionObj, scorecardFilter, streamFilter]);
 
   return (
     <React.Fragment>
@@ -315,6 +393,7 @@ const Index = () => {
             singleCheck={checekedList}
             // onAddNavigate={"/addSubscriber"}
             handleReset={handleReset}
+            handleReload={handleReload}
             loadDataModelFunction={setLoadDataModelVisable}
             reFetchData={fetchData}
             // isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
@@ -322,6 +401,35 @@ const Index = () => {
             setParentCurrentPage={handleCurrentPageChange}
             setParentPageSize={handlePageSizeChange}
             setParentSearchedData={handleTableSearchedDataChange}
+            handleCustomReset={handleCustomReset}
+            renderCustomFilter={() => (
+              <div className="d-flex align-items-center gap-2">
+                <Select
+                  styles={{
+                    control: (provided) => ({ ...provided, width: 150 }),
+                  }}
+                  value={scorecardFilter}
+                  placeholder="Scorecard"
+                  options={SCORECARD_OPTIONS}
+                  onChange={(selectedOption) => {
+                    handleFilterChange("scorecard", selectedOption);
+                  }}
+                  classNamePrefix="filter-dropdown"
+                />
+                <Select
+                  styles={{
+                    control: (provided) => ({ ...provided, width: 150 }),
+                  }}
+                  value={streamFilter}
+                  placeholder="Stream"
+                  options={STREAM_OPTIONS}
+                  onChange={(selectedOption) => {
+                    handleFilterChange("stream", selectedOption);
+                  }}
+                  classNamePrefix="filter-dropdown"
+                />
+              </div>
+            )}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
