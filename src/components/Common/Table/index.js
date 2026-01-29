@@ -2941,7 +2941,7 @@ const Index = forwardRef(
                               tableElement?.title == "Registered Users" ||
                               tableElement?.title == "Events" ||
                               tableElement?.dateTypeTitle == "Market data logs" ||
-                              tableElement?.title == "Competition") ? (
+                              tableElement?.title == "Competition" || tableElement?.dateTypeButNoDateRange ) ? (
                             <Select
                               value={dateType}
                               placeholder="Date Type"
