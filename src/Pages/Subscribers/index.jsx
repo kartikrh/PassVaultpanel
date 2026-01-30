@@ -8,7 +8,7 @@ import DeleteTabModel from "../../components/Model/DeleteModel";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
-import { isEmpty, isEqual } from "lodash";
+import { isEmpty, isEqual, pickBy } from "lodash";
 import { TAB_SUBSCRIBERS, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, ERROR, MODULE_SUBSCRIBERS, } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
@@ -17,17 +17,6 @@ import {ImportExportModel} from '../../components/Model/ImportExportModel'
 import SubDomainsModels from '../../components/Model/SubdomainsModel'
 import LoadDataModal from "../../components/Model/LoadDataModal";
 import Select from "react-select";
-
-const  SCORECARD_OPTIONS = [
-  { label: "Approved", value: true },
-  { label: "Decline", value: false },
-];
-
-const STREAM_OPTIONS = [
-  { label: "All", value: null },
-  { label: "Approved", value: true },
-  { label: "Decline", value: false },
-];
 
 const Index = () => {
   const pageName = TAB_SUBSCRIBERS
@@ -46,8 +35,6 @@ const Index = () => {
   const [tableSearchedData, setTableSearchedData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(globalPageSize || 10);
-  const [scorecardFilter, setScorecardFilter] = useState({ label: "Approved", value: true });
-  const [streamFilter, setStreamFilter] = useState({ label: "All", value: null });
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -55,18 +42,10 @@ const Index = () => {
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction()
-    const data = latestValueFromTable || tableActions
-    const payload = {
-      ...data,
-      isApproved: scorecardFilter.value !== null ? scorecardFilter.value : true,
-    };
-    
-    // Only add isVideoApproved if stream filter is not "All"
-    if (streamFilter.value !== null) {
-      payload.isVideoApproved = streamFilter.value;
-    }
+    const data = latestValueFromTable || tableActions;
+  
     await axiosInstance
-      .post(`/admin/subscribeDomain/all`, payload)
+      .post(`/admin/subscribeDomain/all`, pickBy(data, (value) => value !== null && value !== undefined))
       // .post(`/admin/subscribeDomain/all`, {
       //   ...data,
       //   isApproved: data?.isApproved !== undefined ? data?.isApproved : tableActions?.isApproved !== undefined ? tableActions?.isApproved : true
@@ -230,19 +209,6 @@ const Index = () => {
     setCheckedList([]);
   };
 
-  const handleFilterChange = (filterType, selectedOption) => {
-    if (filterType === "scorecard") {
-      setScorecardFilter(selectedOption);
-    } else if (filterType === "stream") {
-      setStreamFilter(selectedOption);
-    }
-  };
-
-  const handleCustomReset = () => {
-    setScorecardFilter({ label: "Approved", value: true });
-    setStreamFilter({ label: "All", value: null });
-  };
-
   //table columns
   const columns = [
     {
@@ -369,6 +335,18 @@ const Index = () => {
     loadData: true,
     reloadButton: true,
     resetButton: true,
+    scorecardSelect: true,
+    streamSelect: true,
+    scorecardOptions: [
+      { label: "Select Scorecard", value: null },
+      { label: "Approved", value: true },
+      { label: "Decline", value: false },
+    ],
+    streamOptions: [
+      { label: "Select Stream", value: null },
+      { label: "Approved", value: true },
+      { label: "Decline", value: false },
+    ],
   };
 
   useEffect(() => {
@@ -376,7 +354,7 @@ const Index = () => {
       navigate("/dashboard")
     }
     fetchData();
-  }, [permissionObj, scorecardFilter, streamFilter]);
+  }, [permissionObj]);
 
   return (
     <React.Fragment>
@@ -401,35 +379,10 @@ const Index = () => {
             setParentCurrentPage={handleCurrentPageChange}
             setParentPageSize={handlePageSizeChange}
             setParentSearchedData={handleTableSearchedDataChange}
-            handleCustomReset={handleCustomReset}
-            renderCustomFilter={() => (
-              <div className="d-flex align-items-center gap-2">
-                <Select
-                  styles={{
-                    control: (provided) => ({ ...provided, width: 150 }),
-                  }}
-                  value={scorecardFilter}
-                  placeholder="Scorecard"
-                  options={SCORECARD_OPTIONS}
-                  onChange={(selectedOption) => {
-                    handleFilterChange("scorecard", selectedOption);
-                  }}
-                  classNamePrefix="filter-dropdown"
-                />
-                <Select
-                  styles={{
-                    control: (provided) => ({ ...provided, width: 150 }),
-                  }}
-                  value={streamFilter}
-                  placeholder="Stream"
-                  options={STREAM_OPTIONS}
-                  onChange={(selectedOption) => {
-                    handleFilterChange("stream", selectedOption);
-                  }}
-                  classNamePrefix="filter-dropdown"
-                />
-              </div>
-            )}
+            defaultTableActionData={{
+              isActive: true, 
+              isApproved: true,  // Default scorecard to Approved
+            }}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
