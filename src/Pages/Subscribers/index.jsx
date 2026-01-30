@@ -16,7 +16,6 @@ import { updateToastData } from "../../Features/toasterSlice";
 import {ImportExportModel} from '../../components/Model/ImportExportModel'
 import SubDomainsModels from '../../components/Model/SubdomainsModel'
 import LoadDataModal from "../../components/Model/LoadDataModal";
-import Select from "react-select";
 
 const Index = () => {
   const pageName = TAB_SUBSCRIBERS
@@ -382,6 +381,7 @@ const Index = () => {
             defaultTableActionData={{
               isActive: true, 
               isApproved: true,  // Default scorecard to Approved
+              isVideoApproved: null,
             }}
           />
           <DeleteTabModel
