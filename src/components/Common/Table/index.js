@@ -246,6 +246,38 @@ const Index = forwardRef(
         });
       }
     }, [])
+
+    // NEW useEffect for default filters in subscribers table:
+    useEffect(() => {
+      const initialFilters = {};
+
+      if (tableElement?.scorecardSelect) {
+        const defaultScorecard = defaultTableActionData?.isApproved !== undefined
+          ? defaultTableActionData.isApproved
+          : true;
+        initialFilters.scorecard = {
+          value: defaultScorecard,
+          label: defaultScorecard === true ? "Approved" : defaultScorecard === false ? "Decline" : "Select Scorecard",
+        };
+      }
+
+      if (tableElement?.streamSelect) {
+        const defaultStream = defaultTableActionData?.isVideoApproved !== undefined
+          ? defaultTableActionData.isVideoApproved
+          : null;
+        initialFilters.stream = {
+          value: defaultStream,
+          label: defaultStream === true ? "Approved" : defaultStream === false ? "Decline" : "Select Stream",
+        };
+      }
+
+      if (Object.keys(initialFilters).length > 0) {
+        setSelectedTableElements(prev => ({
+          ...prev,
+          ...initialFilters,
+        }));
+      }
+    }, []);
     
     useEffect(() => {
       if (setParentCurrentPage) {
