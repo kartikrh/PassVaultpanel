@@ -636,17 +636,20 @@ const Index = forwardRef(
           setServerCurrentPage(0);
         }
 
-        setStatusSwitch(id);
-        setTableActions((preValue) => {
-          return {
-            ...preValue,
-            [key]: id,
-          };
-        });
-        reFetchData({
-          ...tableActions,
-          isApproved: id,
-        });
+        // setStatusSwitch(id);
+        const value = id?.value !== undefined ? id.value : id;
+  
+  setStatusSwitch(value);
+  setTableActions((preValue) => {
+    return {
+      ...preValue,
+      [key]: value,
+    };
+  });
+  reFetchData({
+    ...tableActions,
+    isApproved: value,
+  });
         // } else if (key === "isTrending") {
         //   if (setServerCurrentPage) {
         //     setServerCurrentPage(0);
@@ -679,6 +682,21 @@ const Index = forwardRef(
         //   ...tableActions,
         //   isMen: id.value,
         // });
+      } else if (key === "isVideoApproved") {  
+        if (setServerCurrentPage) {
+          setServerCurrentPage(0);
+        }
+
+        setTableActions((preValue) => {
+          return {
+            ...preValue,
+            [key]: id?.value !== undefined ? id.value : id, 
+          };
+        });
+        reFetchData({
+          ...tableActions,
+          isVideoApproved: id?.value !== undefined ? id.value : id, 
+        });
       } else if (key === "isShowContent") {
         if (setServerCurrentPage) {
           setServerCurrentPage(0);
@@ -1289,6 +1307,14 @@ const Index = forwardRef(
         isCompetitionStatisticsCalculation: {
           value: 0,
           label: "Competition Stats",
+        },
+        scorecard: {
+          value: true,  // Default Approved
+          label: "Approved",
+        },
+        stream: {
+          value: null, 
+          label: "Select Stream",
         },
       });
       setMenSwitch(null)
@@ -2146,6 +2172,73 @@ const Index = forwardRef(
                               />
                             </div>
                           ) : null}
+                        {tableElement?.scorecardSelect ? (
+                          <div className="">
+                            <Select
+                              styles={{
+                                control: (provided) => ({
+                                  ...provided,
+                                  width: 180,
+                                }),
+                              }}
+                              value={selectedTableElements?.scorecard}
+                              placeholder="Scorecard"
+                              onChange={(e) => {
+                                if (
+                                  e?.value !==
+                                  selectedTableElements?.scorecard?.value
+                                ) {
+                                  handleTableActions("isApproved", e);
+                                  setSelectedTableElements({
+                                    ...selectedTableElements,
+                                    scorecard: e,
+                                  });
+                                }
+                              }}
+                              options={tableElement?.scorecardOptions?.map(
+                                (item) => ({
+                                  label: item?.label,
+                                  value: item?.value,
+                                })
+                              )}
+                              classNamePrefix="filter-dropdown"
+                            />
+                          </div>
+                        ) : null}
+
+                        {tableElement?.streamSelect ? (
+                          <div className="">
+                            <Select
+                              styles={{
+                                control: (provided) => ({
+                                  ...provided,
+                                  width: 180,
+                                }),
+                              }}
+                              value={selectedTableElements?.stream}
+                              placeholder="Stream"
+                              onChange={(e) => {
+                                if (
+                                  e?.value !==
+                                  selectedTableElements?.stream?.value
+                                ) {
+                                  handleTableActions("isVideoApproved", e);
+                                  setSelectedTableElements({
+                                    ...selectedTableElements,
+                                    stream: e,
+                                  });
+                                }
+                              }}
+                              options={tableElement?.streamOptions?.map(
+                                (item) => ({
+                                  label: item?.label,
+                                  value: item?.value,
+                                })
+                              )}
+                              classNamePrefix="filter-dropdown"
+                            />
+                          </div>
+                        ) : null}
                           {/* {tableElement?.pythonApiSelect ? (
                             <div className="">
                               <Select
