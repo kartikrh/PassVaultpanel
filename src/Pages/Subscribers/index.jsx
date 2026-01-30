@@ -8,7 +8,7 @@ import DeleteTabModel from "../../components/Model/DeleteModel";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
-import { isEmpty, isEqual } from "lodash";
+import { isEmpty, isEqual, pickBy } from "lodash";
 import { TAB_SUBSCRIBERS, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, ERROR, MODULE_SUBSCRIBERS, } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
@@ -41,12 +41,14 @@ const Index = () => {
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction()
-    const data = latestValueFromTable || tableActions
+    const data = latestValueFromTable || tableActions;
+  
     await axiosInstance
-      .post(`/admin/subscribeDomain/all`, {
-        ...data,
-        isApproved: data?.isApproved !== undefined ? data?.isApproved : tableActions?.isApproved !== undefined ? tableActions?.isApproved : true
-      })
+      .post(`/admin/subscribeDomain/all`, pickBy(data, (value) => value !== null && value !== undefined))
+      // .post(`/admin/subscribeDomain/all`, {
+      //   ...data,
+      //   isApproved: data?.isApproved !== undefined ? data?.isApproved : tableActions?.isApproved !== undefined ? tableActions?.isApproved : true
+      // })
       .then((response) => {
         const apiData = response?.result?.sort((a,b)=>a?.subScribesDomainId - b?.subScribesDomainId);
         let apiDataIdList = [];
@@ -78,6 +80,23 @@ const Index = () => {
     setIsLoading(true);
     await axiosInstance
       .post(`/admin/subscribeDomain/isDomainApprove`, {
+        subScribesDomainId: record.subScribesDomainId,
+        [pType]: cState ? false : true,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+      });
+  };
+
+  const handleVideoPermissions = async (pType, record, cState) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/subscribeDomain/activeInactiveVideoApproved`, {
         subScribesDomainId: record.subScribesDomainId,
         [pType]: cState ? false : true,
       })
@@ -268,7 +287,7 @@ const Index = () => {
         sort: true,
       },
     {
-      title: "IsApproved",
+      title: "Scorecard",
       key: "isApproved",
       render: (text, record) => (
         <Button
@@ -284,13 +303,49 @@ const Index = () => {
       ),
       style: { width: "2%", textAlign: "center" },
     },
+    {
+      title: "Stream",
+      key: "isVideoApproved",
+      render: (text, record) => (
+        <Button
+          color={`${record.isVideoApproved ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handleVideoPermissions("isVideoApproved", record, record.isVideoApproved);
+          }}
+        >
+          <i className={`bx ${record.isVideoApproved ? "bx-check" : "bx-block"}`}></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
   ];
+
+  const handleReload = (value) => {
+    fetchData();
+  };
+  
   //elements required
   const tableElement = {
     title: "Subscribers",
     // isActive: true,
-    isApproved: true,
+    // isApproved: true,
     loadData: true,
+    reloadButton: true,
+    resetButton: true,
+    scorecardSelect: true,
+    streamSelect: true,
+    scorecardOptions: [
+      { label: "Select Scorecard", value: null },
+      { label: "Approved", value: true },
+      { label: "Decline", value: false },
+    ],
+    streamOptions: [
+      { label: "Select Stream", value: null },
+      { label: "Approved", value: true },
+      { label: "Decline", value: false },
+    ],
   };
 
   useEffect(() => {
@@ -315,6 +370,7 @@ const Index = () => {
             singleCheck={checekedList}
             // onAddNavigate={"/addSubscriber"}
             handleReset={handleReset}
+            handleReload={handleReload}
             loadDataModelFunction={setLoadDataModelVisable}
             reFetchData={fetchData}
             // isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
@@ -322,6 +378,11 @@ const Index = () => {
             setParentCurrentPage={handleCurrentPageChange}
             setParentPageSize={handlePageSizeChange}
             setParentSearchedData={handleTableSearchedDataChange}
+            defaultTableActionData={{
+              isActive: true, 
+              isApproved: true,  // Default scorecard to Approved
+              isVideoApproved: null,
+            }}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
