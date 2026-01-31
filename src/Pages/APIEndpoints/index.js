@@ -164,6 +164,8 @@ const Index = () => {
         return "getCompetitionSquadDataByIdFromEntity";
       case 19:
         return "searchPlayerDataFromEntity";
+      case 20:
+        return "getCommentaryInningDataFromEntity";
       default:
         return "Unknown";
     } 
