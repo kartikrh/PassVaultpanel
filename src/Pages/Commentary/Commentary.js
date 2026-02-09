@@ -2708,7 +2708,7 @@ const Commentary = (props) => {
             && onPitchPlayers[NON_STRIKE]?.commentaryPlayerId)
             apiCallObj["commentaryPartnership"] = generatePartnership({ commentaryDetails, currentPartnership: partnershipDetails, teams: currentInningsTeams, onPitchPlayers: (isEmpty(_onPitchPlayers) ? onPitchPlayers : _onPitchPlayers) })
         // console.log("GENERATING PARTNERSHIP", apiCallObj.commentaryPartnership)
-        if (!currentOverToUpdate && onPitchPlayers[CURRENT_BOWLER]?.commentaryPlayerId) {
+        if (!currentOverToUpdate && onPitchPlayers[CURRENT_BOWLER]?.commentaryPlayerId && commentaryDetails?.commentaryStatus != 4) {
             apiCallObj["commentaryOvers"] = generateOver({
                 commentaryDetails, onPitchPlayers, teams: currentInningsTeams, selectedOverType
             })
