@@ -3119,10 +3119,12 @@ const Commentary = (props) => {
         }
     }, [commentaryDataToUpdate])
     useEffect(() => {
-        if (!inningsChangePopup && !redirectOnScreenChange && !onPitchPlayers[ON_STRIKE]?.playerId || !onPitchPlayers[NON_STRIKE]?.playerId || !onPitchPlayers[CURRENT_BOWLER]?.playerId) {
+        const isMatchCompleted = commentaryDetails?.commentaryStatus === 4;
+        if (isMatchCompleted) { setSelectMissingPlayer(false);}
+        else if (!inningsChangePopup && !redirectOnScreenChange && (!onPitchPlayers[ON_STRIKE]?.playerId || !onPitchPlayers[NON_STRIKE]?.playerId || !onPitchPlayers[CURRENT_BOWLER]?.playerId)) {
             setSelectMissingPlayer(true)
         } else if (onPitchPlayers[ON_STRIKE]?.playerId && onPitchPlayers[NON_STRIKE]?.playerId && onPitchPlayers[CURRENT_BOWLER]?.playerId) setSelectMissingPlayer(false)
-    }, [onPitchPlayers, inningsChangePopup, redirectOnScreenChange])
+    }, [onPitchPlayers, inningsChangePopup, redirectOnScreenChange, commentaryDetails?.commentaryStatus])
     useEffect(() => {
         if (matchTypeDetails?.isAutoChangeStriker
             && !changePlayerList
