@@ -2708,7 +2708,7 @@ const Commentary = (props) => {
             && onPitchPlayers[NON_STRIKE]?.commentaryPlayerId)
             apiCallObj["commentaryPartnership"] = generatePartnership({ commentaryDetails, currentPartnership: partnershipDetails, teams: currentInningsTeams, onPitchPlayers: (isEmpty(_onPitchPlayers) ? onPitchPlayers : _onPitchPlayers) })
         // console.log("GENERATING PARTNERSHIP", apiCallObj.commentaryPartnership)
-        if (!currentOverToUpdate && onPitchPlayers[CURRENT_BOWLER]?.commentaryPlayerId) {
+        if (!currentOverToUpdate && onPitchPlayers[CURRENT_BOWLER]?.commentaryPlayerId && commentaryDetails?.commentaryStatus != 4) {
             apiCallObj["commentaryOvers"] = generateOver({
                 commentaryDetails, onPitchPlayers, teams: currentInningsTeams, selectedOverType
             })
@@ -3119,10 +3119,12 @@ const Commentary = (props) => {
         }
     }, [commentaryDataToUpdate])
     useEffect(() => {
-        if (!inningsChangePopup && !redirectOnScreenChange && !onPitchPlayers[ON_STRIKE]?.playerId || !onPitchPlayers[NON_STRIKE]?.playerId || !onPitchPlayers[CURRENT_BOWLER]?.playerId) {
+        const isMatchCompleted = commentaryDetails?.commentaryStatus === 4;
+        if (isMatchCompleted) { setSelectMissingPlayer(false);}
+        else if (!inningsChangePopup && !redirectOnScreenChange && (!onPitchPlayers[ON_STRIKE]?.playerId || !onPitchPlayers[NON_STRIKE]?.playerId || !onPitchPlayers[CURRENT_BOWLER]?.playerId)) {
             setSelectMissingPlayer(true)
         } else if (onPitchPlayers[ON_STRIKE]?.playerId && onPitchPlayers[NON_STRIKE]?.playerId && onPitchPlayers[CURRENT_BOWLER]?.playerId) setSelectMissingPlayer(false)
-    }, [onPitchPlayers, inningsChangePopup, redirectOnScreenChange])
+    }, [onPitchPlayers, inningsChangePopup, redirectOnScreenChange, commentaryDetails?.commentaryStatus])
     useEffect(() => {
         if (matchTypeDetails?.isAutoChangeStriker
             && !changePlayerList
