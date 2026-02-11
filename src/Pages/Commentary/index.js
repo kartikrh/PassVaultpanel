@@ -1551,6 +1551,33 @@ const Index = () => {
     }
   };
 
+  const handleUpdateData = async (matchId) => {
+    setIsLoading(true)
+    await axiosInstance
+      .post(`/admin/entitySport/inningData`, { matchId })
+      .then((response) => {
+        fetchData()
+        dispatch(
+          updateToastData({
+            data: response.result,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+
   //checkbox select
   const getSelectedItemsData = () => {
     const newCurrentPage = currentPage > 0 ? currentPage : 1;
@@ -2919,6 +2946,35 @@ const Index = () => {
         </div>
       ),
       style: { width: "10%" },
+    },
+    {
+      title: "",
+      dataIndex: "updateCommentaryData",
+      key: "updateCommentaryData",
+      printType: "ignore",
+      render: (text, record) => {
+        if (record?.scoringType === 2 && record?.commentaryStatus !== 4 && record?.commentaryStatus !== 10) {
+          return (
+            <Tooltip
+              title={"Update"}
+              color={"#e8e8ea"}
+              overlayInnerStyle={{ color: "#000" }}
+            >
+              <Button
+                className="btn-border"
+                size="sm"
+                onClick={() => {
+                  handleUpdateData(record?.tpId);
+                }}
+              >
+                Up
+              </Button>
+            </Tooltip>
+          );
+        }
+        return null; // Don't render anything if conditions aren't met
+      },
+      style: { width: "4%", textAlign: "center" },
     },
     {
       title: "",
