@@ -11,7 +11,7 @@ import {
     Collapse,
     Label,
 } from "reactstrap";
-import { Tooltip, Switch, Avatar } from "antd";
+import { Tooltip, Switch } from "antd";
 import Select from "react-select";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
@@ -206,7 +206,7 @@ const TeamMatchType = () => {
 
         // Add jersey image if selected
         if (selectedJerseyImages[teamMatchTypeId]) {
-            formData.append("teamJerseyImage", selectedJerseyImages[teamMatchTypeId]);
+            formData.append("image", selectedJerseyImages[teamMatchTypeId]);
         }
 
         setIsLoading(true);
