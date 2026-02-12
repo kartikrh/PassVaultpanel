@@ -171,7 +171,7 @@ const TeamMatchType = () => {
     //     await axiosInstance
     //         .post("/admin/teamMatchType/update", {
     //             teamMatchTypeId: teamMatchTypeId,
-    //             newPlayerIds: playerIds,
+    //             playerIds: playerIds,
     //         })
     //         .then((response) => {
     //             dispatch(
@@ -202,7 +202,7 @@ const TeamMatchType = () => {
 
         const formData = new FormData();
         formData.append("teamMatchTypeId", teamMatchTypeId);
-        formData.append("newPlayerIds", JSON.stringify(playerIds));
+        formData.append("playerIds", JSON.stringify(playerIds));
 
         // Add jersey image if selected
         if (selectedJerseyImages[teamMatchTypeId]) {
@@ -260,7 +260,7 @@ const TeamMatchType = () => {
     //             const playerIds = (selectedPlayers[item.teamMatchTypeId] || []).map(player => player.value);
     //             await axiosInstance.post("/admin/teamMatchType/update", {
     //                 teamMatchTypeId: item.teamMatchTypeId,
-    //                 newPlayerIds: playerIds,
+    //                 playerIds: playerIds,
     //             });
     //         }
     //         dispatch(
