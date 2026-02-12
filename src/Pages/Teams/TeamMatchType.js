@@ -467,7 +467,7 @@ const TeamMatchType = () => {
                     {data.length > 0 ? (
                         data.map((matchTypeData) => (
                             <Card key={matchTypeData.teamMatchTypeId} className="mb-3">
-                                <CardBody>
+                                <CardBody className="p-2">
                                     {/* Accordion Header */}
                                     <div
                                         className="d-flex justify-content-between align-items-center"
