@@ -206,7 +206,7 @@ const TeamMatchType = () => {
 
         // Add jersey image if selected
         if (selectedJerseyImages[teamMatchTypeId]) {
-            formData.append("jerseyImage", selectedJerseyImages[teamMatchTypeId]);
+            formData.append("teamJerseyImage", selectedJerseyImages[teamMatchTypeId]);
         }
 
         setIsLoading(true);
