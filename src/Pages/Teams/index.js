@@ -460,7 +460,7 @@ const Index = () => {
             </Button>
           </Tooltip>
 
-          {!record?.isInternational && (
+          {record?.isInternational && (
             <Tooltip title="Match Type Image" color="#e8e8ea" overlayInnerStyle={{ color: "#000" }}>
               <Button
                 size="sm"
