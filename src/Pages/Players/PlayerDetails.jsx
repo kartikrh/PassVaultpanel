@@ -47,8 +47,8 @@ const PlayerDetails = () => {
 
     setIsLoading(true);
     await axiosInstance.post("/admin/player/updateHomeTeam", {
-      playerId: record?.refPlayerId,
-      homeTeamId: record?.teamId,
+      teamPlayerId: record?.teamPlayerId,
+      // homeTeamId: record?.teamId,
     }).then((response) => {
       fetchPlayer(record?.refPlayerId);
       dispatch(
@@ -112,6 +112,11 @@ const PlayerDetails = () => {
       key: "teamName",
       sort: true,
       style: { width: "20%", verticalAlign: "middle" },
+      render: (text, record) => {
+        return record.matchType
+          ? `${record.teamName} (${record.matchType})`
+          : record.teamName;
+      },
     },
     {
       title: "Home Team",
