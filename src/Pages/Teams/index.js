@@ -239,6 +239,12 @@ const Index = () => {
     // sessionStorage.removeItem("commentaryManualOddsMarketDetails");
   };
 
+  const handleTeamMatchType = (id) => {
+    const url = new URL(window.location.origin + "/teamMatchType");
+    sessionStorage.setItem('teamId', "" + id);
+    window.open(url.href, '_blank');
+  };
+
   //checkbox select
   const getSelectedItemsData = () => {
     const newCurrentPage = currentPage > 0 ? currentPage : 1;
@@ -440,21 +446,54 @@ const Index = () => {
       title: "International",
       key: "isInternational",
       render: (text, record) => (
-        <Tooltip title={"International"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
-          <Button
-            color={`${record.isInternational ? "primary" : "danger"}`}
-            size="sm"
-            className="btn"
-            onClick={() => {
-              handlePermissions("isInternational", record, record.isInternational);
-            }}
-          >
-            <i className={`bx ${record.isInternational ? "bx-check" : "bx-block"}`}></i>
-          </Button>
-        </Tooltip>
+        <div style={{ display: "flex", gap: "6px", justifyContent: "center" }}>
+          <Tooltip title="International" color="#e8e8ea" overlayInnerStyle={{ color: "#000" }}>
+            <Button
+              color={record.isInternational ? "primary" : "danger"}
+              size="sm"
+              className="btn"
+              onClick={() =>
+                handlePermissions("isInternational", record, record.isInternational)
+              }
+            >
+              <i className={`bx ${record.isInternational ? "bx-check" : "bx-block"}`} />
+            </Button>
+          </Tooltip>
+
+          {record?.isInternational && (
+            <Tooltip title="Match Type Image" color="#e8e8ea" overlayInnerStyle={{ color: "#000" }}>
+              <Button
+                size="sm"
+                className="btn marketTemplateBtn"
+                onClick={() => handleTeamMatchType(record?.teamId)}
+              >
+                <i className="bx bx-image-add" />
+              </Button>
+            </Tooltip>
+          )}
+        </div>
       ),
       style: { width: "2%", textAlign: "center" },
     },
+    // {
+    //   title: "",
+    //   key: "teamMatchType",
+    //   printType: "ignore",
+    //   render: (text, record) => (
+    //     <Tooltip title={" Select Match Type Image"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+    //       <Button
+    //         size="sm"
+    //         className="btn marketTemplateBtn"
+    //         onClick={() => {
+    //           handleTeamMatchType(record?.teamId);
+    //         }}
+    //       >
+    //         <i class='bx bxs-store' ></i>
+    //       </Button>
+    //     </Tooltip>
+    //   ),
+    //   style: { width: "2%", textAlign: "center" },
+    // },
     {
       title: "Snap",
       key: "teamId",

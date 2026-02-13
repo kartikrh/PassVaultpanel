@@ -666,6 +666,13 @@ const Index = () => {
         }
       );
 
+      if (updatedData.commStatus == 3 && selectedCompetitionRecord?.isTrending) {
+        await axiosInstance.post(`/admin/competition/isTrending`, {
+          competitionId: updatedData.competitionId,
+          isTrending: false,
+        });
+      }
+
       fetchData();
       dispatch(
         updateToastData({
