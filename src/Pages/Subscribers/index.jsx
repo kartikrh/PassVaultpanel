@@ -380,7 +380,7 @@ const Index = () => {
             setParentSearchedData={handleTableSearchedDataChange}
             defaultTableActionData={{
               isActive: true, 
-              isApproved: true,  // Default scorecard to Approved
+              isApproved: null,
               isVideoApproved: null,
             }}
           />
