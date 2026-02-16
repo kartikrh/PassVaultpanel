@@ -254,7 +254,7 @@ const Index = forwardRef(
       if (tableElement?.scorecardSelect) {
         const defaultScorecard = defaultTableActionData?.isApproved !== undefined
           ? defaultTableActionData.isApproved
-          : true;
+          : null;
         initialFilters.scorecard = {
           value: defaultScorecard,
           label: defaultScorecard === true ? "Approved" : defaultScorecard === false ? "Decline" : "Select Scorecard",
@@ -1341,8 +1341,8 @@ const Index = forwardRef(
           label: "Competition Stats",
         },
         scorecard: {
-          value: true,  // Default Approved
-          label: "Approved",
+          value: null,
+          label: "Select Scorecard",
         },
         stream: {
           value: null, 
