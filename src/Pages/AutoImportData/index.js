@@ -187,6 +187,8 @@ const Index = () => {
         return "Competition Statistics";
       case 11:
         return "Competition Update";
+      case 12:
+        return "Inning Data Update";
       default:
         return "-";
     }
