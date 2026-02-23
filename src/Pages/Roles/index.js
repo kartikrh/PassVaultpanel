@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
-import { Container } from "reactstrap";
+import { Container, Button } from "reactstrap";
 import SpinnerModel from '../../components/Model/SpinnerModel';
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
@@ -144,6 +144,22 @@ const Index = () => {
     navigate('/addRoles', { state: { roleId } });
   }
 
+  const handleActivePermissions = async (pType, record, cState) => {
+    setIsLoading(true);
+    await axiosInstance.post(`/updateStatus`, {
+      id: record.roleId,
+      [pType]: cState ? false : true,
+    })
+      .then((response) => {
+        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+        fetchData();
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+      });
+  };
+
   //checkbox select
   const getSelectedItemsData = () => {
     const newCurrentPage = currentPage > 0 ? currentPage : 1;
@@ -248,7 +264,24 @@ const Index = () => {
       render: (text, render) => text ? text : "N/A",
       style: { width: "90%" },
     },
-
+    {
+      title: "Active",
+      key: "isActive",
+      dataIndex: "isActive",
+      render: (text, record) => (
+        <Button
+          color={`${text ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handleActivePermissions("isActive", record, record.isActive);
+          }}
+        >
+          <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
   ];
 
   //elements required
@@ -258,6 +291,7 @@ const Index = () => {
     switch: false,
     reloadButton: true,
     loadData: true,
+    isActive: true,
   };
 
   useEffect(() => {
