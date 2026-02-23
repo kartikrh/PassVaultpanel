@@ -48,7 +48,7 @@ const PlayerDetails = () => {
     setIsLoading(true);
     await axiosInstance.post("/admin/player/updateHomeTeam", {
       playerId: record?.refPlayerId,
-      homeTeamId: record?.teamId,
+      teamPlayerId: record?.teamPlayerId,
     }).then((response) => {
       fetchPlayer(record?.refPlayerId);
       dispatch(
