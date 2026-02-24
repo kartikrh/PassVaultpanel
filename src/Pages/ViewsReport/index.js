@@ -8,7 +8,7 @@ import axiosInstance from "../../Features/axios";
 import Chart from "./Chart";
 import { PERMISSION_VIEW, TAB_VIEWS_REPORT } from "../../components/Common/Const";
 import { useSelector } from "react-redux";
-import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateLocalToUTC } from "../../components/Common/Reusables/reusableMethods";
 import { isEmpty } from "lodash";
 import { useNavigate } from "react-router-dom";
 
@@ -210,8 +210,8 @@ const Index = () => {
 
       // Step 1: Prepare raw payload
       const rawPayload = {
-        startDate: isSearch ? dateRange.startDate : null,
-        endDate: isSearch ? dateRange.endDate : null,
+        startDate: isSearch ? convertDateLocalToUTC(dateRange.startDate, "index") : null,
+        endDate: isSearch ? convertDateLocalToUTC(dateRange.endDate, "index") : null,
         eventTypeId: eventTypeSelect,
         competitionId: compSelect,
         commentaryStatus: commentaryStatusSelect,
