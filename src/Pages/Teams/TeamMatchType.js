@@ -31,13 +31,20 @@ import ImageField from "../../components/Common/Reusables/ImageField";
 const TeamMatchType = () => {
     const pageName = TAB_TEAMS;
     const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
-    document.title = "Match Type Image Selection";
+    // document.title = "Match Type Image Selection";
 
     const [data, setData] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [teamId, setTeamId] = useState(
         +sessionStorage.getItem('teamId') || "0"
     );
+    const [teamName, setTeamName] = useState(
+        sessionStorage.getItem('teamName') || ""
+    );
+    document.title = teamName
+        ? `${teamName} Match Type Image Selection`
+        : "Match Type Image Selection";
+
     const [matchTypes, setMatchTypes] = useState([]);
     const [selectedMatchType, setSelectedMatchType] = useState(null);
     const [openAccordions, setOpenAccordions] = useState([]);
@@ -410,7 +417,11 @@ const TeamMatchType = () => {
                 <Container fluid={true}>
                     <Breadcrumbs
                         title="ScoreCard"
-                        breadcrumbItem="Match Type Image Selection"
+                        breadcrumbItem={
+                            teamName
+                                ? `${teamName} Match Type Image Selection`
+                                : "Match Type Image Selection"
+                        }
                     />
                     {isLoading && <SpinnerModel />}
 

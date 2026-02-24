@@ -239,9 +239,10 @@ const Index = () => {
     // sessionStorage.removeItem("commentaryManualOddsMarketDetails");
   };
 
-  const handleTeamMatchType = (id) => {
+  const handleTeamMatchType = (id, teamName) => {
     const url = new URL(window.location.origin + "/teamMatchType");
     sessionStorage.setItem('teamId', "" + id);
+    sessionStorage.setItem('teamName', "" + teamName);
     window.open(url.href, '_blank');
   };
 
@@ -465,7 +466,7 @@ const Index = () => {
               <Button
                 size="sm"
                 className="btn marketTemplateBtn"
-                onClick={() => handleTeamMatchType(record?.teamId)}
+                onClick={() => handleTeamMatchType(record?.teamId, record?.teamName)}
               >
                 <i className="bx bx-image-add" />
               </Button>
