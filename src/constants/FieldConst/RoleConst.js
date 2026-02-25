@@ -1,4 +1,4 @@
-import { SELECT, TEXT, TEXT_AREA } from "../../components/Common/Const";
+import { SELECT, TEXT, TEXT_AREA, SWITCH } from "../../components/Common/Const";
 
 export const RoleFields = [
     {
@@ -34,5 +34,12 @@ export const RoleFields = [
         defaultRows: 3,
         regex: /^.{0,500}$/,
         regexErrorMessage: "Max allowed Characters 500",
+    },
+    {
+        name: "isActive",
+        label: "Is Active",
+        defaultValue: true,
+        parentclassName: "",
+        type: SWITCH,
     },
 ]

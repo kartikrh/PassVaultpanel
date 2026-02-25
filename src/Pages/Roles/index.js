@@ -146,8 +146,8 @@ const Index = () => {
 
   const handleActivePermissions = async (pType, record, cState) => {
     setIsLoading(true);
-    await axiosInstance.post(`/updateStatus`, {
-      id: record.roleId,
+    await axiosInstance.post(`admin/roles/updateStatus`, {
+      roleId: record.roleId,
       [pType]: cState ? false : true,
     })
       .then((response) => {

@@ -112,9 +112,11 @@ const TeamMatchType = () => {
     };
 
     // Fetch all players for dropdown
-    const fetchPlayerList = async () => {
+    const fetchPlayerList = async (teamId) => {
         await axiosInstance
-            .post("/admin/team/playerList", {})
+            .post("/admin/teamMatchType/getPlayers", {
+                teamId: teamId,
+            })
             .then((response) => {
                 setAllPlayers(response?.result || []);
             })
@@ -405,7 +407,7 @@ const TeamMatchType = () => {
 
     useEffect(() => {
         if (teamId !== "0") {
-            fetchPlayerList();
+            fetchPlayerList(teamId);
             fetchData(teamId);
             fetchMatchTypes();
         }

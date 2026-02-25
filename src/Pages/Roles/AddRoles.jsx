@@ -37,14 +37,27 @@ function AddRoles() {
         isDelete: true,
         isView: true,
     })
+
+    // useEffect(() => {
+    //     fetchData(roleId, true);
+    //     if (roleId !== "0") {
+    //         setDisabledFields({
+    //             "displayType": true
+    //         })
+    //     } else {
+    //         setDisabledFields({})
+    //     }
+    // }, [roleId]);
+
     useEffect(() => {
-        fetchData(roleId, true);
         if (roleId !== "0") {
+            fetchData(roleId, true);
             setDisabledFields({
                 "displayType": true
-            })
+            });
         } else {
-            setDisabledFields({})
+            setInitialEditData(undefined);
+            setDisabledFields({});
         }
     }, [roleId]);
 
