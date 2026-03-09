@@ -3,14 +3,14 @@ import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
 import { Avatar, Tooltip } from "antd";
 import { Button } from "reactstrap";
-import _, { isEqual } from "lodash";
+import _, { isEqual, isEmpty } from "lodash";
 import { Container } from "reactstrap";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
 import {
-  TAB_PHOTOS,
+  TAB_PHOTOLIBRARY,
   PERMISSION_ADD,
   PERMISSION_DELETE,
   PERMISSION_EDIT,
@@ -23,10 +23,10 @@ import { checkPermission, convertDateUTCToLocal } from "../../components/Common/
 import { updateToastData } from "../../Features/toasterSlice";
 
 const Photos = () => {
-  const pageName = TAB_PHOTOS;
+  const pageName = TAB_PHOTOLIBRARY;
   const finalizeRef = useRef(null);
   const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
-  document.title = TAB_PHOTOS;
+  document.title = TAB_PHOTOLIBRARY;
 
   const [data, setData] = useState([]);
 
@@ -311,9 +311,9 @@ const Photos = () => {
   };
 
   useEffect(() => {
-    // if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
-    //   navigate("/dashboard")
-    // }
+    if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
+      navigate("/dashboard")
+    }
     fetchData();
   }, []);
 
@@ -322,7 +322,6 @@ const Photos = () => {
   };
   return (
     <React.Fragment>
-      Photos
       <div className="page-content">
         <Container fluid={true}>
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Photos" />
