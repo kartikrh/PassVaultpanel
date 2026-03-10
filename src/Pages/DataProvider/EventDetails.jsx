@@ -64,6 +64,7 @@ const EventDetails = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const socket = useRef(null);
+  const [iframeHeight, setIframeHeight] = useState(110); //default height if scorecard doesn't send height info
 
   useEffect(() => {
     if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW) && !isEmpty(permissionObj)) {
@@ -85,6 +86,18 @@ const EventDetails = () => {
       });
     }
   }, [loadInitData]);
+
+  useEffect(() => {
+    const handleScoreboardMessage = (event) => {
+      if (event.data && event.data.scoreWidgetHeight) {
+        setIframeHeight(event.data.scoreWidgetHeight);
+      }
+    };
+    window.addEventListener('message', handleScoreboardMessage);
+    return () => {
+      window.removeEventListener('message', handleScoreboardMessage);
+    };
+  }, []);
 
   useEffect(() => {
     const fetchMarketCategoriesList = async () => {
@@ -508,7 +521,8 @@ const EventDetails = () => {
                       <iframe
                         title="YouTube video player"
                         width="100%"
-                        height="auto"
+                        // height="auto"
+                        height={iframeHeight}
                         src={scorecardFrameUrl}
                         frameborder="0"
                         className="mb-0"
