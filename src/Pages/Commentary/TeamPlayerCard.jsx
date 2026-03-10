@@ -304,7 +304,7 @@ const TeamPlayerCard = ({ commentaryId, eventRefId, teamDetails, inningPlayers, 
     const handleReloadTeam = async () => {
         setIsLoading(true);
         await axiosInstance
-            .post("/admin/commentary/loadTeamPlayer", { teamId: teamDetails?.teamId })
+            .post("/admin/commentary/loadTeamPlayer", { teamId: teamDetails?.teamId, matchTypeId: commentaryData?.matchTypeId })
             .then((response) => {
                 if (response?.result) {
                     const teamPlayers = response?.result;

@@ -31,13 +31,20 @@ import ImageField from "../../components/Common/Reusables/ImageField";
 const TeamMatchType = () => {
     const pageName = TAB_TEAMS;
     const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
-    document.title = "Match Type Image Selection";
+    // document.title = "Match Type Image Selection";
 
     const [data, setData] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [teamId, setTeamId] = useState(
         +sessionStorage.getItem('teamId') || "0"
     );
+    const [teamName, setTeamName] = useState(
+        sessionStorage.getItem('teamName') || ""
+    );
+    document.title = teamName
+        ? `${teamName} Match Type Image Selection`
+        : "Match Type Image Selection";
+
     const [matchTypes, setMatchTypes] = useState([]);
     const [selectedMatchType, setSelectedMatchType] = useState(null);
     const [openAccordions, setOpenAccordions] = useState([]);
@@ -105,9 +112,11 @@ const TeamMatchType = () => {
     };
 
     // Fetch all players for dropdown
-    const fetchPlayerList = async () => {
+    const fetchPlayerList = async (teamId) => {
         await axiosInstance
-            .post("/admin/team/playerList", {})
+            .post("/admin/teamMatchType/getPlayers", {
+                teamId: teamId,
+            })
             .then((response) => {
                 setAllPlayers(response?.result || []);
             })
@@ -250,68 +259,35 @@ const TeamMatchType = () => {
         }
     };
 
-
-
-    // Save all changes
-    // const handleSaveAll = async () => {
-    //     setIsLoading(true);
-    //     try {
-    //         for (const item of data) {
-    //             const playerIds = (selectedPlayers[item.teamMatchTypeId] || []).map(player => player.value);
-    //             await axiosInstance.post("/admin/teamMatchType/update", {
-    //                 teamMatchTypeId: item.teamMatchTypeId,
-    //                 playerIds: playerIds,
-    //             });
-    //         }
-    //         dispatch(
-    //             updateToastData({
-    //                 data: "All changes saved successfully",
-    //                 title: "Success",
-    //                 type: SUCCESS,
-    //             })
-    //         );
-    //         setIsLoading(false);
-    //     } catch (error) {
-    //         setIsLoading(false);
-    //         dispatch(
-    //             updateToastData({
-    //                 data: error?.message,
-    //                 title: error?.title,
-    //                 type: ERROR,
-    //             })
-    //         );
-    //     }
-    // };
-
     // Toggle active/inactive
-    const handleActiveToggle = async (teamMatchTypeId, currentStatus) => {
-        setIsLoading(true);
-        await axiosInstance
-            .post("/admin/teamMatchType/activeInactive", {
-                teamMatchTypeId: teamMatchTypeId,
-                isActive: !currentStatus,
-            })
-            .then((response) => {
-                fetchData(teamId);
-                dispatch(
-                    updateToastData({
-                        data: response?.message,
-                        title: response?.title,
-                        type: SUCCESS,
-                    })
-                );
-            })
-            .catch((error) => {
-                setIsLoading(false);
-                dispatch(
-                    updateToastData({
-                        data: error?.message,
-                        title: error?.title,
-                        type: ERROR,
-                    })
-                );
-            });
-    };
+    // const handleActiveToggle = async (teamMatchTypeId, currentStatus) => {
+    //     setIsLoading(true);
+    //     await axiosInstance
+    //         .post("/admin/teamMatchType/activeInactive", {
+    //             teamMatchTypeId: teamMatchTypeId,
+    //             isActive: !currentStatus,
+    //         })
+    //         .then((response) => {
+    //             fetchData(teamId);
+    //             dispatch(
+    //                 updateToastData({
+    //                     data: response?.message,
+    //                     title: response?.title,
+    //                     type: SUCCESS,
+    //                 })
+    //             );
+    //         })
+    //         .catch((error) => {
+    //             setIsLoading(false);
+    //             dispatch(
+    //                 updateToastData({
+    //                     data: error?.message,
+    //                     title: error?.title,
+    //                     type: ERROR,
+    //                 })
+    //             );
+    //         });
+    // };
 
     const handleBackClick = () => {
         navigate("/teams");
@@ -398,7 +374,7 @@ const TeamMatchType = () => {
 
     useEffect(() => {
         if (teamId !== "0") {
-            fetchPlayerList();
+            fetchPlayerList(teamId);
             fetchData(teamId);
             fetchMatchTypes();
         }
@@ -410,7 +386,11 @@ const TeamMatchType = () => {
                 <Container fluid={true}>
                     <Breadcrumbs
                         title="ScoreCard"
-                        breadcrumbItem="Match Type Image Selection"
+                        breadcrumbItem={
+                            teamName
+                                ? `${teamName} Match Type Image Selection`
+                                : "Match Type Image Selection"
+                        }
                     />
                     {isLoading && <SpinnerModel />}
 
@@ -454,9 +434,6 @@ const TeamMatchType = () => {
                             </Button>
                         </Col>
                         <Col xs={12} md={6} className="d-flex justify-content-end align-items-center gap-2">
-                            {/* <Button color="primary" onClick={handleSaveAll}>
-                                Save
-                            </Button> */}
                             <Button color="danger" onClick={handleBackClick}>
                                 Back
                             </Button>
@@ -485,7 +462,7 @@ const TeamMatchType = () => {
                                             <h5 className="mb-0">{matchTypeData.matchType}</h5>
                                         </div>
                                         <div className="d-flex align-items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                                            <Tooltip title={matchTypeData.isActive ? "Active" : "Inactive"}>
+                                            {/* <Tooltip title={matchTypeData.isActive ? "Active" : "Inactive"}>
                                                 <Switch
                                                     className="primary-switch"
                                                     checked={matchTypeData.isActive}
@@ -498,7 +475,7 @@ const TeamMatchType = () => {
                                                     checkedChildren="Active"
                                                     unCheckedChildren="Inactive"
                                                 />
-                                            </Tooltip>
+                                            </Tooltip> */}
                                             <Button
                                                 color="primary"
                                                 size="sm"
