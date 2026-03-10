@@ -63,6 +63,7 @@ export const OpenMarket = () => {
     const dispatch = useDispatch();
     const marketTypeObj = useSelector((state) => state.marketType?.marketTypeList);
     const dateTyp = JSON.parse(localStorage.getItem("DateType"));
+    const [iframeHeight, setIframeHeight] = useState(110); //default if height is not sent from scorecard
 
     // const socket = createSocket();
     const statusListToInclude = [1, 2, 3]
@@ -125,6 +126,18 @@ export const OpenMarket = () => {
 
         setNewCalculation(isPlayerStrikeApply);
     }, [loadInitData]);
+
+    useEffect(() => {
+        const handleScoreboardMessage = (event) => {
+            if (event.data && event.data.scoreWidgetHeight) {
+                setIframeHeight(event.data.scoreWidgetHeight);
+            }
+        };
+        window.addEventListener('message', handleScoreboardMessage);
+        return () => {
+            window.removeEventListener('message', handleScoreboardMessage);
+        };
+    }, []);
 
     function calculatePredictedValue(predefined, oversCompleted, maxOvers, playerIdToFind, playersList, newPlayerLine, isSocket) {
         console.log("INPUTS:", predefined, oversCompleted, maxOvers, playerIdToFind, playersList, newPlayerLine, isSocket);
@@ -2404,7 +2417,8 @@ export const OpenMarket = () => {
                                             <iframe
                                                 title="YouTube video player"
                                                 width="100%"
-                                                height="auto"
+                                                height={iframeHeight}
+                                                // height="auto"
                                                 // src={scoreboardUrl}
                                                 src={scorecardFrameUrl}
                                                 frameborder="0"
