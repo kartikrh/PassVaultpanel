@@ -90,7 +90,15 @@ export const videoLibraryFields = [
         label: "IsPermanent",
         defaultValue: false,
         labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 10, lg: 10 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
+    },
+    {
+        type: SWITCH,
+        name: "isActive",
+        label: "IsActive",
+        defaultValue: false,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
     },
     {
         name: "from",
