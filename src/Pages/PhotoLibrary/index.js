@@ -24,6 +24,7 @@ import {
 } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import LoadDataModal from "../../components/Model/LoadDataModal";
+import { Tooltip } from "antd";
 
 const Index = () => {
   const pageName = TAB_PHOTOLIBRARY;
@@ -111,34 +112,34 @@ const Index = () => {
     window.open(url.href, "_blank");
   };
 
-  // const handlePermissions = async (pType, record, cState) => {
-  //   setIsLoading(true);
-  //   await axiosInstance
-  //     .post(`/admin/photoLibrary/activeInactiveNews`, {
-  //       photoLibraryId: record.photoLibraryId,
-  //       [pType]: cState ? false : true,
-  //     })
-  //     .then((response) => {
-  //       fetchData();
-  //       dispatch(
-  //         updateToastData({
-  //           data: response?.message,
-  //           title: response?.title,
-  //           type: SUCCESS,
-  //         })
-  //       );
-  //     })
-  //     .catch((error) => {
-  //       setIsLoading(false);
-  //       dispatch(
-  //         updateToastData({
-  //           data: error?.message,
-  //           title: error?.title,
-  //           type: ERROR,
-  //         })
-  //       );
-  //     });
-  // };
+  const handlePermissions = async (pType, record, cState) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/photoLibrary/updateStatus`, {
+        photoLibraryId: record.photoLibraryId,
+        [pType]: cState ? false : true,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
 
   const handleLoadData = async (password) => {
     setIsLoading(true);
@@ -386,7 +387,7 @@ const Index = () => {
         <Button
           color="success"
           size="sm"
-          style={{ marginRight: "300px" }}
+          // style={{ marginRight: "300px" }}
           onClick={() => {
             handleActionClick(record?.photoLibraryId);
           }}
@@ -396,11 +397,32 @@ const Index = () => {
       ),
       style: { width: "10%"},
     },
+    {
+      title: "Active",
+      dataIndex: "isActive",
+      key: "IsActive",
+      render: (text, record) => (
+        <Tooltip title={"Photo Library"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+          <Button
+            color={`${record.isActive ? "primary" : "danger"}`}
+            size="sm"
+            style={{ marginRight: "200px" }}
+            className="btn"
+            onClick={() => {
+              handlePermissions("isActive", record, record.isActive);
+            }}
+          >
+            <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
+          </Button>
+        </Tooltip>
+      ),
+      style: { width: "10%"},
+    },
   ];
   //elements required
   const tableElement = {
     title: "Photo Library",
-    // isActive: true,
+    isActive: true,
     reloadButton: true,
     loadData: true,
   };
