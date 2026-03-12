@@ -110,6 +110,7 @@ function AddPlayer() {
       .post("/admin/player/byId", { playerId: id })
       .then((response) => {
         const teams = response?.result?.teams || [];
+        const teamMatchType = response?.result?.teamMatchType;
         const homeTeamOptionsList = teams.map((team) => ({
           label: team.teamName,
           value: team.teamId,
@@ -120,7 +121,7 @@ function AddPlayer() {
           homeTeamId: homeTeamOptionsList,
         }));
 
-        const defaultTeam = teams.find((team) => team?.homeTeam == true);
+        const defaultTeam = teamMatchType.find((team) => team?.homeTeam == true);
 
         setDynamicPlayerConst(
           dynamicPlayerConst.map((field) => {
