@@ -135,6 +135,7 @@ const PlayerDetails = () => {
         //     cursor: "pointer",
         //   }}
         // />
+        record?.matchTypeId == -1 && (
         <Tooltip
           title={!record?.homeTeam ? "Set HomeTeam": ""}
           color={"#e8e8ea"}
@@ -152,7 +153,7 @@ const PlayerDetails = () => {
               className={`bx ${record?.homeTeam ? "bx-check" : "bx-block"}`}
             ></i>
           </Button>
-        </Tooltip>
+        </Tooltip>)
       ),
     },
   ];
