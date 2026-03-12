@@ -106,34 +106,34 @@ const Index = () => {
         window.open(url.href, '_blank');
     };
 
-    // const handlePermissions = async (pType, record, cState) => {
-    //   setIsLoading(true);
-    //   await axiosInstance
-    //     .post(`/admin/photoLibrary/activeInactiveNews`, {
-    //       id: record.id,
-    //       [pType]: cState ? false : true,
-    //     })
-    //     .then((response) => {
-    //       fetchData();
-    //       dispatch(
-    //         updateToastData({
-    //           data: response?.message,
-    //           title: response?.title,
-    //           type: SUCCESS,
-    //         })
-    //       );
-    //     })
-    //     .catch((error) => {
-    //       setIsLoading(false);
-    //       dispatch(
-    //         updateToastData({
-    //           data: error?.message,
-    //           title: error?.title,
-    //           type: ERROR,
-    //         })
-    //       );
-    //     });
-    // };
+    const handlePermissions = async (pType, record, cState) => {
+      setIsLoading(true);
+      await axiosInstance
+        .post(`/admin/videoLibrary/updateStatus`, {
+          id: record.id,
+          [pType]: cState ? false : true,
+        })
+        .then((response) => {
+          fetchData();
+          dispatch(
+            updateToastData({
+              data: response?.message,
+              title: response?.title,
+              type: SUCCESS,
+            })
+          );
+        })
+        .catch((error) => {
+          setIsLoading(false);
+          dispatch(
+            updateToastData({
+              data: error?.message,
+              title: error?.title,
+              type: ERROR,
+            })
+          );
+        });
+    };
 
     const handleLoadData = async (password) => {
         setIsLoading(true);
@@ -356,6 +356,26 @@ const Index = () => {
             sort: true,
         },
         {
+            title: "Active",
+            dataIndex: "isActive",
+            key: "IsActive",
+            render: (text, record) => (
+                <Tooltip title={"Video Library"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+                    <Button
+                        color={`${record.isActive ? "primary" : "danger"}`}
+                        size="sm"
+                        className="btn"
+                        onClick={() => {
+                            handlePermissions("isActive", record, record.isActive);
+                        }}
+                    >
+                        <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
+                    </Button>
+                </Tooltip>
+            ),
+            style: { width: "2%" },
+        },
+        {
             title: "From",
             dataIndex: "from",
             render: (text, record) => (
@@ -381,7 +401,7 @@ const Index = () => {
     //elements required
     const tableElement = {
         title: "Video Library",
-        // isActive: true,
+        isActive: true,
         reloadButton: true,
         loadData: true,
     };
