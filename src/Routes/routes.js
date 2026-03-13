@@ -182,6 +182,8 @@ import AddCompetitionStatistics from "../Pages/CompetitionStatistics/AddCompetit
 import MatchCardView from "../Pages/EntityUpdateLogs/MatchCardView.js";
 import CompetitionKeyStatistics from "../Pages/Competition/CompetitionKeyStatistics.jsx";
 import TeamMatchType from "../Pages/Teams/TeamMatchType.js";
+import Advertise from "../Pages/Advertise";
+import AddAdvertise from "../Pages/Advertise/AddAdvertise.jsx";
 
 const authProtectedRoutes = [
   //dashboard
@@ -354,6 +356,8 @@ const authProtectedRoutes = [
   { path: "/iccRanking", component: <IccRankings /> },
   { path: "/addRanking", component: <AddRankings /> },
   { path: "/viewsReport", component: <ViewsReport /> },
+  { path: "/advertise", component: <Advertise /> },
+  { path: "/addAdvertise", component: <AddAdvertise /> },
   { path: "/streamingList", component: <StreamingList /> },
   {
     path: "/changePassword",
