@@ -57,7 +57,7 @@ const AddAdvertise = () => {
         if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
             navigate("/dashboard");
         }
-        // fetchMasterData();
+        fetchMasterData();
     }, [permissionObj]);
 
     useEffect(() => {
@@ -90,21 +90,21 @@ const AddAdvertise = () => {
                 );
             });
     };
-    //   const fetchMasterData = async () => {
-    //     await axiosInstance
-    //       .post("/admin/whitelabel/all", {isActive: true})
-    //       .then((response) => {
-    //         setMasterData((preData) => ({
-    //           ...preData,
-    //           whitelabelId: response.result?.map((item) => {
-    //             return { label: item.domain, value: item.id };
-    //           }),
-    //         }));
-    //       })
-    //       .catch((error) => {
-    //         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-    //       });
-    //   };
+    const fetchMasterData = async () => {
+        await axiosInstance
+            .post("/admin/whitelabel/all", { isActive: true })
+            .then((response) => {
+                setMasterData((preData) => ({
+                    ...preData,
+                    whitelabelId: response.result?.map((item) => {
+                        return { label: item.domain, value: item.id };
+                    }),
+                }));
+            })
+            .catch((error) => {
+                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+            });
+    };
 
     const handleFormBDataChange = (val) => {
         if (val?.isPermanent) {

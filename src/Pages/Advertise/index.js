@@ -312,6 +312,12 @@ const Index = () => {
             sort: true,
         },
         {
+            title: "White Label",
+            dataIndex: "domain",
+            key: "domain",
+            style: { width: "5%", textAlign: "center" },
+        },
+        {
             title: "Views",
             dataIndex: "viewerCount",
             key: "viewerCount",
