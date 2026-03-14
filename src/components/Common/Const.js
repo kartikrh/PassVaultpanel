@@ -31,6 +31,7 @@ export const TAB_API = "API";
 export const TAB_API_ENDPOINTS = "API Endpoints";
 export const TAB_AUTO_EVENT = "Auto Event";
 export const TAB_AWARDS = "Awards";
+export const TAB_ADVERTISE = "Advertise";
 
 export const TAB_BANNER = "Banner";
 export const TAB_COMPETITION_STATISTICS_TYPE = "Competition Statistics Type";
@@ -217,6 +218,7 @@ export const MODULE_VENUE = 41;
 export const MODULE_SINGLE_COMMENTARY = 42;
 export const MODULE_PYTHON_API = 43;
 export const MODULE_ENTITY_SOCKET = 44;
+export const MODULE_ADVERTISE = 45;
 
 export const LOG_ROCKET_TO_INCLUDE_ONLY = "CHG";
 
