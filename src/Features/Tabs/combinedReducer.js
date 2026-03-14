@@ -47,6 +47,7 @@ import packageSlice from "./packageSlice";
 import WhiteLabelSlice from "./WhiteLabelSlice";
 import VenueSlice from "./VenueSlice";
 import pythonApiSlice from "./pythonApiSlice";
+import advertiseSlice from "./advertiseSlice";
 
 const rootReducer = combineReducers({
   tab: TabSlice,
@@ -96,7 +97,8 @@ const rootReducer = combineReducers({
   whiteLabel: WhiteLabelSlice,
   venue: VenueSlice,
   pythonAPI: pythonApiSlice,
-  iccRankings: ICCRankingSlice
+  iccRankings: ICCRankingSlice,
+  advertise: advertiseSlice,
 });
 
 export default rootReducer;

@@ -1,0 +1,80 @@
+import {
+  DATE_TIME_PICKER,
+  IMAGE,
+  SWITCH,
+  TEXT,
+  SELECT,
+} from "../../components/Common/Const";
+
+export const advertiseFields = [
+  {
+    name: "title",
+    label: "Title",
+    isRequired: true,
+    type: TEXT,
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 4, lg: 4 },
+  },
+  {
+    name: "whitelabelId",
+    label: "White Label",
+    // isRequired: true,
+    options: [{ label: "Select White Label", value: "0" }],
+    defaultValue: false,
+    type: SELECT,
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 4, lg: 4 },
+  },
+  {
+    type: SWITCH,
+    name: "isActive",
+    label: "IsActive",
+    defaultValue: true,
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 4, lg: 4 },
+  },
+  {
+    type: SWITCH,
+    name: "isPermanent",
+    label: "IsPermanent",
+    defaultValue: false,
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 4, lg: 4 },
+  },
+  {
+    name: "startDate",
+    label: "From",
+    isRequired: true,
+    // customStyle: {
+    //   maxWidth: "600px",
+    // },
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 4, lg: 4 },
+    type: DATE_TIME_PICKER,
+  },
+  {
+    name: "endDate",
+    label: "To",
+    isRequired: true,
+    // customStyle: {
+    //   maxWidth: "600px",
+    // },
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 4, lg: 4 },
+    type: DATE_TIME_PICKER,
+  },
+  {
+    name: "link",
+    label: "Link",
+    type: TEXT,
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 4, lg: 4 },
+  },
+  {
+    type: IMAGE,
+    name: "image",
+    label: "Image",
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 4, lg: 4 },
+  },
+];

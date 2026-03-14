@@ -86,6 +86,7 @@ export const MarketTemplateRunnerFileds = [
         name: "generate",
         type: BUTTON,
         btnLable: "Update",
+        action: "GENERATE",
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 10, lg: 2 }
     },
