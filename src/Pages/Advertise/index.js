@@ -286,7 +286,7 @@ const Index = () => {
                     {text ? (
                         <div>
                             <img
-                                className="avatar-sm"
+                                className="avatar-sm-auto"
                                 alt=""
                                 src={text}
                             />
