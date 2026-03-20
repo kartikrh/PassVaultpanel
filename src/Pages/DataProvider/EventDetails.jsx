@@ -425,7 +425,8 @@ const EventDetails = () => {
                         <tbody>
                           {market.runner.map((runner) => (
                             <tr
-                              key={runner.runnerId}
+                              key={`${market.marketId}-${runner.runner}`}
+                              //  key={runner.runnerId}
                               className="position-relative"
                             >
                               <td>{runner.runner}</td>
@@ -533,10 +534,30 @@ const EventDetails = () => {
 
                 {Object.entries(marketsGrouped).map(
                   ([categoryId, categoryData]) => {
-                    const activeMarkets =
+                    const allActiveMarkets =
                       categoryData?.markets?.filter(
                         (market) => market?.isActive
                       ) || [];
+
+                    // show only the currentBall of Market 
+                    let activeMarkets = allActiveMarkets;
+                    if (allActiveMarkets.length > 0) {
+                      let maxDelivery = -1;
+                      let currentBallMarket = null;
+                      allActiveMarkets.forEach((market) => {
+                        const match = market.marketName?.trim().match(/(\d+\.\d+)/g);
+                        if (match && match.length > 0) {
+                          const deliveryNum = parseFloat(match[match.length - 1]);
+                          if (deliveryNum > maxDelivery) {
+                            maxDelivery = deliveryNum;
+                            currentBallMarket = market;
+                          }
+                        }
+                      });
+                      if (currentBallMarket) {
+                        activeMarkets = [currentBallMarket];
+                      }
+                    }
                     const fancyLineMarkets = activeMarkets?.filter(
                       (market) =>
                         market?.marketType == marketTypeObj?.Fancy ||
@@ -568,10 +589,30 @@ const EventDetails = () => {
                 ) && <h5 className="mb-0 mt-3">Inactive Markets</h5>}
                 {Object.entries(marketsGrouped).map(
                   ([categoryId, categoryData]) => {
-                    const inActiveMarkets =
+                    const allInActiveMarkets =
                       categoryData?.markets?.filter(
                         (market) => !market?.isActive
                       ) || [];
+
+                    // show only the currentBall of Market 
+                    let inActiveMarkets = allInActiveMarkets;
+                    if (allInActiveMarkets.length > 0) {
+                      let maxDelivery = -1;
+                      let currentBallMarket = null;
+                      allInActiveMarkets.forEach((market) => {
+                        const match = market.marketName?.trim().match(/(\d+\.\d+)/g);
+                        if (match && match.length > 0) {
+                          const deliveryNum = parseFloat(match[match.length - 1]);
+                          if (deliveryNum > maxDelivery) {
+                            maxDelivery = deliveryNum;
+                            currentBallMarket = market;
+                          }
+                        }
+                      });
+                      if (currentBallMarket) {
+                        inActiveMarkets = [currentBallMarket];
+                      }
+                    }
                     const fancyLineMarkets = inActiveMarkets?.filter(
                       (market) =>
                         market?.marketType == marketTypeObj?.Fancy ||
