@@ -49,6 +49,7 @@ export const APIEndpointConst = [
       { label: "getCompetitionSquadDataByIdFromEntity", value: 18 },
       { label: "searchPlayerDataFromEntity", value: 19 },
       { label: "getCommentaryInningDataFromEntity", value: 20 },
+      { label: "upsertAdvertiseDataToClient", value: 21},
     ],
     isRequired: true,
     type: SELECT,
