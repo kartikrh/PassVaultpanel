@@ -166,6 +166,8 @@ const Index = () => {
         return "searchPlayerDataFromEntity";
       case 20:
         return "getCommentaryInningDataFromEntity";
+      case 21:
+        return "upsertAdvertiseDataToClient";
       default:
         return "Unknown";
     } 
