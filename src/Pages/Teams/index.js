@@ -559,6 +559,13 @@ const Index = () => {
       style: { width: "10%" },
       // sort: true,
     },
+    {
+      title: "TID",
+      dataIndex: "teamId",
+      key: "teamId",
+      style: { width: "10%" },
+      sort: true,
+    },
   ];
 
   const downloadExcelColumn = [
