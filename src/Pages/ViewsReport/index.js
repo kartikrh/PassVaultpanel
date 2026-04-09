@@ -55,6 +55,10 @@ const statusOptions = [
     label: "Cancel",
     value: 10,
     },
+    {
+      label: "Abandoned",
+      value: 11,
+    },
 ]
 
 const Index = () => {

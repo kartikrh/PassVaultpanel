@@ -18,6 +18,8 @@ export function mapCommentaryStatus(status) {
       return "Innings Break";
     case 10:
       return "Cancel";
+    case 11:
+      return "Abandoned";
     default:
       return "-";
   }
