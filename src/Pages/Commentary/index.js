@@ -3214,6 +3214,10 @@ const Index = () => {
         label: "Cancel",
         value: 10,
       },
+      {
+        label: "Abandoned",
+        value: 11,
+      },
     ],
     virtualOptions: [
       {
