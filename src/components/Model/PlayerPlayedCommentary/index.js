@@ -109,7 +109,8 @@ const Index = ({
         3: "InProgress",
         4: "Completed",
         5: "Innings Break",
-        10: "Cancelled"
+        10: "Cancelled",
+        11: "Abandoned"
     };
 
     const columns = [

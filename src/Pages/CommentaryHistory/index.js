@@ -2523,6 +2523,14 @@ const Index = () => {
         label: "Innings Break",
         value: 5,
       },
+      {
+        label: "Cancel",
+        value: 10,
+      },
+      {
+        label: "Abandoned",
+        value: 11,
+      },
     ],
     virtualOptions: [
       {
