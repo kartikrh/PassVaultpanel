@@ -1520,7 +1520,7 @@ const Index = () => {
       sessionStorage.setItem("streamingData", "" +  JSON.stringify(details));
       const baseUrl = window.location.origin;
       let iframeURL = `${baseUrl}/streamwatch`;
-      window.open(iframeURL, "_blank", "width=600, height=400");
+      window.open(iframeURL, "_blank", "width=600, height=340");
     }
   };
 
