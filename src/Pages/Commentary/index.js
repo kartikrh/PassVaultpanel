@@ -8,6 +8,7 @@ import DeleteTabModel from "../../components/Model/DeleteModel";
 import LoadCommentaryModel from "../../components/Model/LoadCommentaryModel";
 import SuspendTabModel from "../../components/Model/SuspendModel";
 import CloseTabModel from "../../components/Model/CloseModel";
+import AbandonTabModel from "../../components/Model/AbandonModel";
 import CancelTabModel from "../../components/Model/CancelModel";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
@@ -123,6 +124,7 @@ const Index = () => {
   const [selectedCommentaryId, setSelectedCommentaryId] = useState(null);
   const [suspendModelVisable, setSuspendModelVisable] = useState(false);
   const [closeModelVisible, setCloseModelVisible] = useState(false);
+  const [abandonModelVisible, setAbandonModelVisible] = useState(false);
   const [cancelModelVisible, setCancelModelVisible] = useState(false);
   const [eventTypes, setEventTypes] = useState([]);
   const [competitions, setCompetitions] = useState([]);
@@ -526,6 +528,51 @@ const Index = () => {
         );
       });
   };
+  const handleAbandon = async (e) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/commentary/abandonedCommentary`, {
+        commentaryId: checekedList,
+      })
+      .then((response) => {
+        fetchData();
+        setAbandonModelVisible(false);
+        if (response?.result?.callPredictions?.length > 0) {
+          response.result.callPredictions.forEach((prediction) => {
+            if (prediction?.predictioncallSuccess === false) {
+              const predictionMessage = prediction?.predictionMessage;
+              const endPoint = prediction?.endPoint;
+              dispatch(
+                updateToastData({
+                  data: `${endPoint}\n${predictionMessage}`,
+                  title: "Call Prediction",
+                  type: WARNING,
+                })
+              );
+            }
+          });
+        } else {
+          dispatch(
+            updateToastData({
+              data: response?.message,
+              title: response?.title,
+              type: SUCCESS,
+            })
+          );
+        }
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+
   const handleEdit = (id) => {
     navigate("/addCommentary", { state: { userId: id } });
   };
@@ -3328,6 +3375,7 @@ const Index = () => {
             suspendModelFunction={setSuspendModelVisable}
             closeModelFunction={setCloseModelVisible}
             cancelModelFunction={setCancelModelVisible}
+            abandonModelFunction={setAbandonModelVisible}
             cloneModelFunction={setCloneModelVisible}
             eventTypes={eventTypes}
             matchType={matchTypes}
@@ -3399,6 +3447,12 @@ const Index = () => {
             setCancelModelVisible={setCancelModelVisible}
             handleCancel={handleCancel}
             singleCheck={checekedList}
+          />
+          <AbandonTabModel
+            abandonModelVisible={abandonModelVisible}
+            setAbandonModelVisible={setAbandonModelVisible}
+            handleAbandon={handleAbandon}
+            // singleCheck={checekedList}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

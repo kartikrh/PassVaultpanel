@@ -73,6 +73,7 @@ const Index = forwardRef(
       closeMarketModelFunction,
       cancelAllModelFunction,
       cancelModelFunction,
+      abandonModelFunction,
       resultModelFunction,
       loadPanelModelFunction,
       loadDataModelFunction,
@@ -1853,6 +1854,26 @@ const Index = forwardRef(
                               }}
                             >
                               Cancel
+                            </Button>
+                          )}
+                          {isClosePermission && (
+                            <Button
+                              color="warning"
+                              className="bg-orange-800 hover:bg-orange-900 border-none text-white"
+                              onClick={() => {
+                                // setSearchTerm("");
+                                singleCheck.length > 0
+                                  ? abandonModelFunction(true)
+                                  : dispatch(
+                                    updateToastData({
+                                      data: "Select at least one (only One) row",
+                                      title: "Error",
+                                      type: ERROR,
+                                    })
+                                  );
+                              }}
+                            >
+                              Abandon
                             </Button>
                           )}
                           {isDeletePermission && (
