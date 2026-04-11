@@ -1820,7 +1820,8 @@ const Index = forwardRef(
                           )}
                           {isClosePermission && (
                             <Button
-                              color="danger"
+                              // color="danger"
+                              className="btn closeBtn"
                               onClick={() => {
                                 // setSearchTerm("");
                                 singleCheck.length > 0
@@ -1858,8 +1859,8 @@ const Index = forwardRef(
                           )}
                           {isClosePermission && (
                             <Button
-                              color="warning"
-                              className="bg-orange-800 hover:bg-orange-900 border-none text-white"
+                              // color="warning"
+                              className="btn abandonBtn"
                               onClick={() => {
                                 // setSearchTerm("");
                                 singleCheck.length > 0
@@ -1990,7 +1991,7 @@ const Index = forwardRef(
                                 styles={{
                                   control: (provided) => ({
                                     ...provided,
-                                    width: 180,
+                                    width: 150,
                                   }), // Adjust width as needed
                                 }}
                                 value={
@@ -2191,13 +2192,55 @@ const Index = forwardRef(
                               />
                             </div>
                           ) : null}
+                          {tableElement?.competitionsSelect ? (
+                            <div className="">
+                              <Select
+                                value={
+                                  selectedTableElementsLogs?.competition ||
+                                  selectedTableElements?.competition
+                                }
+                                isDisabled={
+                                  selectedTableElementsLogs?.competition
+                                }
+                                placeholder="Competition"
+                                styles={{
+                                  control: (provided) => ({
+                                    ...provided,
+                                    width: 150,
+                                  }), // Adjust width as needed
+                                }}
+                                onChange={(e) => {
+                                  if (
+                                    e?.value !==
+                                    selectedTableElements?.competition?.value
+                                  ) {
+                                    setCompetitionId(e?.value);
+                                    handleTableActions("competitionId", e);
+                                    setSelectedTableElements({
+                                      ...selectedTableElements,
+                                      competition: e,
+                                      commentary: {
+                                        value: 0,
+                                        label: "Commentary",
+                                      },
+                                    });
+                                  }
+                                }}
+                                options={competitions?.map((item) => ({
+                                  label: item?.competition,
+                                  value: item?.competitionId,
+                                }))}
+                                classNamePrefix="filter-dropdown"
+                              />
+                            </div>
+                          ) : null}
                           {tableElement?.matchTypeSelect ? (
                             <div className="">
                               <Select
                                 styles={{
                                   control: (provided) => ({
                                     ...provided,
-                                    width: 180,
+                                    width: 150,
                                   }), // Adjust width as needed
                                 }}
                                 value={selectedTableElements?.matchType}
@@ -2225,73 +2268,73 @@ const Index = forwardRef(
                               />
                             </div>
                           ) : null}
-                        {tableElement?.scorecardSelect ? (
-                          <div className="">
-                            <Select
-                              styles={{
-                                control: (provided) => ({
-                                  ...provided,
-                                  width: 180,
-                                }),
-                              }}
-                              value={selectedTableElements?.scorecard}
-                              placeholder="Scorecard"
-                              onChange={(e) => {
-                                if (
-                                  e?.value !==
-                                  selectedTableElements?.scorecard?.value
-                                ) {
-                                  handleTableActions("isApproved", e);
-                                  setSelectedTableElements({
-                                    ...selectedTableElements,
-                                    scorecard: e,
-                                  });
-                                }
-                              }}
-                              options={tableElement?.scorecardOptions?.map(
-                                (item) => ({
-                                  label: item?.label,
-                                  value: item?.value,
-                                })
-                              )}
-                              classNamePrefix="filter-dropdown"
-                            />
-                          </div>
-                        ) : null}
+                          {tableElement?.scorecardSelect ? (
+                            <div className="">
+                              <Select
+                                styles={{
+                                  control: (provided) => ({
+                                    ...provided,
+                                    width: 180,
+                                  }),
+                                }}
+                                value={selectedTableElements?.scorecard}
+                                placeholder="Scorecard"
+                                onChange={(e) => {
+                                  if (
+                                    e?.value !==
+                                    selectedTableElements?.scorecard?.value
+                                  ) {
+                                    handleTableActions("isApproved", e);
+                                    setSelectedTableElements({
+                                      ...selectedTableElements,
+                                      scorecard: e,
+                                    });
+                                  }
+                                }}
+                                options={tableElement?.scorecardOptions?.map(
+                                  (item) => ({
+                                    label: item?.label,
+                                    value: item?.value,
+                                  })
+                                )}
+                                classNamePrefix="filter-dropdown"
+                              />
+                            </div>
+                          ) : null}
 
-                        {tableElement?.streamSelect ? (
-                          <div className="">
-                            <Select
-                              styles={{
-                                control: (provided) => ({
-                                  ...provided,
-                                  width: 180,
-                                }),
-                              }}
-                              value={selectedTableElements?.stream}
-                              placeholder="Stream"
-                              onChange={(e) => {
-                                if (
-                                  e?.value !==
-                                  selectedTableElements?.stream?.value
-                                ) {
-                                  handleTableActions("isVideoApproved", e);
-                                  setSelectedTableElements({
-                                    ...selectedTableElements,
-                                    stream: e,
-                                  });
-                                }
-                              }}
-                              options={tableElement?.streamOptions?.map(
-                                (item) => ({
-                                  label: item?.label,
-                                  value: item?.value,
-                                })
-                              )}
-                              classNamePrefix="filter-dropdown"
-                            />
-                          </div>
-                        ) : null}
+                          {tableElement?.streamSelect ? (
+                            <div className="">
+                              <Select
+                                styles={{
+                                  control: (provided) => ({
+                                    ...provided,
+                                    width: 180,
+                                  }),
+                                }}
+                                value={selectedTableElements?.stream}
+                                placeholder="Stream"
+                                onChange={(e) => {
+                                  if (
+                                    e?.value !==
+                                    selectedTableElements?.stream?.value
+                                  ) {
+                                    handleTableActions("isVideoApproved", e);
+                                    setSelectedTableElements({
+                                      ...selectedTableElements,
+                                      stream: e,
+                                    });
+                                  }
+                                }}
+                                options={tableElement?.streamOptions?.map(
+                                  (item) => ({
+                                    label: item?.label,
+                                    value: item?.value,
+                                  })
+                                )}
+                                classNamePrefix="filter-dropdown"
+                              />
+                            </div>
+                          ) : null}
                           {/* {tableElement?.pythonApiSelect ? (
                             <div className="">
                               <Select
@@ -2518,48 +2561,6 @@ const Index = forwardRef(
                               />
                             </div>
                           ) : null}
-                          {tableElement?.competitionsSelect ? (
-                            <div className="">
-                              <Select
-                                value={
-                                  selectedTableElementsLogs?.competition ||
-                                  selectedTableElements?.competition
-                                }
-                                isDisabled={
-                                  selectedTableElementsLogs?.competition
-                                }
-                                placeholder="Competition"
-                                styles={{
-                                  control: (provided) => ({
-                                    ...provided,
-                                    width: 200,
-                                  }), // Adjust width as needed
-                                }}
-                                onChange={(e) => {
-                                  if (
-                                    e?.value !==
-                                    selectedTableElements?.competition?.value
-                                  ) {
-                                    setCompetitionId(e?.value);
-                                    handleTableActions("competitionId", e);
-                                    setSelectedTableElements({
-                                      ...selectedTableElements,
-                                      competition: e,
-                                      commentary: {
-                                        value: 0,
-                                        label: "Commentary",
-                                      },
-                                    });
-                                  }
-                                }}
-                                options={competitions?.map((item) => ({
-                                  label: item?.competition,
-                                  value: item?.competitionId,
-                                }))}
-                                classNamePrefix="filter-dropdown"
-                              />
-                            </div>
-                          ) : null}
                           {tableElement?.commentarySelect ? (
                             <div className="">
                               <Select
@@ -2743,7 +2744,7 @@ const Index = forwardRef(
                               styles={{
                                 control: (provided) => ({
                                   ...provided,
-                                  width: 200,
+                                  width: 160,
                                 }), // Adjust width as needed
                               }}
                               onChange={(e) => {
@@ -2773,7 +2774,7 @@ const Index = forwardRef(
                                 styles={{
                                   control: (provided) => ({
                                     ...provided,
-                                    width: 180,
+                                    width: 100,
                                   }), // Adjust width as needed
                                 }}
                                 value={selectedTableElements?.pythonApi}
