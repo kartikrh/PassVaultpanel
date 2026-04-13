@@ -1818,65 +1818,7 @@ const Index = forwardRef(
                               Suspend
                             </Button>
                           )}
-                          {isClosePermission && (
-                            <Button
-                              // color="danger"
-                              className="btn closeBtn"
-                              onClick={() => {
-                                // setSearchTerm("");
-                                singleCheck.length > 0
-                                  ? closeModelFunction(true)
-                                  : dispatch(
-                                    updateToastData({
-                                      data: "Select at least one (only One) row",
-                                      title: "Error",
-                                      type: ERROR,
-                                    })
-                                  );
-                              }}
-                            >
-                              Close
-                            </Button>
-                          )}
-                          {isCancelPermission && (
-                            <Button
-                              color="danger"
-                              onClick={() => {
-                                // setSearchTerm("");
-                                singleCheck.length > 0
-                                  ? cancelModelFunction(true)
-                                  : dispatch(
-                                    updateToastData({
-                                      data: "Select at least one (only One) row",
-                                      title: "Error",
-                                      type: ERROR,
-                                    })
-                                  );
-                              }}
-                            >
-                              Cancel
-                            </Button>
-                          )}
-                          {isClosePermission && (
-                            <Button
-                              // color="warning"
-                              className="btn abandonBtn"
-                              onClick={() => {
-                                // setSearchTerm("");
-                                singleCheck.length > 0
-                                  ? abandonModelFunction(true)
-                                  : dispatch(
-                                    updateToastData({
-                                      data: "Select at least one (only One) row",
-                                      title: "Error",
-                                      type: ERROR,
-                                    })
-                                  );
-                              }}
-                            >
-                              Abandon
-                            </Button>
-                          )}
+                          {/* Shifted Close, Cancel & Abandon btn from here */}
                           {isDeletePermission && (
                             <Button
                               color="soft-danger"
@@ -2774,7 +2716,7 @@ const Index = forwardRef(
                                 styles={{
                                   control: (provided) => ({
                                     ...provided,
-                                    width: 100,
+                                    width: 110,
                                   }), // Adjust width as needed
                                 }}
                                 value={selectedTableElements?.pythonApi}
@@ -3195,6 +3137,68 @@ const Index = forwardRef(
                         ) : null}
                       </Col>
                     </Row>
+                    {(isClosePermission || isCancelPermission) && (
+                      <Row className="g-2 pt-2">
+                        <Col className="col-sm-auto">
+                          <div className="d-flex flex-wrap align-items-center gap-2">
+                            {isClosePermission && (
+                              <Button
+                                className="btn closeBtn"
+                                onClick={() => {
+                                  singleCheck.length > 0
+                                    ? closeModelFunction(true)
+                                    : dispatch(
+                                        updateToastData({
+                                          data: "Select at least one (only One) row",
+                                          title: "Error",
+                                          type: ERROR,
+                                        })
+                                      );
+                                }}
+                              >
+                                Close
+                              </Button>
+                            )}
+                            {isCancelPermission && (
+                              <Button
+                                color="danger"
+                                onClick={() => {
+                                  singleCheck.length > 0
+                                    ? cancelModelFunction(true)
+                                    : dispatch(
+                                        updateToastData({
+                                          data: "Select at least one (only One) row",
+                                          title: "Error",
+                                          type: ERROR,
+                                        })
+                                      );
+                                }}
+                              >
+                                Cancel
+                              </Button>
+                            )}
+                            {isClosePermission && (
+                              <Button
+                                className="btn abandonBtn"
+                                onClick={() => {
+                                  singleCheck.length > 0
+                                    ? abandonModelFunction(true)
+                                    : dispatch(
+                                        updateToastData({
+                                          data: "Select at least one (only One) row",
+                                          title: "Error",
+                                          type: ERROR,
+                                        })
+                                      );
+                                }}
+                              >
+                                Abandon
+                              </Button>
+                            )}
+                          </div>
+                        </Col>
+                      </Row>
+                    )}
                     <Col className="col-sm-auto ms-auto my-2">
                       <div className="d-flex flex-wrap align-items-center gap-2">
                         {isDeleteAllPermission && (
