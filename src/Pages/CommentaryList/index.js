@@ -5,6 +5,7 @@ import { Button, Container } from "reactstrap";
 import { useNavigate } from "react-router-dom";
 import CloseTabModel from "../../components/Model/CloseModel";
 import CancelTabModel from "../../components/Model/CancelModel";
+import AbandonTabModel from "../../components/Model/AbandonModel";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import axiosInstance from "../../Features/axios";
 import { CommentaryClone } from "../../components/Model/Clone";
@@ -93,6 +94,7 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [closeModelVisible, setCloseModelVisible] = useState(false);
   const [cancelModelVisible, setCancelModelVisible] = useState(false);
+  const [abandonModelVisible, setAbandonModelVisible] = useState(false);
   const [eventTypes, setEventTypes] = useState([]);
   const [competitions, setCompetitions] = useState([]);
   const [runnerModelVisible, setRunnerModelVisible] = useState(false);
@@ -380,6 +382,51 @@ const Index = () => {
         );
       });
   };
+  const handleAbandon = async (e) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/commentary/abandonedCommentary`, {
+        commentaryId: checekedList,
+      })
+      .then((response) => {
+        fetchData();
+        setAbandonModelVisible(false);
+        if (response?.result?.callPredictions?.length > 0) {
+          response.result.callPredictions.forEach((prediction) => {
+            if (prediction?.predictioncallSuccess === false) {
+              const predictionMessage = prediction?.predictionMessage;
+              const endPoint = prediction?.endPoint;
+              dispatch(
+                updateToastData({
+                  data: `${endPoint}\n${predictionMessage}`,
+                  title: "Call Prediction",
+                  type: WARNING,
+                })
+              );
+            }
+          });
+        } else {
+          dispatch(
+            updateToastData({
+              data: response?.message,
+              title: response?.title,
+              type: SUCCESS,
+            })
+          );
+        }
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+  
   const handleEdit = (id) => {
     navigate("/addCommentary", { state: { userId: id } });
   };
@@ -2090,6 +2137,7 @@ const Index = () => {
             }
             closeModelFunction={setCloseModelVisible}
             cancelModelFunction={setCancelModelVisible}
+            abandonModelFunction={setAbandonModelVisible}
             cloneModelFunction={setCloneModelVisible}
             eventTypes={eventTypes}
             singleCheck={checekedList}
@@ -2139,6 +2187,12 @@ const Index = () => {
             setCancelModelVisible={setCancelModelVisible}
             handleCancel={handleCancel}
             singleCheck={checekedList}
+          />
+          <AbandonTabModel
+            abandonModelVisible={abandonModelVisible}
+            setAbandonModelVisible={setAbandonModelVisible}
+            handleAbandon={handleAbandon}
+            // singleCheck={checekedList}
           />
           <CommentaryClone
             cloneModelVisible={cloneModelVisible}

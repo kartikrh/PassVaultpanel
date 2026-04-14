@@ -73,6 +73,7 @@ const Index = forwardRef(
       closeMarketModelFunction,
       cancelAllModelFunction,
       cancelModelFunction,
+      abandonModelFunction,
       resultModelFunction,
       loadPanelModelFunction,
       loadDataModelFunction,
@@ -1817,44 +1818,7 @@ const Index = forwardRef(
                               Suspend
                             </Button>
                           )}
-                          {isClosePermission && (
-                            <Button
-                              color="danger"
-                              onClick={() => {
-                                // setSearchTerm("");
-                                singleCheck.length > 0
-                                  ? closeModelFunction(true)
-                                  : dispatch(
-                                    updateToastData({
-                                      data: "Select at least one (only One) row",
-                                      title: "Error",
-                                      type: ERROR,
-                                    })
-                                  );
-                              }}
-                            >
-                              Close
-                            </Button>
-                          )}
-                          {isCancelPermission && (
-                            <Button
-                              color="danger"
-                              onClick={() => {
-                                // setSearchTerm("");
-                                singleCheck.length > 0
-                                  ? cancelModelFunction(true)
-                                  : dispatch(
-                                    updateToastData({
-                                      data: "Select at least one (only One) row",
-                                      title: "Error",
-                                      type: ERROR,
-                                    })
-                                  );
-                              }}
-                            >
-                              Cancel
-                            </Button>
-                          )}
+                          {/* Shifted Close, Cancel & Abandon btn from here */}
                           {isDeletePermission && (
                             <Button
                               color="soft-danger"
@@ -1969,7 +1933,7 @@ const Index = forwardRef(
                                 styles={{
                                   control: (provided) => ({
                                     ...provided,
-                                    width: 180,
+                                    width: 150,
                                   }), // Adjust width as needed
                                 }}
                                 value={
@@ -2170,13 +2134,55 @@ const Index = forwardRef(
                               />
                             </div>
                           ) : null}
+                          {tableElement?.competitionsSelect ? (
+                            <div className="">
+                              <Select
+                                value={
+                                  selectedTableElementsLogs?.competition ||
+                                  selectedTableElements?.competition
+                                }
+                                isDisabled={
+                                  selectedTableElementsLogs?.competition
+                                }
+                                placeholder="Competition"
+                                styles={{
+                                  control: (provided) => ({
+                                    ...provided,
+                                    width: 150,
+                                  }), // Adjust width as needed
+                                }}
+                                onChange={(e) => {
+                                  if (
+                                    e?.value !==
+                                    selectedTableElements?.competition?.value
+                                  ) {
+                                    setCompetitionId(e?.value);
+                                    handleTableActions("competitionId", e);
+                                    setSelectedTableElements({
+                                      ...selectedTableElements,
+                                      competition: e,
+                                      commentary: {
+                                        value: 0,
+                                        label: "Commentary",
+                                      },
+                                    });
+                                  }
+                                }}
+                                options={competitions?.map((item) => ({
+                                  label: item?.competition,
+                                  value: item?.competitionId,
+                                }))}
+                                classNamePrefix="filter-dropdown"
+                              />
+                            </div>
+                          ) : null}
                           {tableElement?.matchTypeSelect ? (
                             <div className="">
                               <Select
                                 styles={{
                                   control: (provided) => ({
                                     ...provided,
-                                    width: 180,
+                                    width: 150,
                                   }), // Adjust width as needed
                                 }}
                                 value={selectedTableElements?.matchType}
@@ -2204,73 +2210,73 @@ const Index = forwardRef(
                               />
                             </div>
                           ) : null}
-                        {tableElement?.scorecardSelect ? (
-                          <div className="">
-                            <Select
-                              styles={{
-                                control: (provided) => ({
-                                  ...provided,
-                                  width: 180,
-                                }),
-                              }}
-                              value={selectedTableElements?.scorecard}
-                              placeholder="Scorecard"
-                              onChange={(e) => {
-                                if (
-                                  e?.value !==
-                                  selectedTableElements?.scorecard?.value
-                                ) {
-                                  handleTableActions("isApproved", e);
-                                  setSelectedTableElements({
-                                    ...selectedTableElements,
-                                    scorecard: e,
-                                  });
-                                }
-                              }}
-                              options={tableElement?.scorecardOptions?.map(
-                                (item) => ({
-                                  label: item?.label,
-                                  value: item?.value,
-                                })
-                              )}
-                              classNamePrefix="filter-dropdown"
-                            />
-                          </div>
-                        ) : null}
+                          {tableElement?.scorecardSelect ? (
+                            <div className="">
+                              <Select
+                                styles={{
+                                  control: (provided) => ({
+                                    ...provided,
+                                    width: 180,
+                                  }),
+                                }}
+                                value={selectedTableElements?.scorecard}
+                                placeholder="Scorecard"
+                                onChange={(e) => {
+                                  if (
+                                    e?.value !==
+                                    selectedTableElements?.scorecard?.value
+                                  ) {
+                                    handleTableActions("isApproved", e);
+                                    setSelectedTableElements({
+                                      ...selectedTableElements,
+                                      scorecard: e,
+                                    });
+                                  }
+                                }}
+                                options={tableElement?.scorecardOptions?.map(
+                                  (item) => ({
+                                    label: item?.label,
+                                    value: item?.value,
+                                  })
+                                )}
+                                classNamePrefix="filter-dropdown"
+                              />
+                            </div>
+                          ) : null}
 
-                        {tableElement?.streamSelect ? (
-                          <div className="">
-                            <Select
-                              styles={{
-                                control: (provided) => ({
-                                  ...provided,
-                                  width: 180,
-                                }),
-                              }}
-                              value={selectedTableElements?.stream}
-                              placeholder="Stream"
-                              onChange={(e) => {
-                                if (
-                                  e?.value !==
-                                  selectedTableElements?.stream?.value
-                                ) {
-                                  handleTableActions("isVideoApproved", e);
-                                  setSelectedTableElements({
-                                    ...selectedTableElements,
-                                    stream: e,
-                                  });
-                                }
-                              }}
-                              options={tableElement?.streamOptions?.map(
-                                (item) => ({
-                                  label: item?.label,
-                                  value: item?.value,
-                                })
-                              )}
-                              classNamePrefix="filter-dropdown"
-                            />
-                          </div>
-                        ) : null}
+                          {tableElement?.streamSelect ? (
+                            <div className="">
+                              <Select
+                                styles={{
+                                  control: (provided) => ({
+                                    ...provided,
+                                    width: 180,
+                                  }),
+                                }}
+                                value={selectedTableElements?.stream}
+                                placeholder="Stream"
+                                onChange={(e) => {
+                                  if (
+                                    e?.value !==
+                                    selectedTableElements?.stream?.value
+                                  ) {
+                                    handleTableActions("isVideoApproved", e);
+                                    setSelectedTableElements({
+                                      ...selectedTableElements,
+                                      stream: e,
+                                    });
+                                  }
+                                }}
+                                options={tableElement?.streamOptions?.map(
+                                  (item) => ({
+                                    label: item?.label,
+                                    value: item?.value,
+                                  })
+                                )}
+                                classNamePrefix="filter-dropdown"
+                              />
+                            </div>
+                          ) : null}
                           {/* {tableElement?.pythonApiSelect ? (
                             <div className="">
                               <Select
@@ -2497,48 +2503,6 @@ const Index = forwardRef(
                               />
                             </div>
                           ) : null}
-                          {tableElement?.competitionsSelect ? (
-                            <div className="">
-                              <Select
-                                value={
-                                  selectedTableElementsLogs?.competition ||
-                                  selectedTableElements?.competition
-                                }
-                                isDisabled={
-                                  selectedTableElementsLogs?.competition
-                                }
-                                placeholder="Competition"
-                                styles={{
-                                  control: (provided) => ({
-                                    ...provided,
-                                    width: 200,
-                                  }), // Adjust width as needed
-                                }}
-                                onChange={(e) => {
-                                  if (
-                                    e?.value !==
-                                    selectedTableElements?.competition?.value
-                                  ) {
-                                    setCompetitionId(e?.value);
-                                    handleTableActions("competitionId", e);
-                                    setSelectedTableElements({
-                                      ...selectedTableElements,
-                                      competition: e,
-                                      commentary: {
-                                        value: 0,
-                                        label: "Commentary",
-                                      },
-                                    });
-                                  }
-                                }}
-                                options={competitions?.map((item) => ({
-                                  label: item?.competition,
-                                  value: item?.competitionId,
-                                }))}
-                                classNamePrefix="filter-dropdown"
-                              />
-                            </div>
-                          ) : null}
                           {tableElement?.commentarySelect ? (
                             <div className="">
                               <Select
@@ -2722,7 +2686,7 @@ const Index = forwardRef(
                               styles={{
                                 control: (provided) => ({
                                   ...provided,
-                                  width: 200,
+                                  width: 160,
                                 }), // Adjust width as needed
                               }}
                               onChange={(e) => {
@@ -2752,7 +2716,7 @@ const Index = forwardRef(
                                 styles={{
                                   control: (provided) => ({
                                     ...provided,
-                                    width: 180,
+                                    width: 110,
                                   }), // Adjust width as needed
                                 }}
                                 value={selectedTableElements?.pythonApi}
@@ -3173,6 +3137,68 @@ const Index = forwardRef(
                         ) : null}
                       </Col>
                     </Row>
+                    {(isClosePermission || isCancelPermission) && (
+                      <Row className="g-2 pt-2">
+                        <Col className="col-sm-auto">
+                          <div className="d-flex flex-wrap align-items-center gap-2">
+                            {isClosePermission && (
+                              <Button
+                                className="btn closeBtn"
+                                onClick={() => {
+                                  singleCheck.length > 0
+                                    ? closeModelFunction(true)
+                                    : dispatch(
+                                        updateToastData({
+                                          data: "Select at least one (only One) row",
+                                          title: "Error",
+                                          type: ERROR,
+                                        })
+                                      );
+                                }}
+                              >
+                                Close
+                              </Button>
+                            )}
+                            {isCancelPermission && (
+                              <Button
+                                color="danger"
+                                onClick={() => {
+                                  singleCheck.length > 0
+                                    ? cancelModelFunction(true)
+                                    : dispatch(
+                                        updateToastData({
+                                          data: "Select at least one (only One) row",
+                                          title: "Error",
+                                          type: ERROR,
+                                        })
+                                      );
+                                }}
+                              >
+                                Cancel
+                              </Button>
+                            )}
+                            {isClosePermission && (
+                              <Button
+                                className="btn abandonBtn"
+                                onClick={() => {
+                                  singleCheck.length > 0
+                                    ? abandonModelFunction(true)
+                                    : dispatch(
+                                        updateToastData({
+                                          data: "Select at least one (only One) row",
+                                          title: "Error",
+                                          type: ERROR,
+                                        })
+                                      );
+                                }}
+                              >
+                                Abandon
+                              </Button>
+                            )}
+                          </div>
+                        </Col>
+                      </Row>
+                    )}
                     <Col className="col-sm-auto ms-auto my-2">
                       <div className="d-flex flex-wrap align-items-center gap-2">
                         {isDeleteAllPermission && (
