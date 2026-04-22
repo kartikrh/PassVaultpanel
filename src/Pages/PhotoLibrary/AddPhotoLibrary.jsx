@@ -106,6 +106,7 @@ const AddPhotoLibrary = () => {
                 title : dataToSave.title,
                 description : dataToSave.description,
                 isPermanent : dataToSave.isPermanent,
+                isActive: !!dataToSave?.isActive,
                 startDate : null,
                 endDate : null
             }
@@ -113,7 +114,7 @@ const AddPhotoLibrary = () => {
         if (dataToSave) {
             const extraData = {
                 photoLibraryId: photoLibraryId,
-                isPermanent: false,
+                isPermanent: !!dataToSave?.isPermanent,
             };
             dispatch(
                 addPhotoLibraryToDb({ ...dataToSave, ...extraData })
