@@ -54,8 +54,7 @@ const Index = () => {
                 ...(latestValueFromTable || tableActions),
             })
             .then((response) => {
-                const apiData = response?.result;
-                // ?.sort((a, b) => a?.id - b?.id)
+                const apiData = response?.result?.sort((a, b) => a?.displayOrder - b?.displayOrder);
                 let apiDataIdList = [];
                 apiData.forEach((ele) => {
                     apiDataIdList.push(ele?.id);
@@ -404,6 +403,7 @@ const Index = () => {
         isActive: true,
         reloadButton: true,
         loadData: true,
+        dragDrop: true,
     };
 
     useEffect(() => {
@@ -429,7 +429,7 @@ const Index = () => {
                         tableElement={tableElement}
                         deleteModelFunction={setDeleteModelVisable}
                         singleCheck={checekedList}
-                        // changeOrderApiName="award"
+                        changeOrderApiName="videoLibrary"
                         onAddNavigate={"/addVideoLibrary"}
                         handleReset={handleReset}
                         handleReload={handleReload}

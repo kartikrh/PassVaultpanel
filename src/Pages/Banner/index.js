@@ -59,7 +59,7 @@ const Index = () => {
         ...(latestValueFromTable || tableActions),
       })
       .then((response) => {
-        const apiData = response?.result?.sort((a,b)=>a?.bannerId - b?.bannerId);
+        const apiData = response?.result?.sort((a,b)=>a?.displayOrder - b?.displayOrder);
         let apiDataIdList = [];
         apiData.forEach((ele) => {
           apiDataIdList.push(ele?.bannerId);
@@ -371,19 +371,25 @@ const Index = () => {
       title: "White Label",
       dataIndex: "domain",
       key: "domain",
-      style: { width: "5%", textAlign: "center" },
+      style: { width: "5%", textAlign: "left" },
     },
     {
-      title: "Views",
-      dataIndex: "viewerCount",
-      key: "viewerCount",
-      style: { width: "5%", textAlign: "center" },
-    },
-    {
-      title: "Link",
-      dataIndex: "link",
-      key: "link",
-      style: { width: "15%" },
+      title: "Permanent",
+      dataIndex: "isPermanent",
+      key: "isPermanent",
+      render: (text, record) => (
+        <Button
+          color={`${record.isPermanent ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          disabled
+        >
+          <i
+            className={`bx ${record?.isPermanent ? "bx-check" : "bx-block"}`}
+          ></i>
+        </Button>
+      ),
+      style: { width: "2%" },
     },
     {
       title: "Start Date",
@@ -463,6 +469,18 @@ const Index = () => {
       ),
       style: { width: "2%", textAlign: "center" },
     },
+    {
+      title: "Views",
+      dataIndex: "viewerCount",
+      key: "viewerCount",
+      style: { width: "5%", textAlign: "center" },
+    },
+    {
+      title: "Link",
+      dataIndex: "link",
+      key: "link",
+      style: { width: "15%" },
+    },
   ];
   //elements required
   const tableElement = {
@@ -472,6 +490,7 @@ const Index = () => {
     loadData: true,
     isDateTypeSelect: true,
     dateTypeButNoDateRange: true,
+    dragDrop: true,
   };
 
   useEffect(() => {
@@ -517,6 +536,7 @@ const Index = () => {
             setParentSearchedData={handleTableSearchedDataChange}
             dateType={dateType}
             setDateType={setDateType}
+            changeOrderApiName="banner"
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

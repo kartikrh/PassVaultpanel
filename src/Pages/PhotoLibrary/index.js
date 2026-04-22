@@ -58,7 +58,7 @@ const Index = () => {
       })
       .then((response) => {
         const apiData = response?.result?.sort(
-          (a, b) => a?.photoLibraryId - b?.photoLibraryId
+          (a, b) => a?.displayOrder - b?.displayOrder
         );
         let apiDataIdList = [];
         apiData.forEach((ele) => {
@@ -425,6 +425,7 @@ const Index = () => {
     isActive: true,
     reloadButton: true,
     loadData: true,
+    dragDrop: true,
   };
 
   useEffect(() => {
@@ -451,6 +452,7 @@ const Index = () => {
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
             onAddNavigate={"/addPhotoLibrary"}
+            changeOrderApiName="photoLibrary"
             handleReset={handleReset}
             handleReload={handleReload}
             loadDataModelFunction={setLoadDataModelVisable}
