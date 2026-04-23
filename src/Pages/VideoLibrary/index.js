@@ -20,7 +20,7 @@ import {
     MODULE_VIDEO_LIBRARY,
 } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
-import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateUTCToLocal, convertDateUTCToLocalWithSec24, convertDateUtcFormatWithSec24, convertDateLocalToUTC } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import LoadDataModal from "../../components/Model/LoadDataModal";
 
@@ -42,6 +42,16 @@ const Index = () => {
     const [tableSearchedData, setTableSearchedData] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(globalPageSize || 10);
+    const globalDateType = JSON.parse(localStorage.getItem("DateType"))
+    const [dateType, setDateType] = useState(globalDateType || {
+        label: "Local Timezone",
+        value: 1,
+    });
+    const [isSearch, setIsSearch] = useState(false);
+    const [dateRange, setDateRange] = useState({
+        startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
+        endDate: `${new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split("T")[0]}T23:59:00`,
+    });
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -49,10 +59,24 @@ const Index = () => {
     const fetchData = async (latestValueFromTable) => {
         setIsLoading(true);
         const tableActions = finalizeRef.current.getTableAction();
+        let payload = {
+            ...(latestValueFromTable || tableActions),
+        };
+        if (isSearch) {
+            payload = {
+                ...payload,
+                startDate: convertDateLocalToUTC(
+                    latestValueFromTable?.startDate ? latestValueFromTable?.startDate : dateRange?.startDate,
+                    "index"
+                ),
+                endDate: convertDateLocalToUTC(
+                    latestValueFromTable?.endDate ? latestValueFromTable?.endDate : dateRange?.endDate,
+                    "index"
+                ),
+            };
+        }
         await axiosInstance
-            .post(`/admin/videoLibrary/all`, {
-                ...(latestValueFromTable || tableActions),
-            })
+            .post(`/admin/videoLibrary/all`, payload)
             .then((response) => {
                 const apiData = response?.result?.sort((a, b) => a?.displayOrder - b?.displayOrder);
                 let apiDataIdList = [];
@@ -391,9 +415,16 @@ const Index = () => {
         {
             title: "From",
             dataIndex: "from",
-            render: (text, record) => (
+            // render: (text, record) => (
+            //     <span style={{ cursor: "pointer" }}>
+            //         {convertDateUTCToLocal(text, "index")}
+            //     </span>
+            // ),
+            render: (text) => (
                 <span style={{ cursor: "pointer" }}>
-                    {convertDateUTCToLocal(text, "index")}
+                    {dateType?.value == 1
+                        ? convertDateUTCToLocalWithSec24(text, "index")
+                        : convertDateUtcFormatWithSec24(text, "index")}
                 </span>
             ),
             key: "from",
@@ -402,9 +433,11 @@ const Index = () => {
         {
             title: "To",
             dataIndex: "to",
-            render: (text, record) => (
+            render: (text) => (
                 <span style={{ cursor: "pointer" }}>
-                    {convertDateUTCToLocal(text, "index")}
+                    {dateType?.value == 1
+                        ? convertDateUTCToLocalWithSec24(text, "index")
+                        : convertDateUtcFormatWithSec24(text, "index")}
                 </span>
             ),
             key: "to",
@@ -424,10 +457,24 @@ const Index = () => {
     //elements required
     const tableElement = {
         title: "Video Library",
-        isActive: true,
         reloadButton: true,
         loadData: true,
         dragDrop: true,
+        isDateTypeSelect: true,
+        dateTypeButNoDateRange: true,
+        activeSelect: true,
+        activeOptions: [
+            { label: "Select Active", value: null },
+            { label: "Active", value: true },
+            { label: "InActive", value: false },
+        ],
+        permanentSelect: true,
+        permanentOptions: [
+            { label: "Select Permanent", value: null },
+            { label: "Permanent", value: true },
+            { label: "Not Permanent", value: false },
+        ],
+        isDateRange: true,
     };
 
     useEffect(() => {
@@ -472,6 +519,12 @@ const Index = () => {
                         setParentCurrentPage={handleCurrentPageChange}
                         setParentPageSize={handlePageSizeChange}
                         setParentSearchedData={handleTableSearchedDataChange}
+                        dateType={dateType}
+                        setDateType={setDateType}
+                        isSearch={isSearch}
+                        setIsSearch={setIsSearch}
+                        setDateRange={setDateRange}
+                        dateRange={dateRange}
                     />
                     <DeleteTabModel
                         deleteModelVisable={deleteModelVisable}

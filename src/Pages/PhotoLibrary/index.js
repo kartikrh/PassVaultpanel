@@ -21,6 +21,8 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   checkPermission,
   convertDateUTCToLocal,
+  convertDateLocalToUTC,
+  convertDateUTCToLocalWithSec24, convertDateUtcFormatWithSec24,
 } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import LoadDataModal from "../../components/Model/LoadDataModal";
@@ -45,6 +47,16 @@ const Index = () => {
   const [tableSearchedData, setTableSearchedData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(globalPageSize || 10);
+  const [isSearch, setIsSearch] = useState(false);
+  const [dateRange, setDateRange] = useState({
+    startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
+    endDate: `${new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split("T")[0]}T23:59:00`,
+  });
+  const globalDateType = JSON.parse(localStorage.getItem("DateType"))
+  const [dateType, setDateType] = useState(globalDateType || {
+    label: "Local Timezone",
+    value: 1,
+  });
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -52,10 +64,24 @@ const Index = () => {
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
+    let payload = {
+      ...(latestValueFromTable || tableActions),
+    };
+    if (isSearch) {
+      payload = {
+        ...payload,
+        startDate: convertDateLocalToUTC(
+          latestValueFromTable?.startDate ? latestValueFromTable?.startDate : dateRange?.startDate,
+          "index"
+        ),
+        endDate: convertDateLocalToUTC(
+          latestValueFromTable?.endDate ? latestValueFromTable?.endDate : dateRange?.endDate,
+          "index"
+        ),
+      };
+    }
     await axiosInstance
-      .post(`/admin/photoLibrary/all`, {
-        ...(latestValueFromTable || tableActions),
-      })
+      .post(`/admin/photoLibrary/all`, payload)
       .then((response) => {
         const apiData = response?.result?.sort(
           (a, b) => a?.displayOrder - b?.displayOrder
@@ -367,9 +393,16 @@ const Index = () => {
     {
       title: "Start Date",
       dataIndex: "startDate",
-      render: (text, record) => (
+      // render: (text, record) => (
+      //   <span style={{ cursor: "pointer" }}>
+      //     {convertDateUTCToLocal(text, "index")}
+      //   </span>
+      // ),
+      render: (text) => (
         <span style={{ cursor: "pointer" }}>
-          {convertDateUTCToLocal(text, "index")}
+          {dateType?.value == 1
+            ? convertDateUTCToLocalWithSec24(text, "index")
+            : convertDateUtcFormatWithSec24(text, "index")}
         </span>
       ),
       key: "startDate",
@@ -378,9 +411,11 @@ const Index = () => {
     {
       title: "End Date",
       dataIndex: "endDate",
-      render: (text, record) => (
+      render: (text) => (
         <span style={{ cursor: "pointer" }}>
-          {convertDateUTCToLocal(text, "index")}
+          {dateType?.value == 1
+            ? convertDateUTCToLocalWithSec24(text, "index")
+            : convertDateUtcFormatWithSec24(text, "index")}
         </span>
       ),
       key: "endDate",
@@ -428,10 +463,23 @@ const Index = () => {
   //elements required
   const tableElement = {
     title: "Photo Library",
-    isActive: true,
     reloadButton: true,
     loadData: true,
     dragDrop: true,
+    isDateTypeSelect: true,
+    activeSelect: true,
+    activeOptions: [
+      { label: "Select Active", value: null },
+      { label: "Active", value: true },
+      { label: "InActive", value: false },
+    ],
+    permanentSelect: true,
+    permanentOptions: [
+      { label: "Select Permanent", value: null },
+      { label: "Permanent", value: true },
+      { label: "Not Permanent", value: false },
+    ],
+    isDateRange: true,
   };
 
   useEffect(() => {
@@ -476,6 +524,13 @@ const Index = () => {
             setParentCurrentPage={handleCurrentPageChange}
             setParentPageSize={handlePageSizeChange}
             setParentSearchedData={handleTableSearchedDataChange}
+            isSearch={isSearch}
+            setIsSearch={setIsSearch}
+            setDateRange={setDateRange}
+            dateRange={dateRange}
+            dateType={dateType}
+            setDateType={setDateType}
+
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
