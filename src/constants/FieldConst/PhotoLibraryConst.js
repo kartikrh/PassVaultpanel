@@ -41,6 +41,15 @@ import {
       fieldColspan: { xs: 12, md: 10, lg: 10 },
     },
     {
+      name: "commentaryId",
+      label: "Commentary",
+      // parentclassName: "",
+      type: SELECT,
+      options: [{ label: "Select Commentary", value: "0" }],
+      labelColspan: { xs: 12, md: 2, lg: 2 },
+      fieldColspan: { xs: 12, md: 10, lg: 10 }
+    },
+    {
       name: "whitelabelId",
       label: "White Label",
       // isRequired: true,

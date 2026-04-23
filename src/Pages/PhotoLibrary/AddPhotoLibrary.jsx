@@ -93,18 +93,33 @@ const AddPhotoLibrary = () => {
 
     const fetchMasterData = async () => {
         await axiosInstance
-        .post("/admin/whitelabel/all", { isActive: true })
-        .then((response) => {
-            setMasterData((preData) => ({
-                ...preData,
-                whitelabelId: response.result?.map((item) => {
-                    return { label: item.domain, value: item.id };
-                }),
-            }));
-        })
-        .catch((error) => {
-            dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-        });
+            .post("/admin/whitelabel/all", { isActive: true })
+            .then((response) => {
+                setMasterData((preData) => ({
+                    ...preData,
+                    whitelabelId: response.result?.map((item) => {
+                        return { label: item.domain, value: item.id };
+                    }),
+                }));
+            })
+            .catch((error) => {
+                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+            });
+
+        await axiosInstance
+            .post("/admin/list/comList", {})
+            .then((response) => {
+                console.log("comList response", response?.result);
+                setMasterData((preData) => ({
+                    ...preData,
+                    commentaryId: response.result?.map((item) => {
+                        return { label: item.eventName, value: item.commentaryId };
+                    }),
+                }));
+            })
+            .catch((error) => {
+                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+            });
     };
 
     const handleFormBDataChange = (val) => {
@@ -125,6 +140,7 @@ const AddPhotoLibrary = () => {
                 description : dataToSave.description,
                 isPermanent : dataToSave.isPermanent,
                 isActive: !!dataToSave?.isActive,
+                whitelabelId : dataToSave?.whitelabelId,
                 startDate : null,
                 endDate : null
             }
