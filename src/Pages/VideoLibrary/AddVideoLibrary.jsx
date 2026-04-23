@@ -47,6 +47,7 @@ const AddVideoLibrary = () => {
     const location = useLocation();
     const [videoLibraryId, setVideoLibraryId] = useState(location.state?.id || 0);
     const [fields, setFields] = useState(videoLibraryFields || [])
+    const [masterData, setMasterData] = useState({});
     useEffect(() => {
         if (videoLibraryId !== 0) {
             fetchData(videoLibraryId);
@@ -57,6 +58,7 @@ const AddVideoLibrary = () => {
         if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
             navigate("/dashboard");
         }
+        fetchMasterData();
     }, [permissionObj]);
 
     useEffect(() => {
@@ -87,6 +89,37 @@ const AddVideoLibrary = () => {
                         type: ERROR,
                     })
                 );
+            });
+    };
+
+    const fetchMasterData = async () => {
+        await axiosInstance
+            .post("/admin/whitelabel/all", { isActive: true })
+            .then((response) => {
+                setMasterData((preData) => ({
+                    ...preData,
+                    whitelabelId: response.result?.map((item) => {
+                        return { label: item.domain, value: item.id };
+                    }),
+                }));
+            })
+            .catch((error) => {
+                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+            });
+
+        await axiosInstance
+            .post("/admin/list/comList", {})
+            .then((response) => {
+                console.log("comList response", response?.result);
+                setMasterData((preData) => ({
+                    ...preData,
+                    commentaryId: response.result?.map((item) => {
+                        return { label: item.eventName, value: item.commentaryId };
+                    }),
+                }));
+            })
+            .catch((error) => {
+                dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
             });
     };
 
@@ -220,6 +253,7 @@ const AddVideoLibrary = () => {
                                     fields={fields}
                                     editFormData={initialEditData}
                                     onFormDataChange={handleFormBDataChange}
+                                    masterData={masterData}
                                 />
                             </CardBody>
                         </Card>

@@ -46,6 +46,7 @@ const AddPhotoLibrary = () => {
     const location = useLocation();
     const [photoLibraryId, setPhotoLibraryId] = useState(location.state?.photoLibraryId || 0);
     const [fields, setFields] = useState(photoLibraryFields || [])
+    const [masterData, setMasterData] = useState({});
     useEffect(() => {
         if (photoLibraryId !== 0) {
             fetchData(photoLibraryId);
@@ -56,6 +57,7 @@ const AddPhotoLibrary = () => {
         if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
             navigate("/dashboard");
         }
+        fetchMasterData();
     }, [permissionObj]);
 
     useEffect(() => {
@@ -87,6 +89,22 @@ const AddPhotoLibrary = () => {
                     })
                 );
             });
+    };
+
+    const fetchMasterData = async () => {
+        await axiosInstance
+        .post("/admin/whitelabel/all", { isActive: true })
+        .then((response) => {
+            setMasterData((preData) => ({
+                ...preData,
+                whitelabelId: response.result?.map((item) => {
+                    return { label: item.domain, value: item.id };
+                }),
+            }));
+        })
+        .catch((error) => {
+            dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+        });
     };
 
     const handleFormBDataChange = (val) => {
@@ -217,6 +235,7 @@ const AddPhotoLibrary = () => {
                                     fields={fields}
                                     editFormData={initialEditData}
                                     onFormDataChange={handleFormBDataChange}
+                                    masterData={masterData}
                                 />
                             </CardBody>
                         </Card>

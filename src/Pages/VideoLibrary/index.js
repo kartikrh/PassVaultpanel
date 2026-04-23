@@ -311,14 +311,10 @@ const Index = () => {
             sort: true,
         },
         {
-            title: "Video URL",
-            dataIndex: "videoURL",
-            key: "videoURL",
-            render: (text, record) => (
-                <span>{text?.length > 30 ? `${text.substring(0, 30)}...` : text}</span>
-            ),
-            style: { width: "20%" },
-            sort: true,
+            title: "White Label",
+            dataIndex: "domain",
+            key: "domain",
+            style: { width: "5%", textAlign: "left" },
         },
         {
             title: "Tag",
@@ -372,7 +368,25 @@ const Index = () => {
                     </Button>
                 </Tooltip>
             ),
-            style: { width: "2%" },
+            style: { width: "2%", textAlign: "center" },
+        },
+        {
+            title: "Permanent",
+            dataIndex: "isPermanent",
+            key: "isPermanent",
+            render: (text, record) => (
+                <Button
+                    color={`${record.isPermanent ? "primary" : "danger"}`}
+                    size="sm"
+                    className="btn"
+                    disabled
+                >
+                    <i
+                        className={`bx ${record?.isPermanent ? "bx-check" : "bx-block"}`}
+                    ></i>
+                </Button>
+            ),
+            style: { width: "2%", textAlign: "center" },
         },
         {
             title: "From",
@@ -395,6 +409,16 @@ const Index = () => {
             ),
             key: "to",
             style: { width: "20%" },
+        },
+        {
+            title: "Video URL",
+            dataIndex: "videoURL",
+            key: "videoURL",
+            render: (text, record) => (
+                <span>{text?.length > 30 ? `${text.substring(0, 30)}...` : text}</span>
+            ),
+            style: { width: "20%" },
+            sort: true,
         },
     ];
     //elements required

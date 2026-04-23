@@ -333,6 +333,12 @@ const Index = () => {
       style: { width: "20%" },
       sort: true,
     },
+    {
+      title: "White Label",
+      dataIndex: "domain",
+      key: "domain",
+      style: { width: "5%", textAlign: "left" },
+    },
     // {
     //   title: "News",
     //   dataIndex: "news",

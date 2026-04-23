@@ -4,6 +4,7 @@ import {
     SWITCH,
     TEXT,
     TEXT_EDITOR,
+    SELECT,
   } from "../../components/Common/Const";
   
   export const photoLibraryFields = [
@@ -38,6 +39,21 @@ import {
       type: TEXT,
       labelColspan: { xs: 12, md: 2, lg: 2 },
       fieldColspan: { xs: 12, md: 10, lg: 10 },
+    },
+    {
+      name: "whitelabelId",
+      label: "White Label",
+      // isRequired: true,
+      options: [{ label: "Select White Label", value: "0" }],
+      defaultValue: false,
+      type: SELECT,
+      labelColspan: { xs: 12, md: 2, lg: 2 },
+      fieldColspan: { xs: 12, md: 4, lg: 4 },
+    },
+    {
+      // isRequired: true,
+      labelColspan: { xs: 12, md: 2, lg: 2 },
+      fieldColspan: { xs: 12, md: 6, lg: 6 },
     },
     {
       type: SWITCH,
