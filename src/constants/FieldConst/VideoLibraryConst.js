@@ -43,6 +43,15 @@ export const videoLibraryFields = [
         fieldColspan: { xs: 12, md: 10, lg: 10 },
     },
     {
+        name: "commentaryId",
+        label: "Commentary",
+        // parentclassName: "",
+        type: SELECT,
+        options: [{ label: "Select Commentary", value: "0" }],
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 10, lg: 10 }
+    },
+    {
         name: "type",
         label: "Type",
         options: [
@@ -57,20 +66,33 @@ export const videoLibraryFields = [
         fieldColspan: { xs: 12, md: 4, lg: 4 },
     },
     {
-        name: "commentaryId",
-        label: "Commentary Id",
-        parentclassName: "",
-        type: TEXT,
-        regex: /^\d+$/,
-        customStyle: {
-            maxWidth: "200px",
-        },
-        labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 4, lg: 4 }
+      name: "whitelabelId",
+      label: "White Label",
+      // isRequired: true,
+      options: [{ label: "Select White Label", value: "0" }],
+      defaultValue: false,
+      type: SELECT,
+      labelColspan: { xs: 12, md: 2, lg: 2 },
+      fieldColspan: { xs: 12, md: 4, lg: 4 },
     },
+    // {
+    //     name: "commentaryId",
+    //     label: "Commentary Id",
+    //     parentclassName: "",
+    //     type: TEXT,
+    //     regex: /^\d+$/,
+    //     customStyle: {
+    //         maxWidth: "200px",
+    //     },
+    //     labelColspan: { xs: 12, md: 2, lg: 2 },
+    //     fieldColspan: { xs: 12, md: 4, lg: 4 }
+    // },
     {
         name: "video",
         label: "Video",
+        dependsOnField: "type",
+        dependsOnValue: 1,
+        hideDependentInitially: true,
         // isRequired: true,
         type: VIDEO,
         labelColspan: { xs: 12, md: 2, lg: 2 },
@@ -79,6 +101,9 @@ export const videoLibraryFields = [
     {
         name: "videoURL",
         label: "Video URL",
+        dependsOnField: "type",
+        dependsOnValue: 2,
+        hideDependentInitially: true,
         // isRequired: true,
         type: TEXT,
         labelColspan: { xs: 12, md: 2, lg: 2 },

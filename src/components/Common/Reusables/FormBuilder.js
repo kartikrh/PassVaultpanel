@@ -87,64 +87,6 @@ const FormBuilder = forwardRef(
           }));
         };            
 
-      // if (!file) return;
-
-      // const reader = new FileReader();
-
-      // reader.onload = function (e) {
-      //   const img = new Image();
-
-      //   img.onload = () => {
-      //     // Get actual image dimensions
-      //     const { width, height } = img;
-      //     const maxWidth = field.validateWidth || 500;
-      //     const maxHeight = field.validateHeight || 500;
-      //     const isValidSize = width <= maxWidth && height <= maxHeight;
-
-      //     // Update image preview
-      //     setViewImage((prev) => ({
-      //       ...prev,
-      //       [field.name]: e.target.result,
-      //     }));
-
-      //     // Handle validation and errors
-      //     const errors = { ...fieldErrors };
-
-      //     if (!isValidSize) {
-      //       errors[
-      //         field.name
-      //       ] = `Note: Image dimensions (${width}x${height}) exceed the maximum allowed size of ${maxWidth}x${maxHeight} pixels.`;
-      //     } else {
-      //       delete errors[field.name];
-      //     }
-
-      //     setFieldErrors(errors);
-
-      //     console.log({
-      //       isValidSize,
-      //       dimensions: { width, height },
-      //       file: file.name,
-      //     });
-      //   };
-
-      //   img.onerror = () => {
-      //     // Handle invalid image files
-      //     const errors = { ...fieldErrors };
-      //     errors[field.name] =
-      //       "Invalid image file. Please select a valid image.";
-      //     setFieldErrors(errors);
-      //   };
-
-      //   img.src = e.target.result;
-      // };
-
-      // reader.onerror = () => {
-      //   // Handle file reading errors
-      //   const errors = { ...fieldErrors };
-      //   errors[field.name] = "Error reading file. Please try again.";
-      //   setFieldErrors(errors);
-      // };
-
         reader.readAsDataURL(file);
       }   
     };
@@ -438,6 +380,7 @@ const FormBuilder = forwardRef(
                 });
               }
             }
+            if (!fetchIsDependable(field) && field.hideDependentInitially) return null;
             return (
               <React.Fragment key={key}>
                 {field.type === DIVIDER && (

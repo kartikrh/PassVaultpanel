@@ -182,9 +182,8 @@ const Index = forwardRef(
     document.title = `${tableElement?.title}`;
     const [data, setData] = useState(dataSource);
     const [tableActions, setTableActions] = useState(
-      defaultTableActionData || {
-        isActive: true,
-      }
+      defaultTableActionData ||
+      (tableElement?.activeSelect ? {} : { isActive: true })
     );
     const [total, setTotal] = useState(dataSource?.length);
     const [pageSize, setPageSize] = useState(globalPageSize || 10);
@@ -248,7 +247,7 @@ const Index = forwardRef(
       }
     }, [])
 
-    // NEW useEffect for default filters in subscribers table:
+    // NEW useEffect for default filters (subscribers, banner, etc.):
     useEffect(() => {
       const initialFilters = {};
 
@@ -270,6 +269,14 @@ const Index = forwardRef(
           value: defaultStream,
           label: defaultStream === true ? "Approved" : defaultStream === false ? "Decline" : "Select Stream",
         };
+      }
+
+      if (tableElement?.activeSelect) {
+        initialFilters.activeStatus = { value: null, label: "Select Active" };
+      }
+
+      if (tableElement?.permanentSelect) {
+        initialFilters.permanentStatus = { value: null, label: "Select Permanent" };
       }
 
       if (Object.keys(initialFilters).length > 0) {
@@ -652,17 +659,29 @@ const Index = forwardRef(
         if (setServerCurrentPage) {
           setServerCurrentPage(0);
         }
-
-        setStatusSwitch(id);
-        setTableActions((preValue) => {
-          return {
-            ...preValue,
-            [key]: id,
-          };
-        });
+        // Support both raw boolean (from Switch) and {value,label} object (from dropdown)
+        const activeValue = id?.value !== undefined ? id.value : id;
+        setStatusSwitch(activeValue);
+        setTableActions((preValue) => ({
+          ...preValue,
+          [key]: activeValue,
+        }));
         reFetchData({
           ...tableActions,
-          isActive: id,
+          isActive: activeValue,
+        });
+      } else if (key === "isPermanent") {
+        if (setServerCurrentPage) {
+          setServerCurrentPage(0);
+        }
+        const permanentValue = id?.value !== undefined ? id.value : id;
+        setTableActions((preValue) => ({
+          ...preValue,
+          [key]: permanentValue,
+        }));
+        reFetchData({
+          ...tableActions,
+          isPermanent: permanentValue,
         });
       } else if (key === "isApproved") {
         if (setServerCurrentPage) {
@@ -1346,8 +1365,16 @@ const Index = forwardRef(
           label: "Select Scorecard",
         },
         stream: {
-          value: null, 
+          value: null,
           label: "Select Stream",
+        },
+        activeStatus: {
+          value: null,
+          label: "Select Active",
+        },
+        permanentStatus: {
+          value: null,
+          label: "Select Permanent",
         },
       });
       setMenSwitch(null)
@@ -1370,6 +1397,9 @@ const Index = forwardRef(
           isActive: true,
           rateSourceRefId: 1,
         });
+      } else if (tableElement?.activeSelect) {
+        // activeSelect uses a dropdown — don't inject isActive so all records are returned
+        triggerResetWithState({});
       } else {
         triggerResetWithState({
           isActive: true,
@@ -2268,6 +2298,89 @@ const Index = forwardRef(
                                   }
                                 }}
                                 options={tableElement?.streamOptions?.map(
+                                  (item) => ({
+                                    label: item?.label,
+                                    value: item?.value,
+                                  })
+                                )}
+                                classNamePrefix="filter-dropdown"
+                              />
+                            </div>
+                          ) : null}
+
+                          {tableElement?.activeSelect ? (
+                            <div className="">
+                              <Select
+                                styles={{
+                                  control: (provided) => ({
+                                    ...provided,
+                                    width: 160,
+                                  }),
+                                }}
+                                value={selectedTableElements?.activeStatus}
+                                placeholder="Select Active"
+                                onChange={(e) => {
+                                  if (
+                                    e?.value !==
+                                    selectedTableElements?.activeStatus?.value
+                                  ) {
+                                    // If null selected, remove isActive from payload
+                                    const newTableActions = { ...tableActions };
+                                    if (e?.value === null) {
+                                      delete newTableActions.isActive;
+                                      setTableActions(newTableActions);
+                                      reFetchData(newTableActions);
+                                    } else {
+                                      handleTableActions("isActive", e);
+                                    }
+                                    setSelectedTableElements({
+                                      ...selectedTableElements,
+                                      activeStatus: e,
+                                    });
+                                  }
+                                }}
+                                options={tableElement?.activeOptions?.map(
+                                  (item) => ({
+                                    label: item?.label,
+                                    value: item?.value,
+                                  })
+                                )}
+                                classNamePrefix="filter-dropdown"
+                              />
+                            </div>
+                          ) : null}
+
+                          {tableElement?.permanentSelect ? (
+                            <div className="">
+                              <Select
+                                styles={{
+                                  control: (provided) => ({
+                                    ...provided,
+                                    width: 180,
+                                  }),
+                                }}
+                                value={selectedTableElements?.permanentStatus}
+                                placeholder="Select Permanent"
+                                onChange={(e) => {
+                                  if (
+                                    e?.value !==
+                                    selectedTableElements?.permanentStatus?.value
+                                  ) {
+                                    const newTableActions = { ...tableActions };
+                                    if (e?.value === null) {
+                                      delete newTableActions.isPermanent;
+                                      setTableActions(newTableActions);
+                                      reFetchData(newTableActions);
+                                    } else {
+                                      handleTableActions("isPermanent", e);
+                                    }
+                                    setSelectedTableElements({
+                                      ...selectedTableElements,
+                                      permanentStatus: e,
+                                    });
+                                  }
+                                }}
+                                options={tableElement?.permanentOptions?.map(
                                   (item) => ({
                                     label: item?.label,
                                     value: item?.value,
