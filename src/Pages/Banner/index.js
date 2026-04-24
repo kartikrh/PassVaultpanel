@@ -20,7 +20,7 @@ import {
   MODULE_BANNERS,
 } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
-import { checkPermission, convertDateUTCToLocal, convertDateUTCToLocalWithSec24, convertDateUtcFormatWithSec24 } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateUTCToLocal, convertDateUTCToLocalWithSec24, convertDateUtcFormatWithSec24, convertDateLocalToUTC } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import LoadDataModal from "../../components/Model/LoadDataModal";
 
@@ -47,6 +47,11 @@ const Index = () => {
     label: "Local Timezone",
     value: 1,
   });
+  const [isSearch, setIsSearch] = useState(false);
+  const [dateRange, setDateRange] = useState({
+    startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
+    endDate: `${new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split("T")[0]}T23:59:00`,
+  });
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -54,12 +59,26 @@ const Index = () => {
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
+    let payload = {
+      ...(latestValueFromTable || tableActions),
+    };
+    if (isSearch) {
+      payload = {
+        ...payload,
+        startDate: convertDateLocalToUTC(
+          latestValueFromTable?.startDate ? latestValueFromTable?.startDate : dateRange?.startDate,
+          "index"
+        ),
+        endDate: convertDateLocalToUTC(
+          latestValueFromTable?.endDate ? latestValueFromTable?.endDate : dateRange?.endDate,
+          "index"
+        ),
+      };
+    }
     await axiosInstance
-      .post(`/admin/banner/all`, {
-        ...(latestValueFromTable || tableActions),
-      })
+      .post(`/admin/banner/all`, payload)
       .then((response) => {
-        const apiData = response?.result?.sort((a,b)=>a?.bannerId - b?.bannerId);
+        const apiData = response?.result?.sort((a,b)=>a?.displayOrder - b?.displayOrder);
         let apiDataIdList = [];
         apiData.forEach((ele) => {
           apiDataIdList.push(ele?.bannerId);
@@ -193,6 +212,11 @@ const Index = () => {
     navigate("/addBanner", { state: { bannerId: id } });
   };
   const handleReset = (value) => {
+    setIsSearch(false);
+    setDateRange({
+      startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
+      endDate: `${new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split("T")[0]}T23:59:00`,
+    });
     fetchData(value);
   };
 
@@ -371,19 +395,25 @@ const Index = () => {
       title: "White Label",
       dataIndex: "domain",
       key: "domain",
-      style: { width: "5%", textAlign: "center" },
+      style: { width: "5%", textAlign: "left" },
     },
     {
-      title: "Views",
-      dataIndex: "viewerCount",
-      key: "viewerCount",
-      style: { width: "5%", textAlign: "center" },
-    },
-    {
-      title: "Link",
-      dataIndex: "link",
-      key: "link",
-      style: { width: "15%" },
+      title: "Permanent",
+      dataIndex: "isPermanent",
+      key: "isPermanent",
+      render: (text, record) => (
+        <Button
+          color={`${record.isPermanent ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          disabled
+        >
+          <i
+            className={`bx ${record?.isPermanent ? "bx-check" : "bx-block"}`}
+          ></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
     },
     {
       title: "Start Date",
@@ -463,15 +493,41 @@ const Index = () => {
       ),
       style: { width: "2%", textAlign: "center" },
     },
+    {
+      title: "Views",
+      dataIndex: "viewerCount",
+      key: "viewerCount",
+      style: { width: "5%", textAlign: "center" },
+    },
+    {
+      title: "Link",
+      dataIndex: "link",
+      key: "link",
+      style: { width: "15%" },
+    },
   ];
   //elements required
   const tableElement = {
     title: "Banner",
-    isActive: true,
     reloadButton: true,
+    resetButton: true,
     loadData: true,
     isDateTypeSelect: true,
-    dateTypeButNoDateRange: true,
+    // dateTypeButNoDateRange: true,
+    dragDrop: true,
+    activeSelect: true,
+    activeOptions: [
+      { label: "Select Active", value: null },
+      { label: "Active", value: true },
+      { label: "InActive", value: false },
+    ],
+    permanentSelect: true,
+    permanentOptions: [
+      { label: "Select Permanent", value: null },
+      { label: "Permanent", value: true },
+      { label: "Not Permanent", value: false },
+    ],
+    isDateRange: true,
   };
 
   useEffect(() => {
@@ -517,6 +573,11 @@ const Index = () => {
             setParentSearchedData={handleTableSearchedDataChange}
             dateType={dateType}
             setDateType={setDateType}
+            changeOrderApiName="banner"
+            isSearch={isSearch}
+            setIsSearch={setIsSearch}
+            setDateRange={setDateRange}
+            dateRange={dateRange}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}

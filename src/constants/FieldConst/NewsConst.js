@@ -100,7 +100,17 @@ export const newsFields = [
     //     paddingLeft:"0px"
     //   },
     labelColspan: { xs: 12, md: 3, lg: 2 },
-    fieldColspan: { xs: 12, md: 9, lg: 10 },
+    fieldColspan: { xs: 12, md: 4, lg: 4 },
+  },
+  {
+    name: "whitelabelId",
+    label: "White Label",
+    // isRequired: true,
+    options: [{ label: "Select White Label", value: "0" }],
+    defaultValue: false,
+    type: SELECT,
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
   {
     name: "news",

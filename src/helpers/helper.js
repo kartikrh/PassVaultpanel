@@ -41,7 +41,22 @@ export const filterOrderChange = (items, name) => {
           competitionStatisticsTypeId: item.competitionStatisticsTypeId,
           displayOrder: index + 1,
         };
-      }
+      } else if(name === "banner") {
+        return {
+          bannerId: item.bannerId,
+          displayOrder: index + 1,
+        };
+      } else if(name === "videoLibrary") {
+        return {
+          id: item.id,
+          displayOrder: index + 1,
+        };
+      } else if(name === "photoLibrary") {
+        return {
+          photoLibraryId: item.photoLibraryId,
+          displayOrder: index + 1,
+        };
+      } 
     }
   });
 };
