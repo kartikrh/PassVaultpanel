@@ -46,6 +46,7 @@ const AddNews = () => {
   const location = useLocation();
   const [newsId, setNewsId] = useState(location.state?.newsId || "0");
   const [fields, setFields] = useState(newsFields || [])
+  const [masterData, setMasterData] = useState({});
   useEffect(() => {
     if (newsId !== 0) {
       fetchData(newsId);
@@ -56,6 +57,7 @@ const AddNews = () => {
     if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard");
     }
+    fetchMasterData();
   }, [permissionObj]);
 
   useEffect(() => {
@@ -86,6 +88,22 @@ const AddNews = () => {
             type: ERROR,
           })
         );
+      });
+  };
+
+  const fetchMasterData = async () => {
+    await axiosInstance
+      .post("/admin/whitelabel/all", { isActive: true })
+      .then((response) => {
+        setMasterData((preData) => ({
+          ...preData,
+          whitelabelId: response.result?.map((item) => {
+            return { label: item.domain, value: item.id };
+          }),
+        }));
+      })
+      .catch((error) => {
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
       });
   };
   
@@ -205,6 +223,7 @@ const AddNews = () => {
                   fields={fields}
                   editFormData={initialEditData}
                   onFormDataChange={handleFormBDataChange}
+                  masterData={masterData}
                 />
               </CardBody>
             </Card>
