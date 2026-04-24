@@ -212,6 +212,11 @@ const Index = () => {
     navigate("/addBanner", { state: { bannerId: id } });
   };
   const handleReset = (value) => {
+    setIsSearch(false);
+    setDateRange({
+      startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
+      endDate: `${new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split("T")[0]}T23:59:00`,
+    });
     fetchData(value);
   };
 
@@ -505,6 +510,7 @@ const Index = () => {
   const tableElement = {
     title: "Banner",
     reloadButton: true,
+    resetButton: true,
     loadData: true,
     isDateTypeSelect: true,
     // dateTypeButNoDateRange: true,
