@@ -56,6 +56,16 @@ export const filterOrderChange = (items, name) => {
           photoLibraryId: item.photoLibraryId,
           displayOrder: index + 1,
         };
+      } else if(name === "news") {
+        return {
+          newsId: item.newsId,
+          displayOrder: index + 1,
+        };
+      } else if(name === "advertise") {
+        return {
+          advertiseId: item.advertiseId,
+          displayOrder: index + 1,
+        };
       } 
     }
   });
