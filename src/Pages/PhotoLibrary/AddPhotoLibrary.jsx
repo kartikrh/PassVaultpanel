@@ -141,6 +141,7 @@ const AddPhotoLibrary = () => {
                 isPermanent : dataToSave.isPermanent,
                 isActive: !!dataToSave?.isActive,
                 whitelabelId : dataToSave?.whitelabelId,
+                commentaryId : dataToSave?.commentaryId,
                 startDate : null,
                 endDate : null
             }

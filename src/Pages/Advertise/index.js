@@ -76,7 +76,7 @@ const Index = () => {
         await axiosInstance
             .post(`/admin/advertise/all`, payload)
             .then((response) => {
-                const apiData = response?.result?.sort((a, b) => a?.advertiseId - b?.advertiseId);
+                const apiData = response?.result?.sort((a, b) => a?.displayOrder - b?.displayOrder);
                 let apiDataIdList = [];
                 apiData.forEach((ele) => {
                     apiDataIdList.push(ele?.advertiseId);
@@ -424,7 +424,7 @@ const Index = () => {
         resetButton: true,
         loadData: true,
         isDateTypeSelect: true,
-        dateTypeButNoDateRange: true,
+        // dateTypeButNoDateRange: true,
         activeSelect: true,
         activeOptions: [
             { label: "Select Active", value: null },
@@ -438,6 +438,7 @@ const Index = () => {
             { label: "Not Permanent", value: false },
         ],
         isDateRange: true,
+        dragDrop: true,
     };
 
     useEffect(() => {
@@ -487,6 +488,7 @@ const Index = () => {
                         setIsSearch={setIsSearch}
                         setDateRange={setDateRange}
                         dateRange={dateRange}
+                        changeOrderApiName="advertise"
                     />
                     <DeleteTabModel
                         deleteModelVisable={deleteModelVisable}
