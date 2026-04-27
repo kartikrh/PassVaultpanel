@@ -78,7 +78,7 @@ const Index = () => {
     await axiosInstance
       .post(`/admin/news/all`, payload)
       .then((response) => {
-        const apiData = response?.result?.sort((a, b) => a?.newsId - b?.newsId);
+        const apiData = response?.result?.sort((a, b) => a?.displayOrder - b?.displayOrder);
         let apiDataIdList = [];
         apiData.forEach((ele) => {
           apiDataIdList.push(ele?.newsId);
@@ -508,6 +508,7 @@ const Index = () => {
       { label: "Not Permanent", value: false },
     ],
     isDateRange: true,
+    dragDrop: true,
   };
 
   useEffect(() => {
@@ -557,6 +558,7 @@ const Index = () => {
             setIsSearch={setIsSearch}
             setDateRange={setDateRange}
             dateRange={dateRange}
+            changeOrderApiName="news"
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
