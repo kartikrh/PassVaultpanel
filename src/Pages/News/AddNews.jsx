@@ -29,7 +29,7 @@ import { addNewsToDb, updateSavedState } from "../../Features/Tabs/newsSlice";
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { convertObjtoFormData } from "../../components/Common/utilities";
-import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateLocalToUTC } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { isEmpty } from "lodash";
 
@@ -78,7 +78,14 @@ const AddNews = () => {
     await axiosInstance
       .post("/admin/news/byId", { newsId })
       .then((response) => {
-        setInitialEditData(response?.result);
+        // setInitialEditData(response?.result);
+        const data = response?.result;
+
+        setInitialEditData({
+          ...data,
+          startDate: data?.startDate ? convertDateLocalToUTC(data.startDate) : null,
+          endDate: data?.endDate ? convertDateLocalToUTC(data.endDate) : null,
+        });
       })
       .catch((error) => {
         dispatch(
@@ -121,6 +128,8 @@ const AddNews = () => {
     if (dataToSave) {
       const extraData = {
         newsId: newsId,
+        startDate: !dataToSave.isPermanent ? convertDateLocalToUTC(dataToSave?.startDate) : null,
+        endDate: !dataToSave.isPermanent ? convertDateLocalToUTC(dataToSave?.endDate) : null,
       };
       dispatch(
         addNewsToDb(convertObjtoFormData({ ...dataToSave, ...extraData }))
