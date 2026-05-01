@@ -29,7 +29,7 @@ import { addVideoLibraryToDb, updateSavedState } from "../../Features/Tabs/video
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { convertObjtoFormData } from "../../components/Common/utilities";
-import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateLocalToUTC } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { string } from "prop-types";
 import { isEmpty } from "lodash";
@@ -79,7 +79,14 @@ const AddVideoLibrary = () => {
         await axiosInstance
             .post("/admin/videoLibrary/byId", { id: videoLibraryId })
             .then((response) => {
-                setInitialEditData(response?.result);
+                // setInitialEditData(response?.result);
+                const data = response?.result;
+
+                setInitialEditData({
+                    ...data,
+                    from: data?.from ? convertDateLocalToUTC(data.from) : null,
+                    to: data?.to ? convertDateLocalToUTC(data.to) : null,
+                });
             })
             .catch((error) => {
                 dispatch(
@@ -143,8 +150,8 @@ const AddVideoLibrary = () => {
                 id : videoLibraryId,
                 video : dataToSave.type === 1 && typeof(dataToSave.video) !== 'string' ? dataToSave.video : null,
                 videoURL : dataToSave.type === 2 ? dataToSave.videoURL : null,
-                from : !dataToSave.isPermanent ? dataToSave.from : null,
-                to : !dataToSave.isPermanent ? dataToSave.to : null,
+                from : !dataToSave.isPermanent ? convertDateLocalToUTC(dataToSave.from) : null,
+                to : !dataToSave.isPermanent ? convertDateLocalToUTC(dataToSave.to) : null,
             };
             if (dataToSave.type === 1) {
                 dispatch(

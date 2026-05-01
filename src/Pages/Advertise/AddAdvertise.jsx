@@ -28,7 +28,7 @@ import { addAdvertiseToDb, updateSavedState } from "../../Features/Tabs/advertis
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { convertObjtoFormData } from "../../components/Common/utilities";
-import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateLocalToUTC } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { advertiseFields } from "../../constants/FieldConst/AdvertiseConst";
 import { isEmpty } from "lodash";
@@ -78,7 +78,14 @@ const AddAdvertise = () => {
         await axiosInstance
             .post("/admin/advertise/byId", { advertiseId })
             .then((response) => {
-                setInitialEditData(response?.result);
+                // setInitialEditData(response?.result);
+                const data = response?.result;
+
+                setInitialEditData({
+                    ...data,
+                    startDate: data?.startDate ? convertDateLocalToUTC(data.startDate) : null,
+                    endDate: data?.endDate ? convertDateLocalToUTC(data.endDate) : null,
+                });
             })
             .catch((error) => {
                 dispatch(
@@ -117,10 +124,12 @@ const AddAdvertise = () => {
 
     const handleSaveClick = async (saveAction) => {
         const dataToSave = finalizeRef.current.finalizeData();
-        console.log("dataToSave:", dataToSave);
+        // console.log("dataToSave:", dataToSave);
         if (dataToSave) {
             const extraData = {
                 advertiseId: advertiseId,
+                startDate: !dataToSave.isPermanent ? convertDateLocalToUTC(dataToSave?.startDate) : null,
+                endDate: !dataToSave.isPermanent ? convertDateLocalToUTC(dataToSave?.endDate) : null,
             };
             dispatch(
                 addAdvertiseToDb(convertObjtoFormData({ ...dataToSave, ...extraData }))
