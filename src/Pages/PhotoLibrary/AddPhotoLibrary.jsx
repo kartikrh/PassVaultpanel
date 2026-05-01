@@ -29,7 +29,7 @@ import {
 import { addPhotoLibraryToDb, updateSavedState } from "../../Features/Tabs/photoLibrarySlice";
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
-import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateLocalToUTC } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { isEmpty } from "lodash";
 
@@ -78,7 +78,14 @@ const AddPhotoLibrary = () => {
         await axiosInstance
             .post("/admin/photoLibrary/byId", { photoLibraryId })
             .then((response) => {
-                setInitialEditData(response?.result);
+                // setInitialEditData(response?.result);
+                const data = response?.result;
+
+                setInitialEditData({
+                    ...data,
+                    startDate: data?.startDate ? convertDateLocalToUTC(data.startDate) : null,
+                    endDate: data?.endDate ? convertDateLocalToUTC(data.endDate) : null,
+                });
             })
             .catch((error) => {
                 dispatch(
@@ -150,6 +157,8 @@ const AddPhotoLibrary = () => {
             const extraData = {
                 photoLibraryId: photoLibraryId,
                 isPermanent: !!dataToSave?.isPermanent,
+                startDate: convertDateLocalToUTC(dataToSave?.startDate),
+                endDate: convertDateLocalToUTC(dataToSave?.endDate),
             };
             dispatch(
                 addPhotoLibraryToDb({ ...dataToSave, ...extraData })

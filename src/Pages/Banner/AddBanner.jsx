@@ -28,7 +28,7 @@ import { addBannerToDb, updateSavedState } from "../../Features/Tabs/bannerSlice
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { convertObjtoFormData } from "../../components/Common/utilities";
-import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateLocalToUTC } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { bannerFields } from "../../constants/FieldConst/BannerConst";
 import { isEmpty } from "lodash";
@@ -78,7 +78,14 @@ const AddBanner = () => {
     await axiosInstance
       .post("/admin/banner/byId", { bannerId })
       .then((response) => {
-        setInitialEditData(response?.result);
+        // setInitialEditData(response?.result);
+        const data = response?.result;
+
+        setInitialEditData({
+          ...data,
+          startDate: data?.startDate ? convertDateLocalToUTC(data.startDate) : null,
+          endDate: data?.endDate ? convertDateLocalToUTC(data.endDate) : null,
+        });
       })
       .catch((error) => {
         dispatch(
@@ -120,6 +127,8 @@ const AddBanner = () => {
     if (dataToSave) {
       const extraData = {
         bannerId: bannerId,
+        startDate: !dataToSave.isPermanent ? convertDateLocalToUTC(dataToSave?.startDate) : null,
+        endDate: !dataToSave.isPermanent ? convertDateLocalToUTC(dataToSave?.endDate) : null,
       };
       dispatch(
         addBannerToDb(convertObjtoFormData({ ...dataToSave, ...extraData }))
