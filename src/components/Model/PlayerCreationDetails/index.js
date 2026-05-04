@@ -1,5 +1,6 @@
 import React from "react";
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from "reactstrap";
+import { convertDateUTCToLocalWithSec24 } from "../../Common/Reusables/reusableMethods";
 
 export const PlayerCreationDetails = ({ isOpen, toggle, createdDetailsData, playerId }) => {
 
@@ -16,7 +17,7 @@ export const PlayerCreationDetails = ({ isOpen, toggle, createdDetailsData, play
                         <strong>Created Date:</strong>
                         <span className="ms-2">
                             {createdDetailsData?.createdDate
-                                ? new Date(createdDetailsData.createdDate).toLocaleString()
+                                ? convertDateUTCToLocalWithSec24(createdDetailsData.createdDate, "index")
                                 : 'N/A'}
                         </span>
                     </div>
