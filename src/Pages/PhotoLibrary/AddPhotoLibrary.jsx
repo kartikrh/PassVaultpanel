@@ -140,25 +140,25 @@ const AddPhotoLibrary = () => {
 
     const handleSaveClick = async (saveAction) => {
         let dataToSave = finalizeRef.current.finalizeData();
-        if(dataToSave.isPermanent){
-            dataToSave = {
-                SEO : dataToSave.SEO,
-                title : dataToSave.title,
-                description : dataToSave.description,
-                isPermanent : dataToSave.isPermanent,
-                isActive: !!dataToSave?.isActive,
-                whitelabelId : dataToSave?.whitelabelId,
-                commentaryId : dataToSave?.commentaryId,
-                startDate : null,
-                endDate : null
-            }
-        }
+            // if(dataToSave.isPermanent){
+            //     dataToSave = {
+            //         SEO : dataToSave.SEO,
+            //         title : dataToSave.title,
+            //         description : dataToSave.description,
+            //         isPermanent : dataToSave.isPermanent,
+            //         isActive: !!dataToSave?.isActive,
+            //         whitelabelId : dataToSave?.whitelabelId,
+            //         commentaryId : dataToSave?.commentaryId,
+            //         startDate : null,
+            //         endDate : null
+            //     }
+            // }
         if (dataToSave) {
             const extraData = {
                 photoLibraryId: photoLibraryId,
                 isPermanent: !!dataToSave?.isPermanent,
-                startDate: convertDateLocalToUTC(dataToSave?.startDate),
-                endDate: convertDateLocalToUTC(dataToSave?.endDate),
+                startDate: !dataToSave.isPermanent ? convertDateLocalToUTC(dataToSave?.startDate) : null,
+                endDate: !dataToSave.isPermanent ? convertDateLocalToUTC(dataToSave?.endDate) : null,
             };
             dispatch(
                 addPhotoLibraryToDb({ ...dataToSave, ...extraData })
