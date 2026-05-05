@@ -11,14 +11,6 @@ services:
     ports:
       - "4000:80"
     restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          cpus: '2.0'        # 2 of 4 vCPUs — leaves room for OS and backend
-          memory: 512M       # nginx + static files needs very little RAM
-        reservations:
-          cpus: '0.5'
-          memory: 128M
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:80"]
       interval: 30s
