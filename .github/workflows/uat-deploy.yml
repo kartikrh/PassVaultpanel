@@ -1,4 +1,4 @@
-name: scorepanel uat workflow
+name: scorepanel uat  workflow
 on:
   push:
     branches:
@@ -19,7 +19,7 @@ jobs:
           ssh-keyscan -t rsa,ed25519 ${{ secrets.REMOTE_HOST }} >> ~/.ssh/known_hosts || true
           chmod 644 ~/.ssh/known_hosts
 
-      - name: Run scoreapi
+      - name: Run scorepanel
         uses: appleboy/ssh-action@v1.2.1
         with:
           host: ${{ secrets.REMOTE_HOST }}

@@ -29,7 +29,7 @@ import {
 import { addPhotoLibraryToDb, updateSavedState } from "../../Features/Tabs/photoLibrarySlice";
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
-import { checkPermission, convertDateLocalToUTC } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateLocalToUTC, convertDateUTCToLocal24 } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { isEmpty } from "lodash";
 
@@ -116,11 +116,19 @@ const AddPhotoLibrary = () => {
         await axiosInstance
             .post("/admin/list/comList", {})
             .then((response) => {
-                console.log("comList response", response?.result);
+                // console.log("comList response", response?.result);
                 setMasterData((preData) => ({
                     ...preData,
                     commentaryId: response.result?.map((item) => {
-                        return { label: item.eventName, value: item.commentaryId };
+                        const formattedDate = item.eventDate
+                            ? convertDateUTCToLocal24(item.eventDate, "index")
+                            : "";
+
+                        return {
+                            label: `${item.eventName}${formattedDate ? ` (${formattedDate})` : ""}`,
+                            value: item.commentaryId
+                        };
+                        // return { label: item.eventName, value: item.commentaryId };
                     }),
                 }));
             })
