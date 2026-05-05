@@ -6,6 +6,19 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "4000:3000"
-    stdin_open: true
-    tty: true
+      - "4000:80"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'       # Reserve 2 vCPUs for OS / backend on same server
+          memory: 512M      # nginx serving static files needs very little RAM
+        reservations:
+          cpus: '0.5'
+          memory: 128M
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
