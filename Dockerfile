@@ -17,13 +17,17 @@ COPY . .
 RUN yarn build
 
 # ---- Stage 2: Production (nginx) ----
-FROM nginx:alpine AS production
+FROM nginx:stable-alpine AS production
+
+# Remove default nginx configs to avoid conflicts
+RUN rm -f /etc/nginx/conf.d/default.conf && \
+    rm -rf /usr/share/nginx/html/*
 
 # Copy tuned nginx config
 COPY nginx.conf /etc/nginx/nginx.conf
 
-# Copy only the compiled static files — no source, no node_modules
-COPY --from=builder /app/build /usr/share/nginx/html
+# Copy build output directly into nginx webroot (contents, not folder)
+COPY --from=builder /app/build/. /usr/share/nginx/html/
 
 EXPOSE 80
 
