@@ -1,19 +1,35 @@
-# Use an official Node runtime as a parent image
-FROM node:20
+# ---- Stage 1: Build ----
+FROM node:20-alpine AS builder
 
-# Set the working directory in the container to /app
 WORKDIR /app
 
-# Install dependencies
-RUN npm install pm2 -g
-RUN npm install serve -g
-RUN npm install yarn -g --force
+# Increase Node.js heap memory to prevent OOM during build
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 
-# Copy the current directory contents into the container at /app
+# Copy only dependency manifests first — this layer is cached
+# and only re-runs when package.json or yarn.lock changes
+COPY package.json yarn.lock ./
+
+# Install all dependencies (cached layer)
+RUN yarn install --network-timeout 600000
+
+# Now copy the rest of the source code
 COPY . .
 
-# Expose port 3000 to the outside world
+# Build the production bundle
+RUN yarn build
+
+# ---- Stage 2: Production ----
+FROM node:20-alpine AS production
+
+WORKDIR /app
+
+RUN npm install -g serve
+
+# Copy only the compiled static files from the build stage
+# Final image has NO source code, NO node_modules (much smaller)
+COPY --from=builder /app/build ./build
+
 EXPOSE 3000
 
-# Define the command to run your app using npm start
-CMD ["./deploy.sh"]
+CMD ["serve", "-s", "build", "-l", "3000"]
