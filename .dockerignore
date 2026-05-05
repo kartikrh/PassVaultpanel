@@ -1,4 +1,7 @@
 node_modules
+build
+.git
+.gitignore
 npm-debug.log
-.env.development
-.env.production
+yarn-debug.log
+yarn-error.log
