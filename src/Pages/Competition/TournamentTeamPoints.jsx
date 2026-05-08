@@ -26,7 +26,7 @@ const TournamentTeamPoints = () => {
   const [tournamentData, setTournamentData] = useState([]);
   const [teamList, setTeamList] = useState([]);
   const [selectedTeamId, setSelectedTeamId] = useState(null);
-  const [groupDetails, setGroupDetails] = useState({ id : 1, name: ""});
+  const [groupDetails, setGroupDetails] = useState({ id : 1, name: "", prevGroupId: ""});
   const [playersModelVisible, setPlayersModelVisible] = useState(false);
   const [deleteTeamModelVisable, setDeleteTeamModelVisable] = useState(false);
   const [deleteTeamRecord, setDeleteTeamRecord] = useState({});
@@ -145,6 +145,10 @@ const TournamentTeamPoints = () => {
           isActive: true,
           groupId: groupDetails?.id,
           groupName: groupDetails?.name,
+          prevGroupId:
+            groupDetails?.prevGroupId !== ""
+              ? Number(groupDetails?.prevGroupId)
+              : null,
         }
       );
       fetchTournament(competitionId);
@@ -209,6 +213,12 @@ const TournamentTeamPoints = () => {
         {
           competitionId: competitionId,
           ...record,
+          prevGroupId:
+            record?.prevGroupId !== "" &&
+              record?.prevGroupId !== null &&
+              record?.prevGroupId !== undefined
+              ? Number(record?.prevGroupId)
+              : null,
         }
       );
       fetchTournament(competitionId);
@@ -591,6 +601,30 @@ const TournamentTeamPoints = () => {
       key: "actions",
       style: { width: "6%" },
     },
+    {
+      title: "Prev Id",
+      dataIndex: "prevGroupId",
+      render: (text, record) => (
+        <>
+          <Input
+            className="form-control small-text-fields"
+            type="text"
+            inputMode="numeric"
+            value={text != null ? text : ""}
+            onChange={(e) =>
+              handleValueChange(
+                record.id,
+                "prevGroupId",
+                e.target.value.replace(/\D/g, "")
+              )
+            }
+          />
+          <span className="text-danger">{record?.error?.prevGroupId}</span>
+        </>
+      ),
+      key: "prevGroupId",
+      style: { width: "10%" },
+    },
   ];
 
   const teamOptions = teamList.map((team) => ({
@@ -659,6 +693,22 @@ const TournamentTeamPoints = () => {
                         setSelectedTeamId(selectedOption?.value)
                       }
                       options={teamOptions}
+                    />
+                  </Col>
+                  <Col md={1}>
+                    <Input
+                      className="form-control"
+                      type="text"
+                      inputMode="numeric"
+                      value={groupDetails?.prevGroupId}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, "");
+                        setGroupDetails({
+                          ...groupDetails,
+                          prevGroupId: value,
+                        });
+                      }}
+                      placeholder="Prev Group Id"
                     />
                   </Col>
                   <Col md={1}>
