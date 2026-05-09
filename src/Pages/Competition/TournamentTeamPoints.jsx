@@ -882,19 +882,24 @@ const TournamentTeamPoints = () => {
                                                   >
                                                     {column?.dataIndex === "teamId" ? (
                                                       <>
-                                                        <span
-                                                          {...draggableProvided.dragHandleProps}
-                                                          style={{
-                                                            cursor: "grab",
-                                                            marginRight: 6,
-                                                            display: "inline-flex",
-                                                            alignItems: "center",
-                                                            verticalAlign: "middle",
-                                                          }}
-                                                          title="Drag to reorder group"
+                                                        <Tooltip
+                                                          title={"Drag to reorder group"}
+                                                          color={"#e8e8ea"}
+                                                          overlayInnerStyle={{ color: "#000" }}
                                                         >
-                                                          <i className="bx bx-grid-vertical"></i>
-                                                        </span>
+                                                          <span
+                                                            {...draggableProvided.dragHandleProps}
+                                                            style={{
+                                                              cursor: "grab",
+                                                              marginRight: 6,
+                                                              display: "inline-flex",
+                                                              alignItems: "center",
+                                                              verticalAlign: "middle",
+                                                            }}
+                                                          >
+                                                            <i className="bx bx-grid-vertical"></i>
+                                                          </span>
+                                                        </Tooltip>
                                                         {`${groupRecord?.groupName || ""} ${groupId && `[${groupId}]`}`}
                                                       </>
                                                     ) : (
