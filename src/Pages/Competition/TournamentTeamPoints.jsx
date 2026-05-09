@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../../Features/axios";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { filterOrderChange } from "../../helpers/helper";
 import {
   Button,
   Card,
@@ -31,6 +33,7 @@ const TournamentTeamPoints = () => {
   const [deleteTeamModelVisable, setDeleteTeamModelVisable] = useState(false);
   const [deleteTeamRecord, setDeleteTeamRecord] = useState({});
   const [selectedTournament, setSelectedTournament] = useState({});
+  const [groupOrder, setGroupOrder] = useState([]);
 
   const competitionId = +sessionStorage.getItem("competitionId") || "0";
   const competitionDetails = JSON.parse(
@@ -94,6 +97,21 @@ const TournamentTeamPoints = () => {
       fetchTeamList();
     }
   }, [competitionId]);
+
+  // Sync groupOrder whenever tournamentData changes — sorted by groupDisplayOrder from API response
+  useEffect(() => {
+    const groupDisplayOrderMap = {};
+    tournamentData.forEach((item) => {
+      const gId = String(item.groupId || "");
+      if (groupDisplayOrderMap[gId] === undefined) {
+        groupDisplayOrderMap[gId] = item.groupDisplayOrder ?? Infinity;
+      }
+    });
+    const keys = Object.keys(groupDisplayOrderMap).sort(
+      (a, b) => (groupDisplayOrderMap[a] ?? Infinity) - (groupDisplayOrderMap[b] ?? Infinity)
+    );
+    setGroupOrder(keys);
+  }, [tournamentData]);
 
   const handleValueChange = (id, key, value) => {
     setTournamentData((prevData) => {
@@ -319,6 +337,47 @@ const TournamentTeamPoints = () => {
       );
     }
   }
+
+  const handleGroupDragEnd = async (result) => {
+    if (!result.destination) return;
+    if (result.source.index === result.destination.index) return;
+
+    // Optimistic update — reorder locally immediately
+    const newGroupOrder = [...groupOrder];
+    const [moved] = newGroupOrder.splice(result.source.index, 1);
+    newGroupOrder.splice(result.destination.index, 0, moved);
+    setGroupOrder(newGroupOrder);
+
+    // Build displayOrderData using the same filterOrderChange pattern as in common
+    const orderItems = newGroupOrder.map((gId) => ({ groupId: gId }));
+    const displayOrderData = filterOrderChange(orderItems, "tournamentTeamPoints");
+
+    try {
+      await axiosInstance.post("/admin/tournamentTeamPoints/changeDisplayOrder", {
+        competitionId,
+        displayOrderData,
+      });
+      // Fetch fresh data so groupDisplayOrder values in memory are up-to-date.
+      fetchTournament(competitionId);
+      dispatch(
+        updateToastData({
+          data: "Group order updated successfully",
+          title: "Success",
+          type: SUCCESS,
+        })
+      );
+    } catch (error) {
+      // Revert to previous order on failure
+      setGroupOrder(groupOrder);
+      dispatch(
+        updateToastData({
+          data: error?.message,
+          title: error?.title,
+          type: ERROR,
+        })
+      );
+    }
+  };
 
   const columns = [
     {
@@ -770,73 +829,136 @@ const TournamentTeamPoints = () => {
                       ))}
                   </tbody>
                 </Table> */}
-                {Object.entries(
-                  tournamentData.reduce((acc, item) => {
-                    const group = item.groupId || "";
-                    if (!acc[group]) {
-                      acc[group] = [];
-                    }
+                {(() => {
+                  const grouped = tournamentData.reduce((acc, item) => {
+                    const group = String(item.groupId || "");
+                    if (!acc[group]) acc[group] = [];
                     acc[group].push(item);
                     return acc;
-                  }, {})
-                )
-                  // sort groups alphabetically
-                  .sort(([a], [b]) => a.localeCompare(b))
-                  .map(([groupId, groupItems]) => (
-                    <div key={groupId} className="mb-4">
-                      <Table responsive>
-                        <thead>
-                          <tr>
-                            {columns.map((column, index) => {
-                              const groupRecord = groupItems?.find(item => item?.groupName);
-                              return (
-                                <th className="px-2 py-2" key={index} style={column.style}>
-                                  {column?.dataIndex === "teamId"
-                                    ? `${groupRecord?.groupName || ""} ${groupId && `[${groupId}]`}`
-                                    : column.title}
-                                </th>
-                            )})}
-                          </tr>
-                        </thead>
+                  }, {});
 
-                        <tbody>
-                          {groupItems.sort((a, b) => {
-                            const runRateColumn = columns.find(col => col.title === "Run Rate");
-                            const pointColumn = columns.find(col => col.title === "Points");
-
-                            if (!runRateColumn || !pointColumn) return 0;
-
-                            const runRateKey = runRateColumn.dataIndex;
-                            const pointKey = pointColumn.dataIndex;
-
-                            const pointsA = parseFloat(a[pointKey]) || 0;
-                            const pointsB = parseFloat(b[pointKey]) || 0;
-
-                            // First, compare points
-                            if (pointsB !== pointsA) {
-                              return pointsB - pointsA; // higher points first
-                            }
-
-                            // If points are the same, compare run rate
-                            const runRateA = parseFloat(a[runRateKey]) || 0;
-                            const runRateB = parseFloat(b[runRateKey]) || 0;
-
-                            return runRateB - runRateA; // higher run rate first
-                          }).map((item, index) => (
-                            <tr key={item.id || index}>
-                              {columns.map((column, colIndex) => (
-                                <td className="p-2" key={colIndex} style={column.style}>
-                                  {column.render
-                                    ? column.render(item[column.dataIndex], item, index)
-                                    : item[column.dataIndex]}
-                                </td>
-                              ))}
-                            </tr>
-                          ))}
-                        </tbody>
-                      </Table>
-                    </div>
-                  ))}
+                  return (
+                    <DragDropContext onDragEnd={handleGroupDragEnd}>
+                      <Droppable droppableId="tournament-groups">
+                        {(droppableProvided) => (
+                          <div
+                            ref={droppableProvided.innerRef}
+                            {...droppableProvided.droppableProps}
+                          >
+                            {groupOrder
+                              .filter((gId) => grouped[gId])
+                              .map((groupId, index) => {
+                                const groupItems = grouped[groupId];
+                                return (
+                                  <Draggable
+                                    key={groupId}
+                                    draggableId={String(groupId)}
+                                    index={index}
+                                  >
+                                    {(draggableProvided, snapshot) => (
+                                      <div
+                                        ref={draggableProvided.innerRef}
+                                        {...draggableProvided.draggableProps}
+                                        className="mb-4"
+                                        style={{
+                                          ...draggableProvided.draggableProps.style,
+                                          opacity: snapshot.isDragging ? 0.85 : 1,
+                                          background: snapshot.isDragging ? "#f8f9fa" : "transparent",
+                                          borderRadius: snapshot.isDragging ? "4px" : undefined,
+                                        }}
+                                      >
+                                        <Table responsive>
+                                          <thead>
+                                            <tr>
+                                              {columns.map((column, colIdx) => {
+                                                const groupRecord = groupItems?.find(
+                                                  (item) => item?.groupName
+                                                );
+                                                return (
+                                                  <th
+                                                    className="px-2 py-2"
+                                                    key={colIdx}
+                                                    style={column.style}
+                                                  >
+                                                    {column?.dataIndex === "teamId" ? (
+                                                      <>
+                                                        <span
+                                                          {...draggableProvided.dragHandleProps}
+                                                          style={{
+                                                            cursor: "grab",
+                                                            marginRight: 6,
+                                                            display: "inline-flex",
+                                                            alignItems: "center",
+                                                            verticalAlign: "middle",
+                                                          }}
+                                                          title="Drag to reorder group"
+                                                        >
+                                                          <i className="bx bx-grid-vertical"></i>
+                                                        </span>
+                                                        {`${groupRecord?.groupName || ""} ${groupId && `[${groupId}]`}`}
+                                                      </>
+                                                    ) : (
+                                                      column.title
+                                                    )}
+                                                  </th>
+                                                );
+                                              })}
+                                            </tr>
+                                          </thead>
+                                          <tbody>
+                                            {[...groupItems]
+                                              .sort((a, b) => {
+                                                const runRateColumn = columns.find(
+                                                  (col) => col.title === "Run Rate"
+                                                );
+                                                const pointColumn = columns.find(
+                                                  (col) => col.title === "Points"
+                                                );
+                                                if (!runRateColumn || !pointColumn) return 0;
+                                                const runRateKey = runRateColumn.dataIndex;
+                                                const pointKey = pointColumn.dataIndex;
+                                                const pointsA = parseFloat(a[pointKey]) || 0;
+                                                const pointsB = parseFloat(b[pointKey]) || 0;
+                                                // First, compare points
+                                                if (pointsB !== pointsA) return pointsB - pointsA;
+                                                // If points are the same, compare run rate
+                                                const runRateA = parseFloat(a[runRateKey]) || 0;
+                                                const runRateB = parseFloat(b[runRateKey]) || 0;
+                                                return runRateB - runRateA; // higher run rate first
+                                              })
+                                              .map((item, idx) => (
+                                                <tr key={item.id || idx}>
+                                                  {columns.map((column, colIndex) => (
+                                                    <td
+                                                      className="p-2"
+                                                      key={colIndex}
+                                                      style={column.style}
+                                                    >
+                                                      {column.render
+                                                        ? column.render(
+                                                            item[column.dataIndex],
+                                                            item,
+                                                            idx
+                                                          )
+                                                        : item[column.dataIndex]}
+                                                    </td>
+                                                  ))}
+                                                </tr>
+                                              ))}
+                                          </tbody>
+                                        </Table>
+                                      </div>
+                                    )}
+                                  </Draggable>
+                                );
+                              })}
+                            {droppableProvided.placeholder}
+                          </div>
+                        )}
+                      </Droppable>
+                    </DragDropContext>
+                  );
+                })()}
 
               </CardBody>
             </Card>
