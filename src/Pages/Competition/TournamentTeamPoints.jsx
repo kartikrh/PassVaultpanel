@@ -384,6 +384,32 @@ const TournamentTeamPoints = () => {
     }
   };
 
+  const handleGroupVisibilityChange = async (groupId, currentValue) => {
+    try {
+      const res = await axiosInstance.post("/admin/tournamentTeamPoints/changeGroupVisibleStatus", {
+        competitionId,
+        groupId: Number(groupId),
+        isClientVisible: !currentValue,
+      });
+      fetchTournament(competitionId);
+      dispatch(
+        updateToastData({
+          data: res?.message,
+          title: "Success",
+          type: SUCCESS,
+        })
+      );
+    } catch (error) {
+      dispatch(
+        updateToastData({
+          data: error?.message,
+          title: error?.title,
+          type: ERROR,
+        })
+      );
+    }
+  };
+
   const columns = [
     {
       title: "Team",
@@ -888,7 +914,29 @@ const TournamentTeamPoints = () => {
                                                   >
                                                     {column?.dataIndex === "teamId" ? (
                                                       <>
-                                                      {groupOrder.length > 1 && (
+                                                        <Tooltip
+                                                          title={groupItems[0]?.isClientVisible ? "Hide for PlayOff" : "Show for PlayOff"}
+                                                          color={"#e8e8ea"}
+                                                          overlayInnerStyle={{ color: "#000" }}
+                                                        >
+                                                          <input
+                                                            className="form-check-input"
+                                                            type="checkbox"
+                                                            checked={!!groupItems[0]?.isClientVisible}
+                                                            onChange={() =>
+                                                              handleGroupVisibilityChange(
+                                                                groupId,
+                                                                groupItems[0]?.isClientVisible
+                                                              )
+                                                            }
+                                                            style={{
+                                                              marginRight: 6,
+                                                              cursor: "pointer",
+                                                              verticalAlign: "middle",
+                                                            }}
+                                                          />
+                                                        </Tooltip>
+                                                       {groupOrder.length > 1 && (
                                                         <Tooltip
                                                           title={"Drag to reorder group"}
                                                           color={"#e8e8ea"}
