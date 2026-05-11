@@ -859,6 +859,7 @@ const TournamentTeamPoints = () => {
                                     key={groupId}
                                     draggableId={String(groupId)}
                                     index={index}
+                                    isDragDisabled={groupOrder.length <= 1}
                                   >
                                     {(draggableProvided, snapshot) => (
                                       <div
@@ -887,6 +888,7 @@ const TournamentTeamPoints = () => {
                                                   >
                                                     {column?.dataIndex === "teamId" ? (
                                                       <>
+                                                      {groupOrder.length > 1 && (
                                                         <Tooltip
                                                           title={"Drag to reorder group"}
                                                           color={"#e8e8ea"}
@@ -905,6 +907,7 @@ const TournamentTeamPoints = () => {
                                                             <i className="bx bx-grid-vertical"></i>
                                                           </span>
                                                         </Tooltip>
+                                                      )}
                                                         {`${groupRecord?.groupName || ""} ${groupId && `[${groupId}]`}`}
                                                       </>
                                                     ) : (
