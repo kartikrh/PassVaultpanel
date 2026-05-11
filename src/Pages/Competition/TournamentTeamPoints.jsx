@@ -98,18 +98,23 @@ const TournamentTeamPoints = () => {
     }
   }, [competitionId]);
 
-  // Sync groupOrder whenever tournamentData changes — sorted by groupDisplayOrder from API response
+  // Sync groupOrder — sorted by groupDisplayOrder if available, else by groupId
   useEffect(() => {
     const groupDisplayOrderMap = {};
     tournamentData.forEach((item) => {
       const gId = String(item.groupId || "");
       if (groupDisplayOrderMap[gId] === undefined) {
-        groupDisplayOrderMap[gId] = item.groupDisplayOrder ?? Infinity;
+        groupDisplayOrderMap[gId] = item.groupDisplayOrder ?? null;
       }
     });
-    const keys = Object.keys(groupDisplayOrderMap).sort(
-      (a, b) => (groupDisplayOrderMap[a] ?? Infinity) - (groupDisplayOrderMap[b] ?? Infinity)
-    );
+    const keys = Object.keys(groupDisplayOrderMap).sort((a, b) => {
+      const orderA = groupDisplayOrderMap[a];
+      const orderB = groupDisplayOrderMap[b];
+      if(orderA != null && orderB != null) {
+        return orderA - orderB;
+      }
+      return Number(a) - Number(b);
+    });
     setGroupOrder(keys);
   }, [tournamentData]);
 
