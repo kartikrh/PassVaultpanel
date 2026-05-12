@@ -148,10 +148,10 @@ const TournamentTeamPoints = () => {
   };
 
   const handleSave = async () => {
-    if (!groupDetails?.id || !selectedTeamId) {
+    if (!groupDetails?.id) {
       dispatch(
         updateToastData({
-          data: "Group Id and Team are required",
+          data: "Group Id is required",
           title: "Validation Error",
           type: ERROR,
         })
@@ -163,7 +163,7 @@ const TournamentTeamPoints = () => {
         "/admin/tournamentTeamPoints/save",
         {
           id: 0,
-          teamId: selectedTeamId,
+          teamId: selectedTeamId ? selectedTeamId : null,
           competitionId: competitionId,
           isActive: true,
           groupId: groupDetails?.id,
@@ -418,7 +418,7 @@ const TournamentTeamPoints = () => {
         const team = teamOptions.find((option) => option.value === text);
         return (
           <>
-            <span style={{ cursor: "pointer" }} onClick={() => { handleCompetitionClick({...record, teamName: team?.label, competition: competitionDetails?.competition}); }}>{team ? team.label : ""}</span>
+            <span style={{ cursor: "pointer" }} onClick={() => { handleCompetitionClick({...record, teamName: team?.label, competition: competitionDetails?.competition}); }}>{team ? team.label : "TBA"}</span>
             <span className="text-danger">{record?.error?.teamId}</span>
           </>
         );
