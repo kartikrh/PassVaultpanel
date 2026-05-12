@@ -389,7 +389,7 @@ const TournamentTeamPoints = () => {
       const res = await axiosInstance.post("/admin/tournamentTeamPoints/changeGroupVisibleStatus", {
         competitionId,
         groupId: Number(groupId),
-        isClientVisible: !currentValue,
+        isPlayOffGroup: !currentValue,
       });
       fetchTournament(competitionId);
       dispatch(
@@ -915,18 +915,18 @@ const TournamentTeamPoints = () => {
                                                     {column?.dataIndex === "teamId" ? (
                                                       <>
                                                         <Tooltip
-                                                          title={groupItems[0]?.isClientVisible ? "Hide for PlayOff" : "Show for PlayOff"}
+                                                          title={groupItems[0]?.isPlayOffGroup ? "Hide for PlayOff" : "Show for PlayOff"}
                                                           color={"#e8e8ea"}
                                                           overlayInnerStyle={{ color: "#000" }}
                                                         >
                                                           <input
                                                             className="form-check-input"
                                                             type="checkbox"
-                                                            checked={!!groupItems[0]?.isClientVisible}
+                                                            checked={!!groupItems[0]?.isPlayOffGroup}
                                                             onChange={() =>
                                                               handleGroupVisibilityChange(
                                                                 groupId,
-                                                                groupItems[0]?.isClientVisible
+                                                                groupItems[0]?.isPlayOffGroup
                                                               )
                                                             }
                                                             style={{
