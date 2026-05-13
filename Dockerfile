@@ -3,33 +3,32 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Increase Node.js heap memory to prevent OOM during build
+# Use 4 GB heap — safe for 8 GB RAM server, prevents OOM during build
 ENV NODE_OPTIONS="--max-old-space-size=4096"
+# Disable source maps — cuts build time ~40% and reduces memory usage
+ENV GENERATE_SOURCEMAP=false
 
-# Copy only dependency manifests first — this layer is cached
-# and only re-runs when package.json or yarn.lock changes
+# Copy dependency manifests first — Docker caches this layer
+# and skips yarn install on rebuilds unless these files change
 COPY package.json yarn.lock ./
-
-# Install all dependencies (cached layer)
 RUN yarn install --network-timeout 600000
 
-# Now copy the rest of the source code
 COPY . .
-
-# Build the production bundle
 RUN yarn build
 
-# ---- Stage 2: Production ----
-FROM node:20-alpine AS production
+# ---- Stage 2: Production (nginx) ----
+FROM nginx:stable-alpine AS production
 
-WORKDIR /app
+# Remove default nginx configs to avoid conflicts
+RUN rm -f /etc/nginx/conf.d/default.conf && \
+    rm -rf /usr/share/nginx/html/*
 
-RUN npm install -g serve
+# Copy tuned nginx config
+COPY nginx.conf /etc/nginx/nginx.conf
 
-# Copy only the compiled static files from the build stage
-# Final image has NO source code, NO node_modules (much smaller)
-COPY --from=builder /app/build ./build
+# Copy build output directly into nginx webroot (contents, not folder)
+COPY --from=builder /app/build/. /usr/share/nginx/html/
 
-EXPOSE 3000
+EXPOSE 80
 
-CMD ["serve", "-s", "build", "-l", "3000"]
+CMD ["nginx", "-g", "daemon off;"]
