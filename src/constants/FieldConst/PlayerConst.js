@@ -212,7 +212,7 @@ export const PlayerFields = [
         name: "description",
         label: "Description",
         parentclassName: "",
-        isRequired: true,
+        // isRequired: true,
         type: TEXT_EDITOR,
         labelColspan: { xs: 12, md: 2, lg: 2 },
         fieldColspan: { xs: 12, md: 10, lg: 10 },
