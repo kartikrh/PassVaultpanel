@@ -48,7 +48,7 @@ const AddBanner = () => {
   const [fields, setFields] = useState(bannerFields || [])
   const [masterData, setMasterData] = useState({});
   useEffect(() => {
-    if (bannerId !== 0) {
+    if (bannerId !== "0") {
       fetchData(bannerId);
     }
   }, [bannerId]);
@@ -229,11 +229,7 @@ const AddBanner = () => {
                 <FormBuilder
                   ref={finalizeRef}
                   fields={fields}
-                  editFormData={{
-                    deviceTypeId: initialEditData?.deviceTypeId ?? 1,
-                    ...(initialEditData || {}),
-                  }}
-                  // editFormData={initialEditData}
+                  editFormData={initialEditData}
                   masterData={masterData}
                   onFormDataChange={handleFormBDataChange}
                 />
