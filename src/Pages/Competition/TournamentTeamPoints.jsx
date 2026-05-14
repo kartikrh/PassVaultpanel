@@ -34,6 +34,7 @@ const TournamentTeamPoints = () => {
   const [deleteTeamRecord, setDeleteTeamRecord] = useState({});
   const [selectedTournament, setSelectedTournament] = useState({});
   const [groupOrder, setGroupOrder] = useState([]);
+  const [editingTbaRecord, setEditingTbaRecord] = useState(null);
 
   const competitionId = +sessionStorage.getItem("competitionId") || "0";
   const competitionDetails = JSON.parse(
@@ -162,7 +163,7 @@ const TournamentTeamPoints = () => {
       const response = await axiosInstance.post(
         "/admin/tournamentTeamPoints/save",
         {
-          id: 0,
+          id: editingTbaRecord?.id || 0,
           teamId: selectedTeamId ? selectedTeamId : null,
           competitionId: competitionId,
           isActive: true,
@@ -175,6 +176,17 @@ const TournamentTeamPoints = () => {
         }
       );
       fetchTournament(competitionId);
+      if (editingTbaRecord) {
+        setEditingTbaRecord(null);
+
+        setSelectedTeamId(null);
+
+        setGroupDetails({
+          id: 1,
+          name: "",
+          prevGroupId: "",
+        });
+      }
       dispatch(
         updateToastData({
           data: response?.message,
@@ -419,6 +431,40 @@ const TournamentTeamPoints = () => {
         return (
           <>
             <span style={{ cursor: "pointer" }} onClick={() => { handleCompetitionClick({...record, teamName: team?.label, competition: competitionDetails?.competition}); }}>{team ? team.label : "TBA"}</span>
+            {!team && (
+              <Tooltip
+                title={"Assign Team"}
+                color={"#e8e8ea"}
+                overlayInnerStyle={{ color: "#000" }}
+              >
+                <Button
+                  color="link"
+                  size="sm"
+                  className="p-0 ms-2"
+                  onClick={() => {
+                    setEditingTbaRecord(record);
+
+                    setGroupDetails({
+                      id: record?.groupId || 1,
+                      name: record?.groupName || "",
+                      prevGroupId:
+                        record?.prevGroupId != null
+                          ? String(record?.prevGroupId)
+                          : "",
+                    });
+
+                    setSelectedTeamId(null);
+
+                    window.scrollTo({
+                      top: 0,
+                      behavior: "smooth",
+                    });
+                  }}
+                >
+                  <i className="bx bx-edit-alt"></i>
+                </Button>
+              </Tooltip>
+            )}
             <span className="text-danger">{record?.error?.teamId}</span>
           </>
         );
@@ -777,7 +823,7 @@ const TournamentTeamPoints = () => {
                     <Select
                       value={teamOptions.find(
                         (option) => option.value === selectedTeamId
-                      )}
+                      ) || null}
                       placeholder="Select Team"
                       onChange={(selectedOption) =>
                         setSelectedTeamId(selectedOption?.value)
