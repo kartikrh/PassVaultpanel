@@ -1,5 +1,3 @@
-# syntax=docker/dockerfile:1.7
-
 # ---- Stage 1: Build ----
 FROM node:20-alpine AS builder
 
@@ -13,8 +11,7 @@ ENV NODE_OPTIONS="--max-old-space-size=4096" \
 # Install dependencies first so this layer is cached
 # and only re-runs when package.json / yarn.lock change.
 COPY package.json yarn.lock ./
-RUN --mount=type=cache,target=/usr/local/share/.cache/yarn \
-    yarn install --frozen-lockfile --network-timeout 600000
+RUN yarn install --frozen-lockfile --network-timeout 600000
 
 # Copy the rest of the source and produce the production bundle
 COPY . .
