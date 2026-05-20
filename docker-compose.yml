@@ -9,7 +9,7 @@ services:
     ports:
       - "4000:3000"
     environment:
-      - NODE_ENV=developement
+      - NODE_ENV=production
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000/ >/dev/null 2>&1 || exit 1"]
       interval: 30s

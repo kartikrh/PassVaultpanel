@@ -16,8 +16,18 @@ ENV NODE_OPTIONS="--max-old-space-size=4096" \
 COPY package.json yarn.lock ./
 RUN yarn install --frozen-lockfile --network-timeout 600000
 
-# Copy the rest of the source and produce the production bundle
+# Copy the rest of the source
 COPY . .
+
+# react-scripts build hardcodes NODE_ENV=production and always reads
+# .env.production — there is no flag to make it read .env.development.
+# On this branch (UAT) we want the build to bake UAT API values, which
+# live in .env.development. Overlay it onto .env.production before the
+# build so CRA picks up the dev values. main branch keeps its own
+# .env.production untouched and bakes real prod URLs.
+RUN cp .env.development .env.production
+
+# Produce the production bundle
 RUN yarn build
 
 
