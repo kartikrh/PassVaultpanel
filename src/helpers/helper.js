@@ -66,6 +66,11 @@ export const filterOrderChange = (items, name) => {
           advertiseId: item.advertiseId,
           displayOrder: index + 1,
         };
+      } else if(name === "tournamentTeamPoints") {
+        return {
+          groupId: Number(item.groupId),
+          displayOrder: index + 1,
+        };
       } 
     }
   });

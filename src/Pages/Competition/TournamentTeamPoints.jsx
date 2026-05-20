@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../../Features/axios";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { filterOrderChange } from "../../helpers/helper";
 import {
   Button,
   Card,
@@ -26,11 +28,13 @@ const TournamentTeamPoints = () => {
   const [tournamentData, setTournamentData] = useState([]);
   const [teamList, setTeamList] = useState([]);
   const [selectedTeamId, setSelectedTeamId] = useState(null);
-  const [groupDetails, setGroupDetails] = useState({ id : 1, name: ""});
+  const [groupDetails, setGroupDetails] = useState({ id : 1, name: "", prevGroupId: ""});
   const [playersModelVisible, setPlayersModelVisible] = useState(false);
   const [deleteTeamModelVisable, setDeleteTeamModelVisable] = useState(false);
   const [deleteTeamRecord, setDeleteTeamRecord] = useState({});
   const [selectedTournament, setSelectedTournament] = useState({});
+  const [groupOrder, setGroupOrder] = useState([]);
+  const [editingTbaRecord, setEditingTbaRecord] = useState(null);
 
   const competitionId = +sessionStorage.getItem("competitionId") || "0";
   const competitionDetails = JSON.parse(
@@ -95,6 +99,26 @@ const TournamentTeamPoints = () => {
     }
   }, [competitionId]);
 
+  // Sync groupOrder — sorted by groupDisplayOrder if available, else by groupId
+  useEffect(() => {
+    const groupDisplayOrderMap = {};
+    tournamentData.forEach((item) => {
+      const gId = String(item.groupId || "");
+      if (groupDisplayOrderMap[gId] === undefined) {
+        groupDisplayOrderMap[gId] = item.groupDisplayOrder ?? null;
+      }
+    });
+    const keys = Object.keys(groupDisplayOrderMap).sort((a, b) => {
+      const orderA = groupDisplayOrderMap[a];
+      const orderB = groupDisplayOrderMap[b];
+      if(orderA != null && orderB != null) {
+        return orderA - orderB;
+      }
+      return Number(a) - Number(b);
+    });
+    setGroupOrder(keys);
+  }, [tournamentData]);
+
   const handleValueChange = (id, key, value) => {
     setTournamentData((prevData) => {
       return prevData.map((item) => {
@@ -125,10 +149,10 @@ const TournamentTeamPoints = () => {
   };
 
   const handleSave = async () => {
-    if (!groupDetails?.id || !selectedTeamId) {
+    if (!groupDetails?.id) {
       dispatch(
         updateToastData({
-          data: "Group Id and Team are required",
+          data: "Group Id is required",
           title: "Validation Error",
           type: ERROR,
         })
@@ -139,15 +163,30 @@ const TournamentTeamPoints = () => {
       const response = await axiosInstance.post(
         "/admin/tournamentTeamPoints/save",
         {
-          id: 0,
-          teamId: selectedTeamId,
+          id: editingTbaRecord?.id || 0,
+          teamId: selectedTeamId ? selectedTeamId : null,
           competitionId: competitionId,
           isActive: true,
           groupId: groupDetails?.id,
           groupName: groupDetails?.name,
+          prevGroupId:
+            groupDetails?.prevGroupId !== ""
+              ? Number(groupDetails?.prevGroupId)
+              : null,
         }
       );
       fetchTournament(competitionId);
+      if (editingTbaRecord) {
+        setEditingTbaRecord(null);
+
+        setSelectedTeamId(null);
+
+        setGroupDetails({
+          id: 1,
+          name: "",
+          prevGroupId: "",
+        });
+      }
       dispatch(
         updateToastData({
           data: response?.message,
@@ -209,6 +248,12 @@ const TournamentTeamPoints = () => {
         {
           competitionId: competitionId,
           ...record,
+          prevGroupId:
+            record?.prevGroupId !== "" &&
+              record?.prevGroupId !== null &&
+              record?.prevGroupId !== undefined
+              ? Number(record?.prevGroupId)
+              : null,
         }
       );
       fetchTournament(competitionId);
@@ -310,6 +355,73 @@ const TournamentTeamPoints = () => {
     }
   }
 
+  const handleGroupDragEnd = async (result) => {
+    if (!result.destination) return;
+    if (result.source.index === result.destination.index) return;
+
+    // Optimistic update — reorder locally immediately
+    const newGroupOrder = [...groupOrder];
+    const [moved] = newGroupOrder.splice(result.source.index, 1);
+    newGroupOrder.splice(result.destination.index, 0, moved);
+    setGroupOrder(newGroupOrder);
+
+    // Build displayOrderData using the same filterOrderChange pattern as in common
+    const orderItems = newGroupOrder.map((gId) => ({ groupId: gId }));
+    const displayOrderData = filterOrderChange(orderItems, "tournamentTeamPoints");
+
+    try {
+      await axiosInstance.post("/admin/tournamentTeamPoints/changeDisplayOrder", {
+        competitionId,
+        displayOrderData,
+      });
+      // Fetch fresh data so groupDisplayOrder values in memory are up-to-date.
+      fetchTournament(competitionId);
+      dispatch(
+        updateToastData({
+          data: "Group order updated successfully",
+          title: "Success",
+          type: SUCCESS,
+        })
+      );
+    } catch (error) {
+      // Revert to previous order on failure
+      setGroupOrder(groupOrder);
+      dispatch(
+        updateToastData({
+          data: error?.message,
+          title: error?.title,
+          type: ERROR,
+        })
+      );
+    }
+  };
+
+  const handleGroupVisibilityChange = async (groupId, currentValue) => {
+    try {
+      const res = await axiosInstance.post("/admin/tournamentTeamPoints/changeGroupVisibleStatus", {
+        competitionId,
+        groupId: Number(groupId),
+        isPlayOffGroup: !currentValue,
+      });
+      fetchTournament(competitionId);
+      dispatch(
+        updateToastData({
+          data: res?.message,
+          title: "Success",
+          type: SUCCESS,
+        })
+      );
+    } catch (error) {
+      dispatch(
+        updateToastData({
+          data: error?.message,
+          title: error?.title,
+          type: ERROR,
+        })
+      );
+    }
+  };
+
   const columns = [
     {
       title: "Team",
@@ -318,7 +430,41 @@ const TournamentTeamPoints = () => {
         const team = teamOptions.find((option) => option.value === text);
         return (
           <>
-            <span style={{ cursor: "pointer" }} onClick={() => { handleCompetitionClick({...record, teamName: team?.label, competition: competitionDetails?.competition}); }}>{team ? team.label : ""}</span>
+            <span style={{ cursor: "pointer" }} onClick={() => { handleCompetitionClick({...record, teamName: team?.label, competition: competitionDetails?.competition}); }}>{team ? team.label : "TBA"}</span>
+            {!team && (
+              <Tooltip
+                title={"Assign Team"}
+                color={"#e8e8ea"}
+                overlayInnerStyle={{ color: "#000" }}
+              >
+                <Button
+                  color="link"
+                  size="sm"
+                  className="p-0 ms-2"
+                  onClick={() => {
+                    setEditingTbaRecord(record);
+
+                    setGroupDetails({
+                      id: record?.groupId || 1,
+                      name: record?.groupName || "",
+                      prevGroupId:
+                        record?.prevGroupId != null
+                          ? String(record?.prevGroupId)
+                          : "",
+                    });
+
+                    setSelectedTeamId(null);
+
+                    window.scrollTo({
+                      top: 0,
+                      behavior: "smooth",
+                    });
+                  }}
+                >
+                  <i className="bx bx-edit-alt"></i>
+                </Button>
+              </Tooltip>
+            )}
             <span className="text-danger">{record?.error?.teamId}</span>
           </>
         );
@@ -591,6 +737,30 @@ const TournamentTeamPoints = () => {
       key: "actions",
       style: { width: "6%" },
     },
+    {
+      title: "Prev Id",
+      dataIndex: "prevGroupId",
+      render: (text, record) => (
+        <>
+          <Input
+            className="form-control small-text-fields"
+            type="text"
+            inputMode="numeric"
+            value={text != null ? text : ""}
+            onChange={(e) =>
+              handleValueChange(
+                record.id,
+                "prevGroupId",
+                e.target.value.replace(/\D/g, "")
+              )
+            }
+          />
+          <span className="text-danger">{record?.error?.prevGroupId}</span>
+        </>
+      ),
+      key: "prevGroupId",
+      style: { width: "10%" },
+    },
   ];
 
   const teamOptions = teamList.map((team) => ({
@@ -653,12 +823,28 @@ const TournamentTeamPoints = () => {
                     <Select
                       value={teamOptions.find(
                         (option) => option.value === selectedTeamId
-                      )}
+                      ) || null}
                       placeholder="Select Team"
                       onChange={(selectedOption) =>
                         setSelectedTeamId(selectedOption?.value)
                       }
                       options={teamOptions}
+                    />
+                  </Col>
+                  <Col md={1}>
+                    <Input
+                      className="form-control"
+                      type="text"
+                      inputMode="numeric"
+                      value={groupDetails?.prevGroupId}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, "");
+                        setGroupDetails({
+                          ...groupDetails,
+                          prevGroupId: value,
+                        });
+                      }}
+                      placeholder="Prev Group Id"
                     />
                   </Col>
                   <Col md={1}>
@@ -720,73 +906,166 @@ const TournamentTeamPoints = () => {
                       ))}
                   </tbody>
                 </Table> */}
-                {Object.entries(
-                  tournamentData.reduce((acc, item) => {
-                    const group = item.groupId || "";
-                    if (!acc[group]) {
-                      acc[group] = [];
-                    }
+                {(() => {
+                  const grouped = tournamentData.reduce((acc, item) => {
+                    const group = String(item.groupId || "");
+                    if (!acc[group]) acc[group] = [];
                     acc[group].push(item);
                     return acc;
-                  }, {})
-                )
-                  // sort groups alphabetically
-                  .sort(([a], [b]) => a.localeCompare(b))
-                  .map(([groupId, groupItems]) => (
-                    <div key={groupId} className="mb-4">
-                      <Table responsive>
-                        <thead>
-                          <tr>
-                            {columns.map((column, index) => {
-                              const groupRecord = groupItems?.find(item => item?.groupName);
-                              return (
-                                <th className="px-2 py-2" key={index} style={column.style}>
-                                  {column?.dataIndex === "teamId"
-                                    ? `${groupRecord?.groupName || ""} ${groupId && `[${groupId}]`}`
-                                    : column.title}
-                                </th>
-                            )})}
-                          </tr>
-                        </thead>
+                  }, {});
 
-                        <tbody>
-                          {groupItems.sort((a, b) => {
-                            const runRateColumn = columns.find(col => col.title === "Run Rate");
-                            const pointColumn = columns.find(col => col.title === "Points");
-
-                            if (!runRateColumn || !pointColumn) return 0;
-
-                            const runRateKey = runRateColumn.dataIndex;
-                            const pointKey = pointColumn.dataIndex;
-
-                            const pointsA = parseFloat(a[pointKey]) || 0;
-                            const pointsB = parseFloat(b[pointKey]) || 0;
-
-                            // First, compare points
-                            if (pointsB !== pointsA) {
-                              return pointsB - pointsA; // higher points first
-                            }
-
-                            // If points are the same, compare run rate
-                            const runRateA = parseFloat(a[runRateKey]) || 0;
-                            const runRateB = parseFloat(b[runRateKey]) || 0;
-
-                            return runRateB - runRateA; // higher run rate first
-                          }).map((item, index) => (
-                            <tr key={item.id || index}>
-                              {columns.map((column, colIndex) => (
-                                <td className="p-2" key={colIndex} style={column.style}>
-                                  {column.render
-                                    ? column.render(item[column.dataIndex], item, index)
-                                    : item[column.dataIndex]}
-                                </td>
-                              ))}
-                            </tr>
-                          ))}
-                        </tbody>
-                      </Table>
-                    </div>
-                  ))}
+                  return (
+                    <DragDropContext onDragEnd={handleGroupDragEnd}>
+                      <Droppable droppableId="tournament-groups">
+                        {(droppableProvided) => (
+                          <div
+                            ref={droppableProvided.innerRef}
+                            {...droppableProvided.droppableProps}
+                          >
+                            {groupOrder
+                              .filter((gId) => grouped[gId])
+                              .map((groupId, index) => {
+                                const groupItems = grouped[groupId];
+                                return (
+                                  <Draggable
+                                    key={groupId}
+                                    draggableId={String(groupId)}
+                                    index={index}
+                                    isDragDisabled={groupOrder.length <= 1}
+                                  >
+                                    {(draggableProvided, snapshot) => (
+                                      <div
+                                        ref={draggableProvided.innerRef}
+                                        {...draggableProvided.draggableProps}
+                                        className="mb-4"
+                                        style={{
+                                          ...draggableProvided.draggableProps.style,
+                                          opacity: snapshot.isDragging ? 0.85 : 1,
+                                          background: snapshot.isDragging ? "#f8f9fa" : "transparent",
+                                          borderRadius: snapshot.isDragging ? "4px" : undefined,
+                                        }}
+                                      >
+                                        <Table responsive>
+                                          <thead>
+                                            <tr>
+                                              {columns.map((column, colIdx) => {
+                                                const groupRecord = groupItems?.find(
+                                                  (item) => item?.groupName
+                                                );
+                                                return (
+                                                  <th
+                                                    className="px-2 py-2"
+                                                    key={colIdx}
+                                                    style={column.style}
+                                                  >
+                                                    {column?.dataIndex === "teamId" ? (
+                                                      <>
+                                                        <Tooltip
+                                                          title={groupItems[0]?.isPlayOffGroup ? "Hide for PlayOff" : "Show for PlayOff"}
+                                                          color={"#e8e8ea"}
+                                                          overlayInnerStyle={{ color: "#000" }}
+                                                        >
+                                                          <input
+                                                            className="form-check-input"
+                                                            type="checkbox"
+                                                            checked={!!groupItems[0]?.isPlayOffGroup}
+                                                            onChange={() =>
+                                                              handleGroupVisibilityChange(
+                                                                groupId,
+                                                                groupItems[0]?.isPlayOffGroup
+                                                              )
+                                                            }
+                                                            style={{
+                                                              marginRight: 6,
+                                                              cursor: "pointer",
+                                                              verticalAlign: "middle",
+                                                            }}
+                                                          />
+                                                        </Tooltip>
+                                                       {groupOrder.length > 1 && (
+                                                        <Tooltip
+                                                          title={"Drag to reorder group"}
+                                                          color={"#e8e8ea"}
+                                                          overlayInnerStyle={{ color: "#000" }}
+                                                        >
+                                                          <span
+                                                            {...draggableProvided.dragHandleProps}
+                                                            style={{
+                                                              cursor: "grab",
+                                                              marginRight: 6,
+                                                              display: "inline-flex",
+                                                              alignItems: "center",
+                                                              verticalAlign: "middle",
+                                                            }}
+                                                          >
+                                                            <i className="bx bx-grid-vertical"></i>
+                                                          </span>
+                                                        </Tooltip>
+                                                      )}
+                                                        {`${groupRecord?.groupName || ""} ${groupId && `[${groupId}]`}`}
+                                                      </>
+                                                    ) : (
+                                                      column.title
+                                                    )}
+                                                  </th>
+                                                );
+                                              })}
+                                            </tr>
+                                          </thead>
+                                          <tbody>
+                                            {[...groupItems]
+                                              .sort((a, b) => {
+                                                const runRateColumn = columns.find(
+                                                  (col) => col.title === "Run Rate"
+                                                );
+                                                const pointColumn = columns.find(
+                                                  (col) => col.title === "Points"
+                                                );
+                                                if (!runRateColumn || !pointColumn) return 0;
+                                                const runRateKey = runRateColumn.dataIndex;
+                                                const pointKey = pointColumn.dataIndex;
+                                                const pointsA = parseFloat(a[pointKey]) || 0;
+                                                const pointsB = parseFloat(b[pointKey]) || 0;
+                                                // First, compare points
+                                                if (pointsB !== pointsA) return pointsB - pointsA;
+                                                // If points are the same, compare run rate
+                                                const runRateA = parseFloat(a[runRateKey]) || 0;
+                                                const runRateB = parseFloat(b[runRateKey]) || 0;
+                                                return runRateB - runRateA; // higher run rate first
+                                              })
+                                              .map((item, idx) => (
+                                                <tr key={item.id || idx}>
+                                                  {columns.map((column, colIndex) => (
+                                                    <td
+                                                      className="p-2"
+                                                      key={colIndex}
+                                                      style={column.style}
+                                                    >
+                                                      {column.render
+                                                        ? column.render(
+                                                            item[column.dataIndex],
+                                                            item,
+                                                            idx
+                                                          )
+                                                        : item[column.dataIndex]}
+                                                    </td>
+                                                  ))}
+                                                </tr>
+                                              ))}
+                                          </tbody>
+                                        </Table>
+                                      </div>
+                                    )}
+                                  </Draggable>
+                                );
+                              })}
+                            {droppableProvided.placeholder}
+                          </div>
+                        )}
+                      </Droppable>
+                    </DragDropContext>
+                  );
+                })()}
 
               </CardBody>
             </Card>
