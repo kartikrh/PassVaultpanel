@@ -48,7 +48,7 @@ const AddBanner = () => {
   const [fields, setFields] = useState(bannerFields || [])
   const [masterData, setMasterData] = useState({});
   useEffect(() => {
-    if (bannerId !== 0) {
+    if (bannerId !== "0") {
       fetchData(bannerId);
     }
   }, [bannerId]);
