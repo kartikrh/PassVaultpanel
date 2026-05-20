@@ -1,11 +1,29 @@
-version: '3.8'
-
 services:
-  react-app:
+  scorepanel:
     build:
       context: .
       dockerfile: Dockerfile
+    image: scorepanel:latest
+    container_name: scorepanel
+    restart: unless-stopped
     ports:
       - "4000:3000"
-    stdin_open: true
-    tty: true
+    environment:
+      - NODE_ENV=developement
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000/ >/dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - scorepanel-net
+
+networks:
+  scorepanel-net:
+    driver: bridge
