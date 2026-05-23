@@ -11,6 +11,24 @@ ENV NODE_OPTIONS="--max-old-space-size=4096" \
     CI=false \
     DISABLE_ESLINT_PLUGIN=true
 
+# CRA inlines REACT_APP_* at build time, so accept them as build args
+# and promote to env so `npm run build` sees them.
+ARG PORT
+ARG REACT_APP_BASE_URL
+ARG REACT_APP_SOCKET_URL
+ARG REACT_APP_ENCRYPTION_SECRET
+ARG REACT_APP_API_INTERVAL
+ARG REACT_APP_IS_SOCKET
+ARG REACT_APP_DEFAULTAUTH
+
+ENV PORT=$PORT
+ENV REACT_APP_BASE_URL=$REACT_APP_BASE_URL
+ENV REACT_APP_SOCKET_URL=$REACT_APP_SOCKET_URL
+ENV REACT_APP_ENCRYPTION_SECRET=$REACT_APP_ENCRYPTION_SECRET
+ENV REACT_APP_API_INTERVAL=$REACT_APP_API_INTERVAL
+ENV REACT_APP_IS_SOCKET=$REACT_APP_IS_SOCKET
+ENV REACT_APP_DEFAULTAUTH=$REACT_APP_DEFAULTAUTH
+
 # Install dependencies first so this layer is cached
 # and only re-runs when package.json / yarn.lock change.
 COPY package.json yarn.lock ./
@@ -19,17 +37,16 @@ RUN yarn install --frozen-lockfile --network-timeout 600000
 # Copy the rest of the source
 COPY . .
 
-# react-scripts build hardcodes NODE_ENV=production and always reads
-# .env.production — there is no flag to make it read .env.development.
-# On this branch (UAT) we want the build to bake UAT API values, which
-# live in .env.development. Overlay it onto .env.production before the
-# build so CRA picks up the dev values. main branch keeps its own
-# .env.production untouched and bakes real prod URLs.
-RUN cp .env.development .env.production
+## react-scripts build hardcodes NODE_ENV=production and always reads
+## .env.production — there is no flag to make it read .env.development.
+## On this branch (UAT) we want the build to bake UAT API values, which
+## live in .env.development. Overlay it onto .env.production before the
+## build so CRA picks up the dev values. main branch keeps its own
+## .env.production untouched and bakes real prod URLs.
+#RUN cp .env.development .env.production
 
 # Produce the production bundle
 RUN yarn build
-
 
 # ---- Stage 2: Runtime ----
 FROM node:20-alpine AS production
@@ -56,4 +73,5 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
 
 # Shell form so $PORT is expanded at runtime
 # (Railway / Heroku / Cloud Run inject a dynamic PORT; locally falls back to 3000)
-CMD serve -s build -l ${PORT:-3000}
+#CMD serve -s build -l ${PORT:-3000}
+CMD serve -s build --no-request-logging  -l ${PORT:-3000}
