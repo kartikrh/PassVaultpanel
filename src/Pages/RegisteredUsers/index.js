@@ -64,11 +64,14 @@ const Index = () => {
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
+    const payload = { ...(latestValueFromTable || tableActions) };
+    Object.keys(payload).forEach((key) => {
+      if (payload[key] === null || payload[key] === undefined) {
+        delete payload[key];
+      }
+    });
     await axiosInstance
-      .post(`/admin/client/all`, {
-        ...(latestValueFromTable || tableActions),
-        isUserActive: 1,
-      })
+      .post(`/admin/client/all`, payload)
       .then((response) => {
         const clientData = response?.result;
         let clientDataIdList = [];
@@ -307,20 +310,6 @@ const Index = () => {
         ></i>
       ),
       style: { width: "2%" },
-    },
-    {
-      title: "Date",
-      dataIndex: "createdDate",
-      render: (text, record) => (
-        <span>
-          {dateType?.value == 1
-            ? convertDateUTCToLocal2_24(text, "index")
-            : convertDateUtcFormat24(text, "index")}
-        </span>
-      ),
-      key: "eventDate",
-      sort: true,
-      style: { width: "10%" },
     },
     {
       title: "Full Name",
@@ -596,6 +585,20 @@ const Index = () => {
       ),
       style: { width: "2%", textAlign: "center" },
     },
+    {
+      title: "Date",
+      dataIndex: "createdDate",
+      render: (text, record) => (
+        <span>
+          {dateType?.value == 1
+            ? convertDateUTCToLocal2_24(text, "index")
+            : convertDateUtcFormat24(text, "index")}
+        </span>
+      ),
+      key: "eventDate",
+      sort: true,
+      style: { width: "10%" },
+    }
   ];
   //elements required
   const tableElement = {
@@ -606,6 +609,13 @@ const Index = () => {
     loadData: true,
     clone: false,
     isDateTypeSelect: true,
+    isUserStatusActiveSelect: true,
+    isProviderSelect: true,
+    resetButton: true
+  };
+
+  const handleReset = (value) => {
+    fetchData(value);
   };
 
   const handleLoadData = async (password) => {
@@ -688,6 +698,7 @@ const Index = () => {
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
             reFetchData={fetchData}
+            handleReset={handleReset}
             handleReload={handleReload}
             loadDataModelFunction={setLoadDataModelVisable}
             onAddNavigate={"/addRegisteredUsers"}

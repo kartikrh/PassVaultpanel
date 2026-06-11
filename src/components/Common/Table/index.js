@@ -1376,6 +1376,14 @@ const Index = forwardRef(
           value: null,
           label: "Select Permanent",
         },
+        isUserActive: {
+          value: null,
+          label: "Select User Status",
+        },
+        provider: {
+          value: null,
+          label: "Select Provider",
+        }
       });
       setMenSwitch(null)
       setTrendingStatusSwitch(null)
@@ -3195,6 +3203,78 @@ const Index = forwardRef(
                               >
                                 Player History Update
                               </span>
+                            </div>
+                          ) : null}
+                          {tableElement?.isUserStatusActiveSelect ? (
+                            <div className="">
+                              <Select
+                                styles={{
+                                  control: (provided) => ({
+                                    ...provided,
+                                    width: 180,
+                                  }), // Adjust width as needed
+                                }}
+                                value={
+                                  selectedTableElementsLogs?.isUserActive ||
+                                  selectedTableElements?.isUserActive
+                                }
+                                placeholder="User Status"
+                                onChange={(e) => {
+                                  if (
+                                    e?.value !==
+                                    selectedTableElements?.isUserActive?.value
+                                  ) {
+                                    handleTableActions("isUserActive", e);
+                                    setSelectedTableElements({
+                                      ...selectedTableElements,
+                                      isUserActive: e
+                                    });
+                                  }
+                                }}
+                                options={[
+                                  { label: "Select User Status", value: null },
+                                  { label: "Active", value: 1 },
+                                  { label: "In Active", value: 2 }
+                                ]}
+                                classNamePrefix="filter-dropdown"
+                              />
+                            </div>
+                          ) : null}
+                          {tableElement?.isProviderSelect ? (
+                            <div className="">
+                              <Select
+                                styles={{
+                                  control: (provided) => ({
+                                    ...provided,
+                                    width: 150,
+                                  }), // Adjust width as needed
+                                }}
+                                value={
+                                  selectedTableElementsLogs?.provider ||
+                                  selectedTableElements?.provider
+                                }
+                                placeholder="Provider"
+                                onChange={(e) => {
+                                  if (
+                                    e?.value !==
+                                    selectedTableElements?.provider?.value
+                                  ) {
+                                    handleTableActions("provider", e);
+                                    setSelectedTableElements({
+                                      ...selectedTableElements,
+                                      provider: e
+                                    });
+                                  }
+                                }}
+                                options={[
+                                  { label: "Select Provider", value: null },
+                                  { label: "Manual", value: 1 },
+                                  { label: "Google", value: 2 },
+                                  { label: "Facebook", value: 3 },
+                                  { label: "OTP Less", value: 4 }
+                                ]}
+                                classNamePrefix="filter-dropdown"
+                              />
                             </div>
                           ) : null}
                           {renderCustomFilter && renderCustomFilter()}
