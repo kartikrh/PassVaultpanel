@@ -106,6 +106,10 @@ function AddRegisteredUsers() {
         // isActive: dataToSave?.isActive || false,
       };
 
+      if (initialEditData?.password && dataToSave?.password && initialEditData?.password == dataToSave?.password) {
+        delete dataToSave.password;
+      }
+
       const completeData = {};
       ClientConst.forEach((field) => {
         const { name, type } = field;
