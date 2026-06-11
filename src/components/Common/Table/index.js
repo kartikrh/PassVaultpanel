@@ -1383,6 +1383,10 @@ const Index = forwardRef(
         provider: {
           value: null,
           label: "Select Provider",
+        },
+        registrationProcessStatus: {
+          value: null,
+          label: "Select Process Status",
         }
       });
       setMenSwitch(null)
@@ -3203,6 +3207,42 @@ const Index = forwardRef(
                               >
                                 Player History Update
                               </span>
+                            </div>
+                          ) : null}
+                          {tableElement?.isProcessStatusSelect ? (
+                            <div className="">
+                              <Select
+                                styles={{
+                                  control: (provided) => ({
+                                    ...provided,
+                                    width: 180,
+                                  }), // Adjust width as needed
+                                }}
+                                value={
+                                  selectedTableElementsLogs?.registrationProcessStatus ||
+                                  selectedTableElements?.registrationProcessStatus
+                                }
+                                placeholder="Process Status"
+                                onChange={(e) => {
+                                  if (
+                                    e?.value !==
+                                    selectedTableElements?.registrationProcessStatus?.value
+                                  ) {
+                                    handleTableActions("registrationProcessStatus", e);
+                                    setSelectedTableElements({
+                                      ...selectedTableElements,
+                                      registrationProcessStatus: e
+                                    });
+                                  }
+                                }}
+                                options={[
+                                  { label: "Select Process Status", value: null },
+                                  { label: "Added User Details", value: 1 },
+                                  { label: "Mobile/Email Verified", value: 2 },
+                                  { label: "Completed", value: 3 }
+                                ]}
+                                classNamePrefix="filter-dropdown"
+                              />
                             </div>
                           ) : null}
                           {tableElement?.isUserStatusActiveSelect ? (
