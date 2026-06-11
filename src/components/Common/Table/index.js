@@ -3234,7 +3234,7 @@ const Index = forwardRef(
                                 options={[
                                   { label: "Select User Status", value: null },
                                   { label: "Active", value: 1 },
-                                  { label: "In Active", value: 2 }
+                                  { label: "In Active", value: 0 }
                                 ]}
                                 classNamePrefix="filter-dropdown"
                               />
