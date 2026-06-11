@@ -89,7 +89,7 @@ export const ClientConst = [
       { label: "Select Process Status", value: "0" },
       { label: "Added User Details", value: 1 },
       { label: "Mobile/Email Verified", value: 2 },
-      { label: "Password set", value: 3 },
+      { label: "Completed", value: 3 },
     ],
     isRequired: true,
     type: SELECT,
