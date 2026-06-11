@@ -164,7 +164,7 @@ const Index = () => {
       case 2:
         return "Mobile/Email Verified";
       case 3:
-        return "Password set";
+        return "Completed";
       default:
         return "";
     }
