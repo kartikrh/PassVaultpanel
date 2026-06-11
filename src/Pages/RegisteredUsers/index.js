@@ -611,7 +611,8 @@ const Index = () => {
     isDateTypeSelect: true,
     isUserStatusActiveSelect: true,
     isProviderSelect: true,
-    resetButton: true
+    resetButton: true,
+    isProcessStatusSelect: true
   };
 
   const handleReset = (value) => {
