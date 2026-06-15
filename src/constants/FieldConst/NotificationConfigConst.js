@@ -72,7 +72,8 @@ export const notificationConfigField = [
           <span><b>batsmanrun:</b> - Batsman Runs, </span>
           <span><b>batsmanball:</b> - Batsman Balls, </span>
           <span><b>wickettype:</b> - Wicket Type, </span>
-          <span><b>teamScore:</b> - Team Score, </span>
+          <span><b>teamscore:</b> - Team Score / Wicket, </span>
+          <span><b>trilscore:</b> - Trail Score, </span>
           <span><b>wonremark:</b> - Won Remark, </span>
           <span><b>boundarytype:</b> - Boundary Type, </span>
           <span><b>result:</b> - Result, </span>

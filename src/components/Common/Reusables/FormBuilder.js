@@ -128,7 +128,7 @@ const FormBuilder = forwardRef(
           defaultValueObj[field.name] = field.defaultValue;
         }
       });
-      const hasEditData = editFormData && !isEmpty(editFormData);
+      const hasEditData = !!(editFormData && typeof editFormData === "object" && Object.keys(editFormData).length > 0);
       const isFormEmpty = isEmpty(formData);
       const isDefaultEqual = isEqual(formData, defaultValueObj);
 
@@ -139,7 +139,7 @@ const FormBuilder = forwardRef(
       });
       if (
         isFormEmpty &&
-        (!editFormData || isEmpty(editFormData)) &&
+        !hasEditData &&
         !isEmpty(defaultValueObj)
       ) {
         setFormData(defaultValueObj);
