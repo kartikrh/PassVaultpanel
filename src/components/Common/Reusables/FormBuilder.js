@@ -127,6 +127,11 @@ const FormBuilder = forwardRef(
           defaultValueObj[field.name] = field.defaultValue;
         }
       });
+      console.log("[FormBuilder] EditData Check", {
+        hasEditData: !isEmpty(editFormData),
+        isFormEmpty: isEmpty(formData),
+        isDefaultEqual: isEqual(formData, defaultValueObj),
+      });
       if (
         isEmpty(formData) &&
         isEmpty(editFormData) &&
@@ -142,6 +147,7 @@ const FormBuilder = forwardRef(
             (element.type === IMAGE || element.type === VIDEO) &&
             editFormData[element.name]
           ) {
+            console.log("[FormBuilder] Setting formData from editFormData");
             fetch(editFormData[element.name])
               .then((response) => response.blob())
               .then((blob) => {
