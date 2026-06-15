@@ -7,7 +7,8 @@ import React, {
 import PropTypes from "prop-types";
 import Select from "react-select";
 import Creatable from "react-select/creatable";
-import { isEmpty, isEqual } from "lodash";
+import isEmpty from "lodash/isEmpty";
+import isEqual from "lodash/isEqual";
 import Switch from "react-switch";
 import {
   isValueEmpty,
@@ -127,20 +128,24 @@ const FormBuilder = forwardRef(
           defaultValueObj[field.name] = field.defaultValue;
         }
       });
+      const hasEditData = editFormData && !isEmpty(editFormData);
+      const isFormEmpty = isEmpty(formData);
+      const isDefaultEqual = isEqual(formData, defaultValueObj);
+
       console.log("[FormBuilder] EditData Check", {
-        hasEditData: !isEmpty(editFormData),
-        isFormEmpty: isEmpty(formData),
-        isDefaultEqual: isEqual(formData, defaultValueObj),
+        hasEditData,
+        isFormEmpty,
+        isDefaultEqual,
       });
       if (
-        isEmpty(formData) &&
-        isEmpty(editFormData) &&
+        isFormEmpty &&
+        (!editFormData || isEmpty(editFormData)) &&
         !isEmpty(defaultValueObj)
       ) {
         setFormData(defaultValueObj);
       } else if (
-        !isEmpty(editFormData) &&
-        (isEmpty(formData) || isEqual(formData, defaultValueObj))
+        hasEditData &&
+        (isFormEmpty || isDefaultEqual)
       ) {
         fields.forEach(async (element) => {
           if (
