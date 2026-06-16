@@ -133,6 +133,9 @@ const FormBuilder = forwardRef(
       const isDefaultEqual = isEqual(formData, defaultValueObj);
 
       console.log("[FormBuilder] EditData Check", {
+        editFormData,
+        formData,
+        defaultValueObj,
         hasEditData,
         isFormEmpty,
         isDefaultEqual,
