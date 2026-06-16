@@ -132,6 +132,15 @@ const FormBuilder = forwardRef(
       const isFormEmpty = isEmpty(formData);
       const isDefaultEqual = isEqual(formData, defaultValueObj);
 
+      // Check if formData only contains keys that are subset of defaultValueObj with same values.
+      // This handles a production edge case where formData gets set to partial defaults
+      // (e.g. {deviceTypeId: 1}) before real edit data arrives, causing isDefaultEqual to be
+      // false and blocking form population.
+      const isSubsetOfDefaults = !isFormEmpty &&
+        Object.keys(formData).every(
+          (key) => key in defaultValueObj && defaultValueObj[key] === formData[key]
+        );
+
       console.log("[FormBuilder] EditData Check", {
         editFormData,
         formData,
@@ -139,6 +148,7 @@ const FormBuilder = forwardRef(
         hasEditData,
         isFormEmpty,
         isDefaultEqual,
+        isSubsetOfDefaults,
       });
       if (
         isFormEmpty &&
@@ -148,7 +158,7 @@ const FormBuilder = forwardRef(
         setFormData(defaultValueObj);
       } else if (
         hasEditData &&
-        (isFormEmpty || isDefaultEqual)
+        (isFormEmpty || isDefaultEqual || isSubsetOfDefaults)
       ) {
         fields.forEach(async (element) => {
           if (
