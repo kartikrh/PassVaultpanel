@@ -74,18 +74,12 @@ const AddBanner = () => {
     }
   }, [isSaved]);
 
-  useEffect(() => {
-    console.log("[Banner] initialEditData", initialEditData);
-  }, [initialEditData]);
-
   const fetchData = async (bannerId) => {
-    console.log("[Banner] Fetching bannerId:", bannerId);
 
     await axiosInstance
       .post("/admin/banner/byId", { bannerId })
       .then((response) => {
         // setInitialEditData(response?.result);
-        console.log("[Banner] API response", response?.result);
         const data = response?.result;
 
         setInitialEditData({
@@ -146,14 +140,6 @@ const AddBanner = () => {
   const handleBackClick = () => {
     navigate("/banner");
   };
-
-  useEffect(() => {
-    console.log("[Banner] FormBuilder Props", {
-      initialEditData,
-      masterData,
-      fieldsCount: fields?.length,
-    });
-  }, [initialEditData, masterData, fields]);
 
   return (
     <React.Fragment>
