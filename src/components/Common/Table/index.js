@@ -1387,6 +1387,14 @@ const Index = forwardRef(
         registrationProcessStatus: {
           value: null,
           label: "Select Process Status",
+        },
+        isMobileVerified: {
+          value: null,
+          label: "Select Mobile Verified",
+        },
+        isEmailVerified: {
+          value: null,
+          label: "Select Email Verified",
         }
       });
       setMenSwitch(null)
@@ -3312,6 +3320,76 @@ const Index = forwardRef(
                                   { label: "Google", value: 2 },
                                   { label: "Facebook", value: 3 },
                                   { label: "OTP Less", value: 4 }
+                                ]}
+                                classNamePrefix="filter-dropdown"
+                              />
+                            </div>
+                          ) : null}
+                          {tableElement?.isMobileVerificationSelect ? (
+                            <div className="">
+                              <Select
+                                styles={{
+                                  control: (provided) => ({
+                                    ...provided,
+                                    width: 180,
+                                  }),
+                                }}
+                                value={
+                                  selectedTableElementsLogs?.isMobileVerified ||
+                                  selectedTableElements?.isMobileVerified
+                                }
+                                placeholder="Mobile Verified"
+                                onChange={(e) => {
+                                  if (
+                                    e?.value !==
+                                    selectedTableElements?.isMobileVerified?.value
+                                  ) {
+                                    handleTableActions("isMobileVerified", e);
+                                    setSelectedTableElements({
+                                      ...selectedTableElements,
+                                      isMobileVerified: e
+                                    });
+                                  }
+                                }}
+                                options={[
+                                  { label: "Select Mobile Verified", value: null },
+                                  { label: "True", value: true },
+                                  { label: "False", value: false }
+                                ]}
+                                classNamePrefix="filter-dropdown"
+                              />
+                            </div>
+                          ) : null}
+                          {tableElement?.isEmailVerificationSelect ? (
+                            <div className="">
+                              <Select
+                                styles={{
+                                  control: (provided) => ({
+                                    ...provided,
+                                    width: 180,
+                                  }),
+                                }}
+                                value={
+                                  selectedTableElementsLogs?.isEmailVerified ||
+                                  selectedTableElements?.isEmailVerified
+                                }
+                                placeholder="Email Verified"
+                                onChange={(e) => {
+                                  if (
+                                    e?.value !==
+                                    selectedTableElements?.isEmailVerified?.value
+                                  ) {
+                                    handleTableActions("isEmailVerified", e);
+                                    setSelectedTableElements({
+                                      ...selectedTableElements,
+                                      isEmailVerified: e
+                                    });
+                                  }
+                                }}
+                                options={[
+                                  { label: "Select Email Verified", value: null },
+                                  { label: "True", value: true },
+                                  { label: "False", value: false }
                                 ]}
                                 classNamePrefix="filter-dropdown"
                               />

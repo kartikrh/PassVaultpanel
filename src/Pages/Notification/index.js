@@ -20,7 +20,7 @@ import {
   TAB_NOTIFICATION,
 } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
-import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateUTCToLocal2_24, convertDateUtcFormat24, convertDateLocalToUTC } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { Tooltip } from "antd";
 import LoadDataModal from "../../components/Model/LoadDataModal";
@@ -41,24 +41,52 @@ const Index = () => {
   const [tableSearchedData, setTableSearchedData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(globalPageSize || 10);
+  const globalDateType = JSON.parse(localStorage.getItem("DateType"));
+  const [dateType, setDateType] = useState(
+    globalDateType || {
+      label: "Local Timezone",
+      value: 1,
+    }
+  );
+  const [isSearch, setIsSearch] = useState(false);
+  const [dateRange, setDateRange] = useState({
+    startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
+    endDate: `${
+      new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split("T")[0]
+    }T23:59:00`,
+  });
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   useEffect(() => {
-      if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW) && !isEmpty(permissionObj)) {
-        navigate("/dashboard");
-      }
-      fetchData();
-    },[permissionObj]);
+    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW) && !isEmpty(permissionObj)) {
+      navigate("/dashboard");
+    }
+    fetchData();
+  }, [isSearch, permissionObj]);
 
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction();
+    let payload = {
+      ...(latestValueFromTable || tableActions),
+    };
+    if (isSearch) {
+      payload = {
+        ...payload,
+        startDate: convertDateLocalToUTC(
+          latestValueFromTable?.startDate ? latestValueFromTable?.startDate : dateRange?.startDate,
+          "index"
+        ),
+        endDate: convertDateLocalToUTC(
+          latestValueFromTable?.endDate ? latestValueFromTable?.endDate : dateRange?.endDate,
+          "index"
+        ),
+      };
+    }
     await axiosInstance
-      .post(`/admin/notification/all`, {
-        ...(latestValueFromTable || tableActions),
-      })
+      .post(`/admin/notification/all`, payload)
       .then((response) => {
         const notificationData = response?.result?.sort((a,b)=>a?.notificationId - b?.notificationId);
         let notificationDataIdList = [];
@@ -241,6 +269,27 @@ const Index = () => {
       style: { width: "10%" },
     },
     {
+      title: "Date",
+      dataIndex: "createdAt",
+      render: (text, record) => (
+        <span>
+          {dateType?.value == 1
+            ? convertDateUTCToLocal2_24(text, "index")
+            : convertDateUtcFormat24(text, "index")}
+        </span>
+      ),
+      key: "createDate",
+      sort: true,
+      style: { width: "10%" },
+    },
+    {
+      title: "CID",
+      dataIndex: "commentaryId",
+      key: "commentaryId",
+      sort: true,
+      style: { width: "20%" },
+    },
+    {
       title: "Title",
       dataIndex: "title",
       key: "title",
@@ -282,6 +331,8 @@ const Index = () => {
     reloadButton: true,
     loadData: true,
     clone: false,
+    isDateTypeSelect: true,
+    isDateRange: true,
   };
 
   const handleLoadData = async (password) => {
@@ -341,6 +392,17 @@ const Index = () => {
       });
   };
 
+  const handleReset = (value) => {
+    setIsSearch(false);
+    setDateRange({
+      startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
+      endDate: `${
+        new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split("T")[0]
+      }T23:59:00`,
+    });
+    fetchData(value);
+  };
+
   const handleReload = (value) => {
     fetchData();
   };
@@ -359,6 +421,7 @@ const Index = () => {
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
             reFetchData={fetchData}
+            handleReset={handleReset}
             handleReload={handleReload}
             loadDataModelFunction={setLoadDataModelVisable}
             onAddNavigate={"/addNotification"}
@@ -375,6 +438,12 @@ const Index = () => {
             setParentCurrentPage={handleCurrentPageChange}
             setParentPageSize={handlePageSizeChange}
             setParentSearchedData={handleTableSearchedDataChange}
+            dateType={dateType}
+            setDateType={setDateType}
+            isSearch={isSearch}
+            setIsSearch={setIsSearch}
+            setDateRange={setDateRange}
+            dateRange={dateRange}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
