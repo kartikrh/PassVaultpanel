@@ -155,6 +155,14 @@ const Index = () => {
         return "onlyLoggedInUser";
       case 3:
         return "pushNotification";
+      case 4:
+        return "onlyLoggedOutUser";
+      case 5:
+        return "pushNotificationAndOnlyLoggedInUser";
+      case 6:
+        return "pushNotificationAndOnlyLoggedOutUser";
+      case 7:
+        return "onlyLoggedInUserAndLoggedOutUser";
       default:
         return "Unknown";
     }
