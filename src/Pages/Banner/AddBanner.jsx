@@ -230,7 +230,11 @@ const AddBanner = () => {
                 <FormBuilder
                   ref={finalizeRef}
                   fields={fields}
-                  editFormData={initialEditData}
+                  editFormData={{
+                    deviceTypeId: initialEditData?.deviceTypeId ?? 1,
+                    ...(initialEditData || {}),
+                  }}
+                  // editFormData={initialEditData}
                   masterData={masterData}
                   onFormDataChange={handleFormBDataChange}
                 />
