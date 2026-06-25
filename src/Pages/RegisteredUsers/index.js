@@ -612,7 +612,9 @@ const Index = () => {
     isUserStatusActiveSelect: true,
     isProviderSelect: true,
     resetButton: true,
-    isProcessStatusSelect: true
+    isProcessStatusSelect: true,
+    isMobileVerificationSelect: true,
+    isEmailVerificationSelect: true,
   };
 
   const handleReset = (value) => {
