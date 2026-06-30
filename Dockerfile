@@ -22,7 +22,7 @@ ENV REACT_APP_API_INTERVAL=${REACT_APP_API_INTERVAL}
 ENV REACT_APP_IS_SOCKET=${REACT_APP_IS_SOCKET}
 ENV REACT_APP_DEFAULTAUTH=${REACT_APP_DEFAULTAUTH}
 
-RUN node --max-old-space-size=4096 yarn run build
+RUN NODE_OPTIONS="--max-old-space-size=4096" npm run build
 
 FROM nginx:alpine
 
