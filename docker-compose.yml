@@ -3,27 +3,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: scorepanel:latest
-    container_name: scorepanel
-    restart: unless-stopped
+      args:
+        REACT_APP_BASE_URL: ${REACT_APP_BASE_URL}
+        REACT_APP_SOCKET_URL: ${REACT_APP_SOCKET_URL}
+        REACT_APP_ENCRYPTION_SECRET: ${REACT_APP_ENCRYPTION_SECRET}
+        REACT_APP_API_INTERVAL: ${REACT_APP_API_INTERVAL}
+        REACT_APP_IS_SOCKET: ${REACT_APP_IS_SOCKET}
+        REACT_APP_DEFAULTAUTH: ${REACT_APP_DEFAULTAUTH}
+    container_name: pe-admin-fe
     ports:
-      - "4000:3000"
-    environment:
-      - NODE_ENV=production
-    healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000/ >/dev/null 2>&1 || exit 1"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 20s
-    logging:
-      driver: json-file
-      options:
-        max-size: "10m"
-        max-file: "3"
-    networks:
-      - scorepanel-net
-
-networks:
-  scorepanel-net:
-    driver: bridge
+      - "4000:80"
+    restart: unless-stopped
