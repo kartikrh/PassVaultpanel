@@ -10,7 +10,7 @@ services:
         REACT_APP_API_INTERVAL: ${REACT_APP_API_INTERVAL}
         REACT_APP_IS_SOCKET: ${REACT_APP_IS_SOCKET}
         REACT_APP_DEFAULTAUTH: ${REACT_APP_DEFAULTAUTH}
-    container_name: pe-admin-fe
+    container_name: scorepanel
     ports:
       - "4000:80"
     restart: unless-stopped
