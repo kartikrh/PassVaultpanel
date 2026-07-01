@@ -8,7 +8,7 @@ import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
-import { isEmpty, isEqual } from "lodash";
+import { isEmpty, isEqual, pickBy } from "lodash";
 import {
   ERROR,
   MODULE_NOTIFICATIONS,
@@ -48,13 +48,14 @@ const Index = () => {
       value: 1,
     }
   );
-  const [isSearch, setIsSearch] = useState(false);
+  const [isSearch, setIsSearch] = useState(true);
   const [dateRange, setDateRange] = useState({
     startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
     endDate: `${
       new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split("T")[0]
     }T23:59:00`,
   });
+  const [commentaryOptions, setCommentaryOptions] = useState([]);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -65,6 +66,25 @@ const Index = () => {
     }
     fetchData();
   }, [isSearch, permissionObj]);
+
+  useEffect(() => {
+    fetchCommentaryEvents();
+  }, []);
+
+  const fetchCommentaryEvents = async () => {
+    try {
+      const response = await axiosInstance.post("admin/notification/eventList", {});
+      if (response?.result) {
+        const mapped = response.result.map((item) => ({
+          label: `${item.eventName} - ${item.eventRefId} - ${convertDateUTCToLocal2_24(item?.eventDate, "index")}`,
+          value: item.commentaryId,
+        }));
+        setCommentaryOptions([{ label: "Select Commentary Type", value: null }, ...mapped]);
+      }
+    } catch (error) {
+      console.error("Error fetching commentary events:", error);
+    }
+  };
 
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
@@ -85,6 +105,7 @@ const Index = () => {
         ),
       };
     }
+    payload = pickBy(payload, (value) => value !== null && value !== undefined && value !== "");
     await axiosInstance
       .post(`/admin/notification/all`, payload)
       .then((response) => {
@@ -341,6 +362,19 @@ const Index = () => {
     clone: false,
     isDateTypeSelect: true,
     isDateRange: true,
+    sendTypeSelect: true,
+    sendTypeOptions: [
+      { label: "Select Send Type", value: null },
+      { label: "all", value: 1 },
+      { label: "onlyLoggedInUser", value: 2 },
+      { label: "pushNotification", value: 3 },
+      { label: "onlyLoggedOutUser", value: 4 },
+      { label: "pushNotificationAndOnlyLoggedInUser", value: 5 },
+      { label: "pushNotificationAndOnlyLoggedOutUser", value: 6 },
+      { label: "onlyLoggedInUserAndLoggedOutUser", value: 7 },
+    ],
+    commentaryTypeSelect: true,
+    commentaryTypeOptions: commentaryOptions,
   };
 
   const handleLoadData = async (password) => {

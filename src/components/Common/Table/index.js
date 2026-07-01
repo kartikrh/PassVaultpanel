@@ -1395,6 +1395,14 @@ const Index = forwardRef(
         isEmailVerified: {
           value: null,
           label: "Select Email Verified",
+        },
+        sendType: {
+          value: null,
+          label: "Select Send Type",
+        },
+        commentaryType: {
+          value: null,
+          label: "Select Commentary Type",
         }
       });
       setMenSwitch(null)
@@ -2401,6 +2409,86 @@ const Index = forwardRef(
                                   }
                                 }}
                                 options={tableElement?.permanentOptions?.map(
+                                  (item) => ({
+                                    label: item?.label,
+                                    value: item?.value,
+                                  })
+                                )}
+                                classNamePrefix="filter-dropdown"
+                              />
+                            </div>
+                          ) : null}
+                          {tableElement?.sendTypeSelect ? (
+                            <div className="">
+                              <Select
+                                styles={{
+                                  control: (provided) => ({
+                                    ...provided,
+                                    width: 180,
+                                  }),
+                                }}
+                                value={selectedTableElements?.sendType}
+                                placeholder="Select Send Type"
+                                onChange={(e) => {
+                                  if (
+                                    e?.value !==
+                                    selectedTableElements?.sendType?.value
+                                  ) {
+                                    const newTableActions = { ...tableActions };
+                                    if (e?.value === null || e?.value === undefined || e?.value === "0" || e?.value === 0) {
+                                      delete newTableActions.sendType;
+                                      setTableActions(newTableActions);
+                                      reFetchData(newTableActions);
+                                    } else {
+                                      handleTableActions("sendType", e);
+                                    }
+                                    setSelectedTableElements({
+                                      ...selectedTableElements,
+                                      sendType: e,
+                                    });
+                                  }
+                                }}
+                                options={tableElement?.sendTypeOptions?.map(
+                                  (item) => ({
+                                    label: item?.label,
+                                    value: item?.value,
+                                  })
+                                )}
+                                classNamePrefix="filter-dropdown"
+                              />
+                            </div>
+                          ) : null}
+                          {tableElement?.commentaryTypeSelect ? (
+                            <div className="">
+                              <Select
+                                styles={{
+                                  control: (provided) => ({
+                                    ...provided,
+                                    width: 250,
+                                  }),
+                                }}
+                                value={selectedTableElements?.commentaryType}
+                                placeholder="Select Commentary Type"
+                                onChange={(e) => {
+                                  if (
+                                    e?.value !==
+                                    selectedTableElements?.commentaryType?.value
+                                  ) {
+                                    const newTableActions = { ...tableActions };
+                                    if (e?.value === null || e?.value === undefined || e?.value === "0" || e?.value === 0) {
+                                      delete newTableActions.commentaryType;
+                                      setTableActions(newTableActions);
+                                      reFetchData(newTableActions);
+                                    } else {
+                                      handleTableActions("commentaryType", e);
+                                    }
+                                    setSelectedTableElements({
+                                      ...selectedTableElements,
+                                      commentaryType: e,
+                                    });
+                                  }
+                                }}
+                                options={tableElement?.commentaryTypeOptions?.map(
                                   (item) => ({
                                     label: item?.label,
                                     value: item?.value,
