@@ -139,7 +139,7 @@ const Index = () => {
   const handleActivePermissions = async (pType, record, cState) => {
     setIsLoading(true);
     await axiosInstance
-      .post(`/admin/subscribeDomain/inActiveSubscribeDomainAndSubDomain`, {
+      .post(`/admin/subscribeDomain/activeInactiveSubscribeDomain`, {
         subScribesDomainId: record.subScribesDomainId,
         [pType]: cState ? false : true,
       })
