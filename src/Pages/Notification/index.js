@@ -52,7 +52,7 @@ const Index = () => {
   const [dateRange, setDateRange] = useState({
     startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
     endDate: `${
-      new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split("T")[0]
+      new Date().toISOString().split("T")[0]
     }T23:59:00`,
   });
   const [commentaryOptions, setCommentaryOptions] = useState([]);
@@ -439,7 +439,7 @@ const Index = () => {
     setDateRange({
       startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
       endDate: `${
-        new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split("T")[0]
+        new Date().toISOString().split("T")[0]
       }T23:59:00`,
     });
     fetchData(value);
