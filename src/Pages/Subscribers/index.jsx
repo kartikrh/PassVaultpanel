@@ -519,7 +519,7 @@ const Index = () => {
             dateRange={dateRange}
             renderCustomFilter={() => {
               return <>
-                <Tooltip title={"Cross-Verify"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+                <Tooltip title={"InActive All Domains"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
                   <Button
                     onClick={() => handleUpdateAllActive()}
                     // className="btn border"
