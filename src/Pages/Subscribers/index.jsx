@@ -360,7 +360,7 @@ const Index = () => {
         title: "subDomain Count",
         dataIndex: "subDomainCount",
         key: "subDomainCount",
-        style: { width: "10%" },
+        style: { width: "5%", textAlign:"center" },
         sort: true,
       },
       {
@@ -372,7 +372,7 @@ const Index = () => {
             <i className="fas fa-eye"></i>
           </span>
         ),
-        style: { width: "10%", textAlign:"center" },
+        style: { width: "5%", textAlign:"center" },
         sort: true,
       },
     {
@@ -387,7 +387,7 @@ const Index = () => {
       ),
       key: "createdDate",
       sort: true,
-      style: { width: "10%" },
+      style: { width: "5%" },
     },
     {
       title: "Active",
@@ -431,6 +431,7 @@ const Index = () => {
           color={`${record.isVideoApproved ? "primary" : "danger"}`}
           size="sm"
           className="btn"
+          style={{ marginRight: "350px" }}
           onClick={() => {
             handleVideoPermissions("isVideoApproved", record, record.isVideoApproved);
           }}
