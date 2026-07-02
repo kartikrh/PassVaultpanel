@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
-import { Avatar } from "antd";
+import { Avatar, Tooltip } from "antd";
 import { Button } from "reactstrap";
 import { Container } from "reactstrap";
 import DeleteTabModel from "../../components/Model/DeleteModel";
@@ -226,6 +226,33 @@ const Index = () => {
     fetchData(value)
   };
 
+  const handleUpdateAllActive = async () => {
+    setIsLoading(true)
+    await axiosInstance
+      .post(`admin/subscribeDomain/inactiveAllSubscribeDomain`)
+      .then((response) => {
+        fetchData()
+        dispatch(
+          updateToastData({
+            data: response.result,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+
   //checkbox select
   const getSelectedItemsData = () => {
     const newCurrentPage = currentPage > 0 ? currentPage : 1;
@@ -429,6 +456,7 @@ const Index = () => {
     resetButton: true,
     scorecardSelect: true,
     streamSelect: true,
+    activeSelect: true,
     isDateTypeSelect: true,
     isDateRange: true,
     scorecardOptions: [
@@ -440,6 +468,11 @@ const Index = () => {
       { label: "Select Stream", value: null },
       { label: "Approved", value: true },
       { label: "Decline", value: false },
+    ],
+    activeOptions: [
+      { label: "Select Active", value: null },
+      { label: "Active", value: true },
+      { label: "InActive", value: false },
     ],
   };
 
@@ -484,6 +517,19 @@ const Index = () => {
             setIsSearch={setIsSearch}
             setDateRange={setDateRange}
             dateRange={dateRange}
+            renderCustomFilter={() => {
+              return <>
+                <Tooltip title={"Cross-Verify"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+                  <Button
+                    onClick={() => handleUpdateAllActive()}
+                    // className="btn border"
+                    color={"warning"}
+                  >
+                    Cross-Verify
+                  </Button>
+                </Tooltip>
+              </>
+            }}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
