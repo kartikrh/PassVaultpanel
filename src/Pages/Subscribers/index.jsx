@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
-import { Avatar } from "antd";
+import { Avatar, Tooltip } from "antd";
 import { Button } from "reactstrap";
 import { Container } from "reactstrap";
 import DeleteTabModel from "../../components/Model/DeleteModel";
@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { isEmpty, isEqual, pickBy } from "lodash";
 import { TAB_SUBSCRIBERS, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDIT, PERMISSION_VIEW, SUCCESS, ERROR, MODULE_SUBSCRIBERS, } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
-import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateUTCToLocal2_24, convertDateUtcFormat24, convertDateLocalToUTC } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import {ImportExportModel} from '../../components/Model/ImportExportModel'
 import SubDomainsModels from '../../components/Model/SubdomainsModel'
@@ -34,6 +34,20 @@ const Index = () => {
   const [tableSearchedData, setTableSearchedData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(globalPageSize || 10);
+  const globalDateType = JSON.parse(localStorage.getItem("DateType"));
+  const [dateType, setDateType] = useState(
+    globalDateType || {
+      label: "Local Timezone",
+      value: 1,
+    }
+  );
+  const [isSearch, setIsSearch] = useState(false);
+  const [dateRange, setDateRange] = useState({
+    startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
+    endDate: `${
+      new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split("T")[0]
+    }T23:59:00`,
+  });
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -41,14 +55,26 @@ const Index = () => {
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
     const tableActions = finalizeRef.current.getTableAction()
-    const data = latestValueFromTable || tableActions;
+    let payload = {
+      ...(latestValueFromTable || tableActions),
+    };
+    if (isSearch) {
+      payload = {
+        ...payload,
+        startDate: convertDateLocalToUTC(
+          latestValueFromTable?.startDate ? latestValueFromTable?.startDate : dateRange?.startDate,
+          "index"
+        ),
+        endDate: convertDateLocalToUTC(
+          latestValueFromTable?.endDate ? latestValueFromTable?.endDate : dateRange?.endDate,
+          "index"
+        ),
+      };
+    }
+    payload = pickBy(payload, (value) => value !== null && value !== undefined);
   
     await axiosInstance
-      .post(`/admin/subscribeDomain/all`, pickBy(data, (value) => value !== null && value !== undefined))
-      // .post(`/admin/subscribeDomain/all`, {
-      //   ...data,
-      //   isApproved: data?.isApproved !== undefined ? data?.isApproved : tableActions?.isApproved !== undefined ? tableActions?.isApproved : true
-      // })
+      .post(`/admin/subscribeDomain/all`, payload)
       .then((response) => {
         const apiData = response?.result?.sort((a,b)=>a?.subScribesDomainId - b?.subScribesDomainId);
         let apiDataIdList = [];
@@ -110,6 +136,35 @@ const Index = () => {
       });
   };
 
+  const handleActivePermissions = async (pType, record, cState) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/subscribeDomain/activeInactiveSubscribeDomain`, {
+        subScribesDomainId: record.subScribesDomainId,
+        [pType]: cState ? false : true,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+
   const handleLoadData = async (password) => {
     setIsLoading(true);
     await axiosInstance
@@ -161,7 +216,41 @@ const Index = () => {
     setDomainsModelVisable(true)
   };
   const handleReset = (value) => {
+    setIsSearch(false);
+    setDateRange({
+      startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
+      endDate: `${
+        new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split("T")[0]
+      }T23:59:00`,
+    });
     fetchData(value)
+  };
+
+  const handleUpdateAllActive = async () => {
+    setIsLoading(true)
+    await axiosInstance
+      .post(`admin/subscribeDomain/inactiveAllSubscribeDomain`)
+      .then((response) => {
+        fetchData()
+        dispatch(
+          updateToastData({
+            data: response.result,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
   };
 
   //checkbox select
@@ -264,14 +353,14 @@ const Index = () => {
       title: "Site Domain",
       dataIndex: "siteDomain",
       key: "siteDomain",
-      style: { width: "20%" },
+      style: { width: "10%" },
       sort: true,
     },
     {
         title: "subDomain Count",
         dataIndex: "subDomainCount",
         key: "subDomainCount",
-        style: { width: "30%" },
+        style: { width: "5%", textAlign:"center" },
         sort: true,
       },
       {
@@ -283,9 +372,40 @@ const Index = () => {
             <i className="fas fa-eye"></i>
           </span>
         ),
-        style: { width: "10%", textAlign:"center" },
+        style: { width: "5%", textAlign:"center" },
         sort: true,
       },
+    {
+      title: "Created Date",
+      dataIndex: "createdDate",
+      render: (text, record) => (
+        <span>
+          {dateType?.value == 1
+            ? convertDateUTCToLocal2_24(text, "index")
+            : convertDateUtcFormat24(text, "index")}
+        </span>
+      ),
+      key: "createdDate",
+      sort: true,
+      style: { width: "5%" },
+    },
+    {
+      title: "Active",
+      key: "isActive",
+      render: (text, record) => (
+        <Button
+          color={`${record.isActive ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handleActivePermissions("isActive", record, record.isActive);
+          }}
+        >
+          <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
     {
       title: "Scorecard",
       key: "isApproved",
@@ -311,6 +431,7 @@ const Index = () => {
           color={`${record.isVideoApproved ? "primary" : "danger"}`}
           size="sm"
           className="btn"
+          style={{ marginRight: "350px" }}
           onClick={() => {
             handleVideoPermissions("isVideoApproved", record, record.isVideoApproved);
           }}
@@ -336,6 +457,9 @@ const Index = () => {
     resetButton: true,
     scorecardSelect: true,
     streamSelect: true,
+    activeSelect: true,
+    isDateTypeSelect: true,
+    isDateRange: true,
     scorecardOptions: [
       { label: "Select Scorecard", value: null },
       { label: "Approved", value: true },
@@ -346,14 +470,19 @@ const Index = () => {
       { label: "Approved", value: true },
       { label: "Decline", value: false },
     ],
+    activeOptions: [
+      { label: "Select Active", value: null },
+      { label: "Active", value: true },
+      { label: "InActive", value: false },
+    ],
   };
 
   useEffect(() => {
-    if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW) && !isEmpty(permissionObj)) {
+    if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard")
     }
     fetchData();
-  }, [permissionObj]);
+  }, [isSearch, permissionObj]);
 
   return (
     <React.Fragment>
@@ -382,6 +511,25 @@ const Index = () => {
               isActive: true, 
               isApproved: null,
               isVideoApproved: null,
+            }}
+            dateType={dateType}
+            setDateType={setDateType}
+            isSearch={isSearch}
+            setIsSearch={setIsSearch}
+            setDateRange={setDateRange}
+            dateRange={dateRange}
+            renderCustomFilter={() => {
+              return <>
+                <Tooltip title={"InActive All Domains"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+                  <Button
+                    onClick={() => handleUpdateAllActive()}
+                    // className="btn border"
+                    color={"warning"}
+                  >
+                    Cross-Verify
+                  </Button>
+                </Tooltip>
+              </>
             }}
           />
           <DeleteTabModel
