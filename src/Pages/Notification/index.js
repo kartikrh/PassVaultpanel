@@ -358,6 +358,7 @@ const Index = () => {
     headerSelect: false,
     isActive: false,
     reloadButton: true,
+    resetButton: true,
     loadData: true,
     clone: false,
     isDateTypeSelect: true,
@@ -435,7 +436,7 @@ const Index = () => {
   };
 
   const handleReset = (value) => {
-    setIsSearch(false);
+    setIsSearch(true);
     setDateRange({
       startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
       endDate: `${
