@@ -2476,11 +2476,11 @@ const Index = forwardRef(
                                   ) {
                                     const newTableActions = { ...tableActions };
                                     if (e?.value === null || e?.value === undefined || e?.value === "0" || e?.value === 0) {
-                                      delete newTableActions.commentaryType;
+                                      delete newTableActions.commentaryId;
                                       setTableActions(newTableActions);
                                       reFetchData(newTableActions);
                                     } else {
-                                      handleTableActions("commentaryType", e);
+                                      handleTableActions("commentaryId", e);
                                     }
                                     setSelectedTableElements({
                                       ...selectedTableElements,
