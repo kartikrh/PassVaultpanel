@@ -41,7 +41,7 @@ import Item from "antd/es/list/Item";
       { label: "Women", value: 2 },
   ]
   const playerTypeOptions = [
-      { label: "Select Type", value: "0" },
+      { label: "Select Player Type", value: "0" },
       { label: "Batsmen", value: 1 },
       { label: "Bowler", value: 2 },
       { label: "All Rounder", value: 4 },
@@ -65,7 +65,7 @@ const Index = () => {
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [eventTypes, setEventTypes] = useState([]);
   const [matchTypes, setMatchTypes] = useState([]);
-  const [matchTypeList, setMatchTypeList] = useState([{ label: "Select Gender", value: 0 }]);
+  const [matchTypeList, setMatchTypeList] = useState([{ label: "Select Match Type", value: 0 }]);
   const [sportList, setSportList] = useState([{ label: "Select Sport", value: 0 }]);
   const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
   const [typeSelectedOption, setTypeSelectedOption] = useState(undefined);
@@ -707,7 +707,7 @@ const Index = () => {
                 />
                 <Select
                   styles={{
-                    control: (provided) => ({ ...provided, width: 140 }),
+                    control: (provided) => ({ ...provided, width: 150 }),
                   }}
                   // value={playerTypeOptions.find((option) => option.value === playerTypeSelectedOption)}
                   value={
@@ -734,7 +734,7 @@ const Index = () => {
                 />
                 <Select
                   styles={{
-                    control: (provided) => ({ ...provided, width: 180 }),
+                    control: (provided) => ({ ...provided, width: 140 }),
                   }}
                   value={selectedFilter?.sportId ? selectedFilter?.sportId : null}
                   placeholder={"Sport"}
