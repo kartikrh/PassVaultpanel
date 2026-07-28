@@ -397,25 +397,6 @@ const Index = () => {
       render: (text, record) => <span>{getStatusText(record.status)}</span>,
     },
     {
-      title: "APNS",
-      key: "isActive",
-      render: (text, record) => (
-      <Tooltip title={"Active/Inactive APNS"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
-        <Button
-          color={`${record.isAPNSEnable ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          onClick={() => {
-            handleAPNSPermissions("isAPNSEnable", record, record.isAPNSEnable);
-          }}
-        >
-          <i className={`bx ${record.isAPNSEnable ? "bx-check" : "bx-block"}`}></i>
-        </Button>
-      </Tooltip>
-      ),
-      style: { width: "2%", textAlign: "center" },
-    },
-    {
       title: "Active",
       key: "isActive",
       render: (text, record) => (
@@ -448,6 +429,25 @@ const Index = () => {
           }}
         >
           <i className={`bx ${record.isUpdateView ? "bx-check" : "bx-block"}`}></i>
+        </Button>
+      </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "APNS",
+      key: "isActive",
+      render: (text, record) => (
+      <Tooltip title={"Active/Inactive APNS"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+        <Button
+          color={`${record.isAPNSEnable ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handleAPNSPermissions("isAPNSEnable", record, record.isAPNSEnable);
+          }}
+        >
+          <i className={`bx ${record.isAPNSEnable ? "bx-check" : "bx-block"}`}></i>
         </Button>
       </Tooltip>
       ),
