@@ -116,6 +116,23 @@ const Index = () => {
       });
   };
 
+  const handleAPNSPermissions = async (pType, record, cState) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/clientSocket/activeInactiveAPNS`, {
+        clientSocketId: record.clientSocketId,
+        [pType]: cState ? false : true,
+      })
+      .then((response) => {
+        fetchData();
+        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+      });
+  };
+
   const handleUpdateView = async (pType, record, cState) => {
     setIsLoading(true);
     await axiosInstance
@@ -412,6 +429,25 @@ const Index = () => {
           }}
         >
           <i className={`bx ${record.isUpdateView ? "bx-check" : "bx-block"}`}></i>
+        </Button>
+      </Tooltip>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    {
+      title: "APNS",
+      key: "isActive",
+      render: (text, record) => (
+      <Tooltip title={"Active/Inactive APNS"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
+        <Button
+          color={`${record.isAPNSEnable ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          onClick={() => {
+            handleAPNSPermissions("isAPNSEnable", record, record.isAPNSEnable);
+          }}
+        >
+          <i className={`bx ${record.isAPNSEnable ? "bx-check" : "bx-block"}`}></i>
         </Button>
       </Tooltip>
       ),
