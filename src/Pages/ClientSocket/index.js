@@ -436,7 +436,7 @@ const Index = () => {
     },
     {
       title: "APNS",
-      key: "isActive",
+      key: "isAPNSEnable",
       render: (text, record) => (
       <Tooltip title={"Active/Inactive APNS"} color={"#e8e8ea"} overlayInnerStyle={{color: '#000'}}>
         <Button
@@ -446,6 +446,7 @@ const Index = () => {
           onClick={() => {
             handleAPNSPermissions("isAPNSEnable", record, record.isAPNSEnable);
           }}
+          disabled={record.isAPNSEnable ? false : true}
         >
           <i className={`bx ${record.isAPNSEnable ? "bx-check" : "bx-block"}`}></i>
         </Button>
