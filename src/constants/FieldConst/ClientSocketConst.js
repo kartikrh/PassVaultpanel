@@ -1,4 +1,4 @@
-import { SWITCH, TEXT } from "../../components/Common/Const";
+import { SELECT, SWITCH, TEXT } from "../../components/Common/Const";
 
 export const ClientSocketFields = [
     {
@@ -78,10 +78,27 @@ export const ClientSocketFields = [
     },
     {
         name: "isAPNSEnable",
-        label: "Is Active APNS",
+        label: "Is APNS Active",
         defaultValue: false,
         parentclassName: "",
         type: SWITCH,
+    },
+    {
+        type: SELECT,
+        name: "APNSEnvType",
+        label: "APNS Env Type",
+        options: [
+            { label: "Select APNS Env Type", value: "0" },
+            { label: "Production", value: "1" },
+            { label: "Sandbox", value: "2" }
+        ],
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
+        dependsOnField: "isAPNSEnable",
+        hideDependentInitially: true,
+        dependsOnValue: true,
+        isRequired: true,
+        requiredErrorMessage: "Please select APNS Environment."
     },
     {
         type: TEXT,
@@ -160,18 +177,5 @@ export const ClientSocketFields = [
         dependsOnValue: true,
         isRequired: true,
         requiredErrorMessage: "Please enter APNS Key Path."
-    },
-    {
-        type: TEXT,
-        name: "APNSEnv",
-        label: "APNS Env",
-        parentclassName: "",
-        labelColspan: { xs: 12, md: 2, lg: 2 },
-        fieldColspan: { xs: 12, md: 4, lg: 4 },
-        dependsOnField: "isAPNSEnable",
-        hideDependentInitially: true,
-        dependsOnValue: true,
-        isRequired: true,
-        requiredErrorMessage: "Please enter APNS Environment."
-    },
+    }
 ]
