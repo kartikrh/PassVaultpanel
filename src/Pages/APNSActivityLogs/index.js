@@ -53,6 +53,9 @@ const Index = () => {
     const [tableSearchedData, setTableSearchedData] = useState([]);
     const [reqResModelVisible, setReqResModelVisible] = useState(false);
     const [reqBodyData, setReqBodyData] = useState(null);
+    const [selectedTableElements, setSelectedTableElements] = useState({
+        envType: null
+    });
 
     const navigate = useNavigate();
 
@@ -199,7 +202,7 @@ const Index = () => {
             style: { width: "10%" },
         },
         {
-            title: "Env Type",
+            title: "ENV Type",
             dataIndex: "envType",
             key: "envType",
             sort: true,
@@ -317,6 +320,7 @@ const Index = () => {
         isServerPagination: true,
         isDateRange: true,
         isDateTypeSelect: true,
+        apnsEnvTypeSelect: true
     };
 
     useEffect(() => {
@@ -387,7 +391,7 @@ const Index = () => {
                         tableElement={tableElement}
                         singleCheck={checekedList}
                         reFetchData={fetchData}
-                        // selectedTableElementsLogs={selectedTableElements}
+                        selectedTableElementsLogs={selectedTableElements}
                         // eventTypes={eventTypes}
                         // competitions={competitions}
                         // commentary={commentary}
