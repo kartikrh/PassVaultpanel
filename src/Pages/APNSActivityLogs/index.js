@@ -45,17 +45,14 @@ const Index = () => {
     const [currentPage, setCurrentPage] = useState(0);
     const [pageSize, setPageSize] = useState(globalPageSize || 10);
     const [total, setTotal] = useState(0);
-    // const [selectedTableElements, setSelectedTableElements] = useState({
-    //     eventType: null,
-    //     competition: null,
-    //     commentary: null,
-    // });
+    const [selectedTableElements, setSelectedTableElements] = useState({
+        envType: null,
+        clientSocketId: null
+    });
     const [tableSearchedData, setTableSearchedData] = useState([]);
     const [reqResModelVisible, setReqResModelVisible] = useState(false);
     const [reqBodyData, setReqBodyData] = useState(null);
-    const [selectedTableElements, setSelectedTableElements] = useState({
-        envType: null
-    });
+    const [clientSocketList, setClientSocketList] = useState([]);
 
     const navigate = useNavigate();
 
@@ -320,14 +317,30 @@ const Index = () => {
         isServerPagination: true,
         isDateRange: true,
         isDateTypeSelect: true,
-        apnsEnvTypeSelect: true
+        apnsEnvTypeSelect: true,
+        clientSocketSelect: true
     };
 
+    const fetchClientSocketData = async () => {
+        await axiosInstance
+            .post(`/admin/clientSocket/all`, {
+                isActive: true,
+            })
+            .then((response) => {
+                setClientSocketList(response.result?.map((item) => ({
+                    value: item?.clientSocketId,
+                    label: item?.serverName
+                })));
+            })
+            .catch((error) => { });
+    }
+
     useEffect(() => {
-        // if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW) && !isEmpty(permissionObj)) {
-        //     navigate("/dashboard");
-        // }
+        if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW) && !isEmpty(permissionObj)) {
+            navigate("/dashboard");
+        }
         fetchData();
+        fetchClientSocketData();
         // fetchEventTypeData();
     }, [isSearch, currentPage, pageSize, permissionObj]);
 
@@ -390,6 +403,7 @@ const Index = () => {
                         dataSource={data}
                         tableElement={tableElement}
                         singleCheck={checekedList}
+                        clientSocketList={clientSocketList}
                         reFetchData={fetchData}
                         selectedTableElementsLogs={selectedTableElements}
                         // eventTypes={eventTypes}
