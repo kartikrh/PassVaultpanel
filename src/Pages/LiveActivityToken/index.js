@@ -51,6 +51,9 @@ const Index = () => {
   //   commentary: null,
   // });
   const [tableSearchedData, setTableSearchedData] = useState([]);
+  const [selectedTableElements, setSelectedTableElements] = useState({
+    envType: null
+  });
 
   const navigate = useNavigate();
 
@@ -275,6 +278,7 @@ const Index = () => {
     isServerPagination: true,
     isDateRange: true,
     isDateTypeSelect: true,
+    apnsEnvTypeSelect: true
   };
 
   useEffect(() => {
@@ -344,7 +348,7 @@ const Index = () => {
             tableElement={tableElement}
             singleCheck={checekedList}
             reFetchData={fetchData}
-            // selectedTableElementsLogs={selectedTableElements}
+            selectedTableElementsLogs={selectedTableElements}
             // eventTypes={eventTypes}
             // competitions={competitions}
             // commentary={commentary}
