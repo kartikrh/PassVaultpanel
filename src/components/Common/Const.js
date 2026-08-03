@@ -37,6 +37,8 @@ export const TAB_BANNER = "Banner";
 export const TAB_COMPETITION_STATISTICS_TYPE = "Competition Statistics Type";
 export const TAB_BLOCKS = "Blocks";
 export const TAB_AUTO_IMPORT = "Auto Import";
+export const LIVE_ACTIVITY_TOKEN = "Live Activity Token";
+export const APNS_ACTIVITY_LOGS = "APNS Activity Logs";
 
 
 export const TAB_CARD_TYPE = "Card Type";

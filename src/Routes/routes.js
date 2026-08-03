@@ -80,6 +80,8 @@ import AddDisplayStatus from "../Pages/DisplayStatus/AddDisplayStatus.jsx";
 import ClientSocket from "../Pages/ClientSocket";
 import EntitySocket from "../Pages/EntitySocket";
 import ThirdPartyApi from "../Pages/ThirdPartyApi";
+import LiveActivityToken from "../Pages/LiveActivityToken";
+import APNSActivityLogs from "../Pages/APNSActivityLogs";
 // Import Authentication pages
 import Login from "../Pages/Authentication/Login";
 // import ForgetPasswordPage from "../Pages/Authentication/ForgetPassword";
@@ -359,6 +361,8 @@ const authProtectedRoutes = [
   { path: "/advertise", component: <Advertise /> },
   { path: "/addAdvertise", component: <AddAdvertise /> },
   { path: "/streamingList", component: <StreamingList /> },
+  { path: "/liveActivityToken", component: <LiveActivityToken /> },
+  { path: "/apnsActivityLogs", component: <APNSActivityLogs /> },
   {
     path: "/changePassword",
     component: <ChangePassword />,
