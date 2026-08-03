@@ -378,7 +378,7 @@ const Index = () => {
         <React.Fragment>
             <div className="page-content">
                 <Container fluid={true}>
-                    <Breadcrumbs title="ScoreCard" breadcrumbItem="Live Activity Token" />
+                    <Breadcrumbs title="ScoreCard" breadcrumbItem={APNS_ACTIVITY_LOGS} />
                     {isLoading && <SpinnerModel />}
                     <Table
                         ref={finalizeRef}
