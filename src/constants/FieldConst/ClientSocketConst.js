@@ -84,6 +84,16 @@ export const ClientSocketFields = [
         type: SWITCH,
     },
     {
+        name: "isAPNSLogEnable",
+        label: "Is APNS Log Enable",
+        defaultValue: false,
+        parentclassName: "",
+        type: SWITCH,
+        dependsOnField: "isAPNSEnable",
+        hideDependentInitially: true,
+        dependsOnValue: true,
+    },
+    {
         type: SELECT,
         name: "APNSEnvType",
         label: "APNS Env Type",

@@ -1,5 +1,6 @@
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import { convertDateUTCToLocal2_24, convertDateUtcFormat24 } from "../../components/Common/Reusables/reusableMethods";
+import JsonViewer from "../../components/Common/Reusables/JsonViewer/JsonViewer";
 
 const ResponseModal = ({ isOpen, toggle, data, recordRefType }) => {
   const dateTyp = JSON.parse(localStorage.getItem("DateType"));
@@ -45,7 +46,7 @@ const ResponseModal = ({ isOpen, toggle, data, recordRefType }) => {
         <ModalBody className="modal-body">
           {data && (
             <>
-              {JSON.stringify(data.response)}
+              <JsonViewer data={data.response} />
             </>
           )}
         </ModalBody>

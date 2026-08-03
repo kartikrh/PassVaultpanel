@@ -1,4 +1,5 @@
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
+import JsonViewer from "../../components/Common/Reusables/JsonViewer/JsonViewer";
 
 const RequestModal = ({ isOpen, toggle, data }) => {
   const handleYesClick = () => {
@@ -62,7 +63,7 @@ const RequestModal = ({ isOpen, toggle, data }) => {
         <ModalBody className="modal-body">
           {data && (
             <>
-              {JSON.stringify(data.requestBody)}
+               <JsonViewer data={data.requestBody} />
             </>
           )}
         </ModalBody>

@@ -1,0 +1,123 @@
+.jv-container {
+  font-family: "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.jv-toggle {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  border-radius: 3px;
+}
+
+.jv-toggle:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.jv-caret {
+  color: #6c757d;
+  font-size: 10px;
+  display: inline-block;
+  width: 12px;
+  text-align: center;
+}
+
+.jv-bracket {
+  color: #868e96;
+}
+
+.jv-key {
+  color: #a626a4;
+}
+
+.jv-sep,
+.jv-comma {
+  color: #383a42;
+}
+
+.jv-string {
+  color: #50a14f;
+}
+
+.jv-number {
+  color: #986801;
+}
+
+.jv-boolean {
+  color: #4078f2;
+}
+
+.jv-null {
+  color: #9da5b4;
+  font-style: italic;
+}
+
+.jv-count {
+  color: #9da5b4;
+  margin-left: 4px;
+  font-size: 11px;
+}
+
+.jv-preview {
+  color: #868e96;
+}
+
+.jv-children {
+  margin-left: 14px;
+  padding-left: 8px;
+  border-left: 1px dashed #dee2e6;
+}
+
+.jv-row {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.jv-closing {
+  white-space: pre-wrap;
+}
+
+body[data-theme="dark"] .jv-caret {
+  color: #adb5bd;
+}
+
+body[data-theme="dark"] .jv-bracket {
+  color: #6c757d;
+}
+
+body[data-theme="dark"] .jv-key {
+  color: #c678dd;
+}
+
+body[data-theme="dark"] .jv-sep,
+body[data-theme="dark"] .jv-comma {
+  color: #abb2bf;
+}
+
+body[data-theme="dark"] .jv-string {
+  color: #98c379;
+}
+
+body[data-theme="dark"] .jv-number {
+  color: #d19a66;
+}
+
+body[data-theme="dark"] .jv-boolean {
+  color: #61afef;
+}
+
+body[data-theme="dark"] .jv-null {
+  color: #7f848e;
+}
+
+body[data-theme="dark"] .jv-toggle:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
