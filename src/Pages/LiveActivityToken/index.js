@@ -52,8 +52,10 @@ const Index = () => {
   // });
   const [tableSearchedData, setTableSearchedData] = useState([]);
   const [selectedTableElements, setSelectedTableElements] = useState({
-    envType: null
+    envType: null,
+    clientSocketId: null
   });
+  const [clientSocketList, setClientSocketList] = useState([]);
 
   const navigate = useNavigate();
 
@@ -278,14 +280,30 @@ const Index = () => {
     isServerPagination: true,
     isDateRange: true,
     isDateTypeSelect: true,
-    apnsEnvTypeSelect: true
+    apnsEnvTypeSelect: true,
+    clientSocketSelect: true
   };
 
+  const fetchClientSocketData = async () => {
+    await axiosInstance
+      .post(`/admin/clientSocket/all`, {
+        isActive: true,
+      })
+      .then((response) => {
+        setClientSocketList(response.result?.map((item) => ({
+          value: item?.clientSocketId,
+          label: item?.serverName
+        })));
+      })
+      .catch((error) => { });
+  }
+
   useEffect(() => {
-    // if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW) && !isEmpty(permissionObj)) {
-    //   navigate("/dashboard");
-    // }
+    if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW) && !isEmpty(permissionObj)) {
+      navigate("/dashboard");
+    }
     fetchData();
+    fetchClientSocketData();
     // fetchEventTypeData();
   }, [isSearch, currentPage, pageSize, permissionObj]);
 
@@ -347,6 +365,7 @@ const Index = () => {
             dataSource={data}
             tableElement={tableElement}
             singleCheck={checekedList}
+            clientSocketList={clientSocketList}
             reFetchData={fetchData}
             selectedTableElementsLogs={selectedTableElements}
             // eventTypes={eventTypes}
