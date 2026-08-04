@@ -3,7 +3,6 @@ import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
 import { Container } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
-import TabModel from "../../components/Model/AddTabModel";
 import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
 import {
@@ -11,18 +10,28 @@ import {
     ERROR,
     PERMISSION_VIEW,
     SUCCESS,
+    PERMISSION_DELETE
 } from "../../components/Common/Const";
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission, convertDateLocalToUTC, convertDateUtcFormat, convertDateUtcFormat24, convertDateUTCToLocal2, convertDateUTCToLocal2_24 } from "../../components/Common/Reusables/reusableMethods";
 import { isEmpty, isEqual } from "lodash";
 import { updateToastData } from "../../Features/toasterSlice";
-import { Tooltip } from "antd";
-import { Button } from "reactstrap";
 import ReqResModal from "./ReqResModal";
+import DeleteTabModel from "../../components/Model/DeleteModel";
 
 const Index = () => {
-    const globalPageSize = localStorage.getItem("pageSize")
-    const globalDateType = JSON.parse(localStorage.getItem("DateType"))
+    const storedPageSize = localStorage.getItem("pageSize");
+    const storedDateType = localStorage.getItem("DateType");
+    let parsedDateType = null;
+
+    try {
+        parsedDateType = storedDateType ? JSON.parse(storedDateType) : null;
+    } catch (error) {
+        console.error("Error parsing DateType from localStorage:", error);
+    }
+
+    const globalPageSize = storedPageSize || 10;
+    const globalDateType = parsedDateType;
     const pageName = APNS_ACTIVITY_LOGS;
     const dispatch = useDispatch();
     const finalizeRef = useRef(null);
@@ -31,11 +40,6 @@ const Index = () => {
     const [data, setData] = useState([]);
     const [checekedList, setCheckedList] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
-    // const [eventTypes, setEventTypes] = useState([]);
-    // const [competitions, setCompetitions] = useState([]);
-    // const [commentary, setCommentary] = useState([]);
-    // const [eventTypeId, setEventTypeId] = useState(null);
-    // const [competitionId, setCompetitionId] = useState(null);
     const [isSearch, setIsSearch] = useState(true);
     const [dateType, setDateType] = useState(globalDateType || { label: "Local Timezone", value: 1 });
     const [dateRange, setDateRange] = useState({
@@ -53,42 +57,35 @@ const Index = () => {
     const [reqResModelVisible, setReqResModelVisible] = useState(false);
     const [reqBodyData, setReqBodyData] = useState(null);
     const [clientSocketList, setClientSocketList] = useState([]);
+    const [commentaryOptions, setCommentaryOptions] = useState([]);
+    const [dataIndexList, setDataIndexList] = useState([]);
+    const [deleteModelVisable, setDeleteModelVisable] = useState(false);
 
     const navigate = useNavigate();
 
-    // const fetchCompetitionData = async (value) => {
-    //     await axiosInstance
-    //         .post(`/admin/log/competitionListByEventTypeId`, {
-    //             eventTypeId: value,
-    //         })
-    //         .then((response) => {
-    //             setCompetitions(response.result);
-    //         })
-    //         .catch((error) => { });
-    // };
-
-    // const fetchCommentaryData = async (value) => {
-    //     await axiosInstance
-    //         .post(`/admin/log/getComByCompetition`, {
-    //             competitionId: value,
-    //         })
-    //         .then((response) => {
-    //             setCommentary(response.result);
-    //         })
-    //         .catch((error) => { });
-    // };
+    const fetchCommentaryEvents = async () => {
+        try {
+            const response = await axiosInstance.post("admin/notification/eventList", {});
+            if (response?.result) {
+                const mapped = response.result.map((item) => ({
+                    label: `${item.eventName} - ${item.eventRefId} - ${convertDateUTCToLocal2_24(item?.eventDate, "index")}`,
+                    value: item.commentaryId,
+                }));
+                setCommentaryOptions([{ label: "Select Commentary Type", value: null }, ...mapped]);
+            }
+        } catch (error) {
+            console.error("Error fetching commentary events:", error);
+        }
+    };
 
     const fetchData = async (latestValueFromTable) => {
         setIsLoading(true);
-        const tableActions = finalizeRef.current.getTableAction();
-        const data = latestValueFromTable || tableActions
+        const tableActions = finalizeRef?.current?.getTableAction?.() || {};
+        const tableData = latestValueFromTable || tableActions;
         let payload = {
-            ...data,
+            ...tableData,
             page: currentPage == 0 ? 1 : currentPage,
-            limit: Number(pageSize),
-            // eventTypeId: data?.eventTypeId || 0,
-            // competitionId: data?.eventTypeId !== eventTypeId ? 0 : data?.competitionId || 0,
-            // commentaryId: (data?.eventTypeId !== eventTypeId || data?.competitionId !== competitionId) ? 0 : data?.commentaryId || 0,
+            limit: Number(pageSize)
         }
 
         if (isSearch) {
@@ -99,28 +96,51 @@ const Index = () => {
             };
         }
         await axiosInstance
-            .post(`/admin/apnsActivityLogs/all`, payload)
+            .post(`/admin/apnsActivityLogs/getAll`, payload)
             .then((response) => {
                 const logsData = response?.result?.data?.sort((a, b) => b?.id - a?.id);
-                // let logsDataIdList = [];
-                // logsData.forEach((ele) => {
-                //   logsDataIdList.push(ele?.id);
-                // });
-                // setDataIndexList(logsDataIdList);
+                let logsDataIdList = [];
+                logsData.forEach((ele) => {
+                    logsDataIdList.push(ele?.id);
+                });
+                setDataIndexList(logsDataIdList);
                 setData(logsData);
                 setTotal(response?.result?.total || 0);
-                // setCheckedList([]);
+                setCheckedList([]);
                 setIsLoading(false);
             })
             .catch((error) => {
                 setIsLoading(false);
             });
-        // if (data?.eventTypeId && latestValueFromTable) {
-        //     fetchCompetitionData(data?.eventTypeId);
-        // }
-        // if (data?.competitionId && latestValueFromTable) {
-        //     fetchCommentaryData(data?.competitionId);
-        // }
+    };
+
+    const handleDelete = async (e) => {
+        setIsLoading(true);
+        await axiosInstance
+            .post(`/admin/apnsActivityLogs/delete`, {
+                id: checekedList,
+            })
+            .then((response) => {
+                fetchData();
+                setDeleteModelVisable(false);
+                dispatch(
+                    updateToastData({
+                        data: response?.message,
+                        title: response?.title,
+                        type: SUCCESS,
+                    })
+                );
+            })
+            .catch((error) => {
+                setIsLoading(false);
+                dispatch(
+                    updateToastData({
+                        data: error?.message,
+                        title: error?.title,
+                        type: ERROR,
+                    })
+                );
+            });
     };
 
     const handleTableSearchedDataChange = (data) => {
@@ -139,6 +159,29 @@ const Index = () => {
         }
     }
 
+    //checkbox select
+    const getSelectedItemsData = () => {
+        return tableSearchedData && tableSearchedData.length > 0
+            ? tableSearchedData.map(item => item.id)
+            : dataIndexList;
+    };
+
+    const checkIfAllSelected = () => {
+        const currentItems = getSelectedItemsData();
+        return data?.length > 0 &&
+            checekedList?.length > 0 &&
+            isEqual(checekedList?.sort(), currentItems?.sort());
+    };
+
+    const handleSelectAllClick = () => {
+        const currentItems = getSelectedItemsData();
+        setCheckedList(
+            isEqual(checekedList?.sort(), currentItems?.sort())
+                ? []
+                : currentItems
+        );
+    };
+
     //table columns
     const columns = [
         {
@@ -149,8 +192,8 @@ const Index = () => {
                         type="checkbox"
                         name="chk_child"
                         value="option1"
-                    // checked={checkIfAllSelected()}
-                    // onChange={handleSelectAllClick}
+                        checked={checkIfAllSelected()}
+                        onChange={handleSelectAllClick}
                     // checked={
                     //   data?.length > 0 &&
                     //   isEqual(checekedList?.sort(), dataIndexList?.sort())
@@ -309,16 +352,15 @@ const Index = () => {
     //elements required
     const tableElement = {
         title: APNS_ACTIVITY_LOGS,
-        // eventTypeSelect: true,
-        // competitionsSelect: true,
-        // commentarySelect: true,
         resetButton: true,
         reloadButton: true,
         isServerPagination: true,
         isDateRange: true,
         isDateTypeSelect: true,
         apnsEnvTypeSelect: true,
-        clientSocketSelect: true
+        clientSocketSelect: true,
+        commentaryTypeSelect: true,
+        commentaryTypeOptions: commentaryOptions
     };
 
     const fetchClientSocketData = async () => {
@@ -338,27 +380,15 @@ const Index = () => {
     useEffect(() => {
         if (!checkPermission(permissionObj, pageName, PERMISSION_VIEW) && !isEmpty(permissionObj)) {
             navigate("/dashboard");
+            return;
         }
         fetchData();
+    }, [currentPage, pageSize, permissionObj, isSearch, dateRange.startDate, dateRange.endDate]);
+
+    useEffect(() => {
         fetchClientSocketData();
-        // fetchEventTypeData();
-    }, [isSearch, currentPage, pageSize, permissionObj]);
-
-    // useEffect(() => {
-    //     if (!eventTypeId) {
-    //         setCompetitions([]);
-    //         setCommentary([]);
-    //     }
-    // }, [eventTypeId]);
-
-    // const fetchEventTypeData = async () => {
-    //     await axiosInstance
-    //         .post(`/admin/log/eventTypeList`, { isActive: true })
-    //         .then((response) => {
-    //             setEventTypes(response.result);
-    //         })
-    //         .catch((error) => { });
-    // };
+        fetchCommentaryEvents();
+    }, []);
 
     const handleReset = (value) => {
         setDateRange({
@@ -368,15 +398,8 @@ const Index = () => {
         setIsSearch(true)
     };
 
-    useEffect(() => {
-        if (isSearch) {
-            fetchData();
-        }
-    }, [isSearch, dateRange]);
-
     const handleReload = (value) => {
         fetchData();
-        // fetchEventTypeData();
     };
 
     const handleSingleCheck = (e) => {
@@ -406,9 +429,6 @@ const Index = () => {
                         clientSocketList={clientSocketList}
                         reFetchData={fetchData}
                         selectedTableElementsLogs={selectedTableElements}
-                        // eventTypes={eventTypes}
-                        // competitions={competitions}
-                        // commentary={commentary}
                         handleReset={handleReset}
                         handleReload={handleReload}
                         setDateRange={setDateRange}
@@ -431,10 +451,14 @@ const Index = () => {
                         setParentSearchedData={handleTableSearchedDataChange}
                         isSearch={isSearch}
                         setIsSearch={setIsSearch}
-                        // setEventTypeId={setEventTypeId}
-                        // setCompetitionId={setCompetitionId}
                         dateType={dateType}
                         setDateType={setDateType}
+                        isDeletePermission={checkPermission(
+                            permissionObj,
+                            pageName,
+                            PERMISSION_DELETE
+                        )}
+                        deleteModelFunction={setDeleteModelVisable}
                     />
                     {reqResModelVisible && (
                         <ReqResModal
@@ -443,6 +467,12 @@ const Index = () => {
                             data={reqBodyData}
                         />
                     )}
+                    <DeleteTabModel
+                        deleteModelVisable={deleteModelVisable}
+                        setDeleteModelVisable={setDeleteModelVisable}
+                        handleDelete={handleDelete}
+                        singleCheck={checekedList}
+                    />
                 </Container>
             </div>
         </React.Fragment>
