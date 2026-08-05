@@ -55,6 +55,8 @@ import { ChangeCompititionModel } from "../../components/Model/ChangeCompitition
 import { ChangeScoringModel } from "../../components/Model/ChangeScoringModel";
 import PredictMarketPasswordModal from "../../components/Model/PredictMarketPasswordModal";
 import SUpdateAccessModal from "./CommentaryModels/SUpdateAccessModal";
+import { GiCoinflip } from "react-icons/gi";
+import { UpdateTossModal } from "./CommentaryModels/UpdateTossModal";
 
 const Index = () => {
   const pageName = TAB_COMMENTARY;
@@ -152,6 +154,7 @@ const Index = () => {
   const playerCommentaryPlayed = +sessionStorage.getItem('playedCommentaryId');
   const shouldSetStatusToAll = sessionStorage.getItem('setCommentaryStatusToAll') === 'true';
   const [matchTypes, setMatchTypes] = useState([]);
+  const [visibleUpdateTossModal, setVisibleUpdateTossModal] = useState(false);
 
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
@@ -2119,6 +2122,29 @@ const Index = () => {
       ),
       style: { width: "2%", textAlign: "center" },
     },
+    {
+      title: "Toss Update",
+      key: "tossUpdate",
+      style: { width: "10%", textAlign: "center" },
+      render: (text, record) => [2, 3].includes(record?.commentaryStatus) ? (
+        <Tooltip
+          title={"Update Toss"}
+          color={"#e8e8ea"}
+          overlayInnerStyle={{ color: "#000" }}
+        >
+          <Button
+            color={"warning"}
+            size="sm"
+            className="btn"
+            onClick={() => {
+              setVisibleUpdateTossModal(record);
+            }}
+          >
+            <GiCoinflip size={20} color={"black"}/>
+          </Button>
+        </Tooltip>
+      ) : (<></>)
+    },
     // {
     //   title: "Player",
     //   key: "updatePlayers",
@@ -3664,6 +3690,15 @@ const Index = () => {
                 </ModalBody>
               </Modal>
             )} */}
+          {visibleUpdateTossModal && (
+            <UpdateTossModal
+              commentaryDetails={visibleUpdateTossModal}
+              toggle={() => {
+                setVisibleUpdateTossModal(false);
+                handleReload();
+              }}
+            />
+          )}
         </Container>
       </div>
     </React.Fragment>
