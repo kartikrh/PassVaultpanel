@@ -392,12 +392,6 @@ const Index = () => {
       style: { width: "5%", textAlign: "center" },
     },
     {
-      title: "White Label",
-      dataIndex: "domain",
-      key: "domain",
-      style: { width: "5%", textAlign: "left" },
-    },
-    {
       title: "Permanent",
       dataIndex: "isPermanent",
       key: "isPermanent",
@@ -492,12 +486,6 @@ const Index = () => {
       </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
-    },
-    {
-      title: "Views",
-      dataIndex: "viewerCount",
-      key: "viewerCount",
-      style: { width: "5%", textAlign: "center" },
     },
     {
       title: "Link",
