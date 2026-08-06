@@ -4,6 +4,7 @@ import {
   SWITCH,
   TEXT,
   SELECT,
+  MULTI_SELECT,
 } from "../../components/Common/Const";
 
 export const advertiseFields = [
@@ -17,11 +18,10 @@ export const advertiseFields = [
   },
   {
     name: "whitelabelId",
-    label: "White Label",
-    // isRequired: true,
-    options: [{ label: "Select White Label", value: "0" }],
-    defaultValue: false,
-    type: SELECT,
+    label: "Select Whitelable",
+    type: MULTI_SELECT,
+    options: [],
+    showSelectAll: true,
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
