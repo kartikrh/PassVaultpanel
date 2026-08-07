@@ -55,6 +55,7 @@ const Index = () => {
     endDate: `${new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split("T")[0]}T23:59:00`,
   });
   const [viewersModelVisable, setViewersModelVisable] = useState(false);
+  const [isViewerDataLoading, setIsViewerDataLoading] = useState(false);
   const [viewers, setViewers] = useState([]);
 
   const navigate = useNavigate();
@@ -290,19 +291,19 @@ const Index = () => {
   };
 
   const handleOpenViewersModal = async (data) => {
-    setIsLoading(true);
+    setViewersModelVisable(true);
+    setIsViewerDataLoading(true);
     await axiosInstance
       .post(`/admin/viewers/get`, {
         type: ViewerType.BANNER,
         typeId: data
       })
       .then((response) => {
-        setViewersModelVisable(true);
         setViewers(response.result?.find(item => item.type === ViewerType.BANNER && item.typeId === data)?.result || []);
-        setIsLoading(false);
+        setIsViewerDataLoading(false);
       })
       .catch((error) => {
-        setIsLoading(false);
+        setIsViewerDataLoading(false);
         dispatch(
           updateToastData({
             data: error?.message,
@@ -623,6 +624,7 @@ const Index = () => {
             viewersModelVisable={viewersModelVisable}
             setViewersModelVisable={setViewersModelVisable}
             viewers={viewers}
+            isViewerDataLoading={isViewerDataLoading}
           />
         </Container>
       </div>
