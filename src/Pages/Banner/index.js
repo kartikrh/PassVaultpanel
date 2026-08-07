@@ -23,6 +23,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { checkPermission, convertDateUTCToLocal, convertDateUTCToLocalWithSec24, convertDateUtcFormatWithSec24, convertDateLocalToUTC } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import LoadDataModal from "../../components/Model/LoadDataModal";
+import ViewersModal from '../../components/Model/ViewersModal'
+import { ViewerType } from "../../constants/FieldConst/ViewersConst";
 
 const Index = () => {
   const pageName = TAB_BANNER;
@@ -52,6 +54,8 @@ const Index = () => {
     startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
     endDate: `${new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split("T")[0]}T23:59:00`,
   });
+  const [viewersModelVisable, setViewersModelVisable] = useState(false);
+  const [viewers, setViewers] = useState([]);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -285,6 +289,30 @@ const Index = () => {
     3: "Android",
   };
 
+  const handleOpenViewersModal = async (data) => {
+    setIsLoading(true);
+    await axiosInstance
+      .post(`/admin/viewers/get`, {
+        type: ViewerType.BANNER,
+        typeId: data
+      })
+      .then((response) => {
+        setViewersModelVisable(true);
+        setViewers(response.result?.find(item => item.type === ViewerType.BANNER && item.typeId === data)?.result || []);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  }
+
   //table columns
   const columns = [
     {
@@ -392,22 +420,10 @@ const Index = () => {
       style: { width: "5%", textAlign: "center" },
     },
     {
-      title: "Permanent",
-      dataIndex: "isPermanent",
-      key: "isPermanent",
-      render: (text, record) => (
-        <Button
-          color={`${record.isPermanent ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          disabled
-        >
-          <i
-            className={`bx ${record?.isPermanent ? "bx-check" : "bx-block"}`}
-          ></i>
-        </Button>
-      ),
-      style: { width: "2%", textAlign: "center" },
+      title: "Link",
+      dataIndex: "link",
+      key: "link",
+      style: { width: "15%" },
     },
     {
       title: "Start Date",
@@ -439,6 +455,35 @@ const Index = () => {
       ),
       key: "endDate",
       style: { width: "10%" },
+    },
+    {
+      title: "Views",
+      dataIndex: "",
+      key: "",
+      render: (text, record) => (
+        <span style={{ cursor: "pointer", padding: 15 }} onClick={() => handleOpenViewersModal(record.bannerId)}>
+          <i className="fas fa-eye"></i>
+        </span>
+      ),
+      style: { width: "5%" },
+    },
+    {
+      title: "Permanent",
+      dataIndex: "isPermanent",
+      key: "isPermanent",
+      render: (text, record) => (
+        <Button
+          color={`${record.isPermanent ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          disabled
+        >
+          <i
+            className={`bx ${record?.isPermanent ? "bx-check" : "bx-block"}`}
+          ></i>
+        </Button>
+      ),
+      style: { width: "2%", textAlign: "center" },
     },
     // {
     //   title: "Created By",
@@ -486,12 +531,6 @@ const Index = () => {
       </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
-    },
-    {
-      title: "Link",
-      dataIndex: "link",
-      key: "link",
-      style: { width: "15%" },
     },
   ];
   //elements required
@@ -580,6 +619,11 @@ const Index = () => {
               handleLoadData={handleLoadData}
               moduleName={"Banner"} 
             />}
+          <ViewersModal
+            viewersModelVisable={viewersModelVisable}
+            setViewersModelVisable={setViewersModelVisable}
+            viewers={viewers}
+          />
         </Container>
       </div>
     </React.Fragment>
