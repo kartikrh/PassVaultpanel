@@ -23,6 +23,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { checkPermission, convertDateUTCToLocalWithSec24, convertDateUtcFormatWithSec24, convertDateLocalToUTC } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import LoadDataModal from "../../components/Model/LoadDataModal";
+import ViewersModal from '../../components/Model/ViewersModal'
+import { ViewerType } from "../../constants/FieldConst/ViewersConst";
 
 const Index = () => {
     const pageName = TAB_ADVERTISE;
@@ -50,6 +52,9 @@ const Index = () => {
         startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
         endDate: `${new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split("T")[0]}T23:59:00`,
     });
+    const [viewersModelVisable, setViewersModelVisable] = useState(false);
+    const [isViewerDataLoading, setIsViewerDataLoading] = useState(false);
+    const [viewers, setViewers] = useState([]);
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -244,6 +249,30 @@ const Index = () => {
         setCheckedList([]);
     };
 
+    const handleOpenViewersModal = async (data) => {
+        setViewersModelVisable(true);
+        setIsViewerDataLoading(true);
+        await axiosInstance
+            .post(`/admin/viewers/get`, {
+                type: ViewerType.ADVERTISE,
+                typeId: data
+            })
+            .then((response) => {
+                setViewers(response.result?.find(item => item.type === ViewerType.ADVERTISE && item.typeId === data)?.result || []);
+                setIsViewerDataLoading(false);
+            })
+            .catch((error) => {
+                setIsViewerDataLoading(false);
+                dispatch(
+                    updateToastData({
+                        data: error?.message,
+                        title: error?.title,
+                        type: ERROR,
+                    })
+                );
+            });
+    }
+
     //table columns
     const columns = [
         {
@@ -336,18 +365,6 @@ const Index = () => {
             sort: true,
         },
         {
-            title: "White Label",
-            dataIndex: "domain",
-            key: "domain",
-            style: { width: "5%", textAlign: "center" },
-        },
-        {
-            title: "Views",
-            dataIndex: "viewerCount",
-            key: "viewerCount",
-            style: { width: "5%", textAlign: "center" },
-        },
-        {
             title: "Link",
             dataIndex: "link",
             key: "link",
@@ -377,6 +394,17 @@ const Index = () => {
                 </span>
             ),
             key: "endDate",
+            style: { width: "10%" },
+        },
+        {
+            title: "Views",
+            dataIndex: "",
+            key: "",
+            render: (text, record) => (
+                <span style={{ cursor: "pointer", padding: 15 }} onClick={() => handleOpenViewersModal(record.advertiseId)}>
+                    <i className="fas fa-eye"></i>
+                </span>
+            ),
             style: { width: "10%" },
         },
         {
@@ -503,6 +531,12 @@ const Index = () => {
                             handleLoadData={handleLoadData}
                             moduleName={"Advertise"}
                         />}
+                    <ViewersModal
+                        viewersModelVisable={viewersModelVisable}
+                        setViewersModelVisable={setViewersModelVisable}
+                        viewers={viewers}
+                        isViewerDataLoading={isViewerDataLoading}
+                    />
                 </Container>
             </div>
         </React.Fragment>
