@@ -23,6 +23,7 @@ import { Tooltip } from "antd";
 import { Button } from "reactstrap";
 import { AutoImportErrorModel } from "../../components/Model/AutoImportErrorModel";
 import ResponseModal from "./ResponseModal";
+import { AUTO_IMPORT_LOGS, AUTO_IMPORT_STATUS } from "../../constants/FieldConst/AutoImportConst";
 
 const Index = () => {
   const globalPageSize = localStorage.getItem("pageSize")
@@ -60,6 +61,8 @@ const Index = () => {
     eventType: null,
     competition: null,
     commentary: null,
+    refType: null,
+    autoImportStatus: null
   });
   const [tableSearchedData, setTableSearchedData] = useState([]);
 
@@ -454,6 +457,18 @@ const Index = () => {
     // },
   ];
 
+  const refTypeOptions = Object.entries(AUTO_IMPORT_LOGS)
+    .map(([label, value]) => ({
+      label,
+      value
+    }));
+
+  const statusOptions = Object.entries(AUTO_IMPORT_STATUS)
+    .map(([label, value]) => ({
+      label,
+      value
+    }));
+
   //elements required
   const tableElement = {
     title: "Auto Import",
@@ -465,6 +480,8 @@ const Index = () => {
     isServerPagination: true,
     isDateRange: true,
     isDateTypeSelect: true,
+    refTypeOptions: refTypeOptions,
+    autoImportStatusOptions: statusOptions
   };
 
   useEffect(() => {
