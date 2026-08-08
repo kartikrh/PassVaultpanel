@@ -1,4 +1,4 @@
-import { SWITCH, TEXT } from "../../components/Common/Const";
+import { SELECT, SWITCH, TEXT } from "../../components/Common/Const";
 
 export const ClientSocketFields = [
     {
@@ -76,4 +76,116 @@ export const ClientSocketFields = [
         parentclassName: "",
         type: SWITCH,
     },
+    {
+        name: "isAPNSEnable",
+        label: "Is APNS Active",
+        defaultValue: false,
+        parentclassName: "",
+        type: SWITCH,
+    },
+    {
+        name: "isAPNSLogEnable",
+        label: "Is APNS Log Enable",
+        defaultValue: false,
+        parentclassName: "",
+        type: SWITCH,
+        dependsOnField: "isAPNSEnable",
+        hideDependentInitially: true,
+        dependsOnValue: true,
+    },
+    {
+        type: SELECT,
+        name: "APNSEnvType",
+        label: "APNS Env Type",
+        options: [
+            { label: "Select APNS Env Type", value: "0" },
+            { label: "Production", value: "1" },
+            { label: "Sandbox", value: "2" }
+        ],
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
+        dependsOnField: "isAPNSEnable",
+        hideDependentInitially: true,
+        dependsOnValue: true,
+        isRequired: true,
+        requiredErrorMessage: "Please select APNS Environment."
+    },
+    {
+        type: TEXT,
+        name: "APNSProdHost",
+        label: "APNS Prod Host",
+        parentclassName: "",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
+        hideDependentInitially: true,
+        dependsOnField: "isAPNSEnable",
+        dependsOnValue: true,
+        isRequired: true,
+        requiredErrorMessage: "Please enter APNS Prod host url."
+    },
+    {
+        type: TEXT,
+        name: "APNSSandboxHost",
+        label: "APNS Sandbox Host",
+        parentclassName: "",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
+        hideDependentInitially: true,
+        dependsOnField: "isAPNSEnable",
+        dependsOnValue: true,
+        isRequired: true,
+        requiredErrorMessage: "Please enter APNS Sandbox host url."
+    },
+    {
+        type: TEXT,
+        name: "APNSKeyId",
+        label: "APNS Key Id",
+        parentclassName: "",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
+        hideDependentInitially: true,
+        dependsOnField: "isAPNSEnable",
+        dependsOnValue: true,
+        isRequired: true,
+        requiredErrorMessage: "Please enter APNS Key Id."
+    },
+    {
+        type: TEXT,
+        name: "APNSTeamId",
+        label: "APNS Team Id",
+        parentclassName: "",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
+        hideDependentInitially: true,
+        dependsOnField: "isAPNSEnable",
+        dependsOnValue: true,
+        isRequired: true,
+        requiredErrorMessage: "Please enter APNS Team Id."
+    },
+    {
+        type: TEXT,
+        name: "APNSBundleId",
+        label: "APNS Bundle Id",
+        parentclassName: "",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
+        hideDependentInitially: true,
+        dependsOnField: "isAPNSEnable",
+        dependsOnValue: true,
+        isRequired: true,
+        requiredErrorMessage: "Please enter APNS Bundle Id."
+    },
+    {
+        type: TEXT,
+        name: "APNSKeyPath",
+        label: "APNS Key Path",
+        parentclassName: "",
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
+        dependsOnField: "isAPNSEnable",
+        hideDependentInitially: true,
+        dependsOnValue: true,
+        isRequired: true,
+        requiredErrorMessage: "Please enter APNS Key Path."
+    }
 ]

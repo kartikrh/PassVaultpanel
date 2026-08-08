@@ -171,6 +171,7 @@ const Index = forwardRef(
       parentCurrentPage,
       maxTableHeight,
       compStatsEntityEnums,
+      clientSocketList
     },
     ref
   ) => {
@@ -1430,6 +1431,14 @@ const Index = forwardRef(
           value: null,
           label: "Select Commentary Type",
         },
+        envType: {
+          value: null,
+          label: "Select ENV Type",
+        },
+        clientSocketId: {
+          value: null,
+          label: "Select Client Socket",
+        },
         refType: {
           value: null,
           label: "Select Ref Type",
@@ -2087,6 +2096,75 @@ const Index = forwardRef(
                               />
                             </div>
                           ) : null}
+                        {tableElement?.apnsEnvTypeSelect ? (
+                          <div className="">
+                            <Select
+                              styles={{
+                                control: (provided) => ({
+                                  ...provided,
+                                  width: 150,
+                                }), // Adjust width as needed
+                              }}
+                              value={
+                                selectedTableElementsLogs?.envType ||
+                                selectedTableElements?.envType
+                              }
+                              placeholder="ENV Type"
+                              onChange={(e) => {
+                                if (
+                                  e?.value !==
+                                  selectedTableElements?.envType?.value
+                                ) {
+                                  handleTableActions("envType", e);
+                                  setSelectedTableElements({
+                                    ...selectedTableElements,
+                                    envType: e
+                                  })
+                                }
+                              }}
+                              options={[
+                                { label: "Select ENV Type", value: null },
+                                { label: "Production", value: 1 },
+                                { label: "Sandbox", value: 2 },
+                              ]}
+                              classNamePrefix="filter-dropdown"
+                            />
+                          </div>
+                        ) : null}
+                        {tableElement?.clientSocketSelect ? (
+                          <div className="">
+                            <Select
+                              styles={{
+                                control: (provided) => ({
+                                  ...provided,
+                                  width: 150,
+                                }), // Adjust width as needed
+                              }}
+                              value={
+                                selectedTableElementsLogs?.clientSocketId ||
+                                selectedTableElements?.clientSocketId
+                              }
+                              placeholder="Client Socket"
+                              onChange={(e) => {
+                                if (
+                                  e?.value !==
+                                  selectedTableElements?.clientSocketId?.value
+                                ) {
+                                  handleTableActions("clientSocketId", e);
+                                  setSelectedTableElements({
+                                    ...selectedTableElements,
+                                    clientSocketId: e
+                                  })
+                                }
+                              }}
+                              options={[
+                                { label: "Select Client Socket", value: null },
+                                ...clientSocketList
+                              ]}
+                              classNamePrefix="filter-dropdown"
+                            />
+                          </div>
+                        ) : null}
                           {tableElement?.eventTypeSelect ? (
                             <div className="">
                               <Select

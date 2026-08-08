@@ -1,14 +1,14 @@
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import JsonViewer from "../../components/Common/Reusables/JsonViewer/JsonViewer";
 
-const RequestModal = ({ isOpen, toggle, data, fetchData }) => {
+const ReqResModal = ({ isOpen, toggle, data, fetchData }) => {
   const handleYesClick = () => {
     toggle();
   };
 
   const handleCopyClick = () => {
-    if (data) {
-      const jsonData = JSON.stringify(data, null, 2); // Stringify with indentation
+    if (data?.data) {
+      const jsonData = JSON.stringify(data.data, null, 2); // Stringify with indentation
       navigator.clipboard.writeText(jsonData)
         .then(() => {
           alert('Copied to clipboard');
@@ -22,11 +22,11 @@ const RequestModal = ({ isOpen, toggle, data, fetchData }) => {
   return (
     <>
       <Modal isOpen={isOpen} toggle={toggle} size="lg" className="custom-json-modal">
-        <ModalHeader toggle={toggle}>Request Modal</ModalHeader>
+        <ModalHeader toggle={toggle}>{data?.type || "Data"} Modal</ModalHeader>
         <ModalBody className="modal-body">
           {data && (
             <>
-             <JsonViewer data={data} />
+             <JsonViewer data={data.data} />
             </>
           )}
         </ModalBody>
@@ -41,4 +41,4 @@ const RequestModal = ({ isOpen, toggle, data, fetchData }) => {
   );
 };
 
-export default RequestModal;
+export default ReqResModal;
