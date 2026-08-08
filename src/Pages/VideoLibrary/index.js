@@ -23,6 +23,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { checkPermission, convertDateUTCToLocal, convertDateUTCToLocalWithSec24, convertDateUtcFormatWithSec24, convertDateLocalToUTC } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import LoadDataModal from "../../components/Model/LoadDataModal";
+import ViewersModal from '../../components/Model/ViewersModal'
+import { ViewerType } from "../../constants/FieldConst/ViewersConst";
 
 const Index = () => {
     const pageName = TAB_VIDEOLIBRARY;
@@ -52,6 +54,9 @@ const Index = () => {
         startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
         endDate: `${new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split("T")[0]}T23:59:00`,
     });
+    const [viewersModelVisable, setViewersModelVisable] = useState(false);
+    const [isViewerDataLoading, setIsViewerDataLoading] = useState(false);
+    const [viewers, setViewers] = useState([]);
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -271,6 +276,30 @@ const Index = () => {
         setCheckedList([]);
     };
 
+    const handleOpenViewersModal = async (data) => {
+        setViewersModelVisable(true);
+        setIsViewerDataLoading(true);
+        await axiosInstance
+            .post(`/admin/viewers/get`, {
+                type: ViewerType.VIDEO_LIBRARY,
+                typeId: data
+            })
+            .then((response) => {
+                setViewers(response.result?.find(item => item.type === ViewerType.VIDEO_LIBRARY && item.typeId === data)?.result || []);
+                setIsViewerDataLoading(false);
+            })
+            .catch((error) => {
+                setIsViewerDataLoading(false);
+                dispatch(
+                    updateToastData({
+                        data: error?.message,
+                        title: error?.title,
+                        type: ERROR,
+                    })
+                );
+            });
+    }
+
     //table columns
     const columns = [
         {
@@ -340,12 +369,6 @@ const Index = () => {
             sort: true,
         },
         {
-            title: "White Label",
-            dataIndex: "domain",
-            key: "domain",
-            style: { width: "5%", textAlign: "left" },
-        },
-        {
             title: "Tag",
             dataIndex: "tag",
             key: "tag",
@@ -378,44 +401,6 @@ const Index = () => {
             ),
             style: { width: "20%" },
             sort: true,
-        },
-        {
-            title: "Active",
-            dataIndex: "isActive",
-            key: "IsActive",
-            render: (text, record) => (
-                <Tooltip title={"Video Library"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
-                    <Button
-                        color={`${record.isActive ? "primary" : "danger"}`}
-                        size="sm"
-                        className="btn"
-                        onClick={() => {
-                            handlePermissions("isActive", record, record.isActive);
-                        }}
-                    >
-                        <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
-                    </Button>
-                </Tooltip>
-            ),
-            style: { width: "2%", textAlign: "center" },
-        },
-        {
-            title: "Permanent",
-            dataIndex: "isPermanent",
-            key: "isPermanent",
-            render: (text, record) => (
-                <Button
-                    color={`${record.isPermanent ? "primary" : "danger"}`}
-                    size="sm"
-                    className="btn"
-                    disabled
-                >
-                    <i
-                        className={`bx ${record?.isPermanent ? "bx-check" : "bx-block"}`}
-                    ></i>
-                </Button>
-            ),
-            style: { width: "2%", textAlign: "center" },
         },
         {
             title: "From",
@@ -458,6 +443,55 @@ const Index = () => {
             style: { width: "20%" },
             sort: true,
         },
+        {
+            title: "Views",
+            dataIndex: "",
+            key: "",
+            render: (text, record) => (
+                <span style={{ cursor: "pointer", padding: 15 }} onClick={() => handleOpenViewersModal(record.id)}>
+                    <i className="fas fa-eye"></i>
+                </span>
+            ),
+            style: { width: "5%" },
+        },
+        {
+            title: "Active",
+            dataIndex: "isActive",
+            key: "IsActive",
+            render: (text, record) => (
+                <Tooltip title={"Video Library"} color={"#e8e8ea"} overlayInnerStyle={{ color: '#000' }}>
+                    <Button
+                        color={`${record.isActive ? "primary" : "danger"}`}
+                        size="sm"
+                        className="btn"
+                        onClick={() => {
+                            handlePermissions("isActive", record, record.isActive);
+                        }}
+                    >
+                        <i className={`bx ${record.isActive ? "bx-check" : "bx-block"}`}></i>
+                    </Button>
+                </Tooltip>
+            ),
+            style: { width: "2%", textAlign: "center" },
+        },
+        {
+            title: "Permanent",
+            dataIndex: "isPermanent",
+            key: "isPermanent",
+            render: (text, record) => (
+                <Button
+                    color={`${record.isPermanent ? "primary" : "danger"}`}
+                    size="sm"
+                    className="btn"
+                    disabled
+                >
+                    <i
+                        className={`bx ${record?.isPermanent ? "bx-check" : "bx-block"}`}
+                    ></i>
+                </Button>
+            ),
+            style: { width: "2%", textAlign: "center" },
+        }
     ];
     //elements required
     const tableElement = {
@@ -545,6 +579,12 @@ const Index = () => {
                       handleLoadData={handleLoadData}
                       moduleName={"Video Library"} 
                     />}
+                    <ViewersModal
+                        viewersModelVisable={viewersModelVisable}
+                        setViewersModelVisable={setViewersModelVisable}
+                        viewers={viewers}
+                        isViewerDataLoading={isViewerDataLoading}
+                    />
                 </Container>
             </div>
         </React.Fragment>

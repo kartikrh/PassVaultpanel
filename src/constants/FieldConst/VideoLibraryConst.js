@@ -7,6 +7,7 @@ import {
     SELECT,
     TEXT_EDITOR,
     FILE_TYPE,
+    MULTI_SELECT,
 } from "../../components/Common/Const";
 
 export const videoLibraryFields = [
@@ -66,14 +67,13 @@ export const videoLibraryFields = [
         fieldColspan: { xs: 12, md: 4, lg: 4 },
     },
     {
-      name: "whitelabelId",
-      label: "White Label",
-      // isRequired: true,
-      options: [{ label: "Select White Label", value: "0" }],
-      defaultValue: false,
-      type: SELECT,
-      labelColspan: { xs: 12, md: 2, lg: 2 },
-      fieldColspan: { xs: 12, md: 4, lg: 4 },
+        name: "whitelabelId",
+        label: "Whitelable",
+        type: MULTI_SELECT,
+        options: [],
+        showSelectAll: true,
+        labelColspan: { xs: 12, md: 2, lg: 2 },
+        fieldColspan: { xs: 12, md: 4, lg: 4 },
     },
     // {
     //     name: "commentaryId",
