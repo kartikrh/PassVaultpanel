@@ -4,13 +4,13 @@ export const AUTO_IMPORT_LOGS = {
     Match: 3,
     Team: 4,
     Player: 5,
-    TeamUpdate: 6,
-    PlayerUpdate: 7,
-    tournamentTeamPointUpdate: 8,
-    ICCRanking: 9,
-    CompetitionStatistics: 10,
-    CompetitionUpdate: 11,
-    InningDataUpdate: 12
+    "Team Update": 6,
+    "Player Update": 7,
+    "Tournament Team": 8,
+    "ICC Ranking": 9,
+    "Competition Statistics": 10,
+    "Competition Update": 11,
+    "Inning Data Update": 12
 }
 
 export const AUTO_IMPORT_STATUS = {
