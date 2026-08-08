@@ -767,6 +767,32 @@ const Index = forwardRef(
         });
       } else if (key === "onTournamentisChanges") {
         onTournamentisChanges(id);
+      } else if (key === "refType") {
+        if (setServerCurrentPage) {
+          setServerCurrentPage(0);
+        }
+        const refTypeValue = id?.value !== undefined ? id.value : id;
+        setTableActions((preValue) => ({
+          ...preValue,
+          [key]: refTypeValue,
+        }));
+        reFetchData({
+          ...tableActions,
+          refType: refTypeValue,
+        });
+      } else if (key === "autoImportStatus") {
+        if (setServerCurrentPage) {
+          setServerCurrentPage(0);
+        }
+        const statusValue = id?.value !== undefined ? id.value : id;
+        setTableActions((preValue) => ({
+          ...preValue,
+          [key]: statusValue,
+        }));
+        reFetchData({
+          ...tableActions,
+          autoImportStatus: statusValue,
+        });
       } else {
         if (setServerCurrentPage) {
           setServerCurrentPage(0);
@@ -1403,6 +1429,14 @@ const Index = forwardRef(
         commentaryType: {
           value: null,
           label: "Select Commentary Type",
+        },
+        refType: {
+          value: null,
+          label: "Select Ref Type",
+        },
+        autoImportStatus: {
+          value: null,
+          label: "Select Status",
         }
       });
       setMenSwitch(null)
@@ -1895,6 +1929,74 @@ const Index = forwardRef(
                             >
                               <i className="ri-delete-bin-2-line"></i>
                             </Button>
+                          )}
+                          {tableElement?.refTypeOptions?.length > 0 && (
+                            <Select
+                              styles={{
+                                control: (provided) => ({
+                                  ...provided,
+                                  width: 180,
+                                }),
+                              }}
+                              value={selectedTableElements?.refType}
+                              placeholder="Select Ref Type"
+                              onChange={(e) => {
+                                if (
+                                  e?.value !==
+                                  selectedTableElements?.refType?.value
+                                ) {
+                                  // If null selected, remove isActive from payload
+                                  const newTableActions = { ...tableActions };
+                                  if (e?.value === null) {
+                                    delete newTableActions.refType;
+                                    setTableActions(newTableActions);
+                                    reFetchData(newTableActions);
+                                  } else {
+                                    handleTableActions("refType", e);
+                                  }
+                                  setSelectedTableElements({
+                                    ...selectedTableElements,
+                                    refType: e,
+                                  });
+                                }
+                              }}
+                              options={tableElement?.refTypeOptions}
+                              classNamePrefix="filter-dropdown"
+                            />
+                          )}
+                          {tableElement?.autoImportStatusOptions?.length > 0 && (
+                            <Select
+                              styles={{
+                                control: (provided) => ({
+                                  ...provided,
+                                  width: 180,
+                                }),
+                              }}
+                              value={selectedTableElements?.autoImportStatus}
+                              placeholder="Select Status"
+                              onChange={(e) => {
+                                if (
+                                  e?.value !==
+                                  selectedTableElements?.autoImportStatus?.value
+                                ) {
+                                  // If null selected, remove isActive from payload
+                                  const newTableActions = { ...tableActions };
+                                  if (e?.value === null) {
+                                    delete newTableActions.autoImportStatus;
+                                    setTableActions(newTableActions);
+                                    reFetchData(newTableActions);
+                                  } else {
+                                    handleTableActions("autoImportStatus", e);
+                                  }
+                                  setSelectedTableElements({
+                                    ...selectedTableElements,
+                                    autoImportStatus: e,
+                                  });
+                                }
+                              }}
+                              options={tableElement?.autoImportStatusOptions}
+                              classNamePrefix="filter-dropdown"
+                            />
                           )}
                           {tableElement?.isNotCalculate && (
                             <Button
