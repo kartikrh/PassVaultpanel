@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Modal, ModalBody, ModalHeader } from "reactstrap";
-import SpinnerModel from "../../Model/SpinnerModel";
 
 const Index = ({
     viewersModelVisable,
     setViewersModelVisable,
-    viewers,
-    isViewerDataLoading
+    viewers
 }) => {
     return (
         <Modal
@@ -25,7 +23,6 @@ const Index = ({
             >
                 Viewers
             </ModalHeader>
-            {isViewerDataLoading && <SpinnerModel />}
             <div className="tablelist-form">
                 {viewers.length !== 0 ? <ModalBody>
                     <div className="card card-shadow p-0">

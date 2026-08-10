@@ -55,7 +55,6 @@ const Index = () => {
     endDate: `${new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split("T")[0]}T23:59:00`,
   });
   const [viewersModelVisable, setViewersModelVisable] = useState(false);
-  const [isViewerDataLoading, setIsViewerDataLoading] = useState(false);
   const [viewers, setViewers] = useState([]);
 
   const navigate = useNavigate();
@@ -290,28 +289,9 @@ const Index = () => {
     3: "Android",
   };
 
-  const handleOpenViewersModal = async (data) => {
+  const handleOpenViewersModal = async (data = []) => {
+    setViewers(data);
     setViewersModelVisable(true);
-    setIsViewerDataLoading(true);
-    await axiosInstance
-      .post(`/admin/viewers/get`, {
-        type: ViewerType.BANNER,
-        typeId: data
-      })
-      .then((response) => {
-        setViewers(response.result?.find(item => item.type === ViewerType.BANNER && item.typeId === data)?.result || []);
-        setIsViewerDataLoading(false);
-      })
-      .catch((error) => {
-        setIsViewerDataLoading(false);
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
-      });
   }
 
   //table columns
@@ -462,7 +442,7 @@ const Index = () => {
       dataIndex: "",
       key: "",
       render: (text, record) => (
-        <span style={{ cursor: "pointer", padding: 15 }} onClick={() => handleOpenViewersModal(record.bannerId)}>
+        <span style={{ cursor: "pointer", padding: 15 }} onClick={() => handleOpenViewersModal(record?.whitelabelId || [])}>
           <i className="fas fa-eye"></i>
         </span>
       ),
@@ -624,7 +604,6 @@ const Index = () => {
             viewersModelVisable={viewersModelVisable}
             setViewersModelVisable={setViewersModelVisable}
             viewers={viewers}
-            isViewerDataLoading={isViewerDataLoading}
           />
         </Container>
       </div>
