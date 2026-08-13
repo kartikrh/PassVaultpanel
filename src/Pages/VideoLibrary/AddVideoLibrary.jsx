@@ -84,6 +84,7 @@ const AddVideoLibrary = () => {
 
                 setInitialEditData({
                     ...data,
+                    whitelabelId: data?.whitelabelId?.map((item) => item.id),
                     from: data?.from ? convertDateLocalToUTC(data.from) : null,
                     to: data?.to ? convertDateLocalToUTC(data.to) : null,
                 });

@@ -83,6 +83,7 @@ const AddPhotoLibrary = () => {
 
                 setInitialEditData({
                     ...data,
+                    whitelabelId: data?.whitelabelId?.map((item) => item.id),
                     startDate: data?.startDate ? convertDateLocalToUTC(data.startDate) : null,
                     endDate: data?.endDate ? convertDateLocalToUTC(data.endDate) : null,
                 });

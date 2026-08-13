@@ -27,6 +27,8 @@ import {
 import { updateToastData } from "../../Features/toasterSlice";
 import LoadDataModal from "../../components/Model/LoadDataModal";
 import { Tooltip } from "antd";
+import ViewersModal from '../../components/Model/ViewersModal'
+import { ViewerType } from "../../constants/FieldConst/ViewersConst";
 
 const Index = () => {
   const pageName = TAB_PHOTOLIBRARY;
@@ -57,6 +59,8 @@ const Index = () => {
     label: "Local Timezone",
     value: 1,
   });
+  const [viewersModelVisable, setViewersModelVisable] = useState(false);
+  const [viewers, setViewers] = useState([]);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -280,6 +284,11 @@ const Index = () => {
     setCheckedList([]);
   };
 
+  const handleOpenViewersModal = async (data = []) => {
+    setViewers(data);
+    setViewersModelVisable(true);
+  }
+
   //table columns
   const columns = [
     {
@@ -346,30 +355,6 @@ const Index = () => {
       ),
       style: { width: "20%" },
       sort: true,
-    },
-    {
-      title: "White Label",
-      dataIndex: "domain",
-      key: "domain",
-      style: { width: "5%", textAlign: "left" },
-    },
-    {
-      title: "Permanent",
-      dataIndex: "isPermanent",
-      key: "isPermanent",
-      render: (text, record) => (
-        <Button
-          color={`${record.isPermanent ? "primary" : "danger"}`}
-          size="sm"
-          className="btn"
-          disabled
-        >
-          <i
-            className={`bx ${record?.isPermanent ? "bx-check" : "bx-block"}`}
-          ></i>
-        </Button>
-      ),
-      style: { width: "10%"},
     },
     // {
     //   title: "SEO",
@@ -444,6 +429,17 @@ const Index = () => {
       style: { width: "10%"},
     },
     {
+      title: "Views",
+      dataIndex: "",
+      key: "",
+      render: (text, record) => (
+        <span style={{ cursor: "pointer", padding: 15 }} onClick={() => handleOpenViewersModal(record?.whitelabelId || [])}>
+          <i className="fas fa-eye"></i>
+        </span>
+      ),
+      style: { width: "5%" },
+    },
+    {
       title: "Active",
       dataIndex: "isActive",
       key: "IsActive",
@@ -452,7 +448,6 @@ const Index = () => {
           <Button
             color={`${record.isActive ? "primary" : "danger"}`}
             size="sm"
-            style={{ marginRight: "200px" }}
             className="btn"
             onClick={() => {
               handlePermissions("isActive", record, record.isActive);
@@ -464,6 +459,24 @@ const Index = () => {
       ),
       style: { width: "10%"},
     },
+    {
+      title: "Permanent",
+      dataIndex: "isPermanent",
+      key: "isPermanent",
+      render: (text, record) => (
+        <Button
+          color={`${record.isPermanent ? "primary" : "danger"}`}
+          size="sm"
+          className="btn"
+          disabled
+        >
+          <i
+            className={`bx ${record?.isPermanent ? "bx-check" : "bx-block"}`}
+          ></i>
+        </Button>
+      ),
+      style: { width: "10%"},
+    }
   ];
   //elements required
   const tableElement = {
@@ -552,6 +565,11 @@ const Index = () => {
               moduleName={"Photo Library"}
             />
           )}
+          <ViewersModal
+            viewersModelVisable={viewersModelVisable}
+            setViewersModelVisable={setViewersModelVisable}
+            viewers={viewers}
+          />
         </Container>
       </div>
     </React.Fragment>
