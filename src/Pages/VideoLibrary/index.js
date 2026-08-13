@@ -563,6 +563,7 @@ const Index = () => {
                         viewersModelVisable={viewersModelVisable}
                         setViewersModelVisable={setViewersModelVisable}
                         viewers={viewers}
+                        isCountShow={true}
                     />
                 </Container>
             </div>

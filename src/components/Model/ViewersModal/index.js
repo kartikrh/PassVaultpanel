@@ -4,7 +4,8 @@ import { Modal, ModalBody, ModalHeader } from "reactstrap";
 const Index = ({
     viewersModelVisable,
     setViewersModelVisable,
-    viewers
+    viewers,
+    isCountShow = false
 }) => {
     return (
         <Modal
@@ -32,6 +33,12 @@ const Index = ({
                                     <tr>
                                         <th>Domain</th>
                                         <th style={{textAlign: "center"}}>Views</th>
+                                        {isCountShow &&
+                                            <>
+                                                <th style={{ textAlign: "center" }}>Like Count</th>
+                                                <th style={{ textAlign: "center" }}>Dislike Count</th>
+                                            </>
+                                        }
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -39,6 +46,12 @@ const Index = ({
                                         <tr className="">
                                             <td>{value?.domain ?? "-"}</td>
                                             <td style={{textAlign: "center"}}>{value?.viewerCount}</td>
+                                            {isCountShow &&
+                                                <>
+                                                    <th style={{ textAlign: "center" }}>{value?.likeCount}</th>
+                                                    <th style={{ textAlign: "center" }}>{value?.dislikeCount}</th>
+                                                </>
+                                            }
                                         </tr>
                                     ))}
                                 </tbody>
