@@ -32,17 +32,11 @@ if [ "$PULL" = "y" ]; then
 
     log "Folder backup created: $DEST"
 
-    log "Git stashing..."
-    git stash push -u
-
     log "Checkout to ..."
     git checkout "$GIT_BRANCH_NAME"
 
     log "Pulling code from \"$GIT_BRANCH_NAME\"..."
     git pull origin "$GIT_BRANCH_NAME"
-
-    log "Deleting old stash if it's available..."
-    git stash clear
 
     log "Your code is updated with latest pull..."
 else
