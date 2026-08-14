@@ -12,5 +12,4 @@ services:
         REACT_APP_DEFAULTAUTH: ${REACT_APP_DEFAULTAUTH}
     container_name: scorepanel
     ports:
-      - "4000:80"
-    restart: unless-stopped
+      - "${REACT_APP_DOCKER_CONTAINER_PORT:-4000}:80"
