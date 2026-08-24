@@ -31,7 +31,7 @@ import {
 } from "../../Features/Tabs/addNotificationSlice";
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
-import { checkPermission, convertDateUTCToLocal } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { convertObjtoFormData } from "../../components/Common/utilities";
 import { isEmpty } from "lodash";
@@ -42,7 +42,6 @@ function AddNotification() {
   const [drp_up, setDrp_up] = useState(false);
   const [initialEditData, setInitialEditData] = useState(undefined);
   const [disabledFields, setDisabledFields] = useState({});
-  const [masterData, setMasterData] = useState({});
   const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
   const { isSaved, isLoading } = useSelector(
     (state) => state.tabsData.notification
@@ -73,7 +72,6 @@ function AddNotification() {
     if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
       navigate("/dashboard");
     }
-    fetchMasterData()
   }, [permissionObj]);
 
   useEffect(() => {
@@ -95,28 +93,6 @@ function AddNotification() {
       .post("/admin/notification/byId", { notificationId })
       .then((response) => {
         setInitialEditData(response?.result);
-      })
-      .catch((error) => {
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
-      });
-  };
-
-  const fetchMasterData = async () => {
-    axiosInstance
-      .post("admin/notification/eventList", {})
-      .then((response) => {
-        setMasterData((prevData) => ({
-          ...prevData,
-          commentaryId: response?.result?.map((item) => {
-            return { label: `${item.eventName} - ${item.eventRefId} - ${convertDateUTCToLocal(item?.eventDate, "index")}`, value: item.commentaryId };
-          }),
-        }));
       })
       .catch((error) => {
         dispatch(
@@ -235,7 +211,6 @@ function AddNotification() {
                   ref={finalizeRef}
                   fields={NotificationConst}
                   editFormData={initialEditData}
-                  masterData={masterData}
                   disabledFields={disabledFields}
                 />
               </CardBody>

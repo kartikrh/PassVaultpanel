@@ -22,7 +22,21 @@ import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import LoadDataModal from "../../components/Model/LoadDataModal";
-import { mapEventName } from "../Commentary/functions";
+
+// Local replacement for the mapEventName helper previously imported from the
+// (now removed) Commentary module. Mirrors the eventName options defined in
+// NotificationConfigConst.js used by this page's own Add/Edit form.
+const EVENT_NAME_MAP = {
+  0: "Select Event",
+  1: "Comming Soon",
+  2: "Win Toss",
+  3: "Event Start",
+  4: "Inning Completed",
+  5: "Boundary",
+  6: "Wicket",
+  7: "Event Completed",
+};
+const mapEventName = (value) => EVENT_NAME_MAP[value] ?? value;
 
 const Index = () => {
   const pageName = TAB_NOTIFICATION_CONFIG;

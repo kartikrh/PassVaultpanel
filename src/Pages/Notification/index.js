@@ -55,8 +55,6 @@ const Index = () => {
       new Date().toISOString().split("T")[0]
     }T23:59:00`,
   });
-  const [commentaryOptions, setCommentaryOptions] = useState([]);
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -66,25 +64,6 @@ const Index = () => {
     }
     fetchData();
   }, [isSearch, permissionObj]);
-
-  useEffect(() => {
-    fetchCommentaryEvents();
-  }, []);
-
-  const fetchCommentaryEvents = async () => {
-    try {
-      const response = await axiosInstance.post("admin/notification/eventList", {});
-      if (response?.result) {
-        const mapped = response.result.map((item) => ({
-          label: `${item.eventName} - ${item.eventRefId} - ${convertDateUTCToLocal2_24(item?.eventDate, "index")}`,
-          value: item.commentaryId,
-        }));
-        setCommentaryOptions([{ label: "Select Commentary Type", value: null }, ...mapped]);
-      }
-    } catch (error) {
-      console.error("Error fetching commentary events:", error);
-    }
-  };
 
   const fetchData = async (latestValueFromTable) => {
     setIsLoading(true);
@@ -374,8 +353,6 @@ const Index = () => {
       { label: "pushNotificationAndOnlyLoggedOutUser", value: 6 },
       { label: "onlyLoggedInUserAndLoggedOutUser", value: 7 },
     ],
-    commentaryTypeSelect: true,
-    commentaryTypeOptions: commentaryOptions,
   };
 
   const handleLoadData = async (password) => {

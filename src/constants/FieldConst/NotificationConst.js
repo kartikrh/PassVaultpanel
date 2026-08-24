@@ -21,16 +21,6 @@ export const NotificationConst = [
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
   {
-    name: "commentaryId",
-    label: "Commentary Type",
-    options: [{ label: "Select Commentary Type", value: "0" }],
-    isRequired: true,
-    type: SELECT,
-    defaultValue: "0",
-    labelColspan: { xs: 12, md: 2, lg: 2 },
-    fieldColspan: { xs: 12, md: 4, lg: 4 },
-  },
-  {
     name: "title",
     label: "Title",
     type: TEXT,

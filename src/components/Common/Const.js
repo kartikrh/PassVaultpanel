@@ -120,8 +120,6 @@ export const TAB_UNSETTLED_MARKETS = "Unsettled Markets";
 export const TAB_UNDO_LOGS = "Undo Logs";
 
 export const TAB_VIDEOLIBRARY = "Video Library";
-export const TAB_VENDOR = "Vendors";
-export const VENUE = "Venue";
 
 export const TAB_ICC_RANKINGS = "iccRanking";
 

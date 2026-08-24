@@ -256,23 +256,6 @@ const Index = () => {
       });
   };
 
-  const handleShowHideClick = (id,domainName) => {
-    // console.log(id,domainName)
-    localStorage.setItem(
-      "whiteLabelEventId",
-      "" + id
-    );
-      localStorage.setItem(
-      "whiteLabelDomain",
-      "" + domainName
-    );
-    // console.log("id : ",id);
-    navigate("/whiteLabelEventData", { state: { whiteLabelEventId: id,whiteLabelDomain :domainName } });
-
-    // const url = new URL(window.location.origin + "/whiteLabelEventData");
-    // window.open(url.href, "_blank");
-  };
-
   //checkbox select
   const getSelectedItemsData = () => {
     const newCurrentPage = currentPage > 0 ? currentPage : 1;
@@ -387,30 +370,6 @@ const Index = () => {
       key: "imagePath",
       style: { width: "80%" },
       sort: true,
-    },
-    {
-      title: "S/H",
-      key: "getEventTypes",
-      printType: "ignore",
-      render: (text, record) => (
-        <Tooltip
-          title={"Show Hide"}
-          color={"#e8e8ea"}
-          overlayInnerStyle={{ color: "#000" }}
-        >
-          <Button
-            color={"info"}
-            size="sm"
-            className="btn"
-            onClick={() => {
-              handleShowHideClick(record.id, record.domain);
-            }}
-          >
-            <i class="bx bxs-up-arrow-square"></i>
-          </Button>
-        </Tooltip>
-      ),
-      style: { width: "2%", textAlign: "center" },
     },
     {
       title: "Demo Android",

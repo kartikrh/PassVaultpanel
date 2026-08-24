@@ -21,7 +21,6 @@ const Index = () => {
   const permissionObj = useSelector(state => state.auth?.tabPermissionList);
   document.title = TAB_PACKAGE;
   const [data, setData] = useState([]);
-  const [eventTypes, setEventTypes] = useState([]);
   const [dataIndexList, setDataIndexList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
@@ -73,16 +72,6 @@ const Index = () => {
       });
   };
 
-  const fetchEventTypeData = async () => {
-    // setIsLoading(true);
-    await axiosInstance
-      .post(`/admin/player/eventTypeList`, {})
-      .then((response) => {
-        setEventTypes(response.result);
-        // setIsLoading(false);
-      })
-      .catch((error) => { });
-  };
   const fetchTeamsData = async () => {
     // setIsLoading(true);
     await axiosInstance
@@ -507,13 +496,11 @@ const Index = () => {
       navigate("/dashboard")
     }
     fetchData();
-    fetchEventTypeData()
     fetchTeamsData()
   }, [permissionObj]);
 
   const handleReload = (value) => {
     fetchData();
-    // fetchEventTypeData()
     // fetchTeamsData()
   };
 
@@ -548,7 +535,6 @@ const Index = () => {
             changeOrderApiName="package"
             deleteModelFunction={setDeleteModelVisable}
             singleCheck={checekedList}
-            eventTypes={eventTypes}
             onAddNavigate={"/addPackage"}
             handleReset={handleReset}
             reFetchData={fetchData}
