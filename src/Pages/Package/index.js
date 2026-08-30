@@ -292,6 +292,20 @@ const Index = () => {
       style: { width: "10%", textAlign: "center" },
     },
     {
+      title: "Max Accounts",
+      dataIndex: "maxAccounts",
+      key: "maxAccounts",
+      render: (text) => <span>{text ?? "Unlimited"}</span>,
+      style: { width: "10%", textAlign: "center" },
+    },
+    {
+      title: "Max Groups",
+      dataIndex: "maxGroups",
+      key: "maxGroups",
+      render: (text) => <span>{text ?? "Unlimited"}</span>,
+      style: { width: "10%", textAlign: "center" },
+    },
+    {
       title: "Active",
       key: "isActive",
       render: (text, record) => (

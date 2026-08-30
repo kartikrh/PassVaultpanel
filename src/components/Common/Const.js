@@ -87,6 +87,10 @@ export const TAB_NOTIFICATION_CONFIG = "Notification Config";
 
 export const TAB_PAGE = "Pages";
 export const TAB_PACKAGE = "Package";
+
+// Vault feature (distinct from the pre-existing, unused TAB_CLIENT = "Client")
+export const TAB_VAULT_CLIENTS = "Clients";
+export const TAB_VAULT_HISTORY = "History";
 export const TAB_PLAYERS = "Players";
 export const TAB_PANELTY_RUNS = "Penalty Runs";
 export const TAB_PAGE_FORMAT = "Page Formates";

@@ -484,74 +484,6 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "FB Login",
-      key: "isFacebookLogin",
-      render: (text, record) => (
-        <Button color="primary" size="sm" className="btn" disabled={true}>
-          <i
-            className={`bx ${record.isFacebookLogin ? "bx-check" : "bx-block"}`}
-          ></i>
-        </Button>
-      ),
-      style: { width: "2%", textAlign: "center" },
-    },
-    {
-      title: "Mobile OTP",
-      key: "isSendMobileOTP",
-      render: (text, record) => (
-        <Button color="primary" size="sm" className="btn" disabled={true}>
-          <i
-            className={`bx ${record.isSendMobileOTP ? "bx-check" : "bx-block"}`}
-          ></i>
-        </Button>
-      ),
-      style: { width: "2%", textAlign: "center" },
-    },
-    {
-      title: "OTP Type",
-      dataIndex: "sendMobileOTPType",
-      key: "sendMobileOTPType",
-      render: (text, record) => {
-        switch (record.sendMobileOTPType) {
-          case 1:
-            return "OTP Login";
-          case 2:
-            return "OTPless SDK";
-          default:
-            return "-";
-        }
-      },
-      style: { width: "5%" },
-    },
-    {
-      title: "Mail OTP",
-      key: "isSendMailOTP",
-      render: (text, record) => (
-        <Button color="primary" size="sm" className="btn" disabled={true}>
-          <i
-            className={`bx ${record.isSendMailOTP ? "bx-check" : "bx-block"}`}
-          ></i>
-        </Button>
-      ),
-      style: { width: "2%", textAlign: "center" },
-    },
-    {
-      title: "Mail Type",
-      dataIndex: "sendMailType",
-      key: "sendMailType",
-      render: (text, record) => {
-        switch (record.sendMailType) {
-          case 1:
-            return "Gmail";
-          case 2:
-            return "SMTP";
-          default:
-            return "-";
-        }
-      },
-      style: { width: "5%" },
-    },
-    {
       title: "Recatch Key",
       dataIndex: "recatchKey",
       key: "recatchKey",
@@ -564,81 +496,15 @@ const Index = () => {
       style: { width: "10%" },
     },
     {
-      title: "Facebook Key",
-      dataIndex: "facebookKey",
-      key: "facebookKey",
-      style: { width: "10%" },
-    },
-    {
-      title: "Mobile Google Firebase Key",
-      dataIndex: "mobileGoogleFirebaseKey",
-      key: "mobileGoogleFirebaseKey",
-      style: { width: "10%" },
-    },
-    {
-      title: "Mobile Google Firebase Url",
-      dataIndex: "mobileGoogleFirebaseUrl",
-      key: "mobileGoogleFirebaseUrl",
-      style: { width: "10%" },
-    },
-    {
-      title: "Mobile OTP Max Limit",
-      dataIndex: "sendMobileOTPMaxSendLimit",
-      key: "sendMobileOTPMaxSendLimit",
-      style: { width: "10%" },
-    },
-    {
-      title: "Mobile OTP Auth Key",
-      dataIndex: "mobileOTPAuthKey",
-      key: "mobileOTPAuthKey",
-      style: { width: "10%" },
-    },
-    {
-      title: "Mobile OTP Expiry Time",
-      dataIndex: "mobileOTPExpired",
-      key: "mobileOTPExpired",
-      style: { width: "10%" },
-    },
-    {
-      title: "Mobile Seamless OTP Key",
-      dataIndex: "mobileSemlessOTPKey",
-      key: "mobileSemlessOTPKey",
-      style: { width: "10%" },
-    },
-    {
-      title: "Mobile OTP SendUrl",
-      dataIndex: "mobileOTPSendUrl",
-      key: "mobileOTPSendUrl",
-      style: { width: "10%" },
-    },
-    {
-      title: "Mobile OTP Resend Url",
-      dataIndex: "mobileOTPResendUrl",
-      key: "mobileOTPResendUrl",
-      style: { width: "10%" },
-    },
-    {
-      title: "Mobile OTP Forgot Url",
-      dataIndex: "mobileOTPForgotUrl",
-      key: "mobileOTPForgotUrl",
-      style: { width: "10%" },
-    },
-    {
-      title: "Mobile OTP Verification Url",
-      dataIndex: "mobileOTPVerify",
-      key: "mobileOTPVerify",
-      style: { width: "10%" },
-    },
-    {
-      title: "Mail Max Send Limit",
-      dataIndex: "sendMailMaxSendLimit",
-      key: "sendMailMaxSendLimit",
-      style: { width: "10%" },
-    },
-    {
       title: "Client OTP",
       dataIndex: "clientOTP",
       key: "sclientOTP",
+      style: { width: "10%" },
+    },
+    {
+      title: "Mail Setting",
+      dataIndex: "mailSettingEmail",
+      key: "mailSettingEmail",
       style: { width: "10%" },
     },
     {

@@ -76,6 +76,20 @@ export const packageField = [
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
   {
+    name: "maxAccounts",
+    label: "Max Accounts (blank = unlimited)",
+    type: TEXT,
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 4, lg: 4 },
+  },
+  {
+    name: "maxGroups",
+    label: "Max Groups (blank = unlimited)",
+    type: TEXT,
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 4, lg: 4 },
+  },
+  {
     type: SWITCH,
     name: "isActive",
     label: "Is Active",

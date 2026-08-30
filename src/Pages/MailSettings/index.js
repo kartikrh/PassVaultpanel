@@ -23,6 +23,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import LoadDataModal from "../../components/Model/LoadDataModal";
+import TestMailModal from "../../components/Model/TestMailModal";
 
 const Index = () => {
   const pageName = TAB_MAIL_SETTINGS;
@@ -36,6 +37,9 @@ const Index = () => {
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
+  const [testMailModelVisable, setTestMailModelVisable] = useState(false);
+  const [testMailRecord, setTestMailRecord] = useState(null);
+  const [isSendingTestMail, setIsSendingTestMail] = useState(false);
   const globalPageSize = localStorage.getItem("pageSize");
   const [tableSearchedData, setTableSearchedData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -123,6 +127,36 @@ const Index = () => {
         );
       });
   };
+  const handleSendTestMail = async (testEmail) => {
+    setIsSendingTestMail(true);
+    await axiosInstance
+      .post(`/admin/mailSettings/testMail`, {
+        id: testMailRecord?.id,
+        testEmail,
+      })
+      .then((response) => {
+        setIsSendingTestMail(false);
+        setTestMailModelVisable(false);
+        dispatch(
+          updateToastData({
+            data: response?.message,
+            title: response?.title,
+            type: SUCCESS,
+          })
+        );
+      })
+      .catch((error) => {
+        setIsSendingTestMail(false);
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
+
   const handleSingleCheck = (e) => {
     let updateSingleCheck = [];
     if (checekedList.includes(e.id)) {
@@ -248,6 +282,22 @@ const Index = () => {
         ></i>
       ),
       style: { width: "2%" },
+    },
+    {
+      title: "Test",
+      key: "test",
+      render: (text, record) => (
+        <i
+          className="bx bx-mail-send"
+          style={{ cursor: "pointer" }}
+          title="Send test mail"
+          onClick={() => {
+            setTestMailRecord(record);
+            setTestMailModelVisable(true);
+          }}
+        ></i>
+      ),
+      style: { width: "2%", textAlign: "center" },
     },
     {
       title: "Email",
@@ -468,7 +518,14 @@ const Index = () => {
             addModelVisable={addModelVisable}
             setAddModelVisable={setAddModelVisable}
           />
-          {loadDataModelVisable && 
+          <TestMailModal
+            testMailModelVisable={testMailModelVisable}
+            setTestMailModelVisable={setTestMailModelVisable}
+            handleSendTestMail={handleSendTestMail}
+            record={testMailRecord}
+            isSending={isSendingTestMail}
+          />
+          {loadDataModelVisable &&
             <LoadDataModal
               loadDataModelVisable={loadDataModelVisable}
               setLoadDataModelVisable={setLoadDataModelVisable}

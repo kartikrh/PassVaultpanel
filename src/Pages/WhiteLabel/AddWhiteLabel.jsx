@@ -42,6 +42,7 @@ const AddWhiteLabel = () => {
   const [drp_up, setDrp_up] = useState(false);
   const [initialEditData, setInitialEditData] = useState(undefined);
   const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
+  const [masterData, setMasterData] = useState({});
   const { isSaved, isLoading } = useSelector(
     (state) => state.tabsData.whiteLabel
   );
@@ -58,6 +59,34 @@ const AddWhiteLabel = () => {
       fetchData(whiteLabelId);
     }
   }, [whiteLabelId]);
+
+  useEffect(() => {
+    fetchMailSettings();
+  }, []);
+
+  const fetchMailSettings = async () => {
+    await axiosInstance
+      .post("/admin/mailSettings/all", {})
+      .then((response) => {
+        const mailSettingOptions = (response?.result || []).map((item) => ({
+          label: item.email,
+          value: item.id,
+        }));
+        setMasterData((preData) => ({
+          ...preData,
+          mailSettingId: mailSettingOptions,
+        }));
+      })
+      .catch((error) => {
+        dispatch(
+          updateToastData({
+            data: error?.message,
+            title: error?.title,
+            type: ERROR,
+          })
+        );
+      });
+  };
 
   useEffect(() => {
     if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
@@ -227,6 +256,7 @@ const AddWhiteLabel = () => {
                   ref={finalizeRef}
                   fields={WhiteLabelField}
                   editFormData={initialEditData}
+                  masterData={masterData}
                 />
               </CardBody>
             </Card>

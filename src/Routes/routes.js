@@ -76,6 +76,9 @@ import { ShowHide } from "../Pages/WhiteLabel/EventType/index.js";
 import Advertise from "../Pages/Advertise";
 import AddAdvertise from "../Pages/Advertise/AddAdvertise.jsx";
 import AddTemplate from "../Pages/Template/AddTemplate.jsx";
+import Clients from "../Pages/Clients";
+import ClientDetail from "../Pages/Clients/ClientDetail.jsx";
+import History from "../Pages/History";
 
 const authProtectedRoutes = [
   //dashboard
@@ -134,6 +137,9 @@ const authProtectedRoutes = [
   { path: "/addAdvertise", component: <AddAdvertise /> },
   { path: "/template", component: <Template /> },
   { path: "/addTemplate", component: <AddTemplate /> },
+  { path: "/clients", component: <Clients /> },
+  { path: "/clientDetail", component: <ClientDetail /> },
+  { path: "/history", component: <History /> },
   {
     path: "/changePassword",
     component: <ChangePassword />,
