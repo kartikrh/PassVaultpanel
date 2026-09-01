@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
-import { Tooltip } from "antd";
+import { Avatar, Tooltip } from "antd";
 import { Button, Container } from "reactstrap";
 import DeleteTabModel from "../../components/Model/DeleteModel";
 import SpinnerModel from "../../components/Model/SpinnerModel";
@@ -365,11 +365,44 @@ const Index = () => {
       sort: true,
     },
     {
-      title: "Image",
-      dataIndex: "imagePath",
-      key: "imagePath",
-      style: { width: "80%" },
-      sort: true,
+      title: "Logo",
+      dataIndex: "logo",
+      printType: "ignore",
+      render: (text) => (
+        <div className="flex-shrink-0">
+          {text ? (
+            <div>
+              <img className="avatar-sm" alt="" src={text} />
+            </div>
+          ) : (
+            <Avatar src="#" alt="Logo">
+              Logo
+            </Avatar>
+          )}
+        </div>
+      ),
+      key: "logo",
+      style: { width: "10%", textAlign: "left" },
+    },
+    {
+      title: "Favicon",
+      dataIndex: "favicon",
+      printType: "ignore",
+      render: (text) => (
+        <div className="flex-shrink-0">
+          {text ? (
+            <div>
+              <img className="avatar-sm" alt="" src={text} />
+            </div>
+          ) : (
+            <Avatar src="#" alt="Favicon">
+              Favicon
+            </Avatar>
+          )}
+        </div>
+      ),
+      key: "favicon",
+      style: { width: "10%", textAlign: "left" },
     },
     {
       title: "Demo Android",

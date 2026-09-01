@@ -24,6 +24,21 @@ export const loginUser = createAsyncThunk(
   }
 );
 
+// Second step of a 2FA-gated sign-in -- posts the code the user scanned/
+// typed against the pendingToken loginUser.fulfilled stashed in state.
+export const verifyOtp = createAsyncThunk(
+  'user/verifyOtp',
+  async ({ pendingToken, code }, { rejectWithValue, dispatch }) => {
+    try {
+      const response = await axiosInstance.post('/signin/verifyOtp', { pendingToken, code });
+      return response?.result;
+    } catch (error) {
+      dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+      return rejectWithValue(error?.message);
+    }
+  }
+);
+
 export const logoutUser = createAsyncThunk(
   'user/logout',
   async (_, { rejectWithValue }) => {
@@ -43,30 +58,69 @@ const userSlice = createSlice({
     userName: getLoggedinUserName(),
     isLoading: false,
     error: null,
-    isUserLogout: isUserLogout
+    isUserLogout: isUserLogout,
+    // Set by loginUser.fulfilled when the account has 2FA on -- Login.js
+    // renders the code-entry (and QR, first time) step while this is truthy,
+    // instead of navigating away like a normal successful login.
+    otpRequired: false,
+    otpType: null,
+    qrCode: null,
+    pendingToken: null,
   },
   reducers: {
     resetUserSlice: (state, action) => {
       state = undefined
-    }
+    },
+    cancelOtpChallenge: (state) => {
+      state.otpRequired = false;
+      state.otpType = null;
+      state.qrCode = null;
+      state.pendingToken = null;
+    },
   },
   extraReducers: (builder) => {
+    const applySession = (state, payload) => {
+      state.token = payload.token;
+      state.userName = payload.userName;
+      state.refData = payload.refData;
+      state.isUserLogout = false;
+      state.otpRequired = false;
+      state.otpType = null;
+      state.qrCode = null;
+      state.pendingToken = null;
+      localStorage.setItem("authUser", encryptData(payload));
+      localStorage.setItem("refData", JSON.stringify(payload.refData));
+      localStorage.setItem('loggedIn', true);
+      setAuthToken(payload.token);
+    };
+
     builder
       .addCase(loginUser.pending, (state) => {
         state.isLoading = true;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
-        state.token = action.payload.token;
-        state.userName = action.payload.userName;
-        state.refData = action.payload.refData
-        state.isUserLogout = false;
-        localStorage.setItem("authUser", encryptData(action.payload));
-        localStorage.setItem("refData", JSON.stringify(action.payload.refData));
-        localStorage.setItem('loggedIn', true);
-        setAuthToken(action.payload.token);
+        if (action.payload?.otpRequired) {
+          state.otpRequired = true;
+          state.otpType = action.payload.otpType;
+          state.qrCode = action.payload.qrCode || null;
+          state.pendingToken = action.payload.pendingToken;
+        } else {
+          applySession(state, action.payload);
+        }
         state.isLoading = false;
       })
       .addCase(loginUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      .addCase(verifyOtp.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(verifyOtp.fulfilled, (state, action) => {
+        applySession(state, action.payload);
+        state.isLoading = false;
+      })
+      .addCase(verifyOtp.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
       })
@@ -89,5 +143,5 @@ const userSlice = createSlice({
       });
   }
 });
-export const { resetUserSlice } = userSlice.actions;
+export const { resetUserSlice, cancelOtpChallenge } = userSlice.actions;
 export default userSlice.reducer;

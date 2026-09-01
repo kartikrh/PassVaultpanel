@@ -90,6 +90,13 @@ export const packageField = [
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
   {
+    name: "maxNotes",
+    label: "Max Notes (blank = unlimited)",
+    type: TEXT,
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 4, lg: 4 },
+  },
+  {
     type: SWITCH,
     name: "isActive",
     label: "Is Active",

@@ -6,7 +6,6 @@ import { Container } from "reactstrap";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import TabModel from "../../components/Model/AddTabModel";
 import DeleteTabModel from "../../components/Model/DeleteModel";
-import PlayerImageUpdateModel from "../../components/Model/PlayerImageUpdateModel";
 import axiosInstance from "../../Features/axios";
 import { useNavigate } from "react-router-dom";
 import { isEmpty, isEqual } from "lodash";
@@ -14,11 +13,8 @@ import { ERROR, MODULE_CONFIG, PERMISSION_ADD, PERMISSION_DELETE, PERMISSION_EDI
 import { useDispatch, useSelector } from "react-redux";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
-import DeleteAllModel from "../../components/Model/DeleteAllModel";
 import { Tooltip } from "antd";
 import LoadDataModal from "../../components/Model/LoadDataModal";
-// import PanelLoadDataModel from "../../components/Model/PanelLoadDataModel";
-// import ClientLoadDataModel from "../../components/Model/ClientLoadDataModel";
 
 const Index = () => {
   const pageName = TAB_CONFIG
@@ -28,13 +24,8 @@ const Index = () => {
   const [dataIndexList, setDataIndexList] = useState([]);
   const [checekedList, setCheckedList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [isPlayerImageUpdateModule, setIsPlayerImageUpdateModule] = useState(false);
-  const [deleteAllModelVisable, setDeleteAllModelVisable] = useState(false);
-  // const [loadPanelModelVisable, setLoadPanelModelVisable] = useState(false);
-  // const [loadClientModelVisable, setLoadClientModelVisable] = useState(false);
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
-  const [isSignalRStarted, setIsSignalRStarted] = useState(true);
   const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
   const globalPageSize = localStorage.getItem("pageSize");
   const [tableSearchedData, setTableSearchedData] = useState([]);
@@ -138,181 +129,6 @@ const Index = () => {
       .catch((error) => {
         setIsLoading(false);
         dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-      });
-  };
-  const handleUpdatePlayerJersy = async (e) => {
-    setIsLoading(true);
-    await axiosInstance
-      .post(`/admin/player/mergeImageV2`)
-      .then((response) => {
-        fetchData();
-        setIsPlayerImageUpdateModule(false);
-        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-      });
-  };
-  const handleUpdatePlayerJersyForAllPlayers = async (e) => {
-    setIsLoading(true);
-    await axiosInstance
-      .post(`/admin/player/mergeImageV1`)
-      .then((response) => {
-        fetchData();
-        setIsPlayerImageUpdateModule(false);
-        dispatch(updateToastData({ data: response?.message, title: response?.title, type: SUCCESS }));
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
-      });
-  };
-
-  //load client data
-  const handleLoadClientData = async (e) => {
-    setIsLoading(true);
-    await axiosInstance
-      .post(`/loadClientData`)
-      .then((response) => {
-        fetchData();
-        // setLoadClientModelVisable(false);
-        dispatch(
-          updateToastData({
-            data: response?.message,
-            title: response?.title,
-            type: SUCCESS,
-          })
-        );
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
-      });
-  };
-  const playerImageUpdate = async (e) => {
-    setIsPlayerImageUpdateModule(true)
-    // setIsLoading(true);
-    // await axiosInstance
-    //   .post(`/loadClientData`)
-    //   .then((response) => {
-    //     fetchData();
-    //     // setLoadClientModelVisable(false);
-    //     dispatch(
-    //       updateToastData({
-    //         data: response?.message,
-    //         title: response?.title,
-    //         type: SUCCESS,
-    //       })
-    //     );
-    //   })
-    //   .catch((error) => {
-    //     setIsLoading(false);
-    //     dispatch(
-    //       updateToastData({
-    //         data: error?.message,
-    //         title: error?.title,
-    //         type: ERROR,
-    //       })
-    //     );
-    //   });
-  };
-  //load panel data
-  const handleLoadPanelData = async (e) => {
-    setIsLoading(true);
-    await axiosInstance
-      .post(`/loadData`)
-      .then((response) => {
-        fetchData();
-        // setLoadPanelModelVisable(false);
-        dispatch(
-          updateToastData({
-            data: response?.message,
-            title: response?.title,
-            type: SUCCESS,
-          })
-        );
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
-      });
-  };
-  const handleSignalRCheckStatus = async (e) => {
-    setIsLoading(true);
-    await axiosInstance
-      .post(`/signalr/checkStatus`)
-      .then((response) => {
-        const status = response?.data?.isSignalRStarted
-        setIsSignalRStarted(status)
-      })
-      .catch((error) => {
-        setIsLoading(false);
-      });
-  };
-  const handleSignalRToggle = async (e) => {
-    setIsLoading(true);
-    await axiosInstance
-      .post(`/signalr/toggle`)
-      .then((response) => {
-        fetchData();
-        handleSignalRCheckStatus()
-        dispatch(
-          updateToastData({
-            data: response?.status,
-            title: response?.title,
-            type: SUCCESS,
-          })
-        );
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
-      });
-  };
-  //delete All Commentary
-  const handleDeleteAll = async (e) => {
-    setIsLoading(true);
-    await axiosInstance
-      .post(`/admin/commentary/deleteAllCommentary`)
-      .then((response) => {
-        fetchData();
-        setDeleteAllModelVisable(false);
-        dispatch(
-          updateToastData({
-            data: response?.message,
-            title: response?.title,
-            type: SUCCESS,
-          })
-        );
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        dispatch(
-          updateToastData({
-            data: error?.message,
-            title: error?.title,
-            type: ERROR,
-          })
-        );
       });
   };
   //chnage Penalty Run
@@ -528,12 +344,10 @@ const Index = () => {
       navigate("/dashboard")
     }
     fetchData();
-    handleSignalRCheckStatus()
   }, [permissionObj]);
 
   const handleReload = (value) => {
     fetchData();
-    // handleSignalRCheckStatus()
   };
   return (
     <React.Fragment>
@@ -546,13 +360,7 @@ const Index = () => {
             columns={columns}
             dataSource={data}
             tableElement={tableElement}
-            deleteAllModelFunction={setDeleteAllModelVisable}
             deleteModelFunction={setDeleteModelVisable}
-            loadPanelModelFunction={handleLoadPanelData} 
-            loadClientModelFunction={handleLoadClientData}
-            playerImageUpdateFunction={playerImageUpdate}
-            loadSignalRToggleFunction={handleSignalRToggle}
-            isSignalRStarted={isSignalRStarted}
             singleCheck={checekedList}
             reFetchData={fetchData}
             handleReload={handleReload}
@@ -560,42 +368,15 @@ const Index = () => {
             onAddNavigate={"/addConfig"}
             isAddPermission={checkPermission(permissionObj, pageName, PERMISSION_ADD)}
             isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
-            isDeleteAllPermission={checkPermission(permissionObj,pageName,PERMISSION_EDIT)}
             setParentCurrentPage={handleCurrentPageChange}
             setParentPageSize={handlePageSizeChange}
             setParentSearchedData={handleTableSearchedDataChange}
-          />
-          {/* <PanelLoadDataModel
-            loadPanelModelVisable={loadPanelModelVisable}
-            setLoadPanelModelVisable={setLoadPanelModelVisable}
-            handleLoadPanelData={handleLoadPanelData}
-            singleCheck={checekedList}
-          /> */}
-          {/* <ClientLoadDataModel
-            loadClientModelVisable={loadClientModelVisable}
-            setLoadClientModelVisable={setLoadClientModelVisable}
-            handleLoadClientData={handleLoadClientData}
-            singleCheck={checekedList}
-          /> */}
-          <DeleteAllModel
-            deleteAllModelVisable={deleteAllModelVisable}
-            setDeleteAllModelVisable={setDeleteAllModelVisable}
-            handleDeleteAll={handleDeleteAll}
-            singleCheck={checekedList}
           />
           <DeleteTabModel
             deleteModelVisable={deleteModelVisable}
             setDeleteModelVisable={setDeleteModelVisable}
             handleDelete={handleDelete}
             singleCheck={checekedList}
-          />
-          <PlayerImageUpdateModel
-            isPlayerImageUpdateModule={isPlayerImageUpdateModule}
-            setIsPlayerImageUpdateModule={setIsPlayerImageUpdateModule}
-            // handleDelete={handleDelete}
-            // singleCheck={checekedList}
-            handleV2 = {handleUpdatePlayerJersy}
-            handleV1 = {handleUpdatePlayerJersyForAllPlayers}
           />
           <TabModel
             addModelVisable={addModelVisable}

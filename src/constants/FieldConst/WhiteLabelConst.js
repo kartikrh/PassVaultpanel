@@ -1,5 +1,11 @@
-import { SELECT, SWITCH, TEXT } from "../../components/Common/Const";
+import { IMAGE, SELECT, SWITCH, TEXT } from "../../components/Common/Const";
 
+// Every field below uses the same half-row span (label:2 + field:4 = 6 of 12
+// columns), so FormBuilder's single continuous grid naturally packs them two
+// per row -- the same left/right pairing as Banner's Add page. Any dependent
+// field uses hideDependentInitially so it's fully removed from the grid (not
+// just visually hidden) while its toggle is off -- a partially-hidden field
+// would still reserve its column and throw off every pair that follows it.
 export const WhiteLabelField = [
   {
     name: "domain",
@@ -10,31 +16,13 @@ export const WhiteLabelField = [
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
   {
-    name: "imagePath",
-    label: "Image",
-    type: TEXT,
-    accept: "image/*",
-    labelColspan: { xs: 12, md: 2, lg: 2 },
-    fieldColspan: { xs: 12, md: 4, lg: 4 },
-  },
-
-  // reCAPTCH Settings
-  {
     type: SWITCH,
-    name: "isRecatchEnable",
-    label: "Enable reCATCH",
-    defaultValue: false,
+    name: "isActive",
+    label: "Active",
+    defaultValue: true,
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
-  {
-    name: "recatchKey",
-    label: "reCATCH Key",
-    type: TEXT,
-    labelColspan: { xs: 12, md: 2, lg: 2 },
-    fieldColspan: { xs: 12, md: 4, lg: 4 },
-    dependsOnField: "isRecatchEnable",
-    dependsOnValue: true,  },
 
   // Google Login Settings
   {
@@ -43,10 +31,16 @@ export const WhiteLabelField = [
     label: "Enable Google Login",
     defaultValue: false,
     labelColspan: { xs: 12, md: 2, lg: 2 },
-    // Wide on purpose: this toggle alone fills the row, so Google Client
-    // ID/Secret below always start together at the left edge of the next
-    // row (left/right pair) instead of sharing a row with this switch.
-    fieldColspan: { xs: 12, md: 10, lg: 10 },
+    fieldColspan: { xs: 12, md: 4, lg: 4 },
+  },
+  // reCAPTCH Settings
+  {
+    type: SWITCH,
+    name: "isRecatchEnable",
+    label: "Enable reCATCH",
+    defaultValue: false,
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
   {
     name: "googleKey",
@@ -58,8 +52,16 @@ export const WhiteLabelField = [
     fieldColspan: { xs: 12, md: 4, lg: 4 },
     dependsOnField: "isGoogleLogin",
     dependsOnValue: true,
-    // Fully removed from the form (not just visually hidden) when Google
-    // Login is off, so the row disappears instead of leaving a blank gap.
+    hideDependentInitially: true,
+  },
+  {
+    name: "recatchKey",
+    label: "reCATCH Key",
+    type: TEXT,
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 4, lg: 4 },
+    dependsOnField: "isRecatchEnable",
+    dependsOnValue: true,
     hideDependentInitially: true,
   },
   {
@@ -74,7 +76,6 @@ export const WhiteLabelField = [
     dependsOnValue: true,
     hideDependentInitially: true,
   },
-
   {
     name: "clientOTP",
     label: "Client OTP",
@@ -82,14 +83,7 @@ export const WhiteLabelField = [
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
-  {
-    type: SWITCH,
-    name: "isActive",
-    label: "Active",
-    defaultValue: true,
-    labelColspan: { xs: 12, md: 2, lg: 2 },
-    fieldColspan: { xs: 12, md: 4, lg: 4 },
-  },
+
   {
     type: SWITCH,
     name: "isDemoClientLogin",
@@ -112,6 +106,23 @@ export const WhiteLabelField = [
     type: SELECT,
     defaultValue: "0",
     options: [{ label: "None", value: 0 }],
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 4, lg: 4 },
+  },
+
+  // Branding -- last, same as Banner's own Image field, which pairs with
+  // whatever half-row field lands next to it.
+  {
+    name: "logo",
+    label: "Logo",
+    type: IMAGE,
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 4, lg: 4 },
+  },
+  {
+    name: "favicon",
+    label: "Favicon",
+    type: IMAGE,
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },

@@ -68,14 +68,12 @@ const Index = forwardRef(
       loadModelFunction,
       suspendModelFunction,
       closeModelFunction,
-      deleteAllModelFunction,
       closeAllModelFunction,
       closeMarketModelFunction,
       cancelAllModelFunction,
       cancelModelFunction,
       abandonModelFunction,
       resultModelFunction,
-      loadPanelModelFunction,
       loadDataModelFunction,
       importDataMethod,
       importDataName,
@@ -83,11 +81,7 @@ const Index = forwardRef(
       isCheckingImages,
       handleBrokenImageToggle,
       openDataProvider,
-      loadClientModelFunction,
-      playerImageUpdateFunction,
-      loadSignalRToggleFunction,
       datePriceModelFunction,
-      isSignalRStarted,
       singleCheck,
       setImportExportModelVisable,
       handlePlayerHistoryModalPopUp,
@@ -135,7 +129,6 @@ const Index = forwardRef(
       isSuspendPermission,
       isClosePermission,
       isCancelPermission,
-      isDeleteAllPermission,
       breadCrumbs,
       onBreadCrumbsClick,
       teams,
@@ -3778,74 +3771,6 @@ const Index = forwardRef(
                         </Col>
                       </Row>
                     )}
-                    <Col className="col-sm-auto ms-auto my-2">
-                      <div className="d-flex flex-wrap align-items-center gap-2">
-                        {isDeleteAllPermission && (
-                          <Button
-                            color={isSignalRStarted ? "success" : "danger"}
-                            onClick={() => {
-                              loadSignalRToggleFunction();
-                            }}
-                            className="d-flex align-items-center gap-1"
-                          >
-                            <i className="ri-refresh-line"></i>
-                            {isSignalRStarted
-                              ? "SignalR Started"
-                              : "SignalR Stopped"}
-                          </Button>
-                        )}
-                        {isDeleteAllPermission && (
-                          <Button
-                            color="warning"
-                            onClick={() => {
-                              loadPanelModelFunction();
-                            }}
-                            className="d-flex align-items-center gap-1"
-                          >
-                            <i className="ri-refresh-line"></i>
-                            Load Panel Data
-                          </Button>
-                        )}
-                        {isDeleteAllPermission && (
-                          <Button
-                            color="warning"
-                            onClick={() => {
-                              loadClientModelFunction();
-                            }}
-                            className="d-flex align-items-center gap-1"
-                          >
-                            <i className="ri-refresh-line"></i>
-                            Load Client Data
-                          </Button>
-                        )}
-                        {isDeleteAllPermission && (
-                          <Button
-                            // color="warning"
-                            onClick={() => {
-                              playerImageUpdateFunction();
-                            }}
-                            className="d-flex align-items-center gap-1 playerImageUpdate"
-                          >
-                            {/* <i className="ri-refresh-line"></i> */}
-                            Player Image Update
-                          </Button>
-                        )}
-                        {isDeleteAllPermission && (
-                          <div className="ms-auto">
-                            <Button
-                              color="danger"
-                              onClick={() => {
-                                deleteAllModelFunction(true);
-                              }}
-                              className="d-flex align-items-center gap-1"
-                            >
-                              <i className="ri-delete-bin-2-line"></i>
-                              Delete All Commentary
-                            </Button>
-                          </div>
-                        )}
-                      </div>
-                    </Col>
                     {tableElement?.dateRange ? (
                       <Row className="">
                         {/* <Col className="bg-white p-2 m-2"> */}

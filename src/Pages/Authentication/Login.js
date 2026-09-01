@@ -13,6 +13,7 @@ import {
   Input,
   FormFeedback,
   Label,
+  Alert,
 } from "reactstrap";
 
 //redux
@@ -35,8 +36,9 @@ import FacebookLogin from "react-facebook-login/dist/facebook-login-render-props
 
 //Import config
 import { facebook, google } from "../../config";
-import { loginUser } from "../../Features/Authentication/userSlice";
+import { loginUser, verifyOtp, cancelOtpChallenge } from "../../Features/Authentication/userSlice";
 import { REMEMBER_ME_KEY, USER_DATA_KEY } from "../../components/Common/Const";
+import { OTPType } from "../../components/Common/otpConstants";
 
 const Login = (props) => {
   const _rememberMe = JSON.parse(localStorage.getItem(REMEMBER_ME_KEY) || null);
@@ -45,7 +47,9 @@ const Login = (props) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { error, token, isUserLogout } = useSelector((state) => state.user);
+  const { error, token, isUserLogout, otpRequired, otpType, qrCode, pendingToken, isLoading } = useSelector((state) => state.user);
+  const [otpCode, setOtpCode] = useState("");
+  const [otpError, setOtpError] = useState(null);
   const getInitialValues = () => {
     const userData = JSON.parse(localStorage.getItem(USER_DATA_KEY) || null);
     if (userData) return userData
@@ -142,9 +146,26 @@ const Login = (props) => {
     return false;
   }
 
+  const handleOtpSubmit = (e) => {
+    e.preventDefault();
+    setOtpError(null);
+    if (!otpCode) {
+      setOtpError("Please enter the 6-digit code");
+      return;
+    }
+    dispatch(verifyOtp({ pendingToken, code: otpCode }))
+      .unwrap()
+      .catch((message) => setOtpError(message));
+  };
+
+  const handleCancelOtp = () => {
+    setOtpCode("");
+    setOtpError(null);
+    dispatch(cancelOtpChallenge());
+  };
+
   return (
     <React.Fragment>
-      <div className="bg-overlay"></div>
       <div className="account-pages my-5 pt-5">
         <Container>
           <Row className="justify-content-center">
@@ -168,6 +189,65 @@ const Login = (props) => {
                         />
                       </Link> */}
                     </div>
+                    {otpRequired ? (
+                      <>
+                        <h4 className="font-size-18 text-muted mt-2 text-center">
+                          Two-Factor Authentication
+                        </h4>
+                        <p className="mb-4 text-center">
+                          {qrCode
+                            ? "Scan this QR code with Google Authenticator, then enter the 6-digit code below."
+                            : otpType === OTPType.MAIL
+                              ? "Enter the code we emailed you."
+                              : "Enter the 6-digit code from your authenticator app."}
+                        </p>
+                        {qrCode ? (
+                          <div className="text-center mb-4">
+                            <img src={qrCode} alt="Scan with Google Authenticator" style={{ width: 200, height: 200 }} />
+                          </div>
+                        ) : null}
+                        <Form className="form-horizontal" onSubmit={handleOtpSubmit}>
+                          {otpError ? (
+                            <Alert color="danger">
+                              <div className="text-center">{otpError}</div>
+                            </Alert>
+                          ) : null}
+                          <div className="mb-4">
+                            <Label className="form-label">Authentication code</Label>
+                            <Input
+                              name="otpCode"
+                              className="form-control"
+                              placeholder="Enter 6-digit code"
+                              type="text"
+                              inputMode="numeric"
+                              maxLength={6}
+                              value={otpCode}
+                              onChange={(e) => setOtpCode(e.target.value)}
+                              autoFocus
+                            />
+                          </div>
+                          <div className="d-grid mt-4">
+                            <button
+                              className="btn btn-primary waves-effect waves-light"
+                              type="submit"
+                              disabled={isLoading}
+                            >
+                              {isLoading ? "Verifying..." : "Verify"}
+                            </button>
+                          </div>
+                          <div className="d-grid mt-2">
+                            <button
+                              className="btn btn-link waves-effect"
+                              type="button"
+                              onClick={handleCancelOtp}
+                            >
+                              Back to sign in
+                            </button>
+                          </div>
+                        </Form>
+                      </>
+                    ) : (
+                      <>
                     <h4 className="font-size-18 text-muted mt-2 text-center">
                       Welcome Back !
                     </h4>
@@ -314,6 +394,8 @@ const Login = (props) => {
                         </Col>
                       </Row>
                     </Form>
+                      </>
+                    )}
                   </div>
                 </CardBody>
               </Card>

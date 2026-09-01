@@ -306,6 +306,13 @@ const Index = () => {
       style: { width: "10%", textAlign: "center" },
     },
     {
+      title: "Max Notes",
+      dataIndex: "maxNotes",
+      key: "maxNotes",
+      render: (text) => <span>{text ?? "Unlimited"}</span>,
+      style: { width: "10%", textAlign: "center" },
+    },
+    {
       title: "Active",
       key: "isActive",
       render: (text, record) => (

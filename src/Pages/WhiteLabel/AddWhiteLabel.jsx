@@ -32,6 +32,7 @@ import {
 } from "../../Features/Tabs/WhiteLabelSlice";
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
+import { convertObjtoFormData } from "../../components/Common/utilities";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { isEmpty } from "lodash";
@@ -158,7 +159,7 @@ const AddWhiteLabel = () => {
           completeData[name] = value ?? null;
         }
       });
-      dispatch(addWhiteLabelToDb({ ...completeData, ...extraData }));
+      dispatch(addWhiteLabelToDb(convertObjtoFormData({ ...completeData, ...extraData })));
       setCurrentSaveAction(saveAction);
     }
   };

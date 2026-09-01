@@ -32,6 +32,24 @@ const STATUS_OPTIONS = [
   { value: "suspended", label: "Suspended" },
 ];
 
+// Deleted tab's columns -- reads tblDeletedClients (self-delete archive,
+// see PassVaultapi services/vaultAccountLifecycle.js), not tblClient, so
+// there's no status toggle, view, or select/delete here -- it's a
+// read-only record of what happened and why.
+const DELETED_CLIENT_COLUMNS = [
+  { title: "Name", dataIndex: "name", key: "name", render: (text) => text || "-", style: { width: "20%" } },
+  { title: "Email", dataIndex: "email", key: "email", style: { width: "25%" } },
+  { title: "Username", dataIndex: "username", key: "username", render: (text) => text || "-", style: { width: "15%" } },
+  { title: "Reason", dataIndex: "reason", key: "reason", style: { width: "25%" } },
+  {
+    title: "Deleted At",
+    dataIndex: "deletedAt",
+    key: "deletedAt",
+    render: (text) => (text ? convertDateUTCToLocalWithSec24(text, "index") : "-"),
+    style: { width: "15%" },
+  },
+];
+
 // Vault feature: staff-facing "Clients" screen (spec section 4). List/search/filter
 // by plan and status; no vault content (passwords, entries) ever appears here.
 const Index = () => {
@@ -61,6 +79,13 @@ const Index = () => {
     endDate: `${new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split("T")[0]}T23:59:00`,
   });
   const [dateRange, setDateRange] = useState(defaultDateRange());
+
+  // "Active" (tblClient, existing behavior below) vs "Deleted" (reads
+  // tblDeletedClients instead -- see fetchDeletedClients).
+  const [activeTab, setActiveTab] = useState("active");
+  const [deletedClients, setDeletedClients] = useState([]);
+  const [deletedSearch, setDeletedSearch] = useState("");
+  const [isDeletedLoading, setIsDeletedLoading] = useState(false);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -119,6 +144,38 @@ const Index = () => {
   // the current filter state from the closure -- same pattern as History/index.js.
   const fetchData = async () => {
     fetchClients({ search, status, packageId, isSearch, dateRange });
+  };
+
+  const fetchDeletedClients = async (search) => {
+    setIsDeletedLoading(true);
+    await axiosInstance
+      .post(`/vault/admin/clients/deleted`, { search: search || undefined })
+      .then((response) => {
+        setDeletedClients(response?.result || []);
+        setIsDeletedLoading(false);
+      })
+      .catch((error) => {
+        setIsDeletedLoading(false);
+        dispatch(updateToastData({ data: error?.message, title: error?.title, type: ERROR }));
+      });
+  };
+
+  const debouncedDeletedSearchRef = useRef(null);
+  if (!debouncedDeletedSearchRef.current) {
+    debouncedDeletedSearchRef.current = debounce((value) => fetchDeletedClients(value), 400);
+  }
+
+  const handleDeletedSearchChange = (e) => {
+    const value = e.target.value;
+    setDeletedSearch(value);
+    debouncedDeletedSearchRef.current(value);
+  };
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    if (tab === "deleted" && deletedClients.length === 0) {
+      fetchDeletedClients(deletedSearch);
+    }
   };
 
   const fetchPackages = async () => {
@@ -367,36 +424,92 @@ const Index = () => {
       <div className="page-content">
         <Container fluid={true}>
           <Breadcrumbs title="Vault" breadcrumbItem="Clients" />
-          {isLoading && <SpinnerModel />}
-          <Table
-            ref={finalizeRef}
-            columns={columns}
-            dataSource={data}
-            tableElement={tableElement}
-            reFetchData={fetchData}
-            handleReload={fetchData}
-            renderCustomFilter={renderCustomFilter}
-            handleCustomReset={handleCustomReset}
-            isAddPermission={false}
-            isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
-            singleCheck={checekedList}
-            deleteModelFunction={setDeleteModelVisable}
-            setParentCurrentPage={setCurrentPage}
-            setParentPageSize={setPageSize}
-            setParentSearchedData={handleTableSearchedDataChange}
-            dateType={dateType}
-            setDateType={setDateType}
-            isSearch={isSearch}
-            setIsSearch={setIsSearch}
-            dateRange={dateRange}
-            setDateRange={setDateRange}
-          />
-          <DeleteTabModel
-            deleteModelVisable={deleteModelVisable}
-            setDeleteModelVisable={setDeleteModelVisable}
-            handleDelete={handleDelete}
-            singleCheck={checekedList}
-          />
+
+          {/* Active (tblClient) vs Deleted (tblDeletedClients -- self-delete
+              archive, see PassVaultapi services/vaultAccountLifecycle.js).
+              Plain buttons rather than a full Nav/Tabs component, matching
+              this page's existing lightweight, ad-hoc UI style. */}
+          <div className="d-flex gap-2 mb-3">
+            <Button
+              size="sm"
+              color={activeTab === "active" ? "primary" : "light"}
+              onClick={() => handleTabChange("active")}
+            >
+              Active
+            </Button>
+            <Button
+              size="sm"
+              color={activeTab === "deleted" ? "primary" : "light"}
+              onClick={() => handleTabChange("deleted")}
+            >
+              Deleted
+            </Button>
+          </div>
+
+          {activeTab === "active" ? (
+            <>
+              {isLoading && <SpinnerModel />}
+              <Table
+                ref={finalizeRef}
+                columns={columns}
+                dataSource={data}
+                tableElement={tableElement}
+                reFetchData={fetchData}
+                handleReload={fetchData}
+                renderCustomFilter={renderCustomFilter}
+                handleCustomReset={handleCustomReset}
+                isAddPermission={false}
+                isDeletePermission={checkPermission(permissionObj, pageName, PERMISSION_DELETE)}
+                singleCheck={checekedList}
+                deleteModelFunction={setDeleteModelVisable}
+                setParentCurrentPage={setCurrentPage}
+                setParentPageSize={setPageSize}
+                setParentSearchedData={handleTableSearchedDataChange}
+                dateType={dateType}
+                setDateType={setDateType}
+                isSearch={isSearch}
+                setIsSearch={setIsSearch}
+                dateRange={dateRange}
+                setDateRange={setDateRange}
+              />
+              <DeleteTabModel
+                deleteModelVisable={deleteModelVisable}
+                setDeleteModelVisable={setDeleteModelVisable}
+                handleDelete={handleDelete}
+                singleCheck={checekedList}
+              />
+            </>
+          ) : (
+            <>
+              {isDeletedLoading && <SpinnerModel />}
+              <Table
+                columns={DELETED_CLIENT_COLUMNS}
+                dataSource={deletedClients}
+                tableElement={{ title: "Deleted Clients", reloadButton: true }}
+                reFetchData={() => fetchDeletedClients(deletedSearch)}
+                handleReload={() => fetchDeletedClients(deletedSearch)}
+                renderCustomFilter={() => (
+                  <div>
+                    <input
+                      className="form-control"
+                      type="text"
+                      style={{ width: 240 }}
+                      placeholder="Search name, email, or username"
+                      value={deletedSearch}
+                      onChange={handleDeletedSearchChange}
+                    />
+                  </div>
+                )}
+                handleCustomReset={() => {
+                  setDeletedSearch("");
+                  fetchDeletedClients("");
+                }}
+                isAddPermission={false}
+                isDeletePermission={false}
+                singleCheck={[]}
+              />
+            </>
+          )}
         </Container>
       </div>
     </React.Fragment>
