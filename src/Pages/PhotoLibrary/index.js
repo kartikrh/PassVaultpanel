@@ -52,11 +52,10 @@ const Index = () => {
     startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
     endDate: `${new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split("T")[0]}T23:59:00`,
   });
-  const globalDateType = JSON.parse(localStorage.getItem("DateType"))
-  const [dateType, setDateType] = useState(globalDateType || {
-    label: "Local Timezone",
-    value: 1,
-  });
+  // Global "Date Format" preference, set once in the header's settings
+  // panel (see Features/Layout.js) instead of each page re-deriving its
+  // own copy from localStorage.
+  const dateType = useSelector((state) => state.layout.dateType);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -527,7 +526,6 @@ const Index = () => {
             setDateRange={setDateRange}
             dateRange={dateRange}
             dateType={dateType}
-            setDateType={setDateType}
 
           />
           <DeleteTabModel

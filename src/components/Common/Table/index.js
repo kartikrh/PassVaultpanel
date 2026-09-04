@@ -102,7 +102,6 @@ const Index = forwardRef(
       delay,
       setDelay,
       dateType,
-      setDateType,
       handleDelay,
       sendDataList,
       createdTypeList,
@@ -1271,10 +1270,6 @@ const Index = forwardRef(
         handleCustomReset();
         return;
       }
-      if(dateType?.value == 2){
-        localStorage.setItem("DateType", JSON.stringify({ label: 'Local Timezone', value: 1 }))
-        setDateType({ label: 'Local Timezone', value: 1 })
-      } 
       setSearchTerm("");
       setTableActions({
         isActive: true,
@@ -3416,36 +3411,6 @@ const Index = forwardRef(
                               </button>
                             </div>
                           ) : null}
-                          {!tableElement?.isDateRange &&
-                            tableElement?.isDateTypeSelect &&
-                            (tableElement?.title == "Market Data Logs" ||
-                              tableElement?.title == "Registration Pending" ||
-                              tableElement?.title == "Commentary History" ||
-                              tableElement?.title == "Registered Users" ||
-                              tableElement?.title == "Events" ||
-                              tableElement?.dateTypeTitle == "Market data logs" ||
-                              tableElement?.title == "Competition" || tableElement?.dateTypeButNoDateRange ) ? (
-                            <Select
-                              value={dateType}
-                              placeholder="Date Type"
-                              styles={{
-                                control: (provided) => ({
-                                  ...provided,
-                                  width: 200,
-                                }),
-                              }}
-                              onChange={(e) => {
-                                localStorage.setItem("DateType", JSON.stringify(e))
-                                setDateType(e)
-                              }
-                              }
-                              options={[
-                                { label: "Local Timezone", value: 1 },
-                                { label: "UTC Timezone", value: 2 },
-                              ]}
-                              classNamePrefix="filter-dropdown"
-                            />
-                          ) : null}
                           {tableElement?.importExport ? (
                             <div
                               className="d-flex align-items-center"
@@ -3969,28 +3934,6 @@ const Index = forwardRef(
                                   {/* <i className="ri-add-line align-bottom me-1"></i> Reset */}
                                 </button>
                               </div>
-                            ) : null}
-                            {tableElement?.isDateTypeSelect ? (
-                              <Select
-                                value={dateType}
-                                placeholder="Date Type"
-                                styles={{
-                                  control: (provided) => ({
-                                    ...provided,
-                                    width: 200,
-                                  }),
-                                }}
-                                onChange={(e) => {
-
-                                  localStorage.setItem("DateType", JSON.stringify(e))
-                                  setDateType(e)
-                                }}
-                                options={[
-                                  { label: "Local Timezone", value: 1 },
-                                  { label: "UTC Timezone", value: 2 },
-                                ]}
-                                classNamePrefix="filter-dropdown"
-                              />
                             ) : null}
                             {tableElement?.isReportTypeSelected ? (
                               <Select

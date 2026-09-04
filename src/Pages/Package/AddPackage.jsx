@@ -23,7 +23,7 @@ import {
   SAVE,
   SAVE_AND_CLOSE,
   SAVE_AND_NEW,
-  TAB_AWARDS,
+  TAB_PACKAGE,
 } from "../../components/Common/Const";
 import { addPackageToDb, updateSavedState } from "../../Features/Tabs/packageSlice";
 import axiosInstance from "../../Features/axios";
@@ -33,7 +33,7 @@ import { updateToastData } from "../../Features/toasterSlice";
 import { isEmpty } from "lodash";
 
 const AddPackage = () => {
-  const pageName = TAB_AWARDS;
+  const pageName = TAB_PACKAGE;
   const finalizeRef = useRef(null);
   const [drp_up, setDrp_up] = useState(false);
   const [initialEditData, setInitialEditData] = useState(undefined);
@@ -76,7 +76,18 @@ const AddPackage = () => {
     await axiosInstance
       .post("/admin/package/byId", { id: packageId })
       .then((response) => {
-        setInitialEditData(response?.result);
+        const result = response?.result;
+        // Price comes back from the API as a number (0 for a free
+        // package included) -- FormBuilder's isValueEmpty treats a raw
+        // number 0 as "empty" for a required field (unlike a typed "0"
+        // string), which blocked re-saving an already-free package
+        // without retyping the price. Stringify it so it round-trips the
+        // same way a freshly-typed value would.
+        setInitialEditData(
+          result && result.price !== null && result.price !== undefined
+            ? { ...result, price: String(result.price) }
+            : result
+        );
       })
       .catch((error) => {
         dispatch(

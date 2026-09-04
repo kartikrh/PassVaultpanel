@@ -582,6 +582,9 @@ const FormBuilder = forwardRef(
                         closeMenuOnSelect={!field.isMulti}
                         required={field.isRequired}
                         isMulti={field.isMulti}
+                        menuPortalTarget={document.body}
+                        menuPosition="fixed"
+                        styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
                       />
                     )}
                     {field.type === MULTI_SELECT &&
@@ -634,6 +637,9 @@ const FormBuilder = forwardRef(
                             closeMenuOnSelect={!field.isMulti}
                             required={field.isRequired}
                             isMulti={true}
+                            menuPortalTarget={document.body}
+                            menuPosition="fixed"
+                            styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
                           />
                         );
                       })()}
@@ -670,7 +676,10 @@ const FormBuilder = forwardRef(
                               : "",
                             textAlign: "left",
                           }),
+                          menuPortal: (base) => ({ ...base, zIndex: 9999 }),
                         }}
+                        menuPortalTarget={document.body}
+                        menuPosition="fixed"
                         onChange={(selectedOption) => {
                           handleChange(field, selectedOption || null);
                         }}

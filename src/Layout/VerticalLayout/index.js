@@ -101,15 +101,6 @@ const Layout = props => {
     }
   }, [topbarTheme, dispatch]);
 
-  useEffect(() => {
-    if (isHorizontalLayout) {
-      document.body.classList.add("right-sidebar-open");
-    } else {
-      document.body.classList.remove("right-sidebar-open");
-    }
-  }, [isHorizontalLayout]);
-
-
   return (
     <React.Fragment>
       <div id="layout-wrapper">

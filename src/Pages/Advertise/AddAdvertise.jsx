@@ -28,7 +28,7 @@ import { addAdvertiseToDb, updateSavedState } from "../../Features/Tabs/advertis
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { convertObjtoFormData } from "../../components/Common/utilities";
-import { checkPermission, convertDateLocalToUTC } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateForBackend } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { advertiseFields } from "../../constants/FieldConst/AdvertiseConst";
 import { isEmpty } from "lodash";
@@ -41,6 +41,7 @@ const AddAdvertise = () => {
     const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
     const { isSaved, isLoading } = useSelector((state) => state.tabsData.advertise);
     const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
+    const dateType = useSelector((state) => state.layout.dateType);
     const dispatch = useDispatch();
     let navigate = useNavigate();
     const location = useLocation();
@@ -84,8 +85,8 @@ const AddAdvertise = () => {
                 setInitialEditData({
                     ...data,
                     whitelabelId: data?.whitelabelId?.map((item) => item.id),
-                    startDate: data?.startDate ? convertDateLocalToUTC(data.startDate) : null,
-                    endDate: data?.endDate ? convertDateLocalToUTC(data.endDate) : null,
+                    startDate: data?.startDate ? convertDateForBackend(data.startDate, dateType) : null,
+                    endDate: data?.endDate ? convertDateForBackend(data.endDate, dateType) : null,
                 });
             })
             .catch((error) => {
@@ -129,8 +130,8 @@ const AddAdvertise = () => {
         if (dataToSave) {
             const extraData = {
                 advertiseId: advertiseId,
-                startDate: !dataToSave.isPermanent ? convertDateLocalToUTC(dataToSave?.startDate) : null,
-                endDate: !dataToSave.isPermanent ? convertDateLocalToUTC(dataToSave?.endDate) : null,
+                startDate: !dataToSave.isPermanent ? convertDateForBackend(dataToSave?.startDate, dateType) : null,
+                endDate: !dataToSave.isPermanent ? convertDateForBackend(dataToSave?.endDate, dateType) : null,
             };
             dispatch(
                 addAdvertiseToDb(convertObjtoFormData({ ...dataToSave, ...extraData }))

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Table from "../../components/Common/Table";
 import DeleteTabModel from "../../components/Model/DeleteModel";
+import ClientDetailModel from "../../components/Model/ClientDetailModel";
 import { Tooltip } from "antd";
 import { Button, Container } from "reactstrap";
 import Select from "react-select";
@@ -61,6 +62,8 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [checekedList, setCheckedList] = useState([]);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
+  const [detailModelVisible, setDetailModelVisible] = useState(false);
+  const [detailClientId, setDetailClientId] = useState(null);
   const globalPageSize = localStorage.getItem("pageSize");
   const [tableSearchedData, setTableSearchedData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -69,10 +72,10 @@ const Index = () => {
   const [status, setStatus] = useState("");
   const [packageId, setPackageId] = useState("");
   const [packages, setPackages] = useState([]);
-  const globalDateType = JSON.parse(localStorage.getItem("DateType"));
-  const [dateType, setDateType] = useState(
-    globalDateType || { label: "Local Timezone", value: 1 }
-  );
+  // Global "Date Format" preference, set once in the header's settings
+  // panel (see Features/Layout.js) instead of each page re-deriving its
+  // own copy from localStorage.
+  const dateType = useSelector((state) => state.layout.dateType);
   const [isSearch, setIsSearch] = useState(false);
   const defaultDateRange = () => ({
     startDate: `${new Date().toISOString().split("T")[0]}T00:00:00`,
@@ -255,7 +258,15 @@ const Index = () => {
   };
 
   const handleView = (id) => {
-    navigate("/clientDetail", { state: { clientId: id } });
+    setDetailClientId(id);
+    setDetailModelVisible(true);
+  };
+
+  // History screen filters by client email (a plain text Input, not an
+  // id-based select -- see Pages/History/index.js's emailFilter), so that's
+  // what's carried across rather than clientId.
+  const handleViewHistory = (email) => {
+    navigate("/history", { state: { clientEmail: email } });
   };
 
   const handleTableSearchedDataChange = (data) => {
@@ -302,6 +313,20 @@ const Index = () => {
           style={{ cursor: "pointer" }}
           onClick={() => handleView(record.clientId)}
         ></i>
+      ),
+      style: { width: "2%", textAlign: "center" },
+    },
+    checkPermission(permissionObj, pageName, PERMISSION_VIEW) && {
+      title: "History",
+      key: "history",
+      render: (text, record) => (
+        <Tooltip title="View activity history" color={"#e8e8ea"} overlayInnerStyle={{ color: "#000" }}>
+          <i
+            className="bx bx-history"
+            style={{ cursor: "pointer" }}
+            onClick={() => handleViewHistory(record.email)}
+          ></i>
+        </Tooltip>
       ),
       style: { width: "2%", textAlign: "center" },
     },
@@ -466,7 +491,6 @@ const Index = () => {
                 setParentPageSize={setPageSize}
                 setParentSearchedData={handleTableSearchedDataChange}
                 dateType={dateType}
-                setDateType={setDateType}
                 isSearch={isSearch}
                 setIsSearch={setIsSearch}
                 dateRange={dateRange}
@@ -477,6 +501,12 @@ const Index = () => {
                 setDeleteModelVisable={setDeleteModelVisable}
                 handleDelete={handleDelete}
                 singleCheck={checekedList}
+              />
+              <ClientDetailModel
+                isOpen={detailModelVisible}
+                toggle={() => setDetailModelVisible(false)}
+                clientId={detailClientId}
+                onStatusChanged={fetchData}
               />
             </>
           ) : (

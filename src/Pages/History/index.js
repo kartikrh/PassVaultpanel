@@ -4,7 +4,7 @@ import Table from "../../components/Common/Table";
 import { Button, Col, Container, Input, Row, Card, CardBody, Label } from "reactstrap";
 import moment from "moment";
 import { isEmpty } from "lodash";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
@@ -35,12 +35,18 @@ const Index = () => {
   document.title = "History & Audit Log";
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const finalizeRef = useRef(null);
   const globalPageSize = localStorage.getItem("pageSize");
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [emailFilter, setEmailFilter] = useState("");
+  // Pre-filled when arriving via Clients' "View activity history" button
+  // (navigate("/history", { state: { clientEmail } }) -- see
+  // Pages/Clients/index.js's handleViewHistory), same
+  // navigate(path, { state }) + location.state pattern ClientDetail.jsx
+  // already uses for clientId.
+  const [emailFilter, setEmailFilter] = useState(location.state?.clientEmail || "");
   const [activityType, setActivityType] = useState("");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");

@@ -5,6 +5,22 @@ document.body.setAttribute('data-theme', theme);
 
 const layout = localStorage.getItem('layoutType') || 'vertical';
 
+// Global "which timezone am I looking at / entering dates in" preference --
+// previously re-derived independently on every listing page from the same
+// "DateType" localStorage key (each page's own useState, no cross-page
+// sync), and never actually reachable via UI for most of those pages (see
+// components/Common/Table/index.js's isDateTypeSelect dropdown, gated to a
+// different hardcoded set of page titles). Centralized here + the header's
+// settings panel instead, same localStorage key for continuity with
+// whatever a user already had picked.
+const DEFAULT_DATE_TYPE = { label: 'Local Timezone', value: 1 };
+let storedDateType = null;
+try {
+    storedDateType = JSON.parse(localStorage.getItem('DateType'));
+} catch (e) {
+    storedDateType = null;
+}
+
 const initialState = {
     layoutType: layout,
     layoutWidth: 'fluid',
@@ -16,6 +32,7 @@ const initialState = {
     showSidebar: true,
     leftMenu: false,
     sidebarMenuData: [],
+    dateType: storedDateType || DEFAULT_DATE_TYPE,
 };
 
 const layoutSlice = createSlice({
@@ -55,6 +72,10 @@ const layoutSlice = createSlice({
         setSidebarMenuData: (state, action) => {
             state.sidebarMenuData = action.payload;
         },
+        changeDateType: (state, action) => {
+            state.dateType = action.payload;
+            localStorage.setItem('DateType', JSON.stringify(action.payload));
+        },
     },
 });
 
@@ -68,6 +89,7 @@ export const {
     showSidebar,
     toggleLeftmenu,
     setSidebarMenuData,
+    changeDateType,
 } = layoutSlice.actions;
 
 // Reducer

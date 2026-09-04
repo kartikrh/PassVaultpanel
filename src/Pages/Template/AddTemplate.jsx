@@ -111,8 +111,9 @@ function AddTemplate() {
           ...preData,
           type: [
             { label: "Welcome", value: 1 },
-            { label: "Verify", value: 2 },
-            { label: "Newsletter", value: 3 },
+            { label: "Sign In", value: 2 },
+            { label: "Reset 2FA", value: 3 },
+            { label: "Day-End Activity", value: 4 },
           ],
         }));
       }

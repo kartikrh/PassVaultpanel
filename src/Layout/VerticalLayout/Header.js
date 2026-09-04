@@ -27,10 +27,20 @@ import logoLight from "../../assets/images/logo-light.png";
 //   changeSidebarType,
 // } from "../../store/actions";
 import ProfileMenu from "../../components/Common/TopbarDropdown/ProfileMenu";
-import { Col, FormGroup, Input, Label, Row } from "reactstrap";
+import {
+  Col,
+  FormGroup,
+  Label,
+  Row,
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+} from "reactstrap";
 import {
   changeSidebarTheme,
   changeLayout,
+  changeDateType,
 } from "../../Features/Layout";
 // import AppsDropdown from "../../components/Common/TopbarDropdown/AppsDropdown";
 
@@ -38,6 +48,8 @@ const Header = (props) => {
   const [search, setsearch] = useState(false);
   const theme = useSelector((state) => state.layout.panelTheme);
   const isDarkMode = theme === "dark";
+  const dateType = useSelector((state) => state.layout.dateType);
+  const [isDateTypeOpen, setIsDateTypeOpen] = useState(false);
   const dispatch = useDispatch();
   const layoutType = useSelector((state) => state.layout.layoutType);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -175,6 +187,47 @@ const Header = (props) => {
 
             {/* <LanguageDropdown /> */}
             {/* <AppsDropdown /> */}
+
+            {/* Global "which timezone" preference -- always visible in the
+                header bar itself (not tucked inside the gear-icon settings
+                panel) so it's a one-click change from any page. Drives both
+                how every listing page displays dates and how a date/time
+                picked in an Add/Edit form is converted before it's sent to
+                the API (see reusableMethods.js's convertDateForBackend).
+                A reactstrap Dropdown, not a native <select> -- a native
+                select's option list renders as an OS-level popup outside
+                normal DOM stacking, which visually clashed with
+                ProfileMenu's own dropdown opening right next to it. */}
+            <Dropdown
+              isOpen={isDateTypeOpen}
+              toggle={() => setIsDateTypeOpen((open) => !open)}
+              className="d-none d-lg-inline-block ms-1"
+            >
+              {/* .date-format-toggle (_topbar.scss) -- header-item forces
+                  the FULL header-bar height (meant for square icon
+                  buttons), reactstrap's default DropdownToggle color
+                  ("secondary") adds an unwanted dark background, and even a
+                  plain inline style loses a separate color leak from the
+                  dark theme's $gray-800. A dedicated !important class
+                  sidesteps all three. */}
+              <DropdownToggle caret className="border date-format-toggle">
+                {dateType?.label || "Local Timezone"}
+              </DropdownToggle>
+              <DropdownMenu>
+                <DropdownItem
+                  active={dateType?.value === 1}
+                  onClick={() => dispatch(changeDateType({ value: 1, label: "Local Timezone" }))}
+                >
+                  Local Timezone
+                </DropdownItem>
+                <DropdownItem
+                  active={dateType?.value === 2}
+                  onClick={() => dispatch(changeDateType({ value: 2, label: "UTC Timezone" }))}
+                >
+                  UTC Timezone
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
 
             <div className="dropdown d-none d-lg-inline-block ms-1">
               <button

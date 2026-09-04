@@ -10,8 +10,14 @@
     position: fixed;
     left: 0;
     right: 0;
-    z-index: 100;
-    
+    // Was 100 -- far below #page-topbar's z-index: 1002 (_topbar.scss).
+    // .topnav is `position: fixed`, so it forms its own stacking context:
+    // no matter how high a z-index its own .dropdown-menu submenus set
+    // (see below), the whole subtree stays capped at .topnav's z-index
+    // when compared against #page-topbar, so every submenu ("Client list"
+    // -> Clients/History & Audit Log, etc.) rendered behind the header.
+    z-index: 1003;
+
     .topnav-menu {
         margin: 0;
         padding: 0;

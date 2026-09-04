@@ -34,7 +34,10 @@
 
 .vertical-menu {
     width: $sidebar-width;
-    z-index: 1001;
+    // Above #page-topbar's z-index: 1002 (_topbar.scss) -- a collapsed
+    // sidebar's hover-flyout submenus must render on top of the topbar,
+    // not behind it.
+    z-index: 1003;
     background: $sidebar-bg;
     bottom: 0;
     margin-top: 0;

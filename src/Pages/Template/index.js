@@ -164,9 +164,11 @@ const Index = () => {
         case 1:
           return "Welcome";
         case 2:
-          return "Verify";
+          return "Sign In";
         case 3:
-          return "Newsletter";
+          return "Reset 2FA";
+        case 4:
+          return "Day-End Activity";
         default:
           return "Unknown";
       }

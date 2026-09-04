@@ -1,7 +1,7 @@
 import {
   SWITCH,
   TEXT,
-  TEXT_AREA,
+  TEXT_EDITOR,
   SELECT
 } from "../../components/Common/Const";
 
@@ -11,14 +11,6 @@ export const packageField = [
     label: "Name",
     isRequired: true,
     type: TEXT,
-    labelColspan: { xs: 12, md: 2, lg: 2 },
-    fieldColspan: { xs: 12, md: 4, lg: 4 },
-  },
-  {
-    name: "description",
-    label: "Discription",
-    isRequired: true,
-    type: TEXT_AREA,
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
@@ -119,5 +111,13 @@ export const packageField = [
     defaultValue: true,
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
+  },
+  {
+    name: "description",
+    label: "Discription",
+    isRequired: true,
+    type: TEXT_EDITOR,
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 10, lg: 10 },
   },
 ];

@@ -100,6 +100,19 @@ export const convertDateLocalToUTC = (localDate) => {
   return "";
 }
 
+// dateType-aware version of convertDateLocalToUTC, for form submissions --
+// pass the global date-format preference (state.layout.dateType, see
+// Features/Layout.js / the header's Date Format dropdown). When the admin
+// is working in "Local Timezone" mode, a <input type="datetime-local">
+// value is the browser's local time and needs shifting to UTC before it
+// goes to the API (same as convertDateLocalToUTC always did). In "UTC
+// Timezone" mode, the admin is entering the UTC wall-clock time directly,
+// so it must NOT be shifted -- just reinterpreted as UTC as-is.
+export const convertDateForBackend = (value, dateType) => {
+  if (!value) return "";
+  return dateType?.value === 2 ? moment.utc(value).format() : moment(value).utc().format();
+}
+
 export const convertDateUTCToLocal = (UTCDate, page, format) => {
   if (UTCDate) {
     if (page === 'index') {

@@ -17,8 +17,8 @@ body.horizontal-layout {
 
 body.horizontal-layout .main-content {
     margin-left: 0 !important;
-    padding-top: calc(70px + 55px + 20px) !important;
-    /* header + horizontal menu + margin */
+    /* 56px header ($header-height, _variables.scss) + 55px horizontal menu + 20px margin */
+    padding-top: calc(56px + 55px + 20px) !important;
 }
 
 body.horizontal-layout .vertical-menu {
@@ -33,10 +33,10 @@ body.horizontal-layout .commentary-content {
 /* Horizontal Menu Wrapper */
 .horizontal-menu-wrapper {
   position: fixed;
-  top: 70px; /* Below header */
+  top: 56px; /* Below header ($header-height, _variables.scss) */
   left: 0;
   right: 0;
-  z-index: 1050;
+  z-index: 100;
   background-color: #fff;
   border-bottom: 1px solid #e9ecef;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -147,7 +147,7 @@ body.horizontal-layout .commentary-content {
 /* Dropdown Styles */
 .horizontal-dropdown {
   position: fixed; /* Fixed positioning to escape scroll container */
-  top: 125px; /* 70px header + 55px menu */
+  top: 111px; /* 56px header ($header-height, _variables.scss) + 55px menu */
   z-index: 9999;
   display: block;
   opacity: 1;
@@ -354,7 +354,8 @@ body[data-theme="dark"] .scroll-arrow:hover {
   }
 
   body.horizontal-layout .main-content {
-    padding-top: calc(70px + 55px + 10px) !important;
+    /* 56px header ($header-height, _variables.scss) + 55px horizontal menu + 10px margin */
+    padding-top: calc(56px + 55px + 10px) !important;
   }
 }
 

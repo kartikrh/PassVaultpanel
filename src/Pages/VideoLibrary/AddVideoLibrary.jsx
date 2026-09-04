@@ -29,7 +29,7 @@ import { addVideoLibraryToDb, updateSavedState } from "../../Features/Tabs/video
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
 import { convertObjtoFormData } from "../../components/Common/utilities";
-import { checkPermission, convertDateLocalToUTC } from "../../components/Common/Reusables/reusableMethods";
+import { checkPermission, convertDateForBackend } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { string } from "prop-types";
 import { isEmpty } from "lodash";
@@ -42,6 +42,7 @@ const AddVideoLibrary = () => {
     const [currentSaveAction, setCurrentSaveAction] = useState(undefined);
     const { isSaved, isLoading } = useSelector((state) => state.tabsData.videoLibrary);
     const permissionObj = useSelector((state) => state.auth?.tabPermissionList);
+    const dateType = useSelector((state) => state.layout.dateType);
     const dispatch = useDispatch();
     let navigate = useNavigate();
     const location = useLocation();
@@ -85,8 +86,8 @@ const AddVideoLibrary = () => {
                 setInitialEditData({
                     ...data,
                     whitelabelId: data?.whitelabelId?.map((item) => item.id),
-                    from: data?.from ? convertDateLocalToUTC(data.from) : null,
-                    to: data?.to ? convertDateLocalToUTC(data.to) : null,
+                    from: data?.from ? convertDateForBackend(data.from, dateType) : null,
+                    to: data?.to ? convertDateForBackend(data.to, dateType) : null,
                 });
             })
             .catch((error) => {
@@ -136,8 +137,8 @@ const AddVideoLibrary = () => {
                 id : videoLibraryId,
                 video : dataToSave.type === 1 && typeof(dataToSave.video) !== 'string' ? dataToSave.video : null,
                 videoURL : dataToSave.type === 2 ? dataToSave.videoURL : null,
-                from : !dataToSave.isPermanent ? convertDateLocalToUTC(dataToSave.from) : null,
-                to : !dataToSave.isPermanent ? convertDateLocalToUTC(dataToSave.to) : null,
+                from : !dataToSave.isPermanent ? convertDateForBackend(dataToSave.from, dateType) : null,
+                to : !dataToSave.isPermanent ? convertDateForBackend(dataToSave.to, dateType) : null,
             };
             if (dataToSave.type === 1) {
                 dispatch(

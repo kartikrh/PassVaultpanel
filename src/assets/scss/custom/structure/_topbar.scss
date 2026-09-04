@@ -107,8 +107,18 @@
         calc(#{$grid-gutter-width} / 2);
 }
 
-.right-sidebar-open .page-content {
-  padding-top: 6px;
+// Horizontal layout's .main-content already adds its own top padding
+// (calc(70px header + 55px topnav + 10px gutter) !important, see
+// sidebar.css) to clear the fixed header + topnav bars. Without this,
+// .page-content's own header-offsetting padding above stacks on top of
+// that, leaving ~145px of dead space before any page's content starts.
+// (Previously this rule wrongly keyed off .right-sidebar-open -- a class
+// meant for the gear-icon settings panel, not layout mode -- which caused
+// a *different* bug: every page's padding collapsed to 6px for as long as
+// horizontal layout was active, panel open or not. See
+// Layout/VerticalLayout/index.js for that fix.)
+body.horizontal-layout .page-content {
+  padding-top: 0;
 }
 
 .commentary-content {
@@ -126,6 +136,22 @@
     &:hover {
         color: $header-item-color;
     }
+}
+
+// Header's Date Format dropdown toggle (Layout/VerticalLayout/Header.js) --
+// an inline `style` color/background alone loses here: something resolves
+// $gray-800 to the DARK theme's value (_variables-dark.scss, #eff2f7, a
+// near-white) even while in light mode, so a plain .btn ends up with
+// near-white text on a near-white background regardless of what this
+// component sets inline. !important forces this one control's contrast
+// regardless of that broader leak.
+.date-format-toggle {
+    height: auto !important;
+    padding: 4px 10px !important;
+    font-size: 13px !important;
+    line-height: normal !important;
+    color: #495057 !important;
+    background-color: transparent !important;
 }
 
 .header-profile-user {
