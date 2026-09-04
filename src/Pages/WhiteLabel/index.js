@@ -517,18 +517,6 @@ const Index = () => {
       style: { width: "2%", textAlign: "center" },
     },
     {
-      title: "Recatch Key",
-      dataIndex: "recatchKey",
-      key: "recatchKey",
-      style: { width: "10%" },
-    },
-    {
-      title: "Google Key",
-      dataIndex: "googleKey",
-      key: "googleKey",
-      style: { width: "10%" },
-    },
-    {
       title: "Client OTP",
       dataIndex: "clientOTP",
       key: "sclientOTP",

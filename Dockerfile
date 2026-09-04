@@ -28,15 +28,23 @@ FROM nginx:alpine
 
 COPY --from=builder /app/build /usr/share/nginx/html
 
+# Railway (and most PaaS) inject PORT at container start; nginx doesn't read
+# env vars on its own, so this leans on the official nginx image's built-in
+# entrypoint (/docker-entrypoint.d/20-envsubst-on-templates.sh), which
+# envsubst's any *.template file into conf.d using only real env var names --
+# nginx's own $uri/$host/etc. don't match an actual env var, so they're left
+# untouched. Defaults to 80 for a plain `docker run` with no PORT set.
+ENV PORT=80
+RUN mkdir -p /etc/nginx/templates
 RUN printf '%s\n' \
 'server {' \
-'  listen 80;' \
+'  listen ${PORT};' \
 '  server_name _;' \
 '  root /usr/share/nginx/html;' \
 '  index index.html;' \
 '  location / {' \
 '    try_files $uri $uri/ /index.html;' \
 '  }' \
-'}' > /etc/nginx/conf.d/default.conf
+'}' > /etc/nginx/templates/default.conf.template
 
 CMD ["nginx", "-g", "daemon off;"]

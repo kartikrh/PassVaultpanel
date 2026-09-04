@@ -77,6 +77,16 @@ export const WhiteLabelField = [
     hideDependentInitially: true,
   },
   {
+    name: "recatchSecret",
+    label: "reCATCH Secret Key",
+    type: TEXT,
+    labelColspan: { xs: 12, md: 2, lg: 2 },
+    fieldColspan: { xs: 12, md: 4, lg: 4 },
+    dependsOnField: "isRecatchEnable",
+    dependsOnValue: true,
+    hideDependentInitially: true,
+  },
+  {
     name: "clientOTP",
     label: "Client OTP",
     type: TEXT,
