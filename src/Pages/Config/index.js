@@ -15,6 +15,7 @@ import { checkPermission } from "../../components/Common/Reusables/reusableMetho
 import { updateToastData } from "../../Features/toasterSlice";
 import { Tooltip } from "antd";
 import LoadDataModal from "../../components/Model/LoadDataModal";
+import RevealConfigValueModal from "../../components/Model/RevealConfigValueModal";
 
 const Index = () => {
   const pageName = TAB_CONFIG
@@ -27,6 +28,8 @@ const Index = () => {
   const [addModelVisable, setAddModelVisable] = useState(false);
   const [deleteModelVisable, setDeleteModelVisable] = useState(false);
   const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
+  const [revealModalVisible, setRevealModalVisible] = useState(false);
+  const [revealTarget, setRevealTarget] = useState(null);
   const globalPageSize = localStorage.getItem("pageSize");
   const [tableSearchedData, setTableSearchedData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -112,6 +115,14 @@ const Index = () => {
           })
         );
       });
+  };
+
+  const handleRevealConfigValue = async (password) => {
+    const response = await axiosInstance.post(`/admin/config/reveal`, {
+      configId: revealTarget.configId,
+      password,
+    });
+    return response?.result?.value;
   };
 
   //delete row
@@ -261,13 +272,22 @@ const Index = () => {
     {
       title: "Value",
       dataIndex: "value",
-      //   render: (text, record) => (
-      //     <span style={{ cursor: "pointer" }}>
-      //       {record.parentId === "0" ? "Root" : (record?.parentName || null)}
-      //     </span>
-      //   ),
+      render: (text, record) => (
+        <div className="d-flex align-items-center gap-2">
+          <span>••••••••</span>
+          <i
+            className="bx bx-show"
+            style={{ cursor: "pointer" }}
+            title="Show value"
+            onClick={() => {
+              setRevealTarget(record);
+              setRevealModalVisible(true);
+            }}
+          ></i>
+        </div>
+      ),
       key: "value",
-      sort: true,
+      sort: false,
       style: { width: "100%" },
     },
 
@@ -382,12 +402,19 @@ const Index = () => {
             addModelVisable={addModelVisable}
             setAddModelVisable={setAddModelVisable}
           />
-          {loadDataModelVisable && 
+          {loadDataModelVisable &&
             <LoadDataModal
               loadDataModelVisable={loadDataModelVisable}
               setLoadDataModelVisable={setLoadDataModelVisable}
               handleLoadData={handleLoadData}
               moduleName={"Config"}
+            />}
+          {revealModalVisible &&
+            <RevealConfigValueModal
+              visible={revealModalVisible}
+              setVisible={setRevealModalVisible}
+              configKey={revealTarget?.key}
+              onSubmitPassword={handleRevealConfigValue}
             />}
         </Container>
       </div>

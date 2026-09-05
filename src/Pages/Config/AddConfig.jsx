@@ -23,6 +23,7 @@ import {
   Row,
 } from "reactstrap";
 import { isEmpty } from 'lodash';
+import RevealConfigValueModal from "../../components/Model/RevealConfigValueModal";
 
 const AddConfig = () => {
   const finalizeRef = useRef(null);
@@ -41,6 +42,11 @@ const AddConfig = () => {
   const dispatch = useDispatch();
   const location = useLocation();
   const [configId, setconfigId] = useState(location.state?.configId || "0");
+  // Editing an existing config's value requires the same LOADDATAPASSWORD
+  // check the list view's reveal-eye uses -- a brand new config (id "0")
+  // has no existing value to protect, so it skips this gate.
+  const [isValueRevealed, setIsValueRevealed] = useState(configId === "0");
+  const [revealModalVisible, setRevealModalVisible] = useState(configId !== "0");
 
   useEffect(() => {
     // if (id !== "0") {
@@ -53,6 +59,26 @@ const AddConfig = () => {
         });
       }
   }, [configId]);
+
+  const handleRevealConfigValue = async (password) => {
+    const response = await axiosInstance.post('/admin/config/reveal', { configId, password });
+    return response?.result?.value;
+  };
+
+  const handleValueRevealed = (value) => {
+    setInitialEditData((prev) => ({ ...(prev || {}), value }));
+    setIsValueRevealed(true);
+  };
+
+  // Fires after the reveal modal closes. If it closed without a successful
+  // reveal (Close/cancel, not the Ok path), there's nothing editable to show
+  // -- go back rather than leave the page stuck. Runs after render, so
+  // isValueRevealed already reflects whether handleValueRevealed ran.
+  useEffect(() => {
+    if (!revealModalVisible && !isValueRevealed && configId !== "0") {
+      handleBackClick();
+    }
+  }, [revealModalVisible]);
 
   useEffect(() => {
     if (!isEmpty(permissionObj) && !checkPermission(permissionObj, pageName, PERMISSION_VIEW)) {
@@ -146,6 +172,7 @@ const AddConfig = () => {
                     >
                       <Button
                         disabled={
+                          !isValueRevealed ||
                           !(checkPermission(permissionObj, pageName, PERMISSION_ADD) ||
                             checkPermission(permissionObj, pageName, PERMISSION_EDIT))}
                         id="caret"
@@ -170,18 +197,38 @@ const AddConfig = () => {
                     </ButtonDropdown>
                   </Col>
                 </Row>
-                <FormBuilder
-                  ref={finalizeRef}
-                  fields={ConfigFields}
-                  editFormData={initialEditData}
-                // masterData={masterData}
-                 disabledFields={disabledFields}
-                />
+                {isValueRevealed ? (
+                  <FormBuilder
+                    ref={finalizeRef}
+                    fields={ConfigFields}
+                    editFormData={initialEditData}
+                  // masterData={masterData}
+                   disabledFields={disabledFields}
+                  />
+                ) : (
+                  <div className="d-flex flex-column align-items-center py-5">
+                    <span className="mb-3">Enter the password to view and edit this config's value.</span>
+                    <button
+                      className="btn btn-primary"
+                      onClick={() => setRevealModalVisible(true)}
+                    >
+                      Verify Password
+                    </button>
+                  </div>
+                )}
               </CardBody>
             </Card>
           </Row>
         </Container>
       </div>
+      {revealModalVisible &&
+        <RevealConfigValueModal
+          visible={revealModalVisible}
+          setVisible={setRevealModalVisible}
+          configKey={initialEditData?.key}
+          onSubmitPassword={handleRevealConfigValue}
+          onRevealed={handleValueRevealed}
+        />}
     </React.Fragment>
   )
 }

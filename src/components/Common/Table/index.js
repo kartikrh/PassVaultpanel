@@ -85,9 +85,7 @@ const Index = forwardRef(
       singleCheck,
       setImportExportModelVisable,
       handlePlayerHistoryModalPopUp,
-      marketTypes,
       categories,
-      setSelectedMarketType,
       eventTypes,
       selectedTableElementsLogs,
       competitionList,
@@ -2814,47 +2812,6 @@ const Index = forwardRef(
                         ) : null}
                           {tableElement.title !== "Event Markets" &&
                             tableElement.title !== "Manual Odds Markets" &&
-                            tableElement?.marketTypeSelect ? (
-                            <div className="">
-                              <Select
-                                styles={{
-                                  control: (provided) => ({
-                                    ...provided,
-                                    width: 180,
-                                  }), // Adjust width as needed
-                                }}
-                                value={selectedTableElements?.marketTypeName}
-                                placeholder="Market Type"
-                                onChange={(e) => {
-                                  if (
-                                    e?.value !==
-                                    selectedTableElements?.marketTypeName?.value
-                                  ) {
-                                    handleTableActions("marketTypeId", e);
-                                    setSelectedTableElements({
-                                      ...selectedTableElements,
-                                      marketTypeName: e,
-                                      categoryName: {
-                                        value: 0,
-                                        label: "Category",
-                                      },
-                                    });
-                                    setSelectedMarketType(e?.value);
-                                  }
-                                }}
-                                options={[
-                                  { label: "Select Market Type", value: 0 },
-                                  ...marketTypes?.map((item) => ({
-                                    label: item?.marketTypeName,
-                                    value: item?.marketTypeId,
-                                  })),
-                                ]}
-                                classNamePrefix="filter-dropdown"
-                              />
-                            </div>
-                          ) : null}
-                          {tableElement.title !== "Event Markets" &&
-                            tableElement.title !== "Manual Odds Markets" &&
                             tableElement?.categorySelect ? (
                             <div className="">
                               <Select
@@ -4064,53 +4021,6 @@ const Index = forwardRef(
                       tableElement?.delayTextBox ? (
                       <Row className="">
                         <div className="d-flex flex-wrap align-items-center gap-2">
-                          {(tableElement.title === "Event Markets" ||
-                            tableElement.title === "Manual Odds Markets") &&
-                            tableElement?.marketTypeSelect ? (
-                            <div className="">
-                              <Select
-                                styles={{
-                                  control: (provided) => ({
-                                    ...provided,
-                                    width: 180,
-                                  }), // Adjust width as needed
-                                }}
-                                value={
-                                  selectedTableElements?.marketTypeName ||
-                                  selectedTableElementsLogs?.marketTypeName
-                                }
-                                placeholder="Market Type"
-                                onChange={(e) => {
-                                  if (
-                                    e?.value !==
-                                    selectedTableElements?.marketTypeName?.value
-                                  ) {
-                                    handleTableActions("marketTypeId", e);
-                                    setSelectedTableElements({
-                                      ...selectedTableElements,
-                                      marketTypeName: e,
-                                      categoryName: {
-                                        value: 0,
-                                        label: "Category",
-                                      },
-                                    });
-                                    setSelectedMarketType(e?.value);
-                                  }
-                                }}
-                                options={[
-                                  { label: "Select Market Type", value: 0 },
-                                  ...marketTypes?.map((item) => ({
-                                    label: item?.marketTypeName,
-                                    value: item?.marketTypeId,
-                                  })),
-                                ]}
-                                isDisabled={
-                                  selectedTableElementsLogs?.marketTypeName
-                                }
-                                classNamePrefix="filter-dropdown"
-                              />
-                            </div>
-                          ) : null}
                           {(tableElement.title === "Event Markets" ||
                             tableElement.title === "Manual Odds Markets") &&
                             tableElement?.categorySelect ? (

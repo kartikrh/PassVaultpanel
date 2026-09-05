@@ -11,7 +11,6 @@ import {
   getTabPermissions,
 } from "../../Features/Authentication/authorizationSlice";
 import MetisMenu from "metismenujs";
-import { getMarketType } from "../../Features/Authentication/marketTypeSlice";
 import { configInit } from "../../Features/Config/configSlice";
 import "./sidebar.css";
 import LogRocket from "logrocket";
@@ -247,7 +246,6 @@ const Sidebar = (props) => {
   useEffect(() => {
     dispatch(getAuthorisedTabs());
     dispatch(getTabPermissions());
-    dispatch(getMarketType());
     dispatch(configInit());
   }, []);
 
