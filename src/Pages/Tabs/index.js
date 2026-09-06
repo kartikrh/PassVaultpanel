@@ -213,11 +213,13 @@ const Index = () => {
       dataIndex: "tabName",
       render: (text, record) => (
         <span style={{ cursor: "pointer" }} onClick={() => {
-          let currentRecord = [{ label: record.tabName, value: record?.tabId }]
+          // wrParentId (and thus the /tablist parentId filter) is keyed on
+          // the plain wrTabId, not the encrypted tabId used for edit/delete.
+          let currentRecord = [{ label: record.tabName, value: record?.rawTabId }]
           let historyList = selectedTabHistory ?
             [].concat(selectedTabHistory, currentRecord) : currentRecord
           dispatch(setSelectedTabHistory(historyList))
-          dispatch(setSelectedTab({ id: record?.tabId, displayType: record?.displayType }))
+          dispatch(setSelectedTab({ id: record?.rawTabId, displayType: record?.displayType }))
         }}>{text}</span>
       ),
       key: "tabName",

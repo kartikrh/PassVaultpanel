@@ -66,7 +66,7 @@ export const transformApiDataToSidebarData = (apiData) => {
         url: item.webPage,
         displayOrder: item.displayOrder,
         isMainMenu: true,
-        encryptedTabId: item.encryptedTabId, // Add encryptedTabId to identify parents
+        tabId: item.tabId, // Real wrTabId, used below to identify parents -- not the obfuscated encryptedTabId
         subItem: []
       });
     }
@@ -75,7 +75,7 @@ export const transformApiDataToSidebarData = (apiData) => {
   // Then, add sub-items to their respective parent items
   apiData.forEach(item => {
     if (item.parentId && item.parentId !== "0" && item.isActive && item.isView) {
-      let parentItem = SidebarData.find(parent => parent.encryptedTabId === item.parentId);
+      let parentItem = SidebarData.find(parent => parent.tabId === item.parentId);
       if (parentItem) {
         parentItem.subItem.push({
           sublabel: item.displayName,
@@ -87,8 +87,8 @@ export const transformApiDataToSidebarData = (apiData) => {
     }
   });
 
-  // Remove encryptedTabId from final output
-  SidebarData.forEach(item => delete item.encryptedTabId);
+  // Remove tabId from final output -- it was only needed to build the tree above
+  SidebarData.forEach(item => delete item.tabId);
 
   return SidebarData;
 };

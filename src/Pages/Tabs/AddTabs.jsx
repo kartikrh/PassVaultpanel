@@ -89,7 +89,7 @@ function AddTabs() {
                     "parentId":
                         response?.result?.map(item => {
                             return {
-                                label: item.tabName, value: item.encryptedTabId,
+                                label: item.tabName, value: item.tabId,
                                 displayType: item.displayType
                             }
                         })

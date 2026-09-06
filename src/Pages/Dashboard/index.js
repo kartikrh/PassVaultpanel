@@ -5,15 +5,16 @@ import { useNavigate } from "react-router-dom";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import axiosInstance from "../../Features/axios";
 
-// Each tile reuses the same "/all" list endpoint the corresponding CMS page
-// already calls, and just shows the number of records returned.
+// One "/admin/dashboard/counts" call replaces what used to be 6 separate
+// "/all" list-endpoint calls (one per tile, each downloading every row in
+// that table just to read its length) -- see services/dashboard.js.
 const DASHBOARD_TILES = [
-  { key: "news", label: "News", icon: "ri-newspaper-line", color: "primary", url: "/admin/news/all", path: "/news" },
-  { key: "banners", label: "Banners", icon: "ri-gallery-line", color: "success", url: "/admin/banner/all", path: "/banner" },
-  { key: "users", label: "Users", icon: "ri-group-line", color: "info", url: "/admin/user/all", path: "/users" },
-  { key: "pages", label: "Pages", icon: "ri-file-list-3-line", color: "warning", url: "/admin/page/all", path: "/Page" },
-  { key: "photoLibrary", label: "Photo Library", icon: "ri-image-2-line", color: "secondary", url: "/admin/photoLibrary/all", path: "/photoLibrary" },
-  { key: "videoLibrary", label: "Video Library", icon: "ri-video-line", color: "danger", url: "/admin/videoLibrary/all", path: "/videoLibrary" },
+  { key: "news", label: "News", icon: "ri-newspaper-line", color: "primary", path: "/news" },
+  { key: "banners", label: "Banners", icon: "ri-gallery-line", color: "success", path: "/banner" },
+  { key: "users", label: "Users", icon: "ri-group-line", color: "info", path: "/users" },
+  { key: "pages", label: "Pages", icon: "ri-file-list-3-line", color: "warning", path: "/Page" },
+  { key: "photoLibrary", label: "Photo Library", icon: "ri-image-2-line", color: "secondary", path: "/photoLibrary" },
+  { key: "videoLibrary", label: "Video Library", icon: "ri-video-line", color: "danger", path: "/videoLibrary" },
 ];
 
 const Dashboard = () => {
@@ -24,20 +25,14 @@ const Dashboard = () => {
 
   const fetchCounts = async () => {
     setIsLoading(true);
-    const results = await Promise.allSettled(
-      DASHBOARD_TILES.map((tile) => axiosInstance.post(tile.url, {}))
-    );
-
-    const newCounts = {};
-    results.forEach((res, index) => {
-      const { key } = DASHBOARD_TILES[index];
-      if (res.status === "fulfilled" && Array.isArray(res.value?.result)) {
-        newCounts[key] = res.value.result.length;
-      } else {
-        newCounts[key] = null;
-      }
-    });
-    setCounts(newCounts);
+    await axiosInstance
+      .post("/admin/dashboard/counts", {})
+      .then((response) => {
+        setCounts(response?.result || {});
+      })
+      .catch(() => {
+        setCounts({});
+      });
     setIsLoading(false);
   };
 

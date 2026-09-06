@@ -5,6 +5,10 @@ export const validateTabResponse = (tabs, parentId = "0") => {
     const tabId = tab.encryptedTabId;
     const tabData = {
       tabId: tabId,
+      // wrParentId stores the plain wrTabId of the parent tab (see
+      // AddTabs.jsx's parent dropdown / createTabsQuery), not the encrypted
+      // id -- keep it around so parent/child drilldown can match on it.
+      rawTabId: tab.tabId,
       tabName: tab.tabName,
       displayType: tab.displayType,
       displayName: tab.displayName,

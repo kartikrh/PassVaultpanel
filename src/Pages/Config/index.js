@@ -16,6 +16,7 @@ import { updateToastData } from "../../Features/toasterSlice";
 import { Tooltip } from "antd";
 import LoadDataModal from "../../components/Model/LoadDataModal";
 import RevealConfigValueModal from "../../components/Model/RevealConfigValueModal";
+import ChangeEncryptionKeyModal from "../../components/Model/ChangeEncryptionKeyModal";
 
 const Index = () => {
   const pageName = TAB_CONFIG
@@ -30,6 +31,7 @@ const Index = () => {
   const [loadDataModelVisable, setLoadDataModelVisable] = useState(false);
   const [revealModalVisible, setRevealModalVisible] = useState(false);
   const [revealTarget, setRevealTarget] = useState(null);
+  const [changeKeyModalVisible, setChangeKeyModalVisible] = useState(false);
   const globalPageSize = localStorage.getItem("pageSize");
   const [tableSearchedData, setTableSearchedData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -123,6 +125,15 @@ const Index = () => {
       password,
     });
     return response?.result?.value;
+  };
+
+  const handleRotateEncryptionKey = async (newKey, password) => {
+    const response = await axiosInstance.post(`/admin/config/rotateEncryptionKey`, {
+      newKey,
+      password,
+    });
+    fetchData();
+    return response?.result?.message;
   };
 
   //delete row
@@ -374,6 +385,13 @@ const Index = () => {
       <div className="page-content">
         <Container fluid={true}>
           <Breadcrumbs title="ScoreCard" breadcrumbItem="Config" />
+          {checkPermission(permissionObj, pageName, PERMISSION_EDIT) && (
+            <div className="d-flex justify-content-end mb-3">
+              <Button color="danger" onClick={() => setChangeKeyModalVisible(true)}>
+                Change ENCRYPTION KEY
+              </Button>
+            </div>
+          )}
           {isLoading && <SpinnerModel />}
           <Table
             ref={finalizeRef}
@@ -415,6 +433,12 @@ const Index = () => {
               setVisible={setRevealModalVisible}
               configKey={revealTarget?.key}
               onSubmitPassword={handleRevealConfigValue}
+            />}
+          {changeKeyModalVisible &&
+            <ChangeEncryptionKeyModal
+              visible={changeKeyModalVisible}
+              setVisible={setChangeKeyModalVisible}
+              onSubmit={handleRotateEncryptionKey}
             />}
         </Container>
       </div>

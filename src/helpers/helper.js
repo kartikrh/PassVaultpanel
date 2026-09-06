@@ -88,6 +88,7 @@ export const apiGetTabCleaner = (apiGetTab) => {
   return apiGetTab.map((e) => {
     const cleanedTab = {
       tabId: e?.tabId,
+      rawTabId: e?.rawTabId,
       tabName: e?.tabName,
       displayName: e?.displayName,
       displayType: e?.displayType,
