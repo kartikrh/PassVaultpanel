@@ -23,6 +23,7 @@ import socialMediaSlice from "./socialMediaSlice";
 import countryCodeSlice from "./countryCodeSlice";
 import notificationConfigSlice from "./notificationConfigSlice";
 import packageSlice from "./packageSlice";
+import paymentMethodSlice from "./paymentMethodSlice";
 import WhiteLabelSlice from "./WhiteLabelSlice";
 import advertiseSlice from "./advertiseSlice";
 import addTemplateSlice from "./addTemplateSlice";
@@ -51,6 +52,7 @@ const rootReducer = combineReducers({
   socialMedia: socialMediaSlice,
   countryCode: countryCodeSlice,
   package: packageSlice,
+  paymentMethod: paymentMethodSlice,
   notificationConfig: notificationConfigSlice,
   whiteLabel: WhiteLabelSlice,
   advertise: advertiseSlice,
