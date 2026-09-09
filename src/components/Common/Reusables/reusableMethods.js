@@ -51,6 +51,15 @@ export const isValueEmpty = (value, isDropdown = false) => {
     return value <= 0; // Numbers are considered empty if they are 0 or negative
   }
 
+  // A freshly-picked IMAGE/VIDEO field's value is a File/Blob (see
+  // FormBuilder's handleImageChange/handleVideoChange) -- File/Blob expose
+  // name/size/type as inherited getters, not own enumerable properties, so
+  // lodash's isEmpty always reports them as empty even when a real file is
+  // selected. Treat any File/Blob as present.
+  if ((typeof File !== "undefined" && value instanceof File) || (typeof Blob !== "undefined" && value instanceof Blob)) {
+    return false;
+  }
+
   // Use Lodash's isEmpty for other types
   return (isDropdown && value === "0") || _.isEmpty(value);
 };
