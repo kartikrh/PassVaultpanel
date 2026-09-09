@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import logolight from "../../assets/images/logo-light.png";
 import logodark from "../../assets/images/logo-dark.png";
 
@@ -14,6 +14,7 @@ import {
   FormFeedback,
   Label,
   Alert,
+  Spinner,
 } from "reactstrap";
 
 //redux
@@ -48,8 +49,10 @@ const Login = (props) => {
   const navigate = useNavigate();
 
   const { error, token, isUserLogout, otpRequired, otpType, qrCode, pendingToken, isLoading } = useSelector((state) => state.user);
-  const [otpCode, setOtpCode] = useState("");
+  const OTP_LENGTH = 6;
+  const [otpDigits, setOtpDigits] = useState(Array(OTP_LENGTH).fill(""));
   const [otpError, setOtpError] = useState(null);
+  const otpInputRefs = useRef([]);
   const getInitialValues = () => {
     const userData = JSON.parse(localStorage.getItem(USER_DATA_KEY) || null);
     if (userData) return userData
@@ -79,6 +82,14 @@ const Login = (props) => {
       navigate('/login');
     }
   }, [token])
+
+  useEffect(() => {
+    if (otpRequired) {
+      setOtpDigits(Array(OTP_LENGTH).fill(""));
+      setOtpError(null);
+      otpInputRefs.current[0]?.focus();
+    }
+  }, [otpRequired])
 
   const handleRememberMe = () => {
     if (rememberMe === true) {
@@ -146,20 +157,67 @@ const Login = (props) => {
     return false;
   }
 
+  // Fired once every one of the 6 boxes holds a digit -- no separate submit
+  // click needed, matches how authenticator-app OTP prompts usually behave.
+  const submitOtp = (code) => {
+    setOtpError(null);
+    dispatch(verifyOtp({ pendingToken, code }))
+      .unwrap()
+      .catch((message) => {
+        setOtpError(message);
+        setOtpDigits(Array(OTP_LENGTH).fill(""));
+        otpInputRefs.current[0]?.focus();
+      });
+  };
+
+  const handleOtpDigitChange = (index, rawValue) => {
+    const digit = rawValue.replace(/\D/g, "").slice(-1);
+    const next = [...otpDigits];
+    next[index] = digit;
+    setOtpDigits(next);
+    setOtpError(null);
+    if (digit && index < OTP_LENGTH - 1) {
+      otpInputRefs.current[index + 1]?.focus();
+    }
+    if (next.every(Boolean)) {
+      submitOtp(next.join(""));
+    }
+  };
+
+  const handleOtpKeyDown = (index, e) => {
+    if (e.key === "Backspace" && !otpDigits[index] && index > 0) {
+      otpInputRefs.current[index - 1]?.focus();
+    }
+  };
+
+  const handleOtpPaste = (e) => {
+    const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, OTP_LENGTH);
+    if (!pasted) return;
+    e.preventDefault();
+    const next = Array(OTP_LENGTH).fill("");
+    pasted.split("").forEach((digit, i) => {
+      next[i] = digit;
+    });
+    setOtpDigits(next);
+    setOtpError(null);
+    otpInputRefs.current[Math.min(pasted.length, OTP_LENGTH - 1)]?.focus();
+    if (pasted.length === OTP_LENGTH) {
+      submitOtp(next.join(""));
+    }
+  };
+
   const handleOtpSubmit = (e) => {
     e.preventDefault();
-    setOtpError(null);
-    if (!otpCode) {
+    const code = otpDigits.join("");
+    if (code.length < OTP_LENGTH) {
       setOtpError("Please enter the 6-digit code");
       return;
     }
-    dispatch(verifyOtp({ pendingToken, code: otpCode }))
-      .unwrap()
-      .catch((message) => setOtpError(message));
+    submitOtp(code);
   };
 
   const handleCancelOtp = () => {
-    setOtpCode("");
+    setOtpDigits(Array(OTP_LENGTH).fill(""));
     setOtpError(null);
     dispatch(cancelOtpChallenge());
   };
@@ -214,17 +272,32 @@ const Login = (props) => {
                           ) : null}
                           <div className="mb-4">
                             <Label className="form-label">Authentication code</Label>
-                            <Input
-                              name="otpCode"
-                              className="form-control"
-                              placeholder="Enter 6-digit code"
-                              type="text"
-                              inputMode="numeric"
-                              maxLength={6}
-                              value={otpCode}
-                              onChange={(e) => setOtpCode(e.target.value)}
-                              autoFocus
-                            />
+                            <div className="d-flex justify-content-center gap-2">
+                              {otpDigits.map((digit, index) => (
+                                <Input
+                                  key={index}
+                                  innerRef={(el) => (otpInputRefs.current[index] = el)}
+                                  className="form-control text-center"
+                                  style={{ width: 48, height: 56, fontSize: 24, padding: 0 }}
+                                  type="text"
+                                  inputMode="numeric"
+                                  autoComplete="one-time-code"
+                                  maxLength={1}
+                                  value={digit}
+                                  disabled={isLoading}
+                                  onChange={(e) => handleOtpDigitChange(index, e.target.value)}
+                                  onKeyDown={(e) => handleOtpKeyDown(index, e)}
+                                  onPaste={handleOtpPaste}
+                                  autoFocus={index === 0}
+                                />
+                              ))}
+                            </div>
+                            {isLoading ? (
+                              <div className="text-center mt-3">
+                                <Spinner size="sm" color="primary" className="me-2" />
+                                Verifying...
+                              </div>
+                            ) : null}
                           </div>
                           <div className="d-grid mt-4">
                             <button

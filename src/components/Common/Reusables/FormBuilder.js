@@ -395,8 +395,23 @@ const FormBuilder = forwardRef(
               }
             }
             if (!fetchIsDependable(field) && field.hideDependentInitially) return null;
+            // Fields whose label+field colspan already add up to a full row
+            // (e.g. TEXT_AREA fields like "Instructions" with label:2 +
+            // field:10) are meant to occupy the row on their own. Without
+            // this, whatever half-filled row the previous fields leave
+            // behind (e.g. an odd number of half-row fields, which happens
+            // for the Payment Method form's Bank Transfer fields) eats the
+            // label into that row's leftover space while the actual input
+            // wraps to a new row starting at the far left, misaligned under
+            // nothing. A w-100 breaker forces the flex row to wrap here
+            // regardless of how much space is left.
+            const fullRowSpan =
+              (field.labelColspan?.lg ?? field.labelColspan?.md ?? 2) +
+              (field.fieldColspan?.lg ?? field.fieldColspan?.md ?? 4);
+            const isFullRowField = field.type !== DIVIDER && fullRowSpan >= 12;
             return (
               <React.Fragment key={key}>
+                {isFullRowField && <div className="w-100"></div>}
                 {field.type === DIVIDER && (
                   <>
                     <h5 className="modal-header-title">{field.sectionLabel}</h5>

@@ -28,6 +28,7 @@ import {
 import { addPaymentMethodToDb, updateSavedState } from "../../Features/Tabs/paymentMethodSlice";
 import axiosInstance from "../../Features/axios";
 import SpinnerModel from "../../components/Model/SpinnerModel";
+import { convertObjtoFormData } from "../../components/Common/utilities";
 import { checkPermission } from "../../components/Common/Reusables/reusableMethods";
 import { updateToastData } from "../../Features/toasterSlice";
 import { isEmpty } from "lodash";
@@ -98,7 +99,7 @@ const AddPaymentMethod = () => {
   const handleSaveClick = async (saveAction) => {
     const dataToSave = finalizeRef.current.finalizeData();
     if (dataToSave) {
-      dispatch(addPaymentMethodToDb({ ...dataToSave, id: paymentMethodId }));
+      dispatch(addPaymentMethodToDb(convertObjtoFormData({ ...dataToSave, id: paymentMethodId })));
       setCurrentSaveAction(saveAction);
     }
   };

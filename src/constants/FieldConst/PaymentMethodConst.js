@@ -1,4 +1,4 @@
-import { SWITCH, TEXT, SELECT, TEXT_AREA } from "../../components/Common/Const";
+import { SWITCH, TEXT, SELECT, TEXT_EDITOR, IMAGE } from "../../components/Common/Const";
 
 // QR-only and BANK-only field names -- AddPaymentMethod.jsx's
 // handleFormBDataChange filters these in/out of the visible field list based
@@ -32,9 +32,9 @@ export const paymentMethodField = [
   },
   {
     name: "qrImageUrl",
-    label: "QR Image URL",
+    label: "QR Image",
     isRequired: true,
-    type: TEXT,
+    type: IMAGE,
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 4, lg: 4 },
   },
@@ -101,7 +101,7 @@ export const paymentMethodField = [
   {
     name: "instructions",
     label: "Instructions (optional)",
-    type: TEXT_AREA,
+    type: TEXT_EDITOR,
     labelColspan: { xs: 12, md: 2, lg: 2 },
     fieldColspan: { xs: 12, md: 10, lg: 10 },
   },
