@@ -68,6 +68,9 @@ import AddPhotos from "../Pages/PhotoLibrary/AddPhotos.jsx";
 import CountryCode from "../Pages/CountryCode";
 import AddCountryCode from "../Pages/CountryCode/AddCountryCode.jsx";
 import AddPackage from "../Pages/Package/AddPackage.jsx";
+import PaymentMethod from "../Pages/PaymentMethod";
+import AddPaymentMethod from "../Pages/PaymentMethod/AddPaymentMethod.jsx";
+import PlanUpgradeRequests from "../Pages/PlanUpgradeRequests";
 import NotificationConfig from "../Pages/NotificationConfig";
 import AddNotificationConfig from "../Pages/NotificationConfig/AddNotificationConfig.jsx";
 import WhiteLabel from "../Pages/WhiteLabel";
@@ -90,6 +93,9 @@ const authProtectedRoutes = [
   { path: "/addRoles", component: <AddRoles /> },
   { path: "/package", component: <Package /> },
   { path: "/addPackage", component: <AddPackage /> },
+  { path: "/paymentMethod", component: <PaymentMethod /> },
+  { path: "/addPaymentMethod", component: <AddPaymentMethod /> },
+  { path: "/planUpgradeRequests", component: <PlanUpgradeRequests /> },
   { path: "/socialMedia", component: <SocialMedia /> },
   { path: "/addSocialMedia", component: <AddSocialMedia /> },
   { path: "/countryCode", component: <CountryCode /> },
