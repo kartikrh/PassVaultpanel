@@ -27,10 +27,6 @@ import withRouter from "../../components/Common/withRouter";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 
-//Social Media Imports
-import { GoogleLogin } from "react-google-login";
-// import TwitterLogin from "react-twitter-auth"
-import FacebookLogin from "react-facebook-login/dist/facebook-login-render-props";
 
 // actions
 // import { loginUser, socialLogin, } from "../../store/actions";
@@ -55,9 +51,12 @@ const Login = (props) => {
   const otpInputRefs = useRef([]);
   const getInitialValues = () => {
     const userData = JSON.parse(localStorage.getItem(USER_DATA_KEY) || null);
-    if (userData) return userData
+    // Older builds saved the whole form, password included -- scrub it.
+    if (userData?.password) {
+      localStorage.setItem(USER_DATA_KEY, JSON.stringify({ userName: userData.userName }));
+    }
     return {
-      userName: "",
+      userName: userData?.userName || "",
       password: "",
     }
   }

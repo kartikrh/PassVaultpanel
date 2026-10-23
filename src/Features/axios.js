@@ -17,6 +17,11 @@ export const setAuthToken = (token) => {
 };
 
 axiosInstance.interceptors.request.use(async config => {
+    // axios 1.x turns FormData into JSON when Content-Type is application/json.
+    // Drop the instance default so the browser sets the multipart boundary.
+    if (typeof FormData !== 'undefined' && config.data instanceof FormData) {
+        config.headers.setContentType(false);
+    }
     if (!authToken) {
         try {
             authToken = await getToken();
@@ -61,7 +66,7 @@ axiosInstance.interceptors.response.use(
             const encryptedAuth = localStorage.getItem("authUser");
             setAuthToken(newToken);
             if (encryptedAuth) {
-                const decryptedAuth = decryptData(encryptedAuth);
+                const decryptedAuth = decryptData(encryptedAuth) || {};
                 decryptedAuth.token = newToken;
                 localStorage.setItem("authUser", encryptData(decryptedAuth));
             }
