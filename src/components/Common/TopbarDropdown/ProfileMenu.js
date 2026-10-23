@@ -22,7 +22,7 @@ const ProfileMenu = props => {
     if (localStorage.getItem("authUser")) {
       if (process.env.REACT_APP_DEFAULTAUTH === "firebase") {
         const obj = decryptData(localStorage.getItem("authUser"));
-        setusername(obj.displayName);
+        setusername(obj?.displayName);
       } else if (
         process.env.REACT_APP_DEFAULTAUTH === "fake" ||
         process.env.REACT_APP_DEFAULTAUTH === "jwt"

@@ -87,7 +87,7 @@ const getToken = () => {
   }
   const encryptedAuth = localStorage.getItem("authUser");
   const decryptedAuth = decryptData(encryptedAuth);
-  return decryptedAuth.token || null;
+  return decryptedAuth?.token || null;
 }
 
 
@@ -97,7 +97,7 @@ const getLoggedinUserName = () => {
   }
   const encryptedAuth = localStorage.getItem("authUser");
   const decryptedAuth = decryptData(encryptedAuth);
-  if (!decryptedAuth.token) {
+  if (!decryptedAuth?.token) {
     return null;
   } else {
     return decryptedAuth.userName;
@@ -109,7 +109,7 @@ const getLoggedinUser = () => {
   }
   const encryptedAuth = localStorage.getItem("authUser");
   const decryptedAuth = decryptData(encryptedAuth);
-  if (!decryptedAuth.token) {
+  if (!decryptedAuth?.token) {
     return null;
   } else {
     return decryptedAuth;

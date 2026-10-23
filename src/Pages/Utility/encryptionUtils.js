@@ -14,15 +14,24 @@ export const encryptData = (data) => {
 };
 
 // Decrypt data and return the decrypted object
+// Returns null for missing/stale/undecryptable storage (e.g. after the
+// secret changes) instead of throwing and crashing the app on load.
 export const decryptData = (encryptedData) => {
-  const bytes = CryptoJS.AES.decrypt(encryptedData, ENCRYPTION_SECRET);
-  const decrypted = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
-  return decrypted;
+  if (!encryptedData) return null;
+  try {
+    const bytes = CryptoJS.AES.decrypt(encryptedData, ENCRYPTION_SECRET);
+    return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+  } catch (e) {
+    return null;
+  }
 };
 
 export const removeStorageToken = () => {
-  const authData = localStorage.getItem("authUser");
-  const data = decryptData(authData);
-  delete data?.token;
+  const data = decryptData(localStorage.getItem("authUser"));
+  if (!data) {
+    localStorage.removeItem("authUser");
+    return;
+  }
+  delete data.token;
   localStorage.setItem("authUser", encryptData(data))
 }
