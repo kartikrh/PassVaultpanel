@@ -12,7 +12,8 @@ export const loginUser = createAsyncThunk(
       const response = await axiosInstance.post('/signin', userData);
       const rememberMe = JSON.parse(localStorage.getItem(REMEMBER_ME_KEY) || null);
       if (rememberMe) {
-        localStorage.setItem(USER_DATA_KEY, JSON.stringify(userData))
+        // Username only -- the password must never be written to storage.
+        localStorage.setItem(USER_DATA_KEY, JSON.stringify({ userName: userData?.userName }))
       } else {
         localStorage.setItem(USER_DATA_KEY, null)
       }

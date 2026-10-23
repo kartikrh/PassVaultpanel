@@ -75,7 +75,8 @@ const AuthProtected = (props) => {
   useEffect(() => {
     let interval;
     if (!isSocketConnected) {
-      interval = setInterval(verifyToken, process.env.REACT_APP_API_INTERVAL);
+      // Unset env would mean setInterval(fn, undefined) -- a tight loop.
+      interval = setInterval(verifyToken, Number(process.env.REACT_APP_API_INTERVAL) || 60000);
     }
     return () => {
       clearInterval(interval);

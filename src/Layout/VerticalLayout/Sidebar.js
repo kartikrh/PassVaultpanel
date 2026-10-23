@@ -222,16 +222,19 @@ const Sidebar = (props) => {
         (item) => item.key === loadInit.LOG_ROCKET_AP_ID
       )?.value;
       const userObj = JSON.parse(localStorage.getItem(USER_DATA_KEY) || "{}");
+      // identify() belongs inside the guard -- it used to run (and tag the
+      // session with the admin's username) even when init was skipped.
       if (
         !userObj?.userName ||
         userObj?.userName === LOG_ROCKET_TO_INCLUDE_ONLY
-      )
+      ) {
         LogRocket.init(logRocketAppId);
-      LogRocket.identify(userObj?.userName, {
-        name: userObj?.userName,
-        email: userObj?.userName,
-        subscriptionType: "pro",
-      });
+        LogRocket.identify(userObj?.userName, {
+          name: userObj?.userName,
+          email: userObj?.userName,
+          subscriptionType: "pro",
+        });
+      }
       setIsLogRocketInitialized(true);
     }
   }, [initLogRocket, isLogRocketInitialized, loadInitData]);
